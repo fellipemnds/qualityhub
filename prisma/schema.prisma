@@ -43,6 +43,11 @@ enum EstadoNC {
   ENCERRADA
 }
 
+enum ClassificacaoNC {
+  MAJOR
+  MINOR
+}
+
 model NaoConformidade {
   id     Int    @id @default(autoincrement())
   numero String @unique
@@ -50,6 +55,8 @@ model NaoConformidade {
   titulo           String
   descricao        String
   requisitoViolado String
+  classificacao    ClassificacaoNC?
+  analiseCausa     String?
 
   tipo   TipoRegistro @default(NAO_CONFORMIDADE)
   origem OrigemNC
@@ -63,9 +70,11 @@ model NaoConformidade {
   setorId Int
   setor   Setor @relation(fields: [setorId], references: [id])
 
-  atualizadoEm DateTime    @updatedAt
-  reaberturas  Int         @default(0)
-  contencoes   Contencao[]
+  atualizadoEm  DateTime       @updatedAt
+  reaberturas   Int            @default(0)
+  contencoes    Contencao[]
+  investigacoes Investigacao[]
+  anexos        Anexo[]
 }
 
 model Contencao {
@@ -78,6 +87,8 @@ model Contencao {
 
   naoConformidadeId Int
   naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id])
+
+  anexos Anexo[]
 
   criadoEm     DateTime @default(now())
   atualizadoEm DateTime @updatedAt
@@ -94,5 +105,46 @@ model Usuario {
   criadoEm     DateTime @default(now())
   atualizadoEm DateTime @updatedAt
 
-  contencoesResponsavel Contencao[] @relation("ContencaoResponsavel")
+  contencoesResponsavel    Contencao[]    @relation("ContencaoResponsavel")
+  investigacoesResponsavel Investigacao[] @relation("InvestigacaoResponsavel")
+  anexosEnviados           Anexo[]        @relation("AnexoEnviadoPor")
+}
+
+model Investigacao {
+  id                Int             @id @default(autoincrement())
+  naoConformidadeId Int
+  naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id])
+  responsavelId     Int
+  responsavel       Usuario         @relation("InvestigacaoResponsavel", fields: [responsavelId], references: [id])
+
+  causaRaiz   String
+  metodologia String?
+  abrangencia String?
+
+  anexos Anexo[]
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+}
+
+model Anexo {
+  id           Int    @id @default(autoincrement())
+  nomeArquivo  String
+  caminho      String
+  tipoMime     String
+  tamanhoBytes Int
+
+  naoConformidadeId Int?
+  naoConformidade   NaoConformidade? @relation(fields: [naoConformidadeId], references: [id])
+
+  contencaoId Int?
+  contencao   Contencao? @relation(fields: [contencaoId], references: [id])
+
+  investigacaoId Int?
+  investigacao   Investigacao? @relation(fields: [investigacaoId], references: [id])
+
+  criadoEm DateTime @default(now())
+
+  enviadoPorId Int
+  enviadoPor   Usuario @relation("AnexoEnviadoPor", fields: [enviadoPorId], references: [id])
 }
