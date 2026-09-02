@@ -17,6 +17,7 @@ model Setor {
   nome     String   @unique
   criadoEm DateTime @default(now())
 
+  usuarios         Usuario[]
   naoConformidades NaoConformidade[]
 }
 
@@ -62,6 +63,36 @@ model NaoConformidade {
   setorId Int
   setor   Setor @relation(fields: [setorId], references: [id])
 
+  atualizadoEm DateTime    @updatedAt
+  reaberturas  Int         @default(0)
+  contencoes   Contencao[]
+}
+
+model Contencao {
+  id            Int       @id @default(autoincrement())
+  responsavelId Int
+  responsavel   Usuario   @relation("ContencaoResponsavel", fields: [responsavelId], references: [id])
+  descricao     String
+  prazo         DateTime
+  concluidaEm   DateTime?
+
+  naoConformidadeId Int
+  naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id])
+
+  criadoEm     DateTime @default(now())
   atualizadoEm DateTime @updatedAt
-  reaberturas  Int      @default(0)
+}
+
+model Usuario {
+  id    Int    @id @default(autoincrement())
+  nome  String
+  email String @unique
+
+  setorId Int
+  setor   Setor @relation(fields: [setorId], references: [id])
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  contencoesResponsavel Contencao[] @relation("ContencaoResponsavel")
 }
