@@ -34,11 +34,11 @@ enum TipoRegistro {
 
 enum EstadoNC {
   ABERTA
-  EM_ANALISE
+  ANALISE
   IMPROCEDENTE
-  EM_CONTENCAO
-  EM_ACAO_CORRETIVA
-  VERIFICACAO_EFICACIA
+  CONTENCAO
+  ACAO_CORRETIVA
+  VERIFICACAO
   ENCERRADA
 }
 
@@ -62,6 +62,6 @@ model NaoConformidade {
   setorId Int
   setor   Setor @relation(fields: [setorId], references: [id])
 
-  atualizadoem DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
   reaberturas  Int      @default(0)
 }
