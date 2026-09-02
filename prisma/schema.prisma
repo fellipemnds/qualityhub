@@ -75,6 +75,7 @@ model NaoConformidade {
   contencoes    Contencao[]
   investigacoes Investigacao[]
   anexos        Anexo[]
+  aprovacoes    Aprovacao[]
 }
 
 model Contencao {
@@ -110,6 +111,7 @@ model Usuario {
   anexosEnviados           Anexo[]        @relation("AnexoEnviadoPor")
   acoesResponsavel         Acao[]         @relation("AcaoResponsavel")
   verificacoesResponsavel  Verificacao[]  @relation("VerificacaoResponsavel")
+  aprovacoesResponsavel    Aprovacao[]    @relation("AprovacaoResponsavel")
 }
 
 model Investigacao {
@@ -202,4 +204,27 @@ model Verificacao {
 
   criadoEm     DateTime @default(now())
   atualizadoEm DateTime @updatedAt
+}
+
+enum PortaoAprovacao {
+  CLASSIFICACAO
+  ENCERRAMENTO_INVESTIGACAO
+  ENCERRAMENTO_NC
+  AUTORIZACAO_CONCESSAO
+}
+
+model Aprovacao {
+  id     Int             @id @default(autoincrement())
+  portao PortaoAprovacao
+
+  autoaprovacao Boolean @default(false)
+  justificativa String?
+
+  naoConformidadeId Int
+  naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id])
+
+  aprovadorId Int
+  aprovador   Usuario @relation("AprovacaoResponsavel", fields: [aprovadorId], references: [id])
+
+  criadoEm DateTime @default(now())
 }
