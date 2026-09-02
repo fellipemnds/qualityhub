@@ -108,6 +108,8 @@ model Usuario {
   contencoesResponsavel    Contencao[]    @relation("ContencaoResponsavel")
   investigacoesResponsavel Investigacao[] @relation("InvestigacaoResponsavel")
   anexosEnviados           Anexo[]        @relation("AnexoEnviadoPor")
+  acoesResponsavel         Acao[]         @relation("AcaoResponsavel")
+  verificacoesResponsavel  Verificacao[]  @relation("VerificacaoResponsavel")
 }
 
 model Investigacao {
@@ -122,6 +124,7 @@ model Investigacao {
   abrangencia String?
 
   anexos Anexo[]
+  acoes  Acao[]
 
   criadoEm     DateTime @default(now())
   atualizadoEm DateTime @updatedAt
@@ -143,8 +146,60 @@ model Anexo {
   investigacaoId Int?
   investigacao   Investigacao? @relation(fields: [investigacaoId], references: [id])
 
+  acaoId Int?
+  acao   Acao? @relation(fields: [acaoId], references: [id])
+
+  verificacaoId Int?
+  verificacao   Verificacao? @relation(fields: [verificacaoId], references: [id])
+
   criadoEm DateTime @default(now())
 
   enviadoPorId Int
   enviadoPor   Usuario @relation("AnexoEnviadoPor", fields: [enviadoPorId], references: [id])
+}
+
+model Acao {
+  id             Int       @id @default(autoincrement())
+  descricao      String
+  efeitoEsperado String
+  prazo          DateTime
+  concluidaEm    DateTime?
+
+  investigacaoId Int
+  investigacao   Investigacao @relation(fields: [investigacaoId], references: [id])
+
+  responsavelId Int
+  responsavel   Usuario @relation("AcaoResponsavel", fields: [responsavelId], references: [id])
+
+  anexos       Anexo[]
+  verificacoes Verificacao[]
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+}
+
+enum ResultadoVerificacao {
+  PENDENTE
+  EFICAZ
+  PARCIALMENTE_EFICAZ
+  NAO_EFICAZ
+}
+
+model Verificacao {
+  id           Int                  @id @default(autoincrement())
+  resultado    ResultadoVerificacao @default(PENDENTE)
+  conclusao    String?
+  dataAlvo     DateTime
+  verificadoEm DateTime?
+
+  acaoId Int
+  acao   Acao @relation(fields: [acaoId], references: [id])
+
+  responsavelId Int
+  responsavel   Usuario @relation("VerificacaoResponsavel", fields: [responsavelId], references: [id])
+
+  anexos Anexo[]
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
 }
