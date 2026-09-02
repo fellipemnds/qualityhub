@@ -76,6 +76,7 @@ model NaoConformidade {
   investigacoes Investigacao[]
   anexos        Anexo[]
   aprovacoes    Aprovacao[]
+  comentarios   Comentario[]
 }
 
 model Contencao {
@@ -106,12 +107,14 @@ model Usuario {
   criadoEm     DateTime @default(now())
   atualizadoEm DateTime @updatedAt
 
-  contencoesResponsavel    Contencao[]    @relation("ContencaoResponsavel")
-  investigacoesResponsavel Investigacao[] @relation("InvestigacaoResponsavel")
-  anexosEnviados           Anexo[]        @relation("AnexoEnviadoPor")
-  acoesResponsavel         Acao[]         @relation("AcaoResponsavel")
-  verificacoesResponsavel  Verificacao[]  @relation("VerificacaoResponsavel")
-  aprovacoesResponsavel    Aprovacao[]    @relation("AprovacaoResponsavel")
+  contencoesResponsavel    Contencao[]       @relation("ContencaoResponsavel")
+  investigacoesResponsavel Investigacao[]    @relation("InvestigacaoResponsavel")
+  anexosEnviados           Anexo[]           @relation("AnexoEnviadoPor")
+  acoesResponsavel         Acao[]            @relation("AcaoResponsavel")
+  verificacoesResponsavel  Verificacao[]     @relation("VerificacaoResponsavel")
+  aprovacoesResponsavel    Aprovacao[]       @relation("AprovacaoResponsavel")
+  trilhasAuditoriaUsuario  TrilhaAuditoria[] @relation("TrilhaAuditoriaUsuario")
+  comentariosAutor         Comentario[]      @relation("ComentarioAutor")
 }
 
 model Investigacao {
@@ -227,4 +230,32 @@ model Aprovacao {
   aprovador   Usuario @relation("AprovacaoResponsavel", fields: [aprovadorId], references: [id])
 
   criadoEm DateTime @default(now())
+}
+
+model TrilhaAuditoria {
+  id            Int     @id @default(autoincrement())
+  entidade      String
+  entidadeId    Int
+  acao          String
+  campo         String?
+  valorAnterior String?
+  valorNovo     String?
+
+  usuarioId Int
+  usuario   Usuario @relation("TrilhaAuditoriaUsuario", fields: [usuarioId], references: [id])
+
+  criadoEm DateTime @default(now())
+}
+
+model Comentario {
+  id                Int             @id @default(autoincrement())
+  texto             String
+  naoConformidadeId Int
+  naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id])
+
+  autorId Int
+  autor   Usuario @relation("ComentarioAutor", fields: [autorId], references: [id])
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
 }
