@@ -31,6 +31,8 @@
     "@prisma/engines@7.10.0": true
   },
   "dependencies": {
-    "@prisma/client": "^7.10.0"
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "pg": "^8.23.0"
   }
 }
