@@ -11,3 +11,57 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Setor {
+  id       Int      @id @default(autoincrement())
+  nome     String   @unique
+  criadoEm DateTime @default(now())
+
+  naoConformidades NaoConformidade[]
+}
+
+enum OrigemNC {
+  AUDITORIA_INTERNA
+  AUDITORIA_EXTERNA
+  OPERACAO
+  RECLAMACAO_CLIENTE
+}
+
+enum TipoRegistro {
+  NAO_CONFORMIDADE
+  CONCESSAO
+}
+
+enum EstadoNC {
+  ABERTA
+  EM_ANALISE
+  IMPROCEDENTE
+  EM_CONTENCAO
+  EM_ACAO_CORRETIVA
+  VERIFICACAO_EFICACIA
+  ENCERRADA
+}
+
+model NaoConformidade {
+  id     Int    @id @default(autoincrement())
+  numero String @unique
+
+  titulo           String
+  descricao        String
+  requisitoViolado String
+
+  tipo   TipoRegistro @default(NAO_CONFORMIDADE)
+  origem OrigemNC
+  estado EstadoNC     @default(ABERTA)
+
+  cliente String?
+
+  dataOcorrencia DateTime
+  dataRegistro   DateTime @default(now())
+
+  setorId Int
+  setor   Setor @relation(fields: [setorId], references: [id])
+
+  atualizadoem DateTime @default(now())
+  reaberturas  Int      @default(0)
+}
