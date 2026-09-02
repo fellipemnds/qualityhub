@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: qualityhub_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: qualityhub
+      POSTGRES_PASSWORD: qualityhub_dev
+      POSTGRES_DB: qualityhub
+    ports:
+      - "5432:5432"
+    volumes:
+      - qualityhub-data:/var/lib/postgresql/data
+
+volumes:
+  qualityhub-data:
