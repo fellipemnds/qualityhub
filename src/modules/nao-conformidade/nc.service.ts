@@ -1,7 +1,7 @@
 import { ncRepository } from "./nc.repository.js"
 import type { OrigemNC } from "../../generated/prisma/client.js"
 
-type DadosNC = {
+export type DadosNC = {
     titulo: string;
     descricao: string;
     requisitoViolado: string;
