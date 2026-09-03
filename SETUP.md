@@ -342,4 +342,62 @@ code .
 
 Se tudo estiver certo, o VS Code irá abrir a pasta do projeto.
 
+## 11. Digitando a senha só uma vez com ssh-agent
+Para que você não precise digitar a senha toda vez que executa um commit, vamos configurar o "ssh-agent". Com ele, você só precisará digitar a senha na primeira requisição SSH com o servidor do GitHub em cada sessão do Ubuntu. 
+
+Primeiro, vamos criar o arquivo de configuração do SSH. Digite no Terminal: 
+
+```bash
+code ~/.ssh/config
+```
+
+Quando o arquivo abrir no VS Code, cole o seguinte código: 
+
+```
+Host github.com
+    AddKeysToAgent yes
+    IdentityFile ~/.ssh/id_ed25519
+```
+
+Em seguida, salve o arquivo e ajuste a permissão no Terminal: 
+
+```bash
+chmod 600 ~/.ssh/config
+```
+
+O 600 significa que só o dono pode ler e escrever, mais ninguém — como proteção. 
+
+Em seguida, vamos editar o `.bashrc`. Digite no Terminal: 
+
+```bash
+code ~/.bashrc
+```
+
+No fim do arquivo, coloque: 
+
+```bash
+if [ -z "$SSH_AUTH_SOCK" ]; then
+    eval "$(ssh-agent -s)" > /dev/null
+fi
+```
+Essa condição verifica se já existe um agente ativo. Sem ela, cada aba nova do terminal iniciaria um agente novo, e a chave carregada em um deles não valeria nos outros. 
+
+Salve o arquivo, volte ao Terminal e recarregue-o com o comando: 
+
+```bash
+source ~/.bashrc
+```
+
+Em seguida, teste duas vezes com o comando: 
+
+```bash
+ssh -T git@github.com
+```
+
+É esperado que na primeira vez, peça a passphrase. Em seguida, rode o comando de novo e verifique que ele não pede mais a senha. 
+
+Durante o uso comum, geralmente o primeiro push, pull ou clone do dia pede a passphrase e os seguintes não pedem mais. Isso ajuda no fluxo de desenvolvimento. 
+
+---
+
 **Se você chegou até aqui, você terá configurado tudo corretamente! PARABÉNS!** 
