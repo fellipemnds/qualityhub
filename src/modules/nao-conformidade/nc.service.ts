@@ -1,5 +1,6 @@
 import { ncRepository } from "./nc.repository.js"
 import type { OrigemNC } from "../../generated/prisma/client.js"
+import { NaoEncontradoError, ValidacaoError } from "../../lib/errors.js";
 
 export type DadosNC = {
     titulo: string;
@@ -26,7 +27,7 @@ export const ncService = {
         const nc = await ncRepository.buscarPorId(id);
 
         if (!nc) {
-            throw new Error("Nenhuma NC com este ID foi encontrada");
+            throw new NaoEncontradoError("Nenhuma NC com este ID foi encontrada");
         }
 
         return nc;
@@ -34,7 +35,7 @@ export const ncService = {
 
     async criar(dados: DadosNC) {
         if (dados.origem === "RECLAMACAO_CLIENTE" && !dados.cliente) {
-            throw new Error("Cliente não informado!");
+            throw new ValidacaoError("Cliente não informado!");
         }
 
         const numero = await this.gerarNumero();
