@@ -36,16 +36,18 @@ enum TipoRegistro {
 enum EstadoNC {
   ABERTA
   ANALISE
+  CANCELADA
   IMPROCEDENTE
   CONTENCAO
+  INVESTIGACAO
   ACAO_CORRETIVA
   VERIFICACAO
   ENCERRADA
 }
 
 enum ClassificacaoNC {
-  MAJOR
-  MINOR
+  MAIOR
+  MENOR
 }
 
 model NaoConformidade {
