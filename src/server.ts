@@ -3,7 +3,10 @@ import { ncRoutes } from "./modules/nao-conformidade/nc.routes.js";
 import { AppError } from "./lib/errors.js";
 import { ZodError } from "zod";
 
-const app = Fastify({ logger: true });
+const app = Fastify({
+    logger: true,
+    ignoreTrailingSlash: true,
+});
 
 app.get("/", async () => {
     return { status: "QualityHub API no ar" };

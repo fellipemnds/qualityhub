@@ -10,4 +10,8 @@ export const criarNCSchema = z.object({
     setorId: z.number().int().positive()
 })
 
+export const buscarIdNCSchema = z.object({
+    id: z.coerce.number().int().positive()
+})
+
 export type CriarNCInput = z.infer<typeof criarNCSchema>;

@@ -1,6 +1,7 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
 import { ncService } from "./nc.service.js";
 import { criarNCSchema } from "./nc.schema.js";
+import { buscarIdNCSchema } from "./nc.schema.js";
 
 export const ncController = {
     async listar(request: FastifyRequest, reply: FastifyReply) {
@@ -8,9 +9,9 @@ export const ncController = {
     },
 
     async buscarPorId(request: FastifyRequest, reply: FastifyReply) {
-        const { id } = request.params as { id: string }
+        const params = buscarIdNCSchema.parse(request.params);
 
-        return ncService.buscarPorId(Number(id));
+        return ncService.buscarPorId(params.id);
     },
 
     async criar(request: FastifyRequest, reply: FastifyReply) {
