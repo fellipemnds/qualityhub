@@ -98,10 +98,18 @@ model Contencao {
   atualizadoEm DateTime @updatedAt
 }
 
+enum PerfilUsuario {
+  COLABORADOR
+  QA
+  DIRETORIA
+}
+
 model Usuario {
-  id    Int    @id @default(autoincrement())
-  nome  String
-  email String @unique
+  id        Int           @id @default(autoincrement())
+  nome      String
+  email     String        @unique
+  senhaHash String?
+  perfil    PerfilUsuario
 
   setorId Int
   setor   Setor @relation(fields: [setorId], references: [id])
