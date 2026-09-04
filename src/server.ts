@@ -2,16 +2,25 @@ import Fastify from "fastify";
 import { ncRoutes } from "./modules/nao-conformidade/nc.routes.js";
 import { AppError } from "./lib/errors.js";
 import { ZodError } from "zod";
+import fastifyJwt from "@fastify/jwt";
+
 
 const app = Fastify({
     logger: true,
     ignoreTrailingSlash: true,
 });
 
+const jwtSecret = process.env["JWT_SECRET"]!
+
 app.get("/", async () => {
     return { status: "QualityHub API no ar" };
 });
 
+if (!jwtSecret) {
+    throw new Error("JWT_SECRET não está definida no .env");
+}
+
+app.register(fastifyJwt, { secret: jwtSecret });
 app.register(ncRoutes);
 
 app.setErrorHandler((erro, request, reply) => {
