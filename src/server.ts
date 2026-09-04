@@ -1,6 +1,7 @@
 import Fastify from "fastify";
 import { ncRoutes } from "./modules/nao-conformidade/nc.routes.js";
 import { AppError } from "./lib/errors.js";
+import { ZodError } from "zod";
 
 const app = Fastify({ logger: true });
 
@@ -11,6 +12,13 @@ app.get("/", async () => {
 app.register(ncRoutes);
 
 app.setErrorHandler((erro, request, reply) => {
+    if (erro instanceof ZodError) {
+        return reply.status(400).send({
+            mensagem: "Dados inválidos",
+            erros: erro.issues,
+        })
+    }
+
     if (erro instanceof AppError) {
         return reply.status(erro.statusCode).send({ mensagem: erro.message })
     }

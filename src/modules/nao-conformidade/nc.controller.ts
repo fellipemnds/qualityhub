@@ -1,6 +1,6 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
 import { ncService } from "./nc.service.js";
-import type { DadosNC } from "./nc.service.js";
+import { criarNCSchema } from "./nc.schema.js";
 
 export const ncController = {
     async listar(request: FastifyRequest, reply: FastifyReply) {
@@ -14,7 +14,7 @@ export const ncController = {
     },
 
     async criar(request: FastifyRequest, reply: FastifyReply) {
-        const dados = request.body as DadosNC;
+        const dados = criarNCSchema.parse(request.body);
 
         const nc = await ncService.criar(dados);
 
