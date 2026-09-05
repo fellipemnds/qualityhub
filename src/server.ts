@@ -4,6 +4,7 @@ import { authRoutes } from "./modules/auth/auth.routes.js";
 import { AppError } from "./lib/errors.js";
 import { ZodError } from "zod";
 import fastifyJwt from "@fastify/jwt";
+import { usuarioRoutes } from "./modules/usuario/usuario.routes.js";
 
 
 const app = Fastify({
@@ -23,6 +24,7 @@ if (!jwtSecret) {
 
 app.register(fastifyJwt, { secret: jwtSecret });
 app.register(authRoutes);
+app.register(usuarioRoutes);
 app.register(ncRoutes);
 
 app.setErrorHandler((erro, request, reply) => {

@@ -1,15 +1,15 @@
 import { z } from "zod";
+import { PerfilUsuario } from "../../generated/prisma/enums.js";
 
-export const UsuarioSchema = z.object({
+export const criarUsuarioSchema = z.object({
     nome: z.string().min(1),
-    email: z.string().email().min(1),
-    senhaHash: z.string().min(1),
-    perfil: z.enum(["COLABORADOR", "QA", "DIRETORIA"]),
+    email: z.string().email(),
+    perfil: z.enum(PerfilUsuario),
     setorId: z.number().int().positive()
 });
 
 export const buscarUsuarioIdSchema = z.object({
-    id: z.number().int().positive()
+    id: z.coerce.number().int().positive()
 });
 
-export type CriarUsuarioInput = z.infer<typeof UsuarioSchema>;
+export type CriarUsuarioInput = z.infer<typeof criarUsuarioSchema>;

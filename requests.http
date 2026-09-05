@@ -3,6 +3,15 @@
 ### Health check
 GET {{baseUrl}}/
 
+### Cadastrar senha
+POST {{baseUrl}}/auth/definir-senha
+Content-Type: application/json
+
+{
+    "email": "admin@gmail.com",
+    "senha": "eusouoadministrador"
+}
+
 ### Login
 # @name login
 POST {{baseUrl}}/auth/login
@@ -12,6 +21,16 @@ Content-Type: application/json
     "email": "matthew@gmail.com",
     "senha": "umasenhabemlonga"
 }
+
+# ### Login
+# # @name login
+# POST {{baseUrl}}/auth/login
+# Content-Type: application/json
+
+# {
+#     "email": "admin@gmail.com",
+#     "senha": "eusouoadministrador"
+# }
 
 ### Listar NCs
 GET {{baseUrl}}/nao-conformidades
@@ -29,4 +48,16 @@ Authorization: Bearer {{login.response.body.token}}
     "dataOcorrencia": "2026-09-01",
     "origem": "OPERACAO",
     "setorId": 1
+}
+
+### Criar Usuário 
+POST {{baseUrl}}/usuarios
+Content-Type: application/json
+Authorization: BEARER {{login.response.body.token}}
+
+{
+  "nome": "Ana Silva",
+  "email": "ana.silva@empresa.com",
+  "perfil": "QA",
+  "setorId": 1
 }
