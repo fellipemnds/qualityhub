@@ -102,6 +102,7 @@ enum PerfilUsuario {
   COLABORADOR
   QA
   DIRETORIA
+  ADMIN
 }
 
 model Usuario {

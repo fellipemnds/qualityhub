@@ -1,0 +1,32 @@
+@baseUrl = http://localhost:3333
+
+### Health check
+GET {{baseUrl}}/
+
+### Login
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "matthew@gmail.com",
+    "senha": "umasenhabemlonga"
+}
+
+### Listar NCs
+GET {{baseUrl}}/nao-conformidades
+Authorization: Bearer {{login.response.body.token}}
+
+### Criar NC
+POST {{baseUrl}}/nao-conformidades
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+{
+    "titulo": "Teste pelo REST Client",
+    "descricao": "Verificando o fluxo completo",
+    "requisitoViolado": "Procedimento de teste",
+    "dataOcorrencia": "2026-09-01",
+    "origem": "OPERACAO",
+    "setorId": 1
+}
