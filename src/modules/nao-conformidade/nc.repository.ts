@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma.js";
-import { Prisma } from "../../generated/prisma/client.js";
+import type { Prisma } from "../../generated/prisma/client.js";
 
 export const ncRepository = {
     async listar() {
@@ -14,9 +14,9 @@ export const ncRepository = {
             where: { id },
             include: { setor: true },
         });
-    }, 
+    },
 
-    async criar(dados: Prisma.NaoConformidadeCreateInput){
+    async criar(dados: Prisma.NaoConformidadeCreateInput) {
         return prisma.naoConformidade.create({ data: dados });
     },
 
