@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ClassificacaoNC } from "../../generated/prisma/enums.js";
 
 export const criarNCSchema = z.object({
     titulo: z.string().min(1),
@@ -12,6 +13,10 @@ export const criarNCSchema = z.object({
 
 export const buscarIdNCSchema = z.object({
     id: z.coerce.number().int().positive()
+})
+
+export const classificarNCSchema = z.object({
+    classificacao: z.enum(ClassificacaoNC)
 })
 
 export type CriarNCInput = z.infer<typeof criarNCSchema>;

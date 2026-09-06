@@ -8,11 +8,11 @@ POST {{baseUrl}}/auth/definir-senha
 Content-Type: application/json
 
 {
-    "email": "admin@gmail.com",
-    "senha": "eusouoadministrador"
+    "email": "ana.silva@empresa.com",
+    "senha": "anasilvaempresa"
 }
 
-### Login
+### Login Colaborador
 # @name login
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
@@ -22,15 +22,25 @@ Content-Type: application/json
     "senha": "umasenhabemlonga"
 }
 
-# ### Login
-# # @name login
-# POST {{baseUrl}}/auth/login
-# Content-Type: application/json
+### Login Administrador
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
 
-# {
-#     "email": "admin@gmail.com",
-#     "senha": "eusouoadministrador"
-# }
+{
+    "email": "admin@gmail.com",
+    "senha": "eusouoadministrador"
+}
+
+### Login QA
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "ana.silva@empresa.com",
+    "senha": "anasilvaempresa"
+}
 
 ### Listar NCs
 GET {{baseUrl}}/nao-conformidades
@@ -60,4 +70,13 @@ Authorization: BEARER {{login.response.body.token}}
   "email": "ana.silva@empresa.com",
   "perfil": "QA",
   "setorId": 1
+}
+
+### Classificar NC
+PATCH {{baseUrl}}/nao-conformidades/1/classificar
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+{
+  "classificacao": "MAIOR"
 }
