@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "PortaoAprovacao" ADD VALUE 'ENCERRAMENTO_CONTENCAO';
