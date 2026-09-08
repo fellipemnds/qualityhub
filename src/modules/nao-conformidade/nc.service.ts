@@ -4,8 +4,6 @@ import { CriarNCInput } from "./nc.schema.js";
 import { podeClassificar } from "../../lib/permissoes.js";
 import { ClassificacaoNC, PerfilUsuario } from "../../generated/prisma/enums.js";
 import { prisma } from "../../lib/prisma.js";
-import { connect } from "node:http2";
-import { id } from "zod/locales";
 import { Entidades } from "../../lib/entidades.js";
 import { AcoesAuditoria } from "../../lib/acoes.js";
 
