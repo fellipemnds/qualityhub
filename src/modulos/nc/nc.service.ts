@@ -1,11 +1,11 @@
 import { ncRepository } from "./nc.repository.js"
-import { NaoEncontradoError, SemPermissaoError, ValidacaoError } from "../../lib/errors.js";
+import { NaoEncontradoError, SemPermissaoError, ValidacaoError } from "../../compartilhado/errors/errors.js";
 import { CriarNCInput } from "./nc.schema.js";
-import { podeClassificar } from "../../lib/permissoes.js";
+import { podeClassificar } from "../../compartilhado/permissoes/pode-executar.js";
 import { ClassificacaoNC, PerfilUsuario } from "../../generated/prisma/enums.js";
 import { prisma } from "../../lib/prisma.js";
 import { Entidades } from "../../lib/entidades.js";
-import { AcoesAuditoria } from "../../lib/acoes.js";
+import { AcoesAuditoria } from "../../compartilhado/acoes/acoes.js";
 
 type ClassificarNCInput = {
     id: number;

@@ -1,8 +1,8 @@
 import { usuarioRepository } from "./usuario.repository.js";
-import { podeGerenciarUsuarios } from "../../lib/permissoes.js";
+import { podeGerenciarUsuarios } from "../../compartilhado/permissoes/pode-executar.js";
 import type { CriarUsuarioInput } from "./usuario.schema.js";
 import type { PerfilUsuario } from "../../generated/prisma/enums.js";
-import { SemPermissaoError, ValidacaoError } from "../../lib/errors.js";
+import { SemPermissaoError, ValidacaoError } from "../../compartilhado/errors/errors.js";
 
 export const usuarioService = {
     async criar(dados: CriarUsuarioInput, perfilAutor: PerfilUsuario) {

@@ -1,4 +1,4 @@
-import type { PerfilUsuario } from "../generated/prisma/enums.js";
+import type { PerfilUsuario } from "../../generated/prisma/enums.js";
 
 export function podeGerenciarUsuarios(perfil: PerfilUsuario) {
     return perfil === "ADMIN";

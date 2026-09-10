@@ -1,10 +1,10 @@
-import { ValidacaoError } from "../../lib/errors.js";
-import { ncService } from "../nao-conformidade/nc.service.js"
+import { ValidacaoError } from "../../compartilhado/errors/errors.js";
+import { ncService } from "../nc/nc.service.js"
 import { contencaoRepository } from "./contencao.repository.js"
 import { CriarContencaoInput } from "./contencao.schema.js";
 import { prisma } from "../../lib/prisma.js";
 import { Entidades } from "../../lib/entidades.js";
-import { AcoesAuditoria } from "../../lib/acoes.js";
+import { AcoesAuditoria } from "../../compartilhado/acoes/acoes.js";
 
 type RegistrarContencaoInput = CriarContencaoInput & {
     naoConformidadeId: number;

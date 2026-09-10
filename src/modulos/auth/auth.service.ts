@@ -1,5 +1,5 @@
 import { usuarioRepository } from "../usuario/usuario.repository.js";
-import { ValidacaoError } from "../../lib/errors.js";
+import { ValidacaoError } from "../../compartilhado/errors/errors.js";
 import bcrypt from "bcrypt";
 
 export const authService = {

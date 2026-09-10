@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { NaoAutenticadoError } from "../lib/errors.js";
+import { NaoAutenticadoError } from "../compartilhado/errors/errors.js";
 
 export async function autenticar(request: FastifyRequest, reply: FastifyReply) {
     try {
