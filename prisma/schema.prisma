@@ -4,14 +4,86 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  previewFeatures = ["partialIndexes"]
 }
 
 datasource db {
   provider = "postgresql"
 }
 
+// ---------------------------------------------
+
+// Registro
+enum TipoRegistro {
+  NAO_CONFORMIDADE
+  CLASSIFICACAO
+  CONTENCAO
+  INVESTIGACAO
+  ACAO_CORRETIVA
+  VERIFICACAO
+}
+
+enum EstadoRegistro {
+  RASCUNHO
+  ABERTO
+  EM_APROVACAO
+  FECHADO
+  CANCELADO
+}
+
+model Registro {
+  id          String         @id @default(uuid(7))
+  tipo        TipoRegistro
+  codigo      String?        @unique
+  estado      EstadoRegistro @default(RASCUNHO)
+  portaoAtual Int            @default(0)
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  criadoPorId String
+  criadoPor   Usuario @relation(fields: [criadoPorId], references: [id])
+
+  naoConformidade NaoConformidade?
+  atribuicoes     Atribuicao[]
+}
+
+// Não Conformidade
+enum OrigemNC {
+  AUDITORIA_INTERNA
+  AUDITORIA_EXTERNA
+  OPERACAO
+  RECLAMACAO_CLIENTE
+}
+
+enum ClassificacaoNC {
+  MAIOR
+  MENOR
+}
+
+model NaoConformidade {
+  id                 String           @id
+  titulo             String?
+  descricao          String?
+  requisitoViolado   String?
+  processoAfetado    String?
+  classificacaoAtual ClassificacaoNC?
+
+  setorId     Int?
+  setor       Setor?    @relation(fields: [setorId], references: [id])
+  detectadoEm DateTime?
+  origem      OrigemNC?
+  cliente     String?
+
+  riscosRevisados String?
+  mudancasSGQ     String?
+
+  registro Registro @relation(fields: [id], references: [id], onDelete: Cascade)
+}
+
+// Setor
 model Setor {
   id       Int      @id @default(autoincrement())
   nome     String   @unique
@@ -21,96 +93,33 @@ model Setor {
   naoConformidades NaoConformidade[]
 }
 
-enum OrigemNC {
-  AUDITORIA_INTERNA
-  AUDITORIA_EXTERNA
-  OPERACAO
-  RECLAMACAO_CLIENTE
-}
-
-enum TipoRegistro {
-  NAO_CONFORMIDADE
-  CONCESSAO
-}
-
-enum EstadoNC {
-  ABERTA
-  ANALISE
-  CANCELADA
-  IMPROCEDENTE
-  CONTENCAO
-  INVESTIGACAO
-  ACAO_CORRETIVA
-  VERIFICACAO
-  ENCERRADA
-}
-
-enum ClassificacaoNC {
-  MAIOR
-  MENOR
-}
-
-model NaoConformidade {
-  id     Int    @id @default(autoincrement())
-  numero String @unique
-
-  titulo           String
-  descricao        String
-  requisitoViolado String
-  classificacao    ClassificacaoNC?
-  analiseCausa     String?
-
-  tipo   TipoRegistro @default(NAO_CONFORMIDADE)
-  origem OrigemNC
-  estado EstadoNC     @default(ABERTA)
-
-  cliente String?
-
-  dataOcorrencia DateTime
-  dataRegistro   DateTime @default(now())
-
-  setorId Int
-  setor   Setor @relation(fields: [setorId], references: [id])
-
-  atualizadoEm  DateTime       @updatedAt
-  reaberturas   Int            @default(0)
-  contencoes    Contencao[]
-  investigacoes Investigacao[]
-  anexos        Anexo[]
-  aprovacoes    Aprovacao[]
-  comentarios   Comentario[]
-}
-
-model Contencao {
-  id            Int       @id @default(autoincrement())
-  responsavelId Int
-  responsavel   Usuario   @relation("ContencaoResponsavel", fields: [responsavelId], references: [id])
-  descricao     String
-  prazo         DateTime
-  concluidaEm   DateTime?
-
-  naoConformidadeId Int
-  naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id])
-
-  anexos Anexo[]
-
-  criadoEm     DateTime @default(now())
-  atualizadoEm DateTime @updatedAt
-}
-
-enum PerfilUsuario {
-  COLABORADOR
-  QA
-  DIRETORIA
+// Usuário
+enum Papel {
+  VISUALIZADOR
+  EDITOR
+  APROVADOR
+  GERENTE
   ADMIN
 }
 
+model UsuarioPapel {
+  usuario        Usuario  @relation("papeisRecebidos", fields: [usuarioId], references: [id])
+  usuarioId      String
+  papel          Papel
+  concedidoPorId String
+  concedidoPor   Usuario  @relation("papeisConcedidos", fields: [concedidoPorId], references: [id])
+  concedidoEm    DateTime @default(now())
+
+  @@id([usuarioId, papel])
+}
+
 model Usuario {
-  id        Int           @id @default(autoincrement())
-  nome      String
-  email     String        @unique
-  senhaHash String?
-  perfil    PerfilUsuario
+  id               String         @id @default(uuid(7))
+  nome             String
+  email            String         @unique
+  senhaHash        String?
+  papeisRecebidos  UsuarioPapel[] @relation("papeisRecebidos")
+  papeisConcedidos UsuarioPapel[] @relation("papeisConcedidos")
 
   setorId Int
   setor   Setor @relation(fields: [setorId], references: [id])
@@ -118,156 +127,229 @@ model Usuario {
   criadoEm     DateTime @default(now())
   atualizadoEm DateTime @updatedAt
 
-  contencoesResponsavel    Contencao[]       @relation("ContencaoResponsavel")
-  investigacoesResponsavel Investigacao[]    @relation("InvestigacaoResponsavel")
-  anexosEnviados           Anexo[]           @relation("AnexoEnviadoPor")
-  acoesResponsavel         Acao[]            @relation("AcaoResponsavel")
-  verificacoesResponsavel  Verificacao[]     @relation("VerificacaoResponsavel")
-  aprovacoesResponsavel    Aprovacao[]       @relation("AprovacaoResponsavel")
-  trilhasAuditoriaUsuario  TrilhaAuditoria[] @relation("TrilhaAuditoriaUsuario")
-  comentariosAutor         Comentario[]      @relation("ComentarioAutor")
+  registros Registro[]
+
+  atribuicoesRecebidas  Atribuicao[]  @relation("atribuicoesRecebidas")
+  atribuicoesConcedidas Atribuicao[]  @relation("atribuicoesConcedidas")
+  tokensAcesso          TokenAcesso[]
 }
 
-model Investigacao {
-  id                Int             @id @default(autoincrement())
-  naoConformidadeId Int
-  naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id])
-  responsavelId     Int
-  responsavel       Usuario         @relation("InvestigacaoResponsavel", fields: [responsavelId], references: [id])
-
-  causaRaiz   String
-  metodologia String?
-  abrangencia String?
-
-  anexos Anexo[]
-  acoes  Acao[]
-
-  criadoEm     DateTime @default(now())
-  atualizadoEm DateTime @updatedAt
+enum TipoTokenAcesso {
+  CONVITE
+  RECUPERACAO_SENHA
 }
 
-model Anexo {
-  id           Int    @id @default(autoincrement())
-  nomeArquivo  String
-  caminho      String
-  tipoMime     String
-  tamanhoBytes Int
-
-  naoConformidadeId Int?
-  naoConformidade   NaoConformidade? @relation(fields: [naoConformidadeId], references: [id])
-
-  contencaoId Int?
-  contencao   Contencao? @relation(fields: [contencaoId], references: [id])
-
-  investigacaoId Int?
-  investigacao   Investigacao? @relation(fields: [investigacaoId], references: [id])
-
-  acaoId Int?
-  acao   Acao? @relation(fields: [acaoId], references: [id])
-
-  verificacaoId Int?
-  verificacao   Verificacao? @relation(fields: [verificacaoId], references: [id])
-
-  criadoEm DateTime @default(now())
-
-  enviadoPorId Int
-  enviadoPor   Usuario @relation("AnexoEnviadoPor", fields: [enviadoPorId], references: [id])
+model TokenAcesso {
+  id        String          @id @default(uuid(7))
+  usuarioId String
+  usuario   Usuario         @relation(fields: [usuarioId], references: [id])
+  tipo      TipoTokenAcesso
+  tokenHash String          @unique
+  expiraEm  DateTime
+  usadoEm   DateTime?
 }
 
-model Acao {
-  id             Int       @id @default(autoincrement())
-  descricao      String
-  efeitoEsperado String
-  prazo          DateTime
-  concluidaEm    DateTime?
+// Contador para os códigos
+model ContadorSequencia {
+  prefixo      String
+  ano          Int
+  ultimoNumero Int    @default(0)
 
-  investigacaoId Int
-  investigacao   Investigacao @relation(fields: [investigacaoId], references: [id])
-
-  responsavelId Int
-  responsavel   Usuario @relation("AcaoResponsavel", fields: [responsavelId], references: [id])
-
-  anexos       Anexo[]
-  verificacoes Verificacao[]
-
-  criadoEm     DateTime @default(now())
-  atualizadoEm DateTime @updatedAt
+  @@id([prefixo, ano])
 }
 
-enum ResultadoVerificacao {
-  PENDENTE
-  EFICAZ
-  PARCIALMENTE_EFICAZ
-  NAO_EFICAZ
+// Atribuição para os itens
+enum FuncaoAtribuicao {
+  COLABORADOR
+  APROVADOR
 }
 
-model Verificacao {
-  id           Int                  @id @default(autoincrement())
-  resultado    ResultadoVerificacao @default(PENDENTE)
-  conclusao    String?
-  dataAlvo     DateTime
-  verificadoEm DateTime?
+model Atribuicao {
+  registroId String
+  registro   Registro         @relation(fields: [registroId], references: [id])
+  usuario    Usuario          @relation("atribuicoesRecebidas", fields: [usuarioId], references: [id])
+  usuarioId  String
+  funcao     FuncaoAtribuicao
 
-  acaoId Int
-  acao   Acao @relation(fields: [acaoId], references: [id])
+  atribuidoPor   Usuario  @relation("atribuicoesConcedidas", fields: [atribuidoPorId], references: [id])
+  atribuidoPorId String
+  atribuidoEm    DateTime @default(now())
 
-  responsavelId Int
-  responsavel   Usuario @relation("VerificacaoResponsavel", fields: [responsavelId], references: [id])
-
-  anexos Anexo[]
-
-  criadoEm     DateTime @default(now())
-  atualizadoEm DateTime @updatedAt
+  @@id([registroId, usuarioId, funcao])
+  @@unique([registroId], where: { funcao: "APROVADOR" }, map: "atribuicao_um_aprovador")
 }
 
-enum PortaoAprovacao {
-  CLASSIFICACAO
-  ENCERRAMENTO_CONTENCAO
-  ENCERRAMENTO_INVESTIGACAO
-  ENCERRAMENTO_NC
-  AUTORIZACAO_CONCESSAO
-}
+//----------------
 
-model Aprovacao {
-  id     Int             @id @default(autoincrement())
-  portao PortaoAprovacao
+// enum EstadoNC {
+//   ABERTA
+//   ANALISE
+//   CANCELADA
+//   IMPROCEDENTE
+//   CONTENCAO
+//   INVESTIGACAO
+//   ACAO_CORRETIVA
+//   VERIFICACAO
+//   ENCERRADA
+// }
 
-  autoaprovacao Boolean @default(false)
-  justificativa String?
+// model Contencao {
+//   id            Int       @id @default(autoincrement())
+//   responsavelId Int
+//   responsavel   Usuario   @relation("ContencaoResponsavel", fields: [responsavelId], references: [id])
+//   descricao     String
+//   prazo         DateTime
+//   concluidaEm   DateTime?
 
-  naoConformidadeId Int
-  naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id])
+//   naoConformidadeId Int
+//   naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id])
 
-  aprovadorId Int
-  aprovador   Usuario @relation("AprovacaoResponsavel", fields: [aprovadorId], references: [id])
+//   anexos Anexo[]
 
-  criadoEm DateTime @default(now())
-}
+//   criadoEm     DateTime @default(now())
+//   atualizadoEm DateTime @updatedAt
+// }
 
-model TrilhaAuditoria {
-  id            Int     @id @default(autoincrement())
-  entidade      String
-  entidadeId    Int
-  acao          String
-  campo         String?
-  valorAnterior String?
-  valorNovo     String?
+// model Investigacao {
+//   id                Int             @id @default(autoincrement())
+//   naoConformidadeId Int
+//   naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id])
+//   responsavelId     Int
+//   responsavel       Usuario         @relation("InvestigacaoResponsavel", fields: [responsavelId], references: [id])
 
-  usuarioId Int
-  usuario   Usuario @relation("TrilhaAuditoriaUsuario", fields: [usuarioId], references: [id])
+//   causaRaiz   String
+//   metodologia String?
+//   abrangencia String?
 
-  criadoEm DateTime @default(now())
-}
+//   anexos Anexo[]
+//   acoes  Acao[]
 
-model Comentario {
-  id                Int             @id @default(autoincrement())
-  texto             String
-  naoConformidadeId Int
-  naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id])
+//   criadoEm     DateTime @default(now())
+//   atualizadoEm DateTime @updatedAt
+// }
 
-  autorId Int
-  autor   Usuario @relation("ComentarioAutor", fields: [autorId], references: [id])
+// model Anexo {
+//   id           Int    @id @default(autoincrement())
+//   nomeArquivo  String
+//   caminho      String
+//   tipoMime     String
+//   tamanhoBytes Int
 
-  criadoEm     DateTime @default(now())
-  atualizadoEm DateTime @updatedAt
-}
+//   naoConformidadeId Int?
+//   naoConformidade   NaoConformidade? @relation(fields: [naoConformidadeId], references: [id])
+
+//   contencaoId Int?
+//   contencao   Contencao? @relation(fields: [contencaoId], references: [id])
+
+//   investigacaoId Int?
+//   investigacao   Investigacao? @relation(fields: [investigacaoId], references: [id])
+
+//   acaoId Int?
+//   acao   Acao? @relation(fields: [acaoId], references: [id])
+
+//   verificacaoId Int?
+//   verificacao   Verificacao? @relation(fields: [verificacaoId], references: [id])
+
+//   criadoEm DateTime @default(now())
+
+//   enviadoPorId Int
+//   enviadoPor   Usuario @relation("AnexoEnviadoPor", fields: [enviadoPorId], references: [id])
+// }
+
+// model Acao {
+//   id             Int       @id @default(autoincrement())
+//   descricao      String
+//   efeitoEsperado String
+//   prazo          DateTime
+//   concluidaEm    DateTime?
+
+//   investigacaoId Int
+//   investigacao   Investigacao @relation(fields: [investigacaoId], references: [id])
+
+//   responsavelId Int
+//   responsavel   Usuario @relation("AcaoResponsavel", fields: [responsavelId], references: [id])
+
+//   anexos       Anexo[]
+//   verificacoes Verificacao[]
+
+//   criadoEm     DateTime @default(now())
+//   atualizadoEm DateTime @updatedAt
+// }
+
+// enum ResultadoVerificacao {
+//   PENDENTE
+//   EFICAZ
+//   PARCIALMENTE_EFICAZ
+//   NAO_EFICAZ
+// }
+
+// model Verificacao {
+//   id           Int                  @id @default(autoincrement())
+//   resultado    ResultadoVerificacao @default(PENDENTE)
+//   conclusao    String?
+//   dataAlvo     DateTime
+//   verificadoEm DateTime?
+
+//   acaoId Int
+//   acao   Acao @relation(fields: [acaoId], references: [id])
+
+//   responsavelId Int
+//   responsavel   Usuario @relation("VerificacaoResponsavel", fields: [responsavelId], references: [id])
+
+//   anexos Anexo[]
+
+//   criadoEm     DateTime @default(now())
+//   atualizadoEm DateTime @updatedAt
+// }
+
+// enum PortaoAprovacao {
+//   CLASSIFICACAO
+//   ENCERRAMENTO_CONTENCAO
+//   ENCERRAMENTO_INVESTIGACAO
+//   ENCERRAMENTO_NC
+//   AUTORIZACAO_CONCESSAO
+// }
+
+// model Aprovacao {
+//   id     Int             @id @default(autoincrement())
+//   portao PortaoAprovacao
+
+//   autoaprovacao Boolean @default(false)
+//   justificativa String?
+
+//   naoConformidadeId Int
+//   naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id])
+
+//   aprovadorId Int
+//   aprovador   Usuario @relation("AprovacaoResponsavel", fields: [aprovadorId], references: [id])
+
+//   criadoEm DateTime @default(now())
+// }
+
+// model TrilhaAuditoria {
+//   id            Int     @id @default(autoincrement())
+//   entidade      String
+//   entidadeId    Int
+//   acao          String
+//   campo         String?
+//   valorAnterior String?
+//   valorNovo     String?
+
+//   usuarioId Int
+//   usuario   Usuario @relation("TrilhaAuditoriaUsuario", fields: [usuarioId], references: [id])
+
+//   criadoEm DateTime @default(now())
+// }
+
+// model Comentario {
+//   id                Int             @id @default(autoincrement())
+//   texto             String
+//   naoConformidadeId Int
+//   naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id])
+
+//   autorId Int
+//   autor   Usuario @relation("ComentarioAutor", fields: [autorId], references: [id])
+
+//   criadoEm     DateTime @default(now())
+//   atualizadoEm DateTime @updatedAt
+// }
