@@ -36,3 +36,12 @@ export class NaoEncontradoError extends AppError {
         this.name = "NaoEncontradoError";
     }
 }
+
+export class TransicaoInvalidaError extends AppError {
+    statusCode = 409;
+
+    constructor(mensagem = "Transição inválida") {
+        super(mensagem);
+        this.name = "TransicaoInvalidaError";
+    }
+}
