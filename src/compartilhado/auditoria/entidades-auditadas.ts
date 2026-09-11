@@ -1,14 +1,9 @@
-export const Entidades = {
-    NAO_CONFORMIDADE: "NaoConformidade",
-    CONTENCAO: "Contencao",
-    INVESTIGACAO: "Investigacao",
-    ACAO: "Acao",
-    VERIFICACAO: "Verificacao",
-    USUARIO: "Usuario",
-    SETOR: "Setor",
-    APROVACAO: "Aprovacao",
-    ANEXO: "Anexo",
-    COMENTARIO: "Comentario"
+import { TipoRegistro } from "../entidades/tipos-registro.js";
+
+export const EntidadeAuditada = {
+    ...TipoRegistro,
+    USUARIO: "USUARIO",
+    TOKEN_ACESSO: "TOKEN_ACESSO"
 } as const;
 
-export type Entidade = typeof Entidades[keyof typeof Entidades];
+export type EntidadeAuditada = typeof EntidadeAuditada[keyof typeof EntidadeAuditada];
