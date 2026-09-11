@@ -17,5 +17,15 @@ export const atribuicaoRepository = {
             }
         });
         return atribuicao !== null;
+    },
+
+    async existeAprovador(cliente: ClientePrisma, registroId: string) {
+        const atribuicao = await cliente.atribuicao.findFirst({
+            where: {
+                registroId, funcao: "APROVADOR"
+            }
+        })
+
+        return atribuicao !== null;
     }
 }
