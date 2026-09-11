@@ -1,16 +1,31 @@
-import { prisma } from "../../lib/prisma.js";
 import type { Prisma } from "../../generated/prisma/client.js";
-import type { Entidade } from "../../lib/entidades.js";
+import { ClientePrisma } from "../prisma/tipos.js";
 
 export const auditoriaRepository = {
-    async registrar(dados: Prisma.TrilhaAuditoriaCreateInput) {
-        return prisma.trilhaAuditoria.create({ data: dados })
+    async registrar(tx: ClientePrisma, dados: {
+        entidade: string,
+        entidadeId: string,
+        acao: string,
+        usuarioId: string,
+        antes?: unknown,
+        depois?: unknown
+    }) {
+        return tx.auditoria.create({
+            data: {
+                entidade: dados.entidade,
+                entidadeId: dados.entidadeId,
+                acao: dados.acao,
+                usuarioId: dados.usuarioId,
+                antes: dados.antes as Prisma.InputJsonValue | undefined, 
+                depois: dados.depois as Prisma.InputJsonValue | undefined
+            }
+        })
     },
 
-    async listarPorEntidade(entidade: Entidade, entidadeId: number) {
-        return prisma.trilhaAuditoria.findMany({
-            where: { entidade, entidadeId },
-            orderBy: { criadoEm: "desc" }
+    async listarPorEntidade(tx: ClientePrisma, entidadeId: string) {
+        return tx.auditoria.findMany({
+            where: { entidadeId },
+            orderBy: {registradoEm: "desc"}
         })
     }
 }
