@@ -132,6 +132,7 @@ model Usuario {
   atribuicoesRecebidas  Atribuicao[]  @relation("atribuicoesRecebidas")
   atribuicoesConcedidas Atribuicao[]  @relation("atribuicoesConcedidas")
   tokensAcesso          TokenAcesso[]
+  registrosAuditoria    Auditoria[]
 }
 
 enum TipoTokenAcesso {
@@ -177,6 +178,24 @@ model Atribuicao {
 
   @@id([registroId, usuarioId, funcao])
   @@unique([registroId], where: { funcao: "APROVADOR" }, map: "atribuicao_um_aprovador")
+}
+
+// Auditoria
+
+model Auditoria {
+  id         String @id @default(uuid(7))
+  entidade   String
+  entidadeId String
+  acao       String
+  antes      Json?
+  depois     Json?
+
+  usuarioId String
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+
+  registradoEm DateTime @default(now())
+
+  @@index([entidade, entidadeId, registradoEm])
 }
 
 //----------------
