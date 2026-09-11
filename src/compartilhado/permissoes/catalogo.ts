@@ -1,0 +1,19 @@
+import { Acao } from "../entidades/acoes.js";
+import { Papel } from "../entidades/papeis.js";
+
+export const catalogo: Record<Acao, Papel[]> = {
+    GERENCIAR_RASCUNHO: ["EDITOR", "GERENTE"],
+    PUBLICAR: ["EDITOR", "GERENTE"],
+    CANCELAR: ["APROVADOR", "GERENTE"],
+    CLASSIFICAR: ["APROVADOR", "GERENTE"],
+    SUBMETER: ["EDITOR", "GERENTE"],
+    APROVAR: ["APROVADOR", "GERENTE"],
+    CONCLUIR_VERIFICACAO: ["APROVADOR", "GERENTE"],
+    REABRIR: ["APROVADOR", "GERENTE"],
+    ADICIONAR_COLABORADOR: ["EDITOR", "GERENTE"],
+    DEFINIR_APROVADOR: ["APROVADOR", "GERENTE"],
+    GERENCIAR_USUARIOS: ["ADMIN"],
+    COMENTAR: ["EDITOR", "APROVADOR", "GERENTE"],
+    GERAR_RELATORIOS: ["GERENTE"],
+    VISUALIZAR: ["VISUALIZADOR", "EDITOR", "APROVADOR", "GERENTE"]
+}
