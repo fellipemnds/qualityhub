@@ -48,6 +48,9 @@ model Registro {
 
   naoConformidade NaoConformidade?
   atribuicoes     Atribuicao[]
+  aprovacoes      Aprovacao[]
+  reaberturas     Reabertura[]
+  cancelamentos   Cancelamento[]
 }
 
 // Não Conformidade
@@ -129,10 +132,13 @@ model Usuario {
 
   registros Registro[]
 
-  atribuicoesRecebidas  Atribuicao[]  @relation("atribuicoesRecebidas")
-  atribuicoesConcedidas Atribuicao[]  @relation("atribuicoesConcedidas")
+  atribuicoesRecebidas  Atribuicao[]   @relation("atribuicoesRecebidas")
+  atribuicoesConcedidas Atribuicao[]   @relation("atribuicoesConcedidas")
   tokensAcesso          TokenAcesso[]
   registrosAuditoria    Auditoria[]
+  aprovacoes            Aprovacao[]
+  reaberturas           Reabertura[]
+  cancelamentos         Cancelamento[]
 }
 
 enum TipoTokenAcesso {
@@ -196,6 +202,61 @@ model Auditoria {
   registradoEm DateTime @default(now())
 
   @@index([entidade, entidadeId, registradoEm])
+}
+
+// Aprovacão
+
+enum PortaoAprovacao {
+  FECHAMENTO
+  UNICA
+  PLANO
+  EXECUCAO
+}
+
+enum Decisao {
+  APROVADO
+  REPROVADO
+}
+
+model Aprovacao {
+  id         String          @id @default(uuid(7))
+  registroId String
+  registro   Registro        @relation(fields: [registroId], references: [id])
+  portao     PortaoAprovacao
+
+  decisao       Decisao
+  motivo        String?
+  aprovadorId   String
+  aprovador     Usuario @relation(fields: [aprovadorId], references: [id])
+  autoAprovacao Boolean
+
+  decididoEm DateTime @default(now())
+}
+
+// Reabertura 
+
+model Reabertura {
+  id         String   @id @default(uuid(7))
+  registro   Registro @relation(fields: [registroId], references: [id])
+  registroId String
+
+  reabertoPor   Usuario @relation(fields: [reabertoPorId], references: [id])
+  reabertoPorId String
+  motivo        String
+
+  reabertoEm DateTime @default(now())
+}
+
+model Cancelamento {
+  id         String   @id @default(uuid(7))
+  registro   Registro @relation(fields: [registroId], references: [id])
+  registroId String
+
+  canceladoPor   Usuario @relation(fields: [canceladoPorId], references: [id])
+  canceladoPorId String
+  motivo         String
+
+  canceladoEm DateTime @default(now())
 }
 
 //----------------
