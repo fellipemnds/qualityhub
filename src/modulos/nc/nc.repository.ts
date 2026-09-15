@@ -1,33 +1,21 @@
-import { prisma } from "../../lib/prisma.js";
-import type { Prisma } from "../../generated/prisma/client.js";
+import { ClientePrisma } from "../../compartilhado/prisma/tipos.js";
+import { NCRascunhoInput } from "./nc.schema.js";
 
 export const ncRepository = {
-    async listar() {
-        return prisma.naoConformidade.findMany({
-            include: { setor: true },
-            orderBy: { dataRegistro: "desc" },
-        });
+    async criar(tx: ClientePrisma, dados: NCRascunhoInput & { id: string }) {
+        return tx.naoConformidade.create({ data: dados })
     },
 
-    async buscarPorId(id: number) {
-        return prisma.naoConformidade.findUnique({
+    async buscarPorId(tx: ClientePrisma, id: string) {
+        return tx.naoConformidade.findUnique({
+            where: { id }
+        })
+    },
+
+    async atualizar(tx: ClientePrisma, id: string, dados: NCRascunhoInput) {
+        return tx.naoConformidade.update({
             where: { id },
-            include: { setor: true },
-        });
-    },
-
-    async criar(dados: Prisma.NaoConformidadeCreateInput) {
-        return prisma.naoConformidade.create({ data: dados });
-    },
-
-    async contarNoAno(ano: number) {
-        return prisma.naoConformidade.count({
-            where: {
-                dataRegistro: {
-                    gte: new Date(`${ano}-01-01`),
-                    lt: new Date(`${ano + 1}-01-01`),
-                },
-            },
-        });
-    },
+            data: dados
+        })
+    }
 };
