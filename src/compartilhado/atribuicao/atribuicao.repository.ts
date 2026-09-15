@@ -1,3 +1,4 @@
+import { text } from "node:stream/consumers";
 import { ClientePrisma } from "../prisma/tipos.js";
 
 export const atribuicaoRepository = {
@@ -27,5 +28,18 @@ export const atribuicaoRepository = {
         })
 
         return atribuicao !== null;
+    },
+
+    async adicionarColaboradores(cliente: ClientePrisma, registroId: string, usuarioIds: string[], atribuidoPorId: string) {
+        for (const usuarioId of usuarioIds) {
+            await cliente.atribuicao.create({
+                data: {
+                    registroId,
+                    atribuidoPorId,
+                    usuarioId,
+                    funcao: "COLABORADOR"
+                }
+            })
+        }
     }
 }
