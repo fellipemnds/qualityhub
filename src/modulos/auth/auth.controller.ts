@@ -1,20 +1,20 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
 import { authService } from "./auth.service.js";
-import { loginSchema, definirSenhaSchema } from "./auth.schema.js";
+import { DefinirSenhaInput, LoginInput } from "./auth.schema.js";
 
 export const authController = {
-    async definirSenha(request: FastifyRequest, reply: FastifyReply) {
-        const info = definirSenhaSchema.parse(request.body);
+    async definirSenha(request: FastifyRequest<{ Body: DefinirSenhaInput }>, reply: FastifyReply) {
+        const { token, senha } = request.body;
 
-        await authService.definirSenha(info.token, info.senha);
+        await authService.definirSenha(token, senha);
 
         return reply.status(204).send();
     },
 
-    async login(request: FastifyRequest, reply: FastifyReply) {
-        const login = loginSchema.parse(request.body);
+    async login(request: FastifyRequest<{ Body: LoginInput }>, reply: FastifyReply) {
+        const { email, senha } = request.body;
 
-        const usuario = await authService.fazerLogin(login.email, login.senha);
+        const usuario = await authService.fazerLogin(email, senha);
         const papeis = usuario.papeisRecebidos.map((usuarioPapel) => usuarioPapel.papel);
 
         const token = await reply.jwtSign(

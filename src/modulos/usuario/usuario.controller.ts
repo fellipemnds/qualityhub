@@ -1,12 +1,13 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import { usuarioService } from './usuario.service.js';
-import { criarUsuarioSchema } from './usuario.schema.js';
+import { CriarUsuarioInput } from './usuario.schema.js';
 
 export const usuarioController = {
-    async criar(request: FastifyRequest, reply: FastifyReply) {
-        const dados = criarUsuarioSchema.parse(request.body);
+    async criar(request: FastifyRequest<{ Body: CriarUsuarioInput }>, reply: FastifyReply) {
+        const dados = request.body;
+        const { id, papeis } = request.user;
 
-        const registro = await usuarioService.criarUsuario({ id: request.user.id, papeis: request.user.papeis }, dados);
+        const registro = await usuarioService.criarUsuario({ id, papeis }, dados);
 
         const contrato = { id: registro.usuario.id, tokenConvite: registro.token }
 
