@@ -8,7 +8,7 @@ POST {{baseUrl}}/auth/definir-senha
 Content-Type: application/json
 
 {
-    "token": "c44625966b79557bc7e8bb9cd719d797e2c612ffccad3d23aa29e28f740cf8e9",
+    "token": "tokencurto",
     "senha": "umasenhabemlonga"
 }
 

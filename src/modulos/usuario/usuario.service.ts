@@ -38,14 +38,14 @@ export const usuarioService = {
             const token = crypto.randomBytes(32).toString("hex");
             const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
 
-            const registraToken = await tokenAcessoRepository.criar(tx, {
+            await tokenAcessoRepository.criar(tx, {
                 usuarioId: usuario.id,
                 tipo: "CONVITE",
                 tokenHash,
                 expiraEm: new Date(Date.now() + (72 * 60 * 60 * 1000))
             })
 
-            return {usuario, token};
+            return { usuario, token };
         });
     }
 }

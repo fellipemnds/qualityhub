@@ -35,5 +35,12 @@ export const registroRepository = {
         return tx.registro.delete({
             where: { id }
         })
+    },
+
+    async listar(tx: ClientePrisma, filtros: { tipo: TipoRegistro }) {
+        return tx.registro.findMany({
+            where: filtros,
+            include: { naoConformidade: true }
+        })
     }
 }

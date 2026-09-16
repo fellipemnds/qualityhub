@@ -3,6 +3,7 @@ import { atribuicaoRepository } from "../atribuicao/atribuicao.repository.js"
 import { auditoriaRepository } from "../auditoria/auditoria.repository.js"
 import { EntidadeAuditada } from "../auditoria/entidades-auditadas.js"
 import { cancelamentoRepository } from "../cancelamento/cancelamento.repository.js"
+import { Decisao } from "../entidades/decisao.js"
 import { Papel } from "../entidades/papeis.js"
 import { TipoRegistro } from "../entidades/tipos-registro.js"
 import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError, ValidacaoError } from "../errors/errors.js"
@@ -138,7 +139,7 @@ export const cicloVidaService = {
         return dadoAtualizado;
     },
 
-    async decidir(tx: ClientePrisma, registroId: string, ator: { id: string, papeis: Papel[] }, dados: { decisao: "APROVADO" | "REPROVADO", motivo?: string }) {
+    async decidir(tx: ClientePrisma, registroId: string, ator: { id: string, papeis: Papel[] }, dados: { decisao: Decisao, motivo?: string }) {
         const registro = await registroRepository.buscarPorId(tx, registroId);
 
         if (registro === null) {
