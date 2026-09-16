@@ -19,6 +19,13 @@ export class NaoAutenticadoError extends AppError {
         this.name = "NaoAutenticadoError";
     }
 }
+
+export class CredenciaisInvalidasError extends NaoAutenticadoError {
+    constructor(mensagem = "Credenciais inválidas") {
+        super(mensagem);
+        this.name = "CredenciaisInvalidasError";
+    }
+}
 export class SemPermissaoError extends AppError {
     statusCode = 403;
 

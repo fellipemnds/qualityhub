@@ -1,48 +1,67 @@
+import crypto from "node:crypto";
+import { prisma } from "../../compartilhado/prisma/cliente.js";
 import { usuarioRepository } from "../usuario/usuario.repository.js";
-import { ValidacaoError } from "../../compartilhado/errors/errors.js";
+import { CredenciaisInvalidasError, ValidacaoError } from "../../compartilhado/errors/errors.js";
+import { tokenAcessoRepository } from "./token-acesso.repository.js";
 import bcrypt from "bcrypt";
+import { auditoriaRepository } from "../../compartilhado/auditoria/auditoria.repository.js";
+import { EntidadeAuditada } from "../../compartilhado/auditoria/entidades-auditadas.js";
 
 export const authService = {
-    // Recebe o e-mail do usuário para verificar se é seu primeiro acesso, se sim, transforma a senha em um hash e a manda para o usuario.repository, que é quem salva no banco.
-    async definirSenha(email: string, senha: string) {
-        // Busca do banco se o cadastro foi feito pelo Admin
-        const usuario = await usuarioRepository.buscarPorEmail(email);
+    async definirSenha(token: string, senha: string) {
+        return prisma.$transaction(async (tx) => {
+            const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+            const tokenAcesso = await tokenAcessoRepository.buscarPorHash(tx, tokenHash);
 
-        // Verifica se não chegou vazio
-        if (!usuario) {
-            throw new ValidacaoError("Não foi possível processar a solicitação");
-        }
+            if (!tokenAcesso) {
+                throw new ValidacaoError("Não foi possível processar a solicitação.");
+            }
 
-        // Verifica se o primeiro acesso já não foi feito
-        if (usuario.senhaHash) {
-            throw new ValidacaoError("O acesso deste e-mail já foi feito no sistema");
-        }
+            if (tokenAcesso.usadoEm !== null) {
+                throw new ValidacaoError("Este token já foi utilizado");
+            }
 
-        const senhaHash = await bcrypt.hash(senha, 10);
+            const agora = new Date(Date.now());
+            if (tokenAcesso.expiraEm < agora) {
+                throw new ValidacaoError("Token expirado.")
+            }
 
-        await usuarioRepository.definirSenha(usuario.id, senhaHash);
+            const senhaHash = await bcrypt.hash(senha, 10);
+
+            await usuarioRepository.definirSenha(tx, tokenAcesso.usuarioId, senhaHash);
+            await tokenAcessoRepository.marcarComoUsado(tx, tokenAcesso.id);
+
+            await auditoriaRepository.registrar(tx, {
+                entidade: EntidadeAuditada.USUARIO,
+                entidadeId: tokenAcesso.usuarioId,
+                acao: "DEFINIR_SENHA",
+                usuarioId: tokenAcesso.usuarioId,
+                antes: undefined,
+                depois: undefined
+            })
+        })
     },
 
     // Realiza o login, comparando o a senha com seu Hash e retorna o objeto usuário.
     async fazerLogin(email: string, senha: string) {
         // Busca do banco se o cadastro foi feito pelo Admin
-        const usuario = await usuarioRepository.buscarPorEmail(email);
+        const usuario = await usuarioRepository.buscarPorEmail(prisma, email);
 
         // Verifica se não chegou vazio
         if (!usuario) {
-            throw new ValidacaoError("Não foi possível processar a solicitação");
+            throw new CredenciaisInvalidasError();
         }
 
         // Verifica se a pessoa já realizou o primeiro acesso
         if (!usuario.senhaHash) {
-            throw new ValidacaoError("O primeiro acesso ainda não foi realizado");
+            throw new CredenciaisInvalidasError();
         }
 
         const senhaConfere = await bcrypt.compare(senha, usuario.senhaHash);
 
         // Retorna se a senha não confere.
         if (!senhaConfere) {
-            throw new ValidacaoError("Não foi possível processar a solicitação");
+            throw new CredenciaisInvalidasError();
         }
 
         return usuario;
