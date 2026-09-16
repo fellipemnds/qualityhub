@@ -6,8 +6,10 @@ export const usuarioController = {
     async criar(request: FastifyRequest, reply: FastifyReply) {
         const dados = criarUsuarioSchema.parse(request.body);
 
-        const usuario = await usuarioService.criar(dados, request.user.perfil);
+        const registro = await usuarioService.criarUsuario({ id: request.user.id, papeis: request.user.papeis }, dados);
 
-        return reply.status(201).send(usuario);
+        const contrato = { id: registro.usuario.id, tokenConvite: registro.token }
+
+        return reply.status(201).send(contrato);
     }
 }
