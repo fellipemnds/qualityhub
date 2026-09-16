@@ -1,0 +1,63 @@
+# Changelog de Arquitetura — QualityHub
+
+Este documento registra todas as decisões tomadas durante a implementação que divergem do "Chat de arquitetura" original, ou que preenchem lacunas que ele deixou em aberto. Serve como fonte para a próxima revisão consolidada do documento de arquitetura.
+
+---
+
+## Decisões já aplicadas
+
+### Modelagem / Schema
+
+- **`Registro`**: sem `atualizadoPorId`/`atualizadoPor` — quem atualizou por último se consulta via `Auditoria` (já indexada por `entidade` + `entidadeId` + `registradoEm`), não se armazena como campo redundante.
+- **`NaoConformidade`**: sem `responsaveisId`/`qaId` (resolvidos via `Atribuicao` genérica), sem `analiseCausa` (pertence a `Investigacao`), sem `reportadoPorId` (não é exigência textual da ISO 10.2 — decisão de escopo, o custo de cadastro pelo Admin não compensava o ganho).
+- **`NaoConformidade`**: mantém `processoAfetado` **e** `requisitoViolado` como campos distintos (o primeiro sobre localização operacional, o segundo sobre qual requisito/procedimento foi violado).
+- **`Usuario.id`**: migrado de `Int` para `String` (`uuid(7)`) — propagado por toda FK de usuário no sistema.
+- **`ConviteSenha` renomeado para `TokenAcesso`**, com campo `tipo` (`CONVITE` | `RECUPERACAO_SENHA`), preparando o fluxo futuro de "esqueci minha senha" sem precisar de uma segunda tabela.
+- **`Reabertura`**: modelo que o documento original não detalhava — criado seguindo o padrão de `Aprovacao` (evento + motivo + autor + timestamp). Campos: `id`, `registroId`, `motivo`, `reabertoPorId`, `reabertoEm`.
+- **`Cancelamento`**: mesma situação de `Reabertura` — nunca especificado no documento original, apesar de RN-06 exigir motivo de cancelamento. Mesmo padrão: `id`, `registroId`, `motivo`, `canceladoPorId`, `canceladoEm`.
+- **RN-13 ajustada para `NaoConformidade`**: a exigência de aprovador definido não é mais checada em `publicar`, e sim em `submeter` — permite que a NC nasça (vire oficial, ganhe código) antes de um QA ser designado, refletindo o processo real onde a triagem de responsável acontece depois da criação.
+
+### Permissões
+
+- **RN-18 desmembrada**: `ALTERAR_ATRIBUICOES` virou duas ações — `ADICIONAR_COLABORADOR` (qualquer `EDITOR`/`GERENTE`, sem exigir atribuição prévia) e `DEFINIR_APROVADOR` (só `APROVADOR`/`GERENTE`). Motivo: colaboradores precisam de liberdade para se auto-organizar; QA precisa de controle mais rígido sobre quem aprova.
+- **`Verificacao`**: `concluir` exige colaborador atribuído com papel `APROVADOR` (não `EDITOR`) — regra específica do service, análoga à RN-20 (Classificação). O Effectiveness Check do ETQ Reliance exigia QA. Ainda precisa reintroduzir o campo `prazo DateTime`, que existia no schema antigo e foi perdido na consolidação do documento.
+- **`pode-executar.ts` desmembrado**: `temPapel` (só camada 1 — papel) foi extraída como função própria, separada de `podeExecutar` (as três camadas). Motivo: ações como `DEFINIR_APROVADOR` não podem exigir atribuição prévia — seria uma trava impossível (a pessoa nunca "já é" aprovadora antes de se tornar aprovadora pela primeira vez).
+- **`cancelar`**: checagem de permissão é "ser `GERENTE` OU ser o aprovador do item" — não usa `podeExecutar` genérico nem `temPapel` sozinha, é uma combinação manual (`ehGerente || ehAprovadorDoItem`).
+- **`decidir`**: não usa `podeExecutar` genérico — usa checagem estrita (`temPapel(ator, "APROVAR")` + `ehAprovador` especificamente, não `ehColaborador`), porque RN-16 exige ser _o_ aprovador designado, não qualquer colaborador com papel `APROVADOR`.
+
+### Catálogos e enums
+
+- **`entidades-auditadas.ts` reescrito**: renomeado de `Entidades` para `EntidadeAuditada`, derivado de `TipoRegistro` via spread (`...TipoRegistro`) mais `USUARIO`/`TOKEN_ACESSO`, garantindo que nunca diverge dos seis tipos de registro. Removidas entidades obsoletas do model antigo (`ANEXO`, `SETOR`, `APROVACAO`, `COMENTARIO` como estavam
+  desenhadas antes).
+- **Catálogo de ações de permissão (`Acao`)**: desmembrado em granularidade maior que o documento original sugeria — `GERENCIAR_RASCUNHO` (criar + excluir rascunho, fusão segura) mantido separado de `PUBLICAR` e `SUBMETER` (decisão consciente de manter nomes específicos, mesmo com regra de papel idêntica hoje, para facilitar divergência futura sem reescrever chamadas espalhadas).
+- **`Decisao` desacoplado**: criado em `compartilhado/entidades/decisao.ts` (só existia como enum do Prisma antes) — usado em `decidir.schema.ts` e em `ciclo-vida.service.decidir`.
+
+### Infraestrutura
+
+- **`fastify-type-provider-zod`** adotado para validação de rota, em vez de `.parse()` manual dentro dos controllers. Controllers agora usam `FastifyRequest<{ Body: ..., Params: ... }>` tipado, sem validação redundante.
+- **`app.ts`/`server.ts`** divididos conforme §10.5 do documento original — `app.ts` monta a instância (Fastify, JWT, Zod, error handler, rotas), `server.ts` só chama `.listen()`.
+- **`setErrorHandler`** trata três casos: `ZodError` (validação manual dentro de services, via `.parse()` explícito), erros do tipo `FST_ERR_VALIDATION` (validação de rota pelo Fastify/type-provider, identificados por `instanceof Error && "code" in erro`, já que `FastifyError` não é uma classe real exportável para `instanceof`), e `AppError` (erros de domínio).
+
+---
+
+## Pendências em aberto
+
+1. **Catálogo de ações de auditoria** (`acoes-auditadas.ts`) — ainda usa strings soltas no campo `acao` de cada chamada a `auditoriaRepository.registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`, `EXCLUIR_RASCUNHO`, `SUBMETER`, `APROVADO`/`REPROVADO`, `REABRIR`, `CANCELAR`, `DEFINIR_SENHA`. Falta ainda `CONCLUIR` (quando `Verificacao` for modelada). Quando reescrito como enum tipado, revisar todas as funções já escritas para trocar strings soltas pelo tipo.
+
+2. **`ADICIONAR_COLABORADOR`** sem checagem de atribuição prévia — mesma pergunta que gerou o desmembramento de `DEFINIR_APROVADOR` ainda precisa ser formalmente revisada quando escrevermos `atribuicao.service` completo (as funções de escrita além de `adicionarColaboradores`, que já existe em `atribuicao.repository.ts`).
+
+3. **`criarRascunhoNC`** atribui só o criador como colaborador (RN-14) — adicionar colaboradores extras no mesmo passo da criação fica para uma chamada separada, à rota `POST /registros/:id/colaboradores` (ainda não escrita).
+
+4. **`fazerLogin`** deveria auditar tentativas de login, inclusive falhas (útil para detectar força bruta) — isso muda a natureza da função (hoje só leitura, via `prisma` direto, sem transação) e precisa ser desenhado com cuidado antes de implementar.
+
+5. **`ignoreTrailingSlash`** em `app.ts` usa a forma deprecada (`Fastify({ ignoreTrailingSlash: true })`, aviso `FSTDEP022`). Migrar para `Fastify({ routerOptions: { ignoreTrailingSlash: true } })` numa passada de manutenção — não bloqueia nada agora.
+
+6. **`contencao/`** (repository, service, controller) em estado intermediário: `contencao.repository.ts` foi apagado, `contencao.service.ts` está comentado (silenciando erros de compilação do código antigo), `contencao.controller.ts` está vazio. Precisa reescrita completa seguindo o padrão consolidado em `nc/` (schema → repository → service → controller → routes).
+
+7. **`submeterNCParaFechamento`** (a guarda de fechamento, RN-21 a RN-23) — bloqueada. Depende das cinco entidades filhas ainda não modeladas: `Classificacao`, `Investigacao`, `AcaoCorretiva`, `Verificacao`, e a reescrita de `Contencao`.
+
+8. **Listagem de NCs (`listarNC`)** — hoje sem filtros nem paginação (Camada 1 apenas). Contrato de API original previa `?estado&classificacao&origem&de&ate&minhas&cursor`. Camadas 2–4 (filtro por estado, paginação por cursor, demais filtros) ainda não implementadas.
+
+9. **Módulo Feed** (comentários, respostas, menções `@`/`#`) — não iniciado. Depende do módulo `nc/` estar mais maduro.
+
+10. **Documentação OpenAPI** — não iniciada. `fastify-type-provider-zod` já está em uso, o que facilita gerar isso a partir dos schemas existentes quando chegarmos nessa etapa.
