@@ -8,8 +8,8 @@ POST {{baseUrl}}/auth/definir-senha
 Content-Type: application/json
 
 {
-    "email": "ana.silva@empresa.com",
-    "senha": "anasilvaempresa"
+    "token": "c44625966b79557bc7e8bb9cd719d797e2c612ffccad3d23aa29e28f740cf8e9",
+    "senha": "umasenhabemlonga"
 }
 
 ### Login Colaborador
@@ -63,13 +63,13 @@ Authorization: Bearer {{login.response.body.token}}
 ### Criar Usuário 
 POST {{baseUrl}}/usuarios
 Content-Type: application/json
-Authorization: BEARER {{login.response.body.token}}
+Authorization: Bearer {{login.response.body.token}}
 
 {
-  "nome": "Ana Silva",
-  "email": "ana.silva@empresa.com",
-  "perfil": "QA",
-  "setorId": 1
+    "nome": "Segunda Pessoa",
+    "email": "segunda@teste.com",
+    "papeis": ["EDITOR"],
+    "setorId": 1
 }
 
 ### Classificar NC
