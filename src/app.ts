@@ -35,6 +35,14 @@ app.setErrorHandler((erro, request, reply) => {
         })
     }
 
+    if (erro instanceof Error && "code" in erro && erro.code === "FST_ERR_VALIDATION") {
+        const erroValidacao = erro as Error & { code: string; validation: unknown[] };
+        return reply.status(400).send({
+            mensagem: "Dados inválidos",
+            error: erroValidacao.validation
+        })
+    }
+
     if (erro instanceof AppError) {
         return reply.status(erro.statusCode).send({ mensagem: erro.message });
     }
