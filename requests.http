@@ -109,18 +109,43 @@ GET {{baseUrl}}/nc/{{criarNC.response.body.id}}
 Authorization: Bearer {{loginVisualizador.response.body.token}}
 
 ### ===========================================================
-### PARE AQUI.
-### Antes de submeter, o item precisa ter um aprovador designado.
-### Ainda não existe rota para isso — faça manualmente via psql:
-###
-###   INSERT INTO "Atribuicao" ("registroId", "usuarioId", funcao, "atribuidoPorId", "atribuidoEm")
-###   VALUES ('01a0af67-b8d6-738b-975d-5335af0ae4a2', (SELECT id FROM "Usuario" WHERE email = 'aprovador@teste.com'), 'APROVADOR', (SELECT id FROM "Usuario" WHERE email = 'admin@teste.com'), now());
-###
-### O "COLE_O_ID_DA_NC_AQUI" é o mesmo id que aparece nas respostas acima
-### (visível no corpo da resposta de "criarNC", campo "id").
+### 2b. ATRIBUICAO — definir aprovador e gerenciar colaboradores
+### Substitui o antigo passo manual via psql. Agora tudo via API.
 ### ===========================================================
 
+### Login como Gerente (tem papel para DEFINIR_APROVADOR)
+# @name loginGerenteParaAtribuir
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "gerente@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Define o Aprovador Teste como aprovador desta NC
+PUT {{baseUrl}}/registros/{{criarNC.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerenteParaAtribuir.response.body.token}}
+
+{
+    "usuarioId": "COLE_O_ID_DO_APROVADOR_AQUI"
+}
+
+### Adiciona o QA como colaborador extra desta NC (usando o Editor, que já tem GERENCIAR_COLABORADORES)
+# @name adicionaColaboradorExtra
+POST {{baseUrl}}/registros/{{criarNC.response.body.id}}/colaboradores
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "colaboradores": ["COLE_O_ID_DO_QA_AQUI"]
+}
+
+### ===========================================================
 ### Login como Editor de novo (relogar antes de submeter)
+### ===========================================================
+
 # @name loginEditor2
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
@@ -164,6 +189,28 @@ Authorization: Bearer {{loginAprovador.response.body.token}}
 
 {
     "motivo": "Verificação de eficácia identificou recorrência do problema."
+}
+
+### ===========================================================
+### 2c. ATRIBUICAO — remover colaborador, testando RN-12
+### ===========================================================
+
+### Remove o QA (o extra que foi adicionado) — deve funcionar, ainda sobra o Editor
+DELETE {{baseUrl}}/registros/{{criarNC.response.body.id}}/colaboradores
+Content-Type: application/json
+Authorization: Bearer {{loginEditor2.response.body.token}}
+
+{
+    "colaboradores": ["COLE_O_ID_DO_QA_AQUI"]
+}
+
+### Tenta remover o ÚLTIMO colaborador restante (Editor) — espera 409 (RN-12)
+DELETE {{baseUrl}}/registros/{{criarNC.response.body.id}}/colaboradores
+Content-Type: application/json
+Authorization: Bearer {{loginEditor2.response.body.token}}
+
+{
+    "colaboradores": ["COLE_O_ID_DO_EDITOR_AQUI"]
 }
 
 ### ===========================================================
@@ -237,6 +284,15 @@ Authorization: Bearer {{loginEditor3.response.body.token}}
     "email": "naodeve@teste.com",
     "papeis": ["EDITOR"],
     "setorId": 1
+}
+
+### Editor tentando definir aprovador — deve falhar com 403 (Editor não tem DEFINIR_APROVADOR)
+PUT {{baseUrl}}/registros/{{criarNC.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginEditor3.response.body.token}}
+
+{
+    "usuarioId": "COLE_O_ID_DO_APROVADOR_AQUI"
 }
 
 ### ===========================================================
