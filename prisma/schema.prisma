@@ -173,7 +173,7 @@ enum FuncaoAtribuicao {
 
 model Atribuicao {
   registroId String
-  registro   Registro         @relation(fields: [registroId], references: [id])
+  registro   Registro         @relation(fields: [registroId], references: [id], onDelete: Cascade)
   usuario    Usuario          @relation("atribuicoesRecebidas", fields: [usuarioId], references: [id])
   usuarioId  String
   funcao     FuncaoAtribuicao

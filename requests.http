@@ -1,82 +1,321 @@
 @baseUrl = http://localhost:3333
 
-### Health check
+### ===========================================================
+### 0. Health check
+### ===========================================================
+
+### Servidor no ar?
 GET {{baseUrl}}/
 
-### Cadastrar senha
-POST {{baseUrl}}/auth/definir-senha
-Content-Type: application/json
+### ===========================================================
+### 1. USUARIO — criar um novo usuário via API (fluxo real de convite)
+### Só Admin pode. Gera um tokenConvite de verdade.
+### ===========================================================
 
-{
-    "token": "tokencurto",
-    "senha": "umasenhabemlonga"
-}
-
-### Login Colaborador
-# @name login
+### Login como Admin
+# @name loginAdmin
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-    "email": "matthew@gmail.com",
-    "senha": "umasenhabemlonga"
+    "email": "admin@teste.com",
+    "senha": "SenhaDeTeste123!"
 }
 
-### Login Administrador
-# @name login
-POST {{baseUrl}}/auth/login
-Content-Type: application/json
-
-{
-    "email": "admin@gmail.com",
-    "senha": "eusouoadministrador"
-}
-
-### Login QA
-# @name login
-POST {{baseUrl}}/auth/login
-Content-Type: application/json
-
-{
-    "email": "ana.silva@empresa.com",
-    "senha": "anasilvaempresa"
-}
-
-### Listar NCs
-GET {{baseUrl}}/nao-conformidades
-Authorization: Bearer {{login.response.body.token}}
-
-### Criar NC
-POST {{baseUrl}}/nao-conformidades
-Content-Type: application/json
-Authorization: Bearer {{login.response.body.token}}
-
-{
-    "titulo": "Teste pelo REST Client",
-    "descricao": "Verificando o fluxo completo",
-    "requisitoViolado": "Procedimento de teste",
-    "dataOcorrencia": "2026-09-01",
-    "origem": "OPERACAO",
-    "setorId": 1
-}
-
-### Criar Usuário 
+### Criar novo usuário (Editor) via API — rode o login acima logo antes
+# @name criarUsuarioAPI
 POST {{baseUrl}}/usuarios
 Content-Type: application/json
-Authorization: Bearer {{login.response.body.token}}
+Authorization: Bearer {{loginAdmin.response.body.token}}
 
 {
-    "nome": "Segunda Pessoa",
-    "email": "segunda@teste.com",
+    "nome": "Novo Colaborador",
+    "email": "novo.colaborador@teste.com",
     "papeis": ["EDITOR"],
     "setorId": 1
 }
 
-### Classificar NC
-PATCH {{baseUrl}}/nao-conformidades/1/classificar
+### Definir senha desse novo usuário (usa o tokenConvite da resposta acima)
+POST {{baseUrl}}/auth/definir-senha
 Content-Type: application/json
-Authorization: Bearer {{login.response.body.token}}
 
 {
-  "classificacao": "MAIOR"
+    "token": "{{criarUsuarioAPI.response.body.tokenConvite}}",
+    "senha": "SenhaDeTeste123!"
 }
+
+### ===========================================================
+### 2. NC — ciclo de vida completo (como Editor)
+### ===========================================================
+
+### Login como Editor
+# @name loginEditor
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "editor@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Criar rascunho de NC — rode o login acima logo antes
+# @name criarNC
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "titulo": "Vazamento de óleo na linha 2",
+    "descricao": "Identificado vazamento de óleo hidráulico durante inspeção de rotina na linha 2 de produção.",
+    "requisitoViolado": "Procedimento PO-07, item 4.3 - inspeção de recebimento",
+    "processoAfetado": "Linha de Produção 2",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Salvar rascunho (edição parcial) — mesmo login do Editor ainda vale
+PATCH {{baseUrl}}/nc/{{criarNC.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Identificado vazamento de óleo hidráulico durante inspeção de rotina na linha 2 de produção. Volume estimado: 2 litros."
+}
+
+### Listar todas as NCs (como Editor)
+GET {{baseUrl}}/nc
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Publicar a NC (RASCUNHO -> ABERTO, gera código)
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### ===========================================================
+### Login como Visualizador (relogar sempre, nunca reaproveitar de sessão antiga)
+### ===========================================================
+
+# @name loginVisualizador
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "visualizador@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Buscar a NC por id (como Visualizador — confirma que ele pode ver, mas não editar)
+GET {{baseUrl}}/nc/{{criarNC.response.body.id}}
+Authorization: Bearer {{loginVisualizador.response.body.token}}
+
+### ===========================================================
+### PARE AQUI.
+### Antes de submeter, o item precisa ter um aprovador designado.
+### Ainda não existe rota para isso — faça manualmente via psql:
+###
+###   INSERT INTO "Atribuicao" ("registroId", "usuarioId", funcao, "atribuidoPorId", "atribuidoEm")
+###   VALUES ('01a0af67-b8d6-738b-975d-5335af0ae4a2', (SELECT id FROM "Usuario" WHERE email = 'aprovador@teste.com'), 'APROVADOR', (SELECT id FROM "Usuario" WHERE email = 'admin@teste.com'), now());
+###
+### O "COLE_O_ID_DA_NC_AQUI" é o mesmo id que aparece nas respostas acima
+### (visível no corpo da resposta de "criarNC", campo "id").
+### ===========================================================
+
+### Login como Editor de novo (relogar antes de submeter)
+# @name loginEditor2
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "editor@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Submeter a NC (ABERTO -> EM_APROVACAO)
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor2.response.body.token}}
+
+### ===========================================================
+### Login como Aprovador
+### ===========================================================
+
+# @name loginAprovador
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "aprovador@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Decidir - aprovar (EM_APROVACAO -> FECHADO, já que NC só tem 1 portão)
+### Precisa ser o aprovador designado acima (aprovador@teste.com)
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### Reabrir (FECHADO -> ABERTO) — exige papel APROVADOR, qualquer um
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/reabrir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "motivo": "Verificação de eficácia identificou recorrência do problema."
+}
+
+### ===========================================================
+### Login como Gerente
+### ===========================================================
+
+# @name loginGerente
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "gerente@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Cancelar (qualquer estado != FECHADO) — exige ser o aprovador do item OU GERENTE
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/cancelar
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "motivo": "Registro duplicado, cancelado por engano de digitação."
+}
+
+### ===========================================================
+### 3. Testes de permissão negada (esperado: 403)
+### ===========================================================
+
+### Login como Visualizador (relogar)
+# @name loginVisualizador2
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "visualizador@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Visualizador tentando criar NC — deve falhar com 403
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginVisualizador2.response.body.token}}
+
+{
+    "titulo": "Teste de permissão",
+    "descricao": "Este request deveria ser rejeitado.",
+    "requisitoViolado": "N/A",
+    "processoAfetado": "N/A",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Login como Editor (relogar)
+# @name loginEditor3
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "editor@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Editor tentando criar usuário — deve falhar com 403 (só Admin pode)
+POST {{baseUrl}}/usuarios
+Content-Type: application/json
+Authorization: Bearer {{loginEditor3.response.body.token}}
+
+{
+    "nome": "Não Deveria Funcionar",
+    "email": "naodeve@teste.com",
+    "papeis": ["EDITOR"],
+    "setorId": 1
+}
+
+### ===========================================================
+### Teste de vulnerabilidade: usuário SEM nenhum papel
+### Confirma que papeis: [] nega acesso, em vez de liberar
+### (relembra a investigação feita nesta sessão)
+### ===========================================================
+
+### Login como Sem Papel
+# @name loginSemPapel
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "sempapel@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Sem Papel tentando criar usuário — deve falhar com 403 (não 201!)
+POST {{baseUrl}}/usuarios
+Content-Type: application/json
+Authorization: Bearer {{loginSemPapel.response.body.token}}
+
+{
+    "nome": "Nao Deveria Funcionar Tambem",
+    "email": "naodeve2@teste.com",
+    "papeis": ["EDITOR"],
+    "setorId": 1
+}
+
+### Sem Papel tentando criar NC — deve falhar com 403
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginSemPapel.response.body.token}}
+
+{
+    "titulo": "Teste sem papel nenhum",
+    "descricao": "Este request deveria ser rejeitado, papeis vazio nao libera nada.",
+    "requisitoViolado": "N/A",
+    "processoAfetado": "N/A",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### ===========================================================
+### 4. Excluir rascunho (item separado, não reaproveita o de cima)
+### ===========================================================
+
+### Login como Editor (relogar)
+# @name loginEditor4
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "editor@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Criar um segundo rascunho, só para testar exclusão
+# @name criarNCParaExcluir
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginEditor4.response.body.token}}
+
+{
+    "titulo": "Rascunho para excluir",
+    "descricao": "Este item vai ser excluído em seguida, só para testar a rota de exclusão.",
+    "requisitoViolado": "N/A",
+    "processoAfetado": "N/A",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Excluir o rascunho (204 esperado)
+DELETE {{baseUrl}}/nc/{{criarNCParaExcluir.response.body.id}}
+Authorization: Bearer {{loginEditor4.response.body.token}}
+
+### Confirmar que sumiu (404 esperado)
+GET {{baseUrl}}/nc/{{criarNCParaExcluir.response.body.id}}
+Authorization: Bearer {{loginEditor4.response.body.token}}

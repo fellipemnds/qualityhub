@@ -9,7 +9,7 @@ export const ncBaseSchema = z.object({
     setorId: z.coerce.number().int().positive(),
     detectadoEm: z.coerce.date().max(new Date(), "Data de detecção não pode ser no futuro"),
     origem: z.enum(OrigemNC),
-    cliente: z.string().optional()
+    cliente: z.string().nullish()
 })
 
 export const ncRascunhoSchema = ncBaseSchema.partial();

@@ -1,0 +1,496 @@
+@baseUrl = http://localhost:3333
+
+### ===========================================================
+### TESTES DE MODO DE FALHA
+### Roda depois de já ter executado requests.http (usuários já existem)
+### Cada bloco relogar antes de usar, seguindo a lição já aprendida
+### ===========================================================
+
+
+### ===========================================================
+### CATEGORIA 1 — Transições de estado fora de ordem
+### ===========================================================
+
+### Login como Editor
+# @name loginEditor
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "editor@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Cria uma NC nova, só para os testes desta categoria
+# @name ncEstados
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "titulo": "NC para testar transicoes invalidas",
+    "descricao": "Este item vai ser usado para tentar pular etapas do ciclo de vida.",
+    "requisitoViolado": "N/A",
+    "processoAfetado": "N/A",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Submeter direto, ainda em RASCUNHO (sem publicar antes) — espera 409
+POST {{baseUrl}}/nc/{{ncEstados.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Decidir direto, ainda em RASCUNHO — espera 409
+POST {{baseUrl}}/nc/{{ncEstados.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### Publica normalmente, para os próximos testes
+POST {{baseUrl}}/nc/{{ncEstados.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Publicar de novo (já está ABERTO agora) — espera 409
+POST {{baseUrl}}/nc/{{ncEstados.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Excluir uma NC já publicada (não está mais em RASCUNHO) — espera 409
+DELETE {{baseUrl}}/nc/{{ncEstados.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Cancelar uma NC que ainda não está FECHADA, deveria funcionar (200) —
+### fazemos isso para depois testar cancelar de novo (já CANCELADO)
+POST {{baseUrl}}/nc/{{ncEstados.response.body.id}}/cancelar
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "motivo": "Teste de cancelamento duplo."
+}
+
+### Cancelar de novo (já está CANCELADO) — espera 409
+POST {{baseUrl}}/nc/{{ncEstados.response.body.id}}/cancelar
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "motivo": "Segunda tentativa, deveria falhar."
+}
+
+### Reabrir uma NC que está CANCELADA, não FECHADA — espera 409
+### (reabrir só aceita FECHADO, relembra o ciclo-vida.service)
+POST {{baseUrl}}/nc/{{ncEstados.response.body.id}}/reabrir
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "motivo": "Este item nunca fechou, so foi cancelado."
+}
+
+
+### ===========================================================
+### CATEGORIA 2 — Regras de negócio específicas
+### ===========================================================
+
+### Cria uma segunda NC nova, para os testes desta categoria
+# @name ncRegras
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "titulo": "NC para testar regras de negocio",
+    "descricao": "Este item vai testar submissao sem aprovador e reprovacao sem motivo.",
+    "requisitoViolado": "N/A",
+    "processoAfetado": "N/A",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Publica
+POST {{baseUrl}}/nc/{{ncRegras.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Submeter SEM aprovador definido ainda — espera 409
+POST {{baseUrl}}/nc/{{ncRegras.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### ===========================================================
+### PARE AQUI. Defina o aprovador via psql antes de continuar:
+###
+###   INSERT INTO "Atribuicao" ("registroId", "usuarioId", funcao, "atribuidoPorId", "atribuidoEm")
+###   VALUES ('COLE_O_ID_DE_ncRegras_AQUI', (SELECT id FROM "Usuario" WHERE email = 'aprovador@teste.com'), 'APROVADOR', (SELECT id FROM "Usuario" WHERE email = 'admin@teste.com'), now());
+### ===========================================================
+
+### Agora sim, submeter (com aprovador já definido)
+POST {{baseUrl}}/nc/{{ncRegras.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Login como Aprovador
+# @name loginAprovador
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "aprovador@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Reprovar SEM motivo — espera 400
+POST {{baseUrl}}/nc/{{ncRegras.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "REPROVADO"
+}
+
+### Reprovar COM motivo — espera 200, volta para ABERTO
+POST {{baseUrl}}/nc/{{ncRegras.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "REPROVADO",
+    "motivo": "Descricao insuficiente para avaliar o caso."
+}
+
+
+### ===========================================================
+### CATEGORIA 3 — Atribuição específica (a mais importante de testar,
+### nunca foi exercitada de verdade até agora)
+### ===========================================================
+
+### Login como QA (tem papel APROVADOR, mas NAO vai ser o aprovador designado)
+# @name loginQA
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "qa@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Cria uma terceira NC, para testar atribuição específica
+# @name ncAtribuicao
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "titulo": "NC para testar atribuicao especifica",
+    "descricao": "So o Aprovador Teste pode decidir este item, mesmo QA tendo papel APROVADOR.",
+    "requisitoViolado": "N/A",
+    "processoAfetado": "N/A",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Publica
+POST {{baseUrl}}/nc/{{ncAtribuicao.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### ===========================================================
+### PARE AQUI. Defina o APROVADOR desta NC como "aprovador@teste.com"
+### (não o QA!), via psql:
+###
+###   INSERT INTO "Atribuicao" ("registroId", "usuarioId", funcao, "atribuidoPorId", "atribuidoEm")
+###   VALUES ('COLE_O_ID_DE_ncAtribuicao_AQUI', (SELECT id FROM "Usuario" WHERE email = 'aprovador@teste.com'), 'APROVADOR', (SELECT id FROM "Usuario" WHERE email = 'admin@teste.com'), now());
+### ===========================================================
+
+### Submeter
+POST {{baseUrl}}/nc/{{ncAtribuicao.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### QA (tem papel APROVADOR, mas NAO é o aprovador designado) tenta decidir
+### — espera 403, mesmo QA tendo o papel certo no sistema
+POST {{baseUrl}}/nc/{{ncAtribuicao.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginQA.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### O aprovador de verdade consegue decidir normalmente — espera 200
+POST {{baseUrl}}/nc/{{ncAtribuicao.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+
+### ===========================================================
+### CATEGORIA 4 — Validação de dados malformados
+### ===========================================================
+
+### Criar NC com detectadoEm no futuro — espera 400
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "titulo": "Data no futuro",
+    "descricao": "Este request deveria ser rejeitado por data invalida.",
+    "requisitoViolado": "N/A",
+    "processoAfetado": "N/A",
+    "setorId": 1,
+    "detectadoEm": "2099-01-01T00:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Criar NC com titulo curto demais (menos de 5 caracteres) — espera 400
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "titulo": "Ok",
+    "descricao": "Este request deveria ser rejeitado por titulo curto demais.",
+    "requisitoViolado": "N/A",
+    "processoAfetado": "N/A",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Login como Admin (para criar usuário)
+# @name loginAdmin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Criar usuário com papeis vazio — espera 400
+POST {{baseUrl}}/usuarios
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.token}}
+
+{
+    "nome": "Sem Papel Nenhum No Cadastro",
+    "email": "papeisvazio@teste.com",
+    "papeis": [],
+    "setorId": 1
+}
+
+
+### ===========================================================
+### CATEGORIA 5 — Auto-aprovação (RN-27)
+### Não deveria bloquear nada — só registrar autoAprovacao = true
+### ===========================================================
+
+### Login como QA (Editor + Aprovador — pode criar E aprovar o mesmo item)
+# @name loginQA2
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "qa@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Cria uma NC como QA
+# @name ncAutoAprovacao
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginQA2.response.body.token}}
+
+{
+    "titulo": "NC para testar auto-aprovacao",
+    "descricao": "O QA vai criar e depois aprovar o proprio item, testando RN-27.",
+    "requisitoViolado": "N/A",
+    "processoAfetado": "N/A",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Publica
+POST {{baseUrl}}/nc/{{ncAutoAprovacao.response.body.id}}/publicar
+Authorization: Bearer {{loginQA2.response.body.token}}
+
+### ===========================================================
+### PARE AQUI. Defina o proprio QA como aprovador via psql:
+###
+###   INSERT INTO "Atribuicao" ("registroId", "usuarioId", funcao, "atribuidoPorId", "atribuidoEm")
+###   VALUES ('COLE_O_ID_DE_ncAutoAprovacao_AQUI', (SELECT id FROM "Usuario" WHERE email = 'qa@teste.com'), 'APROVADOR', (SELECT id FROM "Usuario" WHERE email = 'admin@teste.com'), now());
+### ===========================================================
+
+### Submeter
+POST {{baseUrl}}/nc/{{ncAutoAprovacao.response.body.id}}/submeter
+Authorization: Bearer {{loginQA2.response.body.token}}
+
+### QA aprova o proprio item — espera 200, funciona normalmente
+POST {{baseUrl}}/nc/{{ncAutoAprovacao.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginQA2.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### ===========================================================
+### Verificação: confirma autoAprovacao = true direto no banco.
+### Rode este SELECT via psql (não é uma requisição HTTP):
+###
+###   SELECT a.decisao, a."autoAprovacao", a."aprovadorId", r."criadoPorId"
+###   FROM "Aprovacao" a
+###   JOIN "Registro" r ON r.id = a."registroId"
+###   WHERE a."registroId" = 'COLE_O_ID_DE_ncAutoAprovacao_AQUI';
+###
+### Esperado: autoAprovacao = true, e aprovadorId igual a criadoPorId.
+### ===========================================================
+
+
+### ===========================================================
+### CATEGORIA 6 — Id inexistente (deve dar 404, nunca 500)
+### ===========================================================
+
+### Login como Editor
+# @name loginEditor5
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "editor@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### UUID com formato válido, mas que não existe no banco.
+### Espera 404, não 500 — confirma que registro === null está tratado.
+GET {{baseUrl}}/nc/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{loginEditor5.response.body.token}}
+
+### Mesma ideia, tentando publicar um id que não existe — espera 404
+POST {{baseUrl}}/nc/00000000-0000-0000-0000-000000000000/publicar
+Authorization: Bearer {{loginEditor5.response.body.token}}
+
+### Mesma ideia, tentando excluir um id que não existe — espera 404
+DELETE {{baseUrl}}/nc/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{loginEditor5.response.body.token}}
+
+
+### ===========================================================
+### CATEGORIA 7 — Reabrir por qualquer APROVADOR (RN-17, sem atribuição)
+### Diferente de decidir: aqui NÃO importa se é o aprovador designado
+### ===========================================================
+
+### Cria uma NC nova
+# @name ncReabrirQualquerAprovador
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImJjY2ZjMzk0LTFkZDktNDQ4MS1hZDg3LTQxNzU0Mjg0YmQyOCIsInBhcGVpcyI6WyJFRElUT1IiXSwiaWF0IjoxNzg5NjUyMDY0LCJleHAiOjE3ODk2NTIxMjR9.RVxq1QOPbfEcQXR0OsP_vvzznsZmG93PDgJtMH8swRc
+
+{
+    "titulo": "NC para testar reabrir por qualquer aprovador",
+    "descricao": "Aprovador Teste nunca foi atribuido a este item, mas deveria poder reabrir mesmo assim.",
+    "requisitoViolado": "N/A",
+    "processoAfetado": "N/A",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Publica
+POST {{baseUrl}}/nc/{{ncReabrirQualquerAprovador.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor5.response.body.token}}
+
+### ===========================================================
+### PARE AQUI. Defina o GERENTE como aprovador via psql
+### (de propósito, NÃO o Aprovador Teste, que vai reabrir depois):
+###
+###   INSERT INTO "Atribuicao" ("registroId", "usuarioId", funcao, "atribuidoPorId", "atribuidoEm")
+###   VALUES ('COLE_O_ID_DE_ncReabrirQualquerAprovador_AQUI', (SELECT id FROM "Usuario" WHERE email = 'gerente@teste.com'), 'APROVADOR', (SELECT id FROM "Usuario" WHERE email = 'admin@teste.com'), now());
+### ===========================================================
+
+### Submeter
+POST {{baseUrl}}/nc/{{ncReabrirQualquerAprovador.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor5.response.body.token}}
+
+### Login como Gerente (aprovador designado deste item)
+# @name loginGerente2
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "gerente@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Gerente aprova, fechando a NC
+POST {{baseUrl}}/nc/{{ncReabrirQualquerAprovador.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginGerente2.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### Login como Aprovador Teste (NUNCA foi atribuido a este item)
+# @name loginAprovador2
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "aprovador@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Aprovador Teste reabre, mesmo nunca tendo sido atribuido a este item
+### — espera 200 (RN-17: reabrir não exige atribuição, só papel APROVADOR)
+POST {{baseUrl}}/nc/{{ncReabrirQualquerAprovador.response.body.id}}/reabrir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador2.response.body.token}}
+
+{
+    "motivo": "Teste de reabertura por aprovador nao designado a este item."
+}
+
+
+### ===========================================================
+### CATEGORIA 8 — Motivo vazio/só espaços em reabrir (RN-05)
+### ===========================================================
+
+### Motivo só com espaços — espera 400 (checagem .trim())
+POST {{baseUrl}}/nc/{{ncReabrirQualquerAprovador.response.body.id}}/reabrir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador2.response.body.token}}
+
+{
+    "motivo": "   "
+}
+
+
+### ===========================================================
+### CATEGORIA 9 (COMENTADO) — JWT adulterado ou expirado
+###
+### Estes dois não dá pra automatizar no .http — exigem passos manuais.
+###
+### 9a. Token adulterado:
+###   1. Copie um token válido de qualquer login acima.
+###   2. Mude UM caractere no meio da terceira parte (depois do último
+###      ponto — é a assinatura).
+###   3. Use esse token adulterado em qualquer rota protegida.
+###   Esperado: 401 (jwtVerify() rejeita, assinatura não bate mais).
+###
+### 9b. Token expirado:
+###   1. Em src/modulos/auth/auth.controller.ts, troque temporariamente
+###      { expiresIn: "5h" } por { expiresIn: "1s" } (ou "1m", pra dar
+###      tempo de copiar o token antes de expirar).
+###   2. Reinicie o servidor, faça login, copie o token.
+###   3. Espere o tempo configurado passar.
+###   4. Use esse token numa rota protegida.
+###   Esperado: 401 (jwtVerify() rejeita, token expirado).
+###   NÃO ESQUEÇA de reverter para "5h" depois do teste.
+### ===========================================================
