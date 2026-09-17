@@ -1,5 +1,5 @@
-import { text } from "node:stream/consumers";
 import { ClientePrisma } from "../prisma/tipos.js";
+import { FuncaoAtribuicao } from "../entidades/funcoes-atribuicao.js";
 
 export const atribuicaoRepository = {
     async ehColaborador(cliente: ClientePrisma, registroId: string, usuarioId: string) {
@@ -30,16 +30,39 @@ export const atribuicaoRepository = {
         return atribuicao !== null;
     },
 
-    async adicionarColaboradores(cliente: ClientePrisma, registroId: string, usuarioIds: string[], atribuidoPorId: string) {
-        for (const usuarioId of usuarioIds) {
-            await cliente.atribuicao.create({
-                data: {
-                    registroId,
-                    atribuidoPorId,
-                    usuarioId,
-                    funcao: "COLABORADOR"
-                }
-            })
-        }
+    async inserirAtribuicao(tx: ClientePrisma, registroId: string, usuarioId: string, atribuidoPorId: string, funcao: FuncaoAtribuicao) {
+        const atribuicao = await tx.atribuicao.create({
+            data: {
+                registroId,
+                atribuidoPorId,
+                usuarioId,
+                funcao
+            }
+        })
+
+        return atribuicao;
+    },
+
+    async contarColaboradores(cliente: ClientePrisma, registroId: string) {
+        return cliente.atribuicao.count({
+            where: { registroId, funcao: "COLABORADOR" }
+        })
+    },
+
+    async removerAtribuicao(tx: ClientePrisma, registroId: string, usuarioId: string, funcao: FuncaoAtribuicao) {
+        return tx.atribuicao.delete({
+            where: {
+                registroId_usuarioId_funcao: { registroId, usuarioId, funcao }
+            }
+        })
+    },
+
+    async buscarAprovador(cliente: ClientePrisma, registroId: string) {
+        return cliente.atribuicao.findFirst({
+            where: {
+                registroId,
+                funcao: "APROVADOR"
+            }
+        })
     }
 }

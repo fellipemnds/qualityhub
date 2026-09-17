@@ -22,7 +22,7 @@ export const ncService = {
 
             const nc = await ncRepository.criar(tx, { id: registro.id, ...dados });
 
-            await atribuicaoRepository.adicionarColaboradores(tx, registro.id, [ator.id], ator.id);
+            await atribuicaoRepository.inserirAtribuicao(tx, registro.id, ator.id, ator.id, "COLABORADOR");
 
             return { ...registro, ...nc };
         })
