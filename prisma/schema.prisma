@@ -48,6 +48,7 @@ model Registro {
 
   naoConformidade NaoConformidade?
   contencao       Contencao?
+  classificacao   Classificacao?
   atribuicoes     Atribuicao[]
   aprovacoes      Aprovacao[]
   reaberturas     Reabertura[]
@@ -84,8 +85,20 @@ model NaoConformidade {
   riscosRevisados String?
   mudancasSGQ     String?
 
-  registro   Registro    @relation(fields: [id], references: [id], onDelete: Cascade)
-  contencoes Contencao[]
+  registro      Registro        @relation(fields: [id], references: [id], onDelete: Cascade)
+  contencoes    Contencao[]
+  classificacoes Classificacao[]
+}
+
+// Classificação
+
+model Classificacao {
+  id                String          @id
+  registro          Registro        @relation(fields: [id], references: [id], onDelete: Cascade)
+  naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id], onDelete: Cascade)
+  naoConformidadeId String
+  valor             ClassificacaoNC?
+  justificativa     String?
 }
 
 // Setor
@@ -249,6 +262,7 @@ model Reabertura {
   reabertoEm DateTime @default(now())
 }
 
+// Cancelamento
 model Cancelamento {
   id         String   @id @default(uuid(7))
   registro   Registro @relation(fields: [registroId], references: [id])
@@ -260,6 +274,8 @@ model Cancelamento {
 
   canceladoEm DateTime @default(now())
 }
+
+// Contenção
 
 enum Disposicao {
   ACEITO
@@ -279,35 +295,6 @@ model Contencao {
 }
 
 //----------------
-
-// enum EstadoNC {
-//   ABERTA
-//   ANALISE
-//   CANCELADA
-//   IMPROCEDENTE
-//   CONTENCAO
-//   INVESTIGACAO
-//   ACAO_CORRETIVA
-//   VERIFICACAO
-//   ENCERRADA
-// }
-
-// model Contencao {
-//   id            Int       @id @default(autoincrement())
-//   responsavelId Int
-//   responsavel   Usuario   @relation("ContencaoResponsavel", fields: [responsavelId], references: [id])
-//   descricao     String
-//   prazo         DateTime
-//   concluidaEm   DateTime?
-
-//   naoConformidadeId Int
-//   naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id])
-
-//   anexos Anexo[]
-
-//   criadoEm     DateTime @default(now())
-//   atualizadoEm DateTime @updatedAt
-// }
 
 // model Investigacao {
 //   id                Int             @id @default(autoincrement())
