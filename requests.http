@@ -129,7 +129,7 @@ Content-Type: application/json
 Authorization: Bearer {{loginGerenteParaAtribuir.response.body.token}}
 
 {
-    "usuarioId": "COLE_O_ID_DO_APROVADOR_AQUI"
+    "usuarioId": "3b6cc42f-26e8-46fa-b28c-20d72ac02197"
 }
 
 ### Adiciona o QA como colaborador extra desta NC (usando o Editor, que já tem GERENCIAR_COLABORADORES)
@@ -139,7 +139,7 @@ Content-Type: application/json
 Authorization: Bearer {{loginEditor.response.body.token}}
 
 {
-    "colaboradores": ["COLE_O_ID_DO_QA_AQUI"]
+    "colaboradores": ["3b6cc42f-26e8-46fa-b28c-20d72ac02197"]
 }
 
 ### ===========================================================
@@ -201,7 +201,7 @@ Content-Type: application/json
 Authorization: Bearer {{loginEditor2.response.body.token}}
 
 {
-    "colaboradores": ["COLE_O_ID_DO_QA_AQUI"]
+    "colaboradores": ["3b6cc42f-26e8-46fa-b28c-20d72ac02197"]
 }
 
 ### Tenta remover o ÚLTIMO colaborador restante (Editor) — espera 409 (RN-12)
@@ -210,7 +210,7 @@ Content-Type: application/json
 Authorization: Bearer {{loginEditor2.response.body.token}}
 
 {
-    "colaboradores": ["COLE_O_ID_DO_EDITOR_AQUI"]
+    "colaboradores": ["6f8e038d-0ba9-47a9-b3f3-5e6ffb44e603"]
 }
 
 ### ===========================================================
@@ -292,7 +292,7 @@ Content-Type: application/json
 Authorization: Bearer {{loginEditor3.response.body.token}}
 
 {
-    "usuarioId": "COLE_O_ID_DO_APROVADOR_AQUI"
+    "usuarioId": "2c3f6801-c075-436e-ace4-666aca2b4fce"
 }
 
 ### ===========================================================

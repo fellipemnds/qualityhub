@@ -13,9 +13,9 @@ Este documento registra todas as decisões tomadas durante a implementação que
 - **`NaoConformidade`**: mantém `processoAfetado` **e** `requisitoViolado` como campos distintos (o primeiro sobre localização operacional, o segundo sobre qual requisito/procedimento foi violado).
 - **`Usuario.id`**: migrado de `Int` para `String` (`uuid(7)`) — propagado por toda FK de usuário no sistema.
 - **`ConviteSenha` renomeado para `TokenAcesso`**, com campo `tipo` (`CONVITE` | `RECUPERACAO_SENHA`), preparando o fluxo futuro de "esqueci minha senha" sem precisar de uma segunda tabela.
-- **`Reabertura`**: modelo que o documento original não detalhava — criado seguindo o padrão de `Aprovacao` (evento + motivo + autor + timestamp). Campos: `id`, `registroId`, `motivo`, `reabertoPorId`, `reabertoEm`.
-- **`Cancelamento`**: mesma situação de `Reabertura` — nunca especificado no documento original, apesar de RN-06 exigir motivo de cancelamento. Mesmo padrão: `id`, `registroId`, `motivo`, `canceladoPorId`, `canceladoEm`.
-- **RN-13 ajustada para `NaoConformidade`**: a exigência de aprovador definido não é mais checada em `publicar`, e sim em `submeter` — permite que a NC nasça (vire oficial, ganhe código) antes de um QA ser designado, refletindo o processo real onde a triagem de responsável acontece depois da criação.
+- **`Reabertura`**: modelo que o documento original não detalhava — criado seguindo o padrão de `Aprovacao` (evento + motivo + autor + timestamp). Campos: `id`, `registroId`, `motivo`, `reabertoPorId`, `reabertoEm`. **`Cancelamento`**: mesma situação de `Reabertura` — nunca especificado no documento original, apesar de RN-06 exigir motivo de cancelamento. Mesmo padrão: `id`, `registroId`, `motivo`, `canceladoPorId`, `canceladoEm`.
+- **RN-13 ajustada para `NaoConformidade`**: a exigência de aprovador definido não é mais checada em `publicar`, e sim em `submeter` — permite que a NC nasça (vire oficial, ganhe código) antes de um QA ser designado, refletindo o processo real onde a triagem de responsável acontece depois
+  da criação.
 
 ### Permissões
 
@@ -27,10 +27,29 @@ Este documento registra todas as decisões tomadas durante a implementação que
 
 ### Catálogos e enums
 
-- **`entidades-auditadas.ts` reescrito**: renomeado de `Entidades` para `EntidadeAuditada`, derivado de `TipoRegistro` via spread (`...TipoRegistro`) mais `USUARIO`/`TOKEN_ACESSO`, garantindo que nunca diverge dos seis tipos de registro. Removidas entidades obsoletas do model antigo (`ANEXO`, `SETOR`, `APROVACAO`, `COMENTARIO` como estavam
-  desenhadas antes).
+- **`entidades-auditadas.ts` reescrito**: renomeado de `Entidades` para `EntidadeAuditada`, derivado de `TipoRegistro` via spread (`...TipoRegistro`) mais `USUARIO`/`TOKEN_ACESSO`, garantindo que nunca diverge dos seis tipos de registro. Removidas entidades obsoletas do model antigo (`ANEXO`, `SETOR`, `APROVACAO`, `COMENTARIO` como estavam desenhadas antes).
 - **Catálogo de ações de permissão (`Acao`)**: desmembrado em granularidade maior que o documento original sugeria — `GERENCIAR_RASCUNHO` (criar + excluir rascunho, fusão segura) mantido separado de `PUBLICAR` e `SUBMETER` (decisão consciente de manter nomes específicos, mesmo com regra de papel idêntica hoje, para facilitar divergência futura sem reescrever chamadas espalhadas).
 - **`Decisao` desacoplado**: criado em `compartilhado/entidades/decisao.ts` (só existia como enum do Prisma antes) — usado em `decidir.schema.ts` e em `ciclo-vida.service.decidir`.
+
+### Correções encontradas via testes manuais
+
+- **`nc.schema.ts`**: campo `cliente` estava `.optional()`, mas dados vindos do Prisma trazem `null` (não `undefined`) para colunas nuláveis não preenchidas — o Zod rejeitava. Corrigido para `.nullish()` (aceita `undefined` **e** `null`). Regra geral: todo campo opcional que é validado contra dados vindos do banco precisa de `.nullish()`, não só `.optional()`.
+- **`schema.prisma`**: `Atribuicao.registro` não tinha `onDelete: Cascade`, diferente de `NaoConformidade.registro`. Isso impedia excluir um `Registro` em `RASCUNHO` sempre que ele já tivesse pelo menos uma `Atribuicao` (o que é sempre o caso, por RN-14 — o criador já é colaborador desde a criação). Corrigido adicionando o cascade.
+
+### Correções encontradas via testes manuais
+
+- **`nc.schema.ts`**: campo `cliente` estava `.optional()`, mas dados vindos do Prisma trazem `null` (não `undefined`) para colunas nuláveis não preenchidas — o Zod rejeitava. Corrigido para `.nullish()` (aceita `undefined` **e** `null`). Regra geral: todo campo opcional que é validado contra dados vindos do banco precisa de `.nullish()`, não só `.optional()`.
+- **`schema.prisma`**: `Atribuicao.registro` não tinha `onDelete: Cascade`, diferente de `NaoConformidade.registro`. Isso impedia excluir um `Registro` em `RASCUNHO` sempre que ele já tivesse pelo menos uma `Atribuicao` (o que é sempre o caso, por RN-14 — o criador já é colaborador desde a criação). Corrigido adicionando o cascade.
+- **`atribuicaoService.adicionarColaboradores`/`removerColaboradores`**: o mesmo `usuarioId` repetido dentro do array recebido na mesma requisição causava erro `500` (`P2002`, violação de chave primária) — o filtro B2 (checagem contra `ehColaborador`) só olhava o estado do banco, nunca duplicatas dentro do próprio array de entrada. Corrigido com `[...new Set(colaboradoresId)]`, eliminando duplicatas antes do filtro, nas duas funções.
+
+### Módulo `atribuicao/` — completo e testado
+
+- Implementado do zero: `atribuicaoRepository` (7 funções — `ehColaborador`, `ehAprovador`, `existeAprovador`, `contarColaboradores`, `buscarAprovador`, `inserirAtribuicao`/`removerAtribuicao`, genéricas por `FuncaoAtribuicao`), `atribuicaoService` (`adicionarColaboradores`, `removerColaboradores`, `definirAprovador`), `atribuicaoController`, `atribuicaoRoutes`.
+- `GERENCIAR_COLABORADORES` (renomeado de `ADICIONAR_COLABORADOR`) cobre tanto adicionar quanto remover colaboradores — mesma regra de papel (`EDITOR`/`GERENTE`), sem checagem de atribuição prévia.
+- `removerColaboradores` valida RN-12 (não deixar o registro sem nenhum colaborador) contando o total atual e comparando com quantos serão de fato removidos (após dedupe e após filtrar quem já não era colaborador).
+- `definirAprovador` valida que o **alvo** (não o ator) tem papel `APROVADOR` antes de atribuí-lo; segue o padrão "hard delete do vigente + insert" para respeitar o índice único parcial.
+- Ambas as operações de lote (`adicionarColaboradores`/`removerColaboradores`) usam filtro "B2": separam quem já satisfaz a condição (já é/não é colaborador) do que precisa de fato ser processado, devolvendo os dois grupos na resposta (`adicionados`/`jaEramColaboradores`, `removidos`/`naoEramColaboradores`) — em vez de falhar ou ignorar silenciosamente.
+- Testado via API real de ponta a ponta (10 categorias de modo de falha, incluindo estado, regras de negócio, atribuição específica, validação, auto-aprovação, id inexistente, JWT adulterado/expirado, e os cenários específicos deste módulo) — eliminou de vez a necessidade de inserir `Atribuicao` manualmente via SQL nos testes.
 
 ### Infraestrutura
 
@@ -60,4 +79,5 @@ Este documento registra todas as decisões tomadas durante a implementação que
 
 9. **Módulo Feed** (comentários, respostas, menções `@`/`#`) — não iniciado. Depende do módulo `nc/` estar mais maduro.
 
-10. **Documentação OpenAPI** — não iniciada. `fastify-type-provider-zod` já está em uso, o que facilita gerar isso a partir dos schemas existentes quando chegarmos nessa etapa.
+10. **Documentação OpenAPI** — não iniciada. `fastify-type-provider-zod` já está em uso, o que facilita gerar isso a partir dos schemas
+    existentes quando chegarmos nessa etapa.
