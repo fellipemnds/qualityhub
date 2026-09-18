@@ -47,6 +47,7 @@ model Registro {
   criadoPor   Usuario @relation(fields: [criadoPorId], references: [id])
 
   naoConformidade NaoConformidade?
+  contencao       Contencao?
   atribuicoes     Atribuicao[]
   aprovacoes      Aprovacao[]
   reaberturas     Reabertura[]
@@ -83,7 +84,8 @@ model NaoConformidade {
   riscosRevisados String?
   mudancasSGQ     String?
 
-  registro Registro @relation(fields: [id], references: [id], onDelete: Cascade)
+  registro   Registro    @relation(fields: [id], references: [id], onDelete: Cascade)
+  contencoes Contencao[]
 }
 
 // Setor
@@ -257,6 +259,23 @@ model Cancelamento {
   motivo         String
 
   canceladoEm DateTime @default(now())
+}
+
+enum Disposicao {
+  ACEITO
+  CORRIGIDO
+  ANULADO
+  EM_ANALISE
+}
+
+model Contencao {
+  id                String          @id
+  registro          Registro        @relation(fields: [id], references: [id], onDelete: Cascade)
+  naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id], onDelete: Cascade)
+  naoConformidadeId String
+  descricao         String?
+  executadaEm       DateTime?
+  disposicao        Disposicao?
 }
 
 //----------------
