@@ -61,7 +61,7 @@ documento de arquitetura.
   sozinha, é uma combinação manual (`ehGerente || ehAprovadorDoItem`).
 - **`decidir`**: não usa `podeExecutar` genérico — usa checagem estrita
   (`temPapel(ator, "APROVAR")` + `ehAprovador` especificamente, não
-  `ehColaborador`), porque RN-16 exige ser _o_ aprovador designado, não
+  `ehColaborador`), porque RN-16 exige ser *o* aprovador designado, não
   qualquer colaborador com papel `APROVADOR`.
 
 ### Catálogos e enums
@@ -117,56 +117,37 @@ documento de arquitetura.
   a validação de fechamento deveria disparar (relacionado a
   `submeterNCParaFechamento`, ainda bloqueada).
 
-### Entidade `Classificacao` — em andamento
+### Entidade `Classificacao` — completa e testada
 
-- `model Classificacao` criado, com chave compartilhada dupla (`Registro`
-  - `NaoConformidade`, ambas `onDelete: Cascade`) — mesmo padrão de
-    `Contencao`. `ClassificacaoNC` (enum `MAIOR`/`MENOR`) existia só no
-    Prisma desde a Fase 0; criado o desacoplado
-    (`compartilhado/entidades/classificacao-nc.ts`) que faltava.
-- `classificacao.schema.ts`: **sem** schema de fechamento — diferente de
-  NC/Contenção, `Classificacao` não tem campos que só fazem sentido
-  "depois de tudo decidido"; `classificacaoPublicacaoSchema` já cobre
-  tudo, um schema de fechamento seria idêntico e redundante.
-- `criarRascunhoClassificacao`: usa a ação `CLASSIFICAR` (não
-  `GERENCIAR_RASCUNHO`) na checagem de permissão, por RN-20. O criador
-  ainda vira `COLABORADOR` (não `APROVADOR`) — decisão consciente de
-  manter a mesma separação de responsabilidade que as outras entidades
-  têm (definir aprovador continua sendo um passo explícito e separado,
-  via `atribuicaoService.definirAprovador`, mesmo sabendo que só um
-  `APROVADOR` pode ter criado a Classificação em primeiro lugar).
-- `salvarRascunhoClassificacao`: pronta, mesma estrutura de
-  `salvarRascunhoContencao`, checando `CLASSIFICAR` + `ehColaborador`.
+- **Descoberta de arquitetura**: `cicloVidaService.publicar`/`submeter`/
+  `excluirRascunho` tinham a ação de permissão fixa internamente
+  (`"PUBLICAR"`, `"SUBMETER"`, `"GERENCIAR_RASCUNHO"`) — impossível para
+  `Classificacao` exigir `"CLASSIFICAR"` (RN-20: só `APROVADOR`/`GERENTE`
+  cria/edita/publica/submete/exclui, nunca `EDITOR` puro). Corrigido
+  adicionando parâmetro opcional `acao: Acao` com valor padrão igual à
+  ação original em cada função — zero impacto nas chamadas existentes
+  (NC, Contenção), `Classificacao` passa `"CLASSIFICAR"` explicitamente.
+  Aproveitado para corrigir `antes: dadoValidado` → `antes: registro` em
+  `publicar` (bug: registrava o resultado da validação, não o estado
+  real anterior do Registro).
+- Sem `cancelarClassificacao` nem `reabrirClassificacao` — mesmo raciocínio
+  de `Contencao`: ciclo de vida é curto, excluir rascunho já cobre
+  "desistir cedo", reclassificar sempre gera uma nova instância (1:N com
+  a NC), nunca uma reabertura da anterior.
+- Criador sempre vira `COLABORADOR` (nunca `APROVADOR` automaticamente),
+  mesmo precisando ter papel `APROVADOR` para criar — preserva a
+  possibilidade de designar formalmente outra pessoa como aprovadora via
+  `atribuicaoService.definirAprovador`, em vez de travar nisso implicitamente.
+- Testado de ponta a ponta (13 casos), incluindo a checagem estrita de
+  `decidir` (papel certo mas não é o aprovador designado → 403) e RN-20
+  em três pontos (criar, publicar, excluir — todos bloqueiam EDITOR).
 
-**Problema de arquitetura identificado, ainda não resolvido — bloqueia
-`publicarClassificacao`:**
+- `model Classificacao`: chave compartilhada dupla (`Registro` +
+  `NaoConformidade`, ambas `onDelete: Cascade`), mesmo padrão de
+  `Contencao`. `ClassificacaoNC` desacoplado criado (só existia no Prisma).
+- `classificacao.schema.ts`: sem schema de fechamento — nenhum campo só
+  faz sentido "depois de tudo decidido" nesta entidade.
 
-`cicloVidaService.publicar` (e provavelmente `submeter`/`decidir`
-também) tem a ação de permissão **fixa** internamente (`"PUBLICAR"`,
-`"SUBMETER"`, `"APROVAR"`) — a função genérica não sabe que, para
-`Classificacao` especificamente, a ação correta seria `"CLASSIFICAR"`
-(RN-20). Chamar `cicloVidaService.publicar` direto para uma
-`Classificacao` deixaria um `EDITOR` sem papel `APROVADOR` publicá-la,
-violando RN-20.
-
-Duas linhas de solução a avaliar na próxima sessão:
-
-1. `publicarClassificacao` faz sua própria checagem manual de
-   `CLASSIFICAR` **antes** de chamar `cicloVidaService.publicar` — que
-   ainda vai checar `PUBLICAR` por dentro, redundantemente (mas
-   `PUBLICAR` inclui `EDITOR`/`GERENTE`, então um `APROVADOR` sozinho,
-   sem também ser `EDITOR`, falharia nessa segunda checagem — **isso
-   quebraria o fluxo**, precisa ser pensado com cuidado, não é só
-   "checagem a mais").
-2. `cicloVidaService.publicar` (e as demais transições que dependem de
-   `podeExecutar`) passam a aceitar a ação como **parâmetro**, em vez de
-   fixa internamente — mudança mais profunda, mas resolve de forma
-   genérica para qualquer entidade futura com a mesma necessidade
-   (mudar a ação sem mudar a assinatura toda vez).
-
-Decidir isso é pré-requisito para `publicarClassificacao`,
-`submeterClassificacao` e `decidirClassificacao` — as três ficam
-bloqueadas até resolver.
 
 - **`nc.schema.ts`**: campo `cliente` estava `.optional()`, mas dados vindos
   do Prisma trazem `null` (não `undefined`) para colunas nuláveis não
@@ -202,7 +183,7 @@ bloqueadas até resolver.
   fato removidos (após dedupe e após filtrar quem já não era colaborador).
 - `definirAprovador` valida que o **alvo** (não o ator) tem papel
   `APROVADOR` antes de atribuí-lo; segue o padrão "hard delete do vigente
-  - insert" para respeitar o índice único parcial.
+  + insert" para respeitar o índice único parcial.
 - Ambas as operações de lote (`adicionarColaboradores`/`removerColaboradores`)
   usam filtro "B2": separam quem já satisfaz a condição (já é/não é
   colaborador) do que precisa de fato ser processado, devolvendo os dois
@@ -237,7 +218,7 @@ bloqueadas até resolver.
 
 1. **Catálogo de ações de auditoria** (`acoes-auditadas.ts`) — ainda usa
    strings soltas no campo `acao` de cada chamada a `auditoriaRepository.
-registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
+   registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
    `EXCLUIR_RASCUNHO`, `SUBMETER`, `APROVADO`/`REPROVADO`, `REABRIR`,
    `CANCELAR`, `DEFINIR_SENHA`. Falta ainda `CONCLUIR` (quando
    `Verificacao` for modelada). Quando reescrito como enum tipado, revisar
@@ -274,7 +255,7 @@ registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
 
 8. **Listagem de NCs (`listarNC`)** — hoje sem filtros nem paginação
    (Camada 1 apenas). Contrato de API original previa `?estado&
-classificacao&origem&de&ate&minhas&cursor`. Camadas 2–4 (filtro por
+   classificacao&origem&de&ate&minhas&cursor`. Camadas 2–4 (filtro por
    estado, paginação por cursor, demais filtros) ainda não implementadas.
 
 9. **Módulo Feed** (comentários, respostas, menções `@`/`#`) — não
