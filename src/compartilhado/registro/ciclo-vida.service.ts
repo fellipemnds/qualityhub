@@ -3,6 +3,7 @@ import { atribuicaoRepository } from "../atribuicao/atribuicao.repository.js"
 import { auditoriaRepository } from "../auditoria/auditoria.repository.js"
 import { EntidadeAuditada } from "../auditoria/entidades-auditadas.js"
 import { cancelamentoRepository } from "../cancelamento/cancelamento.repository.js"
+import { Acao } from "../entidades/acoes.js"
 import { Decisao } from "../entidades/decisao.js"
 import { Papel } from "../entidades/papeis.js"
 import { TipoRegistro } from "../entidades/tipos-registro.js"
@@ -31,7 +32,7 @@ export const cicloVidaService = {
         return registro;
     },
 
-    async publicar(tx: ClientePrisma, registroId: string, ator: { id: string, papeis: Papel[] }, dados: unknown, validador: (dados: unknown) => unknown) {
+    async publicar(tx: ClientePrisma, registroId: string, ator: { id: string, papeis: Papel[] }, dados: unknown, validador: (dados: unknown) => unknown, acao: Acao = "PUBLICAR") {
         const registro = await registroRepository.buscarPorId(tx, registroId);
 
         if (registro === null) {
@@ -42,13 +43,13 @@ export const cicloVidaService = {
             throw new TransicaoInvalidaError("Apenas itens em rascunho podem ser publicados!");
         }
 
-        const podeEditar = await podeExecutar(tx, ator, "PUBLICAR", registroId);
+        const podeEditar = await podeExecutar(tx, ator, acao, registroId);
 
         if (!podeEditar) {
             throw new SemPermissaoError("Você não pode realizar esta ação pois você não está atribuido neste item.")
         }
 
-        const dadoValidado = validador(dados);
+        validador(dados);
 
         const prefixo = prefixoPorTipo[registro.tipo];
         const anoAtual = new Date().getFullYear();
@@ -62,14 +63,14 @@ export const cicloVidaService = {
             entidadeId: registroAtualizado.id,
             acao: "PUBLICAR",
             usuarioId: ator.id,
-            antes: dadoValidado,
+            antes: registro,
             depois: registroAtualizado
         })
 
         return registroAtualizado;
     },
 
-    async excluirRascunho(tx: ClientePrisma, registroId: string, ator: { id: string, papeis: Papel[] }) {
+    async excluirRascunho(tx: ClientePrisma, registroId: string, ator: { id: string, papeis: Papel[] }, acao: Acao = "GERENCIAR_RASCUNHO") {
         const registro = await registroRepository.buscarPorId(tx, registroId);
 
         if (registro === null) {
@@ -80,7 +81,7 @@ export const cicloVidaService = {
             throw new TransicaoInvalidaError("Apenas itens em rascunho podem ser deletados!");
         }
 
-        const podeDeletar = await podeExecutar(tx, ator, "GERENCIAR_RASCUNHO", registroId);
+        const podeDeletar = await podeExecutar(tx, ator, acao, registroId);
 
         if (!podeDeletar) {
             throw new SemPermissaoError("Você não pode realizar esta ação pois você não está atribuido neste item.");
@@ -100,7 +101,7 @@ export const cicloVidaService = {
         return registroDeletado;
     },
 
-    async submeter(tx: ClientePrisma, registroId: string, ator: { id: string, papeis: Papel[] }, dados: unknown, validador: (dados: unknown) => unknown) {
+    async submeter(tx: ClientePrisma, registroId: string, ator: { id: string, papeis: Papel[] }, dados: unknown, validador: (dados: unknown) => unknown, acao: Acao = "SUBMETER") {
         const registro = await registroRepository.buscarPorId(tx, registroId);
 
         if (registro === null) {
@@ -111,7 +112,7 @@ export const cicloVidaService = {
             throw new TransicaoInvalidaError();
         }
 
-        const podeSubmeter = await podeExecutar(tx, ator, "SUBMETER", registroId);
+        const podeSubmeter = await podeExecutar(tx, ator, acao, registroId);
 
         if (!podeSubmeter) {
             throw new SemPermissaoError("Você não pode realizar esta ação pois você não está atribuido neste item ou não possui as permissões necessárias.");
@@ -123,7 +124,7 @@ export const cicloVidaService = {
             throw new TransicaoInvalidaError("Este item deve possuir um aprovador delegado antes de ser submetido.");
         }
 
-        const dadoValidado = validador(dados);
+        validador(dados);
 
         const dadoAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "EM_APROVACAO" });
 
