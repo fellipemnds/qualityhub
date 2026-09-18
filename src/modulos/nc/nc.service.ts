@@ -8,6 +8,8 @@ import { ncRepository } from "./nc.repository.js"
 import { ncPublicacaoSchema, NCRascunhoInput } from "./nc.schema.js"
 import { DecisaoInput } from "../../compartilhado/registro/decidir.schema.js"
 import { registroRepository } from "../../compartilhado/registro/registro.repository.js"
+import { auditoriaRepository } from "../../compartilhado/auditoria/auditoria.repository.js"
+import { EntidadeAuditada } from "../../compartilhado/auditoria/entidades-auditadas.js"
 
 export const ncService = {
     async criarRascunhoNC(ator: { id: string, papeis: Papel[] }, dados: NCRascunhoInput) {
@@ -47,7 +49,17 @@ export const ncService = {
                 throw new SemPermissaoError("Você não tem permissões suficientes para atualizar este rascunho.");
             }
 
+            const ncAntes = await ncRepository.buscarPorId(tx, registroId);
             const ncAtualizada = await ncRepository.atualizar(tx, registroId, dados);
+
+            await auditoriaRepository.registrar(tx, {
+                entidade: EntidadeAuditada[registro.tipo],
+                entidadeId: registro.id,
+                acao: "SALVAR_RASCUNHO",
+                usuarioId: ator.id,
+                antes: ncAntes,
+                depois: ncAtualizada
+            })
 
             return ncAtualizada;
         })
