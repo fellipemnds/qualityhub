@@ -1,0 +1,298 @@
+@baseUrl = http://localhost:3333
+
+### ===========================================================
+### Fluxo completo de Classificacao, integrado com NC e atribuicao
+### Pressupoe que setup-usuarios-teste.sql ja foi rodado
+### ===========================================================
+
+### Login como Editor
+# @name loginEditor
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "editor@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Cria a NC-mae
+# @name criarNC
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "titulo": "Vazamento de oleo na linha 2",
+    "descricao": "Identificado vazamento de oleo hidraulico durante inspecao de rotina na linha 2 de producao.",
+    "requisitoViolado": "Procedimento PO-07, item 4.3 - inspecao de recebimento",
+    "processoAfetado": "Linha de Producao 2",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Publica a NC
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### ===========================================================
+### Classificacao — precisa ser criada por um APROVADOR (RN-20)
+### ===========================================================
+
+### Login como Aprovador
+# @name loginAprovador
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "aprovador@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Cria a Classificacao para essa NC
+# @name criarClassificacao
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/classificacoes
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "valor": "MAIOR",
+    "justificativa": "Vazamento afeta diretamente a seguranca operacional e a qualidade do produto final entregue ao cliente."
+}
+
+### Salva/edita o rascunho
+PATCH {{baseUrl}}/classificacoes/{{criarClassificacao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "justificativa": "Vazamento afeta diretamente a seguranca operacional e a qualidade do produto final entregue ao cliente. Risco de contaminacao confirmado."
+}
+
+### Publica a Classificacao (RASCUNHO -> ABERTO, gera codigo)
+POST {{baseUrl}}/classificacoes/{{criarClassificacao.response.body.id}}/publicar
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### ===========================================================
+### Define o aprovador desta Classificacao (modulo atribuicao)
+### ===========================================================
+
+### Login como Gerente (tem DEFINIR_APROVADOR)
+# @name loginGerente
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "gerente@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Define o proprio Aprovador Teste como aprovador desta Classificacao
+PUT {{baseUrl}}/registros/{{criarClassificacao.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "COLE_O_ID_DO_APROVADOR_AQUI"
+}
+
+### ===========================================================
+### Submeter e decidir
+### ===========================================================
+
+### Submeter a Classificacao (ABERTO -> EM_APROVACAO)
+POST {{baseUrl}}/classificacoes/{{criarClassificacao.response.body.id}}/submeter
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### Decidir - aprovar (EM_APROVACAO -> FECHADO, ja que Classificacao so tem 1 portao)
+POST {{baseUrl}}/classificacoes/{{criarClassificacao.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### ===========================================================
+### Leitura
+### ===========================================================
+
+### Busca a Classificacao por id
+GET {{baseUrl}}/classificacoes/{{criarClassificacao.response.body.id}}
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### Lista todas as classificacoes (sem filtro)
+GET {{baseUrl}}/classificacoes
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### Lista as classificacoes filtrando por essa NC especifica
+GET {{baseUrl}}/classificacoes?naoConformidadeId={{criarNC.response.body.id}}
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### ===========================================================
+### Excluir rascunho (item separado)
+### ===========================================================
+
+### Cria uma segunda Classificacao, so para testar exclusao
+# @name classificacaoParaExcluir
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/classificacoes
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "valor": "MENOR",
+    "justificativa": "Classificacao criada apenas para testar a rota de exclusao de rascunho."
+}
+
+### Exclui (204 esperado)
+DELETE {{baseUrl}}/classificacoes/{{classificacaoParaExcluir.response.body.id}}
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### Confirma que sumiu (404 esperado)
+GET {{baseUrl}}/classificacoes/{{classificacaoParaExcluir.response.body.id}}
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+
+### ===========================================================
+### MODOS DE FALHA — especificos de Classificacao (RN-20)
+### ===========================================================
+
+### 1 — EDITOR (sem papel APROVADOR) tentando criar uma Classificacao
+### — espera 403, mesmo Editor podendo criar NC normalmente
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/classificacoes
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "valor": "MAIOR",
+    "justificativa": "Este request deveria ser rejeitado, Editor nao tem papel APROVADOR."
+}
+
+### 2 — Cria uma Classificacao valida para os proximos dois testes
+# @name classificacaoRN20
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/classificacoes
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "valor": "MENOR",
+    "justificativa": "Classificacao para testar publicar e excluir com papel errado."
+}
+
+### 3 — EDITOR tentando publicar uma Classificacao (mesmo sendo colaborador
+### de outros itens em geral) — espera 403
+POST {{baseUrl}}/classificacoes/{{classificacaoRN20.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### 4 — EDITOR tentando excluir o rascunho de uma Classificacao — espera 403
+DELETE {{baseUrl}}/classificacoes/{{classificacaoRN20.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### 5 — Valor invalido no PATCH (fora do enum MAIOR/MENOR) — espera 400
+PATCH {{baseUrl}}/classificacoes/{{classificacaoRN20.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "valor": "GRAVISSIMA"
+}
+
+### 6 — Criar Classificacao para uma NC que nao existe — espera 404
+POST {{baseUrl}}/nc/00000000-0000-0000-0000-000000000000/classificacoes
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "valor": "MAIOR",
+    "justificativa": "Esta NC nao existe, deveria falhar com 404."
+}
+
+### 7 — Publicar uma Classificacao ja publicada (estado ABERTO, nao RASCUNHO)
+### — espera 409
+POST {{baseUrl}}/classificacoes/{{criarClassificacao.response.body.id}}/publicar
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+
+### ===========================================================
+### MODOS DE FALHA — atribuicao especifica e validacao (continuacao)
+### ===========================================================
+
+### Login como QA (tem papel APROVADOR, mas nao sera colaborador desta Classificacao)
+# @name loginQA
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "qa@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### 8 — Cria uma Classificacao com o Aprovador (QA nunca sera colaborador dela)
+# @name classificacaoSemQA
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/classificacoes
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "valor": "MAIOR",
+    "justificativa": "Classificacao criada pelo Aprovador, QA nunca sera atribuido a ela como colaborador."
+}
+
+### 9 — QA (tem papel APROVADOR, mas NAO e colaborador deste item) tenta
+### editar o rascunho — espera 403
+PATCH {{baseUrl}}/classificacoes/{{classificacaoSemQA.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginQA.response.body.token}}
+
+{
+    "justificativa": "QA tentando editar uma classificacao que nao e sua."
+}
+
+### 10 — Publica a classificacao para testar submeter sem aprovador
+POST {{baseUrl}}/classificacoes/{{classificacaoSemQA.response.body.id}}/publicar
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### 11 — Submeter SEM aprovador definido ainda — espera 409
+POST {{baseUrl}}/classificacoes/{{classificacaoSemQA.response.body.id}}/submeter
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### ===========================================================
+### PARE AQUI. Defina o QA como aprovador desta classificacao via psql
+### (de proposito, para o teste 12 seguinte funcionar):
+###
+###   INSERT INTO "Atribuicao" ("registroId", "usuarioId", funcao, "atribuidoPorId", "atribuidoEm")
+###   VALUES ('COLE_O_ID_DE_classificacaoSemQA_AQUI', (SELECT id FROM "Usuario" WHERE email = 'qa@teste.com'), 'APROVADOR', (SELECT id FROM "Usuario" WHERE email = 'admin@teste.com'), now());
+### ===========================================================
+
+### Submeter (agora com aprovador definido)
+POST {{baseUrl}}/classificacoes/{{classificacaoSemQA.response.body.id}}/submeter
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### 12 — O Aprovador (papel certo, mas NAO e o aprovador designado — foi
+### o QA quem foi designado) tenta decidir — espera 403
+POST {{baseUrl}}/classificacoes/{{classificacaoSemQA.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### O QA (aprovador designado de verdade) consegue decidir — espera 200
+POST {{baseUrl}}/classificacoes/{{classificacaoSemQA.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginQA.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### 13 — Justificativa curta demais (menos de 20 caracteres) — espera 400
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/classificacoes
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "valor": "MAIOR",
+    "justificativa": "Curta demais"
+}
