@@ -7,6 +7,7 @@ import { authRoutes } from "./modulos/auth/auth.routes.js";
 import { usuarioRoutes } from "./modulos/usuario/usuario.routes.js";
 import { ncRoutes } from "./modulos/nc/nc.routes.js";
 import { atribuicaoRoutes } from "./compartilhado/atribuicao/atribuicao.routes.js";
+import { contencaoRoutes } from "./modulos/nc/contencao.routes.js";
 
 const app = Fastify({
     logger: true,
@@ -30,6 +31,7 @@ app.register(authRoutes);
 app.register(usuarioRoutes);
 app.register(ncRoutes);
 app.register(atribuicaoRoutes);
+app.register(contencaoRoutes);
 
 app.setErrorHandler((erro, request, reply) => {
     if (erro instanceof ZodError) {

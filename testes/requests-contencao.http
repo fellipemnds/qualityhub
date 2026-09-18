@@ -1,0 +1,290 @@
+@baseUrl = http://localhost:3333
+
+### ===========================================================
+### Fluxo completo de Contencao, integrado com NC e atribuicao
+### Pressupoe que setup-usuarios-teste.sql ja foi rodado
+### ===========================================================
+
+### Login como Editor
+# @name loginEditor
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "editor@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Cria a NC-mae
+# @name criarNC
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "titulo": "Vazamento de oleo na linha 2",
+    "descricao": "Identificado vazamento de oleo hidraulico durante inspecao de rotina na linha 2 de producao.",
+    "requisitoViolado": "Procedimento PO-07, item 4.3 - inspecao de recebimento",
+    "processoAfetado": "Linha de Producao 2",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Publica a NC
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### ===========================================================
+### Contencao
+### ===========================================================
+
+### Cria a Contencao para essa NC
+# @name criarContencao
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/contencoes
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Retrabalho realizado na peca com defeito, substituindo a vedacao danificada."
+}
+
+### Salva/edita o rascunho da Contencao (inclui executadaEm e disposicao)
+PATCH {{baseUrl}}/contencoes/{{criarContencao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "executadaEm": "2026-09-15T14:30:00.000Z",
+    "disposicao": "CORRIGIDO"
+}
+
+### Publica a Contencao (RASCUNHO -> ABERTO, gera codigo)
+POST {{baseUrl}}/contencoes/{{criarContencao.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### ===========================================================
+### Define o aprovador desta Contencao (modulo atribuicao)
+### ===========================================================
+
+### Login como Gerente (tem DEFINIR_APROVADOR)
+# @name loginGerente
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "gerente@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Define o Aprovador Teste como aprovador desta Contencao
+PUT {{baseUrl}}/registros/{{criarContencao.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "COLE_O_ID_DO_APROVADOR_AQUI"
+}
+
+### ===========================================================
+### Submeter e decidir
+### ===========================================================
+
+### Submeter a Contencao (ABERTO -> EM_APROVACAO)
+POST {{baseUrl}}/contencoes/{{criarContencao.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Login como Aprovador
+# @name loginAprovador
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "aprovador@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Decidir - aprovar (EM_APROVACAO -> FECHADO, ja que Contencao so tem 1 portao)
+POST {{baseUrl}}/contencoes/{{criarContencao.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### ===========================================================
+### Leitura
+### ===========================================================
+
+### Busca a Contencao por id
+GET {{baseUrl}}/contencoes/{{criarContencao.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Lista todas as contencoes (sem filtro)
+GET {{baseUrl}}/contencoes
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Lista as contencoes filtrando por essa NC especifica
+GET {{baseUrl}}/contencoes?naoConformidadeId={{criarNC.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Lista as contencoes filtrando por estado FECHADO
+GET {{baseUrl}}/contencoes?estado=FECHADO
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### ===========================================================
+### Cancelamento (item separado, para nao interferir no fluxo acima)
+### ===========================================================
+
+### Cria uma segunda Contencao, so para testar cancelamento
+# @name contencaoParaCancelar
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/contencoes
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Contencao criada apenas para testar o fluxo de cancelamento."
+}
+
+### Publica
+POST {{baseUrl}}/contencoes/{{contencaoParaCancelar.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Login como Gerente (relogar)
+# @name loginGerente2
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "gerente@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Cancela (GERENTE ou o aprovador do item podem cancelar)
+POST {{baseUrl}}/contencoes/{{contencaoParaCancelar.response.body.id}}/cancelar
+Content-Type: application/json
+Authorization: Bearer {{loginGerente2.response.body.token}}
+
+{
+    "motivo": "Contencao registrada por engano, cancelada para novo registro correto."
+}
+
+### ===========================================================
+### Excluir rascunho (nao interfere no que ja foi publicado)
+### ===========================================================
+
+### Cria uma terceira Contencao, so para testar exclusao
+# @name contencaoParaExcluir
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/contencoes
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Esta contencao vai ser excluida em seguida, apenas para testar a rota."
+}
+
+### Exclui (204 esperado)
+DELETE {{baseUrl}}/contencoes/{{contencaoParaExcluir.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Confirma que sumiu (404 esperado)
+GET {{baseUrl}}/contencoes/{{contencaoParaExcluir.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+
+### ===========================================================
+### MODOS DE FALHA — especificos de Contencao
+### ===========================================================
+
+### Login como Editor (relogar)
+# @name loginEditorFalhas
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "editor@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### 1 — Disposicao invalida no PATCH — espera 400
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/contencoes
+Content-Type: application/json
+Authorization: Bearer {{loginEditorFalhas.response.body.token}}
+
+{
+    "descricao": "Contencao para testar disposicao invalida."
+}
+
+### (rode a de cima primeiro, pegue o id da resposta e cole abaixo,
+### ou use uma variavel nomeada — aqui deixamos manual por simplicidade)
+//PATCH {{baseUrl}}/contencoes/COLE_O_ID_DA_CONTENCAO_ACIMA
+PATCH {{baseUrl}}/contencoes/01a0b4e3-d2b3-72fb-ae30-590deb08997d
+Content-Type: application/json
+Authorization: Bearer {{loginEditorFalhas.response.body.token}}
+
+{
+    "disposicao": "XPTO_INVALIDO"
+}
+
+### 2 — Criar Contencao para uma NC que nao existe — espera 404
+POST {{baseUrl}}/nc/00000000-0000-0000-0000-000000000000/contencoes
+Content-Type: application/json
+Authorization: Bearer {{loginEditorFalhas.response.body.token}}
+
+{
+    "descricao": "Esta NC nao existe, deveria falhar."
+}
+
+### 3 — Listar contencoes filtrando por NC sem nenhuma contencao — espera 200, lista vazia
+### (usa um id de NC valido mas que nunca teve contencao — ajuste conforme seu banco,
+### ou crie uma NC nova rapida so para este teste)
+
+GET {{baseUrl}}/contencoes?naoConformidadeId=01a0b4e3-d2b3-72fb-ae30-590deb08997d
+Authorization: Bearer {{loginEditorFalhas.response.body.token}}
+
+### 4 — Segunda Contencao para a MESMA NC (relacao 1:N, deve funcionar) — espera 201
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/contencoes
+Content-Type: application/json
+Authorization: Bearer {{loginEditorFalhas.response.body.token}}
+
+{
+    "descricao": "Segunda tentativa de contencao para a mesma NC, apos a primeira ja ter sido fechada."
+}
+
+### 5 — Filtro de estado invalido na listagem — espera 400
+GET {{baseUrl}}/contencoes?estado=XPTO_INVALIDO
+Authorization: Bearer {{loginEditorFalhas.response.body.token}}
+
+### 6 — Alguem SEM ser colaborador da contencao tentando salvar o rascunho
+### (mesmo tendo papel EDITOR em geral) — espera 403
+### Usa o QA, que nunca foi atribuido a esta contencao especifica
+
+# @name loginQAFalhas
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "qa@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Cria uma contencao com o Editor (QA nao e colaborador dela)
+# @name contencaoSemQA
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/contencoes
+Content-Type: application/json
+Authorization: Bearer {{loginEditorFalhas.response.body.token}}
+
+{
+    "descricao": "Contencao criada pelo Editor, QA nunca sera atribuido a ela."
+}
+
+### QA (tem papel EDITOR? nao — QA tem EDITOR e APROVADOR, entao ele TEM o papel
+### generico, mas NAO e colaborador deste item especifico) tenta editar — espera 403
+PATCH {{baseUrl}}/contencoes/{{contencaoSemQA.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginQAFalhas.response.body.token}}
+
+{
+    "descricao": "QA tentando editar uma contencao que nao e dele."
+}
