@@ -582,18 +582,17 @@ Authorization: Bearer {{loginEditor6.response.body.token}}
     "colaboradores": ["COLE_O_ID_DO_EDITOR_AQUI"]
 }
 
-### 10.5 — Remover alguem que NAO e colaborador (o Aprovador Teste, que
-### nunca foi atribuido a este item)
-### Espera 200, com o Aprovador aparecendo em "naoEramColaboradores"
-POST {{baseUrl}}/registros/{{ncAtribuicaoFalhas.response.body.id}}/colaboradores
+### 10.5 — Remover alguem que NAO e colaborador (o QA, que nunca foi
+### atribuido a este item especifico — repara que este eh outro NC,
+### diferente do usado no requests.http principal)
+### Espera 200, com o QA aparecendo em "naoEramColaboradores"
+DELETE {{baseUrl}}/registros/{{ncAtribuicaoFalhas.response.body.id}}/colaboradores
 Content-Type: application/json
 Authorization: Bearer {{loginEditor6.response.body.token}}
 
 {
     "colaboradores": ["COLE_O_ID_DO_QA_AQUI"]
 }
-
-### Confirma que o QA foi mesmo adicionado (para o teste 10.6 fazer sentido)
 
 ### 10.6 — CENARIO A INVESTIGAR: o MESMO id duplicado dentro do array,
 ### na MESMA requisicao. O filtro B2 checa contra o banco, que ainda nao
@@ -603,16 +602,6 @@ Authorization: Bearer {{loginEditor6.response.body.token}}
 ### Resultado esperado: AINDA NAO SABEMOS — é isso que estamos testando.
 ### Se der 500, é um bug real a corrigir (filtrar duplicatas dentro do
 ### proprio array recebido, antes de checar contra o banco).
-DELETE {{baseUrl}}/registros/{{ncAtribuicaoFalhas.response.body.id}}/colaboradores
-Content-Type: application/json
-Authorization: Bearer {{loginEditor6.response.body.token}}
-
-{
-    "colaboradores": ["COLE_O_ID_DO_QA_AQUI"]
-}
-
-### Recria a situacao para o teste de duplicata na ADICAO (mais facil de
-### observar o bug, já que remover já limpou o estado)
 ### Envia o MESMO id do QA duas vezes no mesmo array
 POST {{baseUrl}}/registros/{{ncAtribuicaoFalhas.response.body.id}}/colaboradores
 Content-Type: application/json
@@ -620,4 +609,55 @@ Authorization: Bearer {{loginEditor6.response.body.token}}
 
 {
     "colaboradores": ["COLE_O_ID_DO_QA_AQUI", "COLE_O_ID_DO_QA_AQUI"]
+}
+
+
+### ===========================================================
+### 10.7 — GERENTE removendo colaborador (variação de papel, não
+### testada ainda — confirma que GERENTE tambem tem GERENCIAR_COLABORADORES)
+### ===========================================================
+
+### Login como Gerente
+# @name loginGerente4
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "gerente@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Adiciona o QA de novo como colaborador (para ter alguem a mais para remover)
+POST {{baseUrl}}/registros/{{ncAtribuicaoFalhas.response.body.id}}/colaboradores
+Content-Type: application/json
+Authorization: Bearer {{loginGerente4.response.body.token}}
+
+{
+    "colaboradores": ["COLE_O_ID_DO_QA_AQUI"]
+}
+
+### Gerente remove o QA — espera 200 (GERENTE tambem tem GERENCIAR_COLABORADORES)
+DELETE {{baseUrl}}/registros/{{ncAtribuicaoFalhas.response.body.id}}/colaboradores
+Content-Type: application/json
+Authorization: Bearer {{loginGerente4.response.body.token}}
+
+{
+    "colaboradores": ["COLE_O_ID_DO_QA_AQUI"]
+}
+
+
+### ===========================================================
+### 10.8 — RN-12 combinada com duplicata no array: remover o UNICO
+### colaborador restante (Editor), duas vezes no mesmo array.
+### Apos o dedupe (Set), vira ["editor-id"] uma vez soh — a checagem
+### de RN-12 (total - removiveis.length <= 0) deve continuar bloqueando.
+### Espera 409, nao 500 e nao 200.
+### ===========================================================
+
+DELETE {{baseUrl}}/registros/{{ncAtribuicaoFalhas.response.body.id}}/colaboradores
+Content-Type: application/json
+Authorization: Bearer {{loginGerente4.response.body.token}}
+
+{
+    "colaboradores": ["COLE_O_ID_DO_EDITOR_AQUI", "COLE_O_ID_DO_EDITOR_AQUI"]
 }

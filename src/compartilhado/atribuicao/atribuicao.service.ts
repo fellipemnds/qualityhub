@@ -23,9 +23,11 @@ export const atribuicaoService = {
                 throw new SemPermissaoError("Você não tem permissões suficientes para incluir colaboradores.");
             }
 
+            const colaboradoresIdUnicos = [...new Set(colaboradoresId)];
             const colaboradoresExistentes = [];
             const colaboradoresNovos = [];
-            for (const colaboradorId of colaboradoresId) {
+
+            for (const colaboradorId of colaboradoresIdUnicos) {
                 const colaboradorEsta = await atribuicaoRepository.ehColaborador(tx, registroId, colaboradorId);
                 if (colaboradorEsta) {
                     colaboradoresExistentes.push(colaboradorId);
@@ -67,10 +69,11 @@ export const atribuicaoService = {
                 throw new SemPermissaoError("Você não tem permissões suficientes para remover colaboradores.");
             }
 
+            const colaboradoresIdUnicos = [...new Set(colaboradoresId)];
             const colaboradoresRemoviveis = [];
             const naoSaoColaboradores = [];
 
-            for (const colaboradorId of colaboradoresId) {
+            for (const colaboradorId of colaboradoresIdUnicos) {
                 const colaboradorEsta = await atribuicaoRepository.ehColaborador(tx, registroId, colaboradorId);
                 if (colaboradorEsta) {
                     colaboradoresRemoviveis.push(colaboradorId);
