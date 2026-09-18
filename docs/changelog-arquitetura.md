@@ -13,9 +13,9 @@ Este documento registra todas as decisões tomadas durante a implementação que
 - **`NaoConformidade`**: mantém `processoAfetado` **e** `requisitoViolado` como campos distintos (o primeiro sobre localização operacional, o segundo sobre qual requisito/procedimento foi violado).
 - **`Usuario.id`**: migrado de `Int` para `String` (`uuid(7)`) — propagado por toda FK de usuário no sistema.
 - **`ConviteSenha` renomeado para `TokenAcesso`**, com campo `tipo` (`CONVITE` | `RECUPERACAO_SENHA`), preparando o fluxo futuro de "esqueci minha senha" sem precisar de uma segunda tabela.
-- **`Reabertura`**: modelo que o documento original não detalhava — criado seguindo o padrão de `Aprovacao` (evento + motivo + autor + timestamp). Campos: `id`, `registroId`, `motivo`, `reabertoPorId`, `reabertoEm`. **`Cancelamento`**: mesma situação de `Reabertura` — nunca especificado no documento original, apesar de RN-06 exigir motivo de cancelamento. Mesmo padrão: `id`, `registroId`, `motivo`, `canceladoPorId`, `canceladoEm`.
-- **RN-13 ajustada para `NaoConformidade`**: a exigência de aprovador definido não é mais checada em `publicar`, e sim em `submeter` — permite que a NC nasça (vire oficial, ganhe código) antes de um QA ser designado, refletindo o processo real onde a triagem de responsável acontece depois
-  da criação.
+- **`Reabertura`**: modelo que o documento original não detalhava — criado seguindo o padrão de `Aprovacao` (evento + motivo + autor + timestamp). Campos: `id`, `registroId`, `motivo`, `reabertoPorId`, `reabertoEm`.
+- **`Cancelamento`**: mesma situação de `Reabertura` — nunca especificado no documento original, apesar de RN-06 exigir motivo de cancelamento. Mesmo padrão: `id`, `registroId`, `motivo`, `canceladoPorId`, `canceladoEm`.
+- **RN-13 ajustada para `NaoConformidade`**: a exigência de aprovador definido não é mais checada em `publicar`, e sim em `submeter` — permite que a NC nasça (vire oficial, ganhe código) antes de um QA ser designado, refletindo o processo real onde a triagem de responsável acontece depois da criação.
 
 ### Permissões
 
@@ -31,10 +31,15 @@ Este documento registra todas as decisões tomadas durante a implementação que
 - **Catálogo de ações de permissão (`Acao`)**: desmembrado em granularidade maior que o documento original sugeria — `GERENCIAR_RASCUNHO` (criar + excluir rascunho, fusão segura) mantido separado de `PUBLICAR` e `SUBMETER` (decisão consciente de manter nomes específicos, mesmo com regra de papel idêntica hoje, para facilitar divergência futura sem reescrever chamadas espalhadas).
 - **`Decisao` desacoplado**: criado em `compartilhado/entidades/decisao.ts` (só existia como enum do Prisma antes) — usado em `decidir.schema.ts` e em `ciclo-vida.service.decidir`.
 
-### Correções encontradas via testes manuais
+### Entidade `Contencao` — completa e testada
 
-- **`nc.schema.ts`**: campo `cliente` estava `.optional()`, mas dados vindos do Prisma trazem `null` (não `undefined`) para colunas nuláveis não preenchidas — o Zod rejeitava. Corrigido para `.nullish()` (aceita `undefined` **e** `null`). Regra geral: todo campo opcional que é validado contra dados vindos do banco precisa de `.nullish()`, não só `.optional()`.
-- **`schema.prisma`**: `Atribuicao.registro` não tinha `onDelete: Cascade`, diferente de `NaoConformidade.registro`. Isso impedia excluir um `Registro` em `RASCUNHO` sempre que ele já tivesse pelo menos uma `Atribuicao` (o que é sempre o caso, por RN-14 — o criador já é colaborador desde a criação). Corrigido adicionando o cascade.
+- Implementada do zero (era só schema comentado + repository apagado): `model Contencao` com chave compartilhada dupla (com `Registro`, via `onDelete: Cascade`, e com `NaoConformidade`, também `Cascade`, por segurança defensiva mesmo não sendo exercitada no fluxo atual).
+- **`Disposicao` generalizada** (decisão de produto): em vez do vocabulário tradicional de chão de fábrica (retrabalho, refugo, segregação — específico de peça física), o enum usa termos abstratos que servem qualquer área que gere não conformidades (Operação, RH, Desenvolvimento, Qualidade): `ACEITO`, `CORRIGIDO`, `ANULADO`, `EM_ANALISE`. Decisão registrada porque não é óbvia relendo o código — alguém revisando pode estranhar a ausência de "refugo"/"retrabalho".
+- `executadaEm` e `disposicao` ficam juntos desde `contencaoBaseSchema` (opcionais/nullish) — decisão de processo real: no fluxo da empresa, quem executa a contenção já sabe, no mesmo momento, qual foi o destino da peça/situação. Diferente de `riscosRevisados`/`mudancasSGQ` em NC, que só fazem sentido depois de tudo mais decidido.
+- `contencao.service.ts` reescrito com 9 funções (sem `reabrir` — decisão: contenções que não funcionam geram uma **nova** tentativa, não uma reabertura da antiga, já que a relação com a NC é 1:N).
+- `contencaoRepository.listarContencoes` aceita filtros opcionais (`naoConformidadeId`, `estado`) — modelo a ser replicado quando `listarNC` for revisitada com os filtros do contrato de API original.
+- Testado via API real de ponta a ponta, incluindo seis modos de falha específicos (disposição inválida, NC inexistente, filtro vazio, segunda contenção pra mesma NC, filtro de estado inválido, e a checagem de atribuição específica — alguém com papel certo mas sem ser colaborador daquela contenção específica).
+- **Lacuna identificada, ainda não resolvida**: `contencaoFechamentoSchema` existe mas nenhuma função do `service` o utiliza — mesma lacuna de `ncFechamentoSchema` em NC. Revisar junto quando decidirmos como/quando a validação de fechamento deveria disparar (relacionado a `submeterNCParaFechamento`, ainda bloqueada).
 
 ### Correções encontradas via testes manuais
 
@@ -65,19 +70,21 @@ Este documento registra todas as decisões tomadas durante a implementação que
 
 2. **`ADICIONAR_COLABORADOR`** sem checagem de atribuição prévia — mesma pergunta que gerou o desmembramento de `DEFINIR_APROVADOR` ainda precisa ser formalmente revisada quando escrevermos `atribuicao.service` completo (as funções de escrita além de `adicionarColaboradores`, que já existe em `atribuicao.repository.ts`).
 
-3. **`criarRascunhoNC`** atribui só o criador como colaborador (RN-14) — adicionar colaboradores extras no mesmo passo da criação fica para uma chamada separada, à rota `POST /registros/:id/colaboradores` (ainda não escrita).
+3. **`criarRascunhoNC`** atribui só o criador como colaborador (RN-14) — adicionar colaboradores extras no mesmo passo da criação fica para uma chamada separada, à rota `POST /registros/:id/colaboradores` (ainda não
+   escrita).
 
 4. **`fazerLogin`** deveria auditar tentativas de login, inclusive falhas (útil para detectar força bruta) — isso muda a natureza da função (hoje só leitura, via `prisma` direto, sem transação) e precisa ser desenhado com cuidado antes de implementar.
 
 5. **`ignoreTrailingSlash`** em `app.ts` usa a forma deprecada (`Fastify({ ignoreTrailingSlash: true })`, aviso `FSTDEP022`). Migrar para `Fastify({ routerOptions: { ignoreTrailingSlash: true } })` numa passada de manutenção — não bloqueia nada agora.
 
-6. **`contencao/`** (repository, service, controller) em estado intermediário: `contencao.repository.ts` foi apagado, `contencao.service.ts` está comentado (silenciando erros de compilação do código antigo), `contencao.controller.ts` está vazio. Precisa reescrita completa seguindo o padrão consolidado em `nc/` (schema → repository → service → controller → routes).
+6. ~~**`contencao/`** em estado intermediário~~ — **RESOLVIDO.** Módulo completo (schema, repository, service, controller, routes), testado via API de ponta a ponta. Ver seção "Entidade `Contencao`" acima.
 
-7. **`submeterNCParaFechamento`** (a guarda de fechamento, RN-21 a RN-23) — bloqueada. Depende das cinco entidades filhas ainda não modeladas: `Classificacao`, `Investigacao`, `AcaoCorretiva`, `Verificacao`, e a reescrita de `Contencao`.
+7. **`submeterNCParaFechamento`** (a guarda de fechamento, RN-21 a RN-23) — ainda bloqueada. Depende das quatro entidades filhas restantes: `Classificacao`, `Investigacao`, `AcaoCorretiva`, `Verificacao`.
 
 8. **Listagem de NCs (`listarNC`)** — hoje sem filtros nem paginação (Camada 1 apenas). Contrato de API original previa `?estado&classificacao&origem&de&ate&minhas&cursor`. Camadas 2–4 (filtro por estado, paginação por cursor, demais filtros) ainda não implementadas.
 
 9. **Módulo Feed** (comentários, respostas, menções `@`/`#`) — não iniciado. Depende do módulo `nc/` estar mais maduro.
 
-10. **Documentação OpenAPI** — não iniciada. `fastify-type-provider-zod` já está em uso, o que facilita gerar isso a partir dos schemas
-    existentes quando chegarmos nessa etapa.
+10. **Documentação OpenAPI** — não iniciada. `fastify-type-provider-zod` já está em uso, o que facilita gerar isso a partir dos schemas existentes quando chegarmos nessa etapa.
+
+11. **Arquivos de teste manual** (`requests.http`, `requests-modos-falha.http`, `requests-contencao.http`, `setup-usuarios-teste.sql`) reorganizados da raiz do projeto para a pasta `testes/`.
