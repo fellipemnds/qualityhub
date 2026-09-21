@@ -15,12 +15,12 @@ export const classificacaoController = {
         return reply.status(201).send(classificacaoRascunho);
     },
 
-    async salvarRascunhoClassificacao(request: FastifyRequest<{ Params: { id: string }, Body: ClassificacaoRascunhoInput }>, reply: FastifyReply) {
+    async atualizarClassificacao(request: FastifyRequest<{ Params: { id: string }, Body: ClassificacaoRascunhoInput }>, reply: FastifyReply) {
         const dados = request.body;
         const id = request.params.id;
         const ator = request.user;
 
-        const classificacaoSalva = await classificacaoService.salvarRascunhoClassificacao(id, ator, dados);
+        const classificacaoSalva = await classificacaoService.atualizarClassificacao(id, ator, dados);
 
         return reply.status(200).send(classificacaoSalva);
     },

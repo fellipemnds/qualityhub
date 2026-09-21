@@ -1,90 +1,101 @@
 import type { FastifyInstance } from "fastify";
-import { classificacaoController } from "./classificacao.controller.js";
-import { ZodTypeProvider } from "fastify-type-provider-zod";
+import { investigacaoController } from "./investigacao.controller.js";
 import { autenticar } from "../../middlewares/autenticar.js";
+import { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
-import { classificacaoRascunhoSchema } from "./classificacao.schema.js";
+import { investigacaoRascunhoSchema } from "./investigacao.schema.js";
 import { decisaoSchema } from "../../compartilhado/registro/decidir.schema.js";
+import { motivoSchema } from "../../compartilhado/registro/motivo.schema.js";
 import { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
 
-export async function classificacaoRoutes(app: FastifyInstance) {
-
+export async function investigacaoRoutes(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
-        url: "/nc/:naoConformidadeId/classificacoes",
+        url: "/nc/:naoConformidadeId/investigacoes",
         onRequest: [autenticar],
         schema: {
             params: z.object({ naoConformidadeId: z.uuid() }),
-            body: classificacaoRascunhoSchema
+            body: investigacaoRascunhoSchema
         },
-        handler: classificacaoController.criarRascunhoClassificacao
+        handler: investigacaoController.criarRascunhoInvestigacao
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "PATCH",
-        url: "/classificacoes/:id",
+        url: "/investigacoes/:id",
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
-            body: classificacaoRascunhoSchema
+            body: investigacaoRascunhoSchema
         },
-        handler: classificacaoController.atualizarClassificacao
+        handler: investigacaoController.atualizarInvestigacao
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "DELETE",
-        url: "/classificacoes/:id",
+        url: "/investigacoes/:id",
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() })
         },
-        handler: classificacaoController.excluirRascunhoClassificacao
+        handler: investigacaoController.excluirRascunhoInvestigacao
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
-        url: "/classificacoes/:id/publicar",
+        url: "/investigacoes/:id/publicar",
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() })
         },
-        handler: classificacaoController.publicarClassificacao
+        handler: investigacaoController.publicarInvestigacao
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
-        url: "/classificacoes/:id/submeter",
+        url: "/investigacoes/:id/submeter",
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() })
         },
-        handler: classificacaoController.submeterClassificacao
+        handler: investigacaoController.submeterInvestigacao
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
-        url: "/classificacoes/:id/decidir",
+        url: "/investigacoes/:id/decidir",
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
             body: decisaoSchema
         },
-        handler: classificacaoController.decidirClassificacao
+        handler: investigacaoController.decidirInvestigacao
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
-        method: "GET",
-        url: "/classificacoes/:id",
+        method: "POST",
+        url: "/investigacoes/:id/cancelar",
         onRequest: [autenticar],
         schema: {
-            params: z.object({ id: z.uuid() })
+            params: z.object({ id: z.uuid() }),
+            body: motivoSchema
         },
-        handler: classificacaoController.buscarPorIdClassificacao
+        handler: investigacaoController.cancelarInvestigacao
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "GET",
-        url: "/classificacoes",
+        url: "/investigacoes/:id",
+        onRequest: [autenticar],
+        schema: {
+            params: z.object({ id: z.uuid() }),
+        },
+        handler: investigacaoController.buscarPorIdInvestigacao
+    });
+
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: "GET",
+        url: "/investigacoes",
         onRequest: [autenticar],
         schema: {
             querystring: z.object({
@@ -92,8 +103,6 @@ export async function classificacaoRoutes(app: FastifyInstance) {
                 estado: z.enum(EstadoRegistro).optional()
             })
         },
-        handler: classificacaoController.listarClassificacoes
+        handler: investigacaoController.listarInvestigacoes
     });
-
-
 }

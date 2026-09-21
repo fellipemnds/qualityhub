@@ -29,7 +29,7 @@ export async function contencaoRoutes(app: FastifyInstance) {
             params: z.object({ id: z.uuid() }),
             body: contencaoRascunhoSchema
         },
-        handler: contencaoController.salvarRascunhoContencao
+        handler: contencaoController.atualizarContencao
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({

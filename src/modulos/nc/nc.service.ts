@@ -10,6 +10,7 @@ import { DecisaoInput } from "../../compartilhado/registro/decidir.schema.js"
 import { registroRepository } from "../../compartilhado/registro/registro.repository.js"
 import { auditoriaRepository } from "../../compartilhado/auditoria/auditoria.repository.js"
 import { EntidadeAuditada } from "../../compartilhado/auditoria/entidades-auditadas.js"
+import { ESTADOS_EDITAVEIS } from "../../compartilhado/registro/estados-editaveis.js"
 
 export const ncService = {
     async criarRascunhoNC(ator: { id: string, papeis: Papel[] }, dados: NCRascunhoInput) {
@@ -30,7 +31,7 @@ export const ncService = {
         })
     },
 
-    async salvarRascunhoNC(registroId: string, ator: { id: string, papeis: Papel[] }, dados: NCRascunhoInput) {
+    async atualizarNC(registroId: string, ator: { id: string, papeis: Papel[] }, dados: NCRascunhoInput) {
         return prisma.$transaction(async (tx) => {
             const registro = await registroRepository.buscarPorId(tx, registroId);
 
@@ -38,8 +39,8 @@ export const ncService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            if (registro.estado !== "RASCUNHO") {
-                throw new TransicaoInvalidaError('O item precisa estar no status "Rascunho".')
+            if (!ESTADOS_EDITAVEIS.includes(registro.estado)) {
+                throw new TransicaoInvalidaError('O item precisa estar no status "Rascunho" ou "Aberto".')
             }
 
             const papel = temPapel(ator, "GERENCIAR_RASCUNHO");

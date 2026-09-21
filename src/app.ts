@@ -9,6 +9,7 @@ import { ncRoutes } from "./modulos/nc/nc.routes.js";
 import { atribuicaoRoutes } from "./compartilhado/atribuicao/atribuicao.routes.js";
 import { contencaoRoutes } from "./modulos/nc/contencao.routes.js";
 import { classificacaoRoutes } from "./modulos/nc/classificacao.routes.js";
+import { investigacaoRoutes } from "./modulos/nc/investigacao.routes.js";
 
 const app = Fastify({
     logger: true,
@@ -34,6 +35,7 @@ app.register(ncRoutes);
 app.register(atribuicaoRoutes);
 app.register(contencaoRoutes);
 app.register(classificacaoRoutes);
+app.register(investigacaoRoutes);
 
 app.setErrorHandler((erro, request, reply) => {
     if (erro instanceof ZodError) {

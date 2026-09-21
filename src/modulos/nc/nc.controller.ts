@@ -14,12 +14,12 @@ export const ncController = {
         return reply.status(201).send(ncRascunho);
     },
 
-    async salvarRascunhoNC(request: FastifyRequest<{ Params: { id: string }, Body: NCRascunhoInput }>, reply: FastifyReply) {
+    async atualizarNC(request: FastifyRequest<{ Params: { id: string }, Body: NCRascunhoInput }>, reply: FastifyReply) {
         const dados = request.body;
         const id = request.params.id;
         const ator = request.user;
 
-        const ncSalva = await ncService.salvarRascunhoNC(id, ator, dados);
+        const ncSalva = await ncService.atualizarNC(id, ator, dados);
 
         return reply.status(200).send(ncSalva);
     },

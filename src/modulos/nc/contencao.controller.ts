@@ -15,12 +15,12 @@ export const contencaoController = {
         return reply.status(201).send(contencaoRascunho);
     },
 
-    async salvarRascunhoContencao(request: FastifyRequest<{ Params: { id: string }, Body: ContencaoRascunhoInput }>, reply: FastifyReply) {
+    async atualizarContencao(request: FastifyRequest<{ Params: { id: string }, Body: ContencaoRascunhoInput }>, reply: FastifyReply) {
         const dados = request.body;
         const id = request.params.id;
         const ator = request.user;
 
-        const contencaoSalva = await contencaoService.salvarRascunhoContencao(id, ator, dados);
+        const contencaoSalva = await contencaoService.atualizarContencao(id, ator, dados);
 
         return reply.status(200).send(contencaoSalva);
     },

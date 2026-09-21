@@ -8,6 +8,7 @@ import { temPapel } from "../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../compartilhado/prisma/cliente.js";
 import { cicloVidaService } from "../../compartilhado/registro/ciclo-vida.service.js";
 import { DecisaoInput } from "../../compartilhado/registro/decidir.schema.js";
+import { ESTADOS_EDITAVEIS } from "../../compartilhado/registro/estados-editaveis.js";
 import { registroRepository } from "../../compartilhado/registro/registro.repository.js";
 import { classificacaoRepository } from "./classificacao.repository.js";
 import { classificacaoPublicacaoSchema, ClassificacaoRascunhoInput } from "./classificacao.schema.js";
@@ -38,7 +39,7 @@ export const classificacaoService = {
         })
     },
 
-    async salvarRascunhoClassificacao(registroId: string, ator: { id: string, papeis: Papel[] }, dados: ClassificacaoRascunhoInput) {
+    async atualizarClassificacao(registroId: string, ator: { id: string, papeis: Papel[] }, dados: ClassificacaoRascunhoInput) {
         return prisma.$transaction(async (tx) => {
             const registro = await registroRepository.buscarPorId(tx, registroId);
 
@@ -46,8 +47,8 @@ export const classificacaoService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            if (registro.estado !== "RASCUNHO") {
-                throw new TransicaoInvalidaError('O item precisa estar no status "Rascunho".')
+            if (!ESTADOS_EDITAVEIS.includes(registro.estado)) {
+                throw new TransicaoInvalidaError('O item precisa estar no status "Rascunho" ou "Aberto".')
             }
 
             const papel = temPapel(ator, "CLASSIFICAR");

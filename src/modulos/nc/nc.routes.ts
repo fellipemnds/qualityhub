@@ -27,7 +27,7 @@ export async function ncRoutes(app: FastifyInstance) {
             params: z.object({ id: z.uuid() }),
             body: ncRascunhoSchema
         },
-        handler: ncController.salvarRascunhoNC
+        handler: ncController.atualizarNC
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
