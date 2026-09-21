@@ -11,7 +11,7 @@ import { DecisaoInput } from "../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../compartilhado/registro/estados-editaveis.js";
 import { registroRepository } from "../../compartilhado/registro/registro.repository.js";
 import { investigacaoRepository } from "./investigacao.repository.js";
-import { investigacaoPublicacaoSchema, InvestigacaoRascunhoInput } from "./investigacao.schema.js";
+import { investigacaoFechamentoSchema, investigacaoPublicacaoSchema, InvestigacaoRascunhoInput } from "./investigacao.schema.js";
 import { ncRepository } from "./nc.repository.js";
 
 export const investigacaoService = {
@@ -104,7 +104,7 @@ export const investigacaoService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, investigacao, (dadosParaValidar) => investigacaoPublicacaoSchema.parse(dadosParaValidar));
+            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, investigacao, (dadosParaValidar) => investigacaoFechamentoSchema.parse(dadosParaValidar));
 
             return { ...registroSubmetido, ...investigacao };
         });

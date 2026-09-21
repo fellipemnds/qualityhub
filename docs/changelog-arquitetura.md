@@ -9,6 +9,26 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Regra geral revisada: edição permitida além de `RASCUNHO`
+
+- **Descoberta ao testar `Investigacao`**: publicar não deveria travar o
+  conteúdo — só formaliza que o item existe e ganha código. A edição
+  deveria ficar bloqueada apenas a partir de `EM_APROVACAO` (quando o
+  item está sob decisão formal — editar por baixo do aprovador seria
+  incoerente), não a partir de `ABERTO`.
+- Criado `compartilhado/registro/estados-editaveis.ts`, exportando
+  `ESTADOS_EDITAVEIS = ["RASCUNHO", "ABERTO"]`. Aplicado nas quatro
+  entidades já modeladas (`NaoConformidade`, `Contencao`, `Classificacao`,
+  `Investigacao`) — todas seguem a mesma regra, sem exceção; a suspeita
+  inicial de que `Classificacao` seria diferente (por ir rápido para
+  decisão) não se confirmou — o bloqueio real é sobre `EM_APROVACAO`, não
+  sobre "já publicado".
+- **Renomeado `salvarRascunho<Entidade>` → `atualizar<Entidade>`** nas
+  quatro entidades (service, controller, routes) — o nome antigo ficou
+  impreciso, já que a função edita em mais de um estado agora, não só
+  rascunho. Feito via rename symbol do editor, para atualizar todas as
+  referências de uma vez.
+
 ### Entidade `Investigacao` — service completo
 
 - Usa as ações **padrão** (`GERENCIAR_RASCUNHO`, `PUBLICAR`, `SUBMETER`),
@@ -72,8 +92,8 @@ documento de arquitetura.
   aqui porque o banco não valida isso (é JSON livre), mas o frontend vai
   precisar seguir essa sequência ao montar o formulário:
   `PERCEPÇÃO INICIAL → DESCRIÇÃO → REAL PROBLEMA → ISHIKAWA → CAUSA
-  DIRETA → 5 PORQUÊS → CAUSA RAIZ → CONTRAMEDIDAS → CHECK DE
-  EFETIVIDADE`. A "causa raiz" identificada ao final do processo é a
+DIRETA → 5 PORQUÊS → CAUSA RAIZ → CONTRAMEDIDAS → CHECK DE
+EFETIVIDADE`. A "causa raiz" identificada ao final do processo é a
   mesma que deve ser **extraída** e registrada como uma linha real em
   `CausaRaiz` (RN-24 exige ≥1) — o campo dentro do JSON é rascunho do
   processo, a linha em `CausaRaiz` é o dado consultável ("quais causas
@@ -131,7 +151,7 @@ documento de arquitetura.
   sozinha, é uma combinação manual (`ehGerente || ehAprovadorDoItem`).
 - **`decidir`**: não usa `podeExecutar` genérico — usa checagem estrita
   (`temPapel(ator, "APROVAR")` + `ehAprovador` especificamente, não
-  `ehColaborador`), porque RN-16 exige ser *o* aprovador designado, não
+  `ehColaborador`), porque RN-16 exige ser _o_ aprovador designado, não
   qualquer colaborador com papel `APROVADOR`.
 
 ### Catálogos e enums
@@ -218,7 +238,6 @@ documento de arquitetura.
 - `classificacao.schema.ts`: sem schema de fechamento — nenhum campo só
   faz sentido "depois de tudo decidido" nesta entidade.
 
-
 - **`nc.schema.ts`**: campo `cliente` estava `.optional()`, mas dados vindos
   do Prisma trazem `null` (não `undefined`) para colunas nuláveis não
   preenchidas — o Zod rejeitava. Corrigido para `.nullish()` (aceita
@@ -253,7 +272,7 @@ documento de arquitetura.
   fato removidos (após dedupe e após filtrar quem já não era colaborador).
 - `definirAprovador` valida que o **alvo** (não o ator) tem papel
   `APROVADOR` antes de atribuí-lo; segue o padrão "hard delete do vigente
-  + insert" para respeitar o índice único parcial.
+  - insert" para respeitar o índice único parcial.
 - Ambas as operações de lote (`adicionarColaboradores`/`removerColaboradores`)
   usam filtro "B2": separam quem já satisfaz a condição (já é/não é
   colaborador) do que precisa de fato ser processado, devolvendo os dois
@@ -288,7 +307,7 @@ documento de arquitetura.
 
 1. **Catálogo de ações de auditoria** (`acoes-auditadas.ts`) — ainda usa
    strings soltas no campo `acao` de cada chamada a `auditoriaRepository.
-   registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
+registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
    `EXCLUIR_RASCUNHO`, `SUBMETER`, `APROVADO`/`REPROVADO`, `REABRIR`,
    `CANCELAR`, `DEFINIR_SENHA`. Falta ainda `CONCLUIR` (quando
    `Verificacao` for modelada). Quando reescrito como enum tipado, revisar
@@ -325,7 +344,7 @@ documento de arquitetura.
 
 8. **Listagem de NCs (`listarNC`)** — hoje sem filtros nem paginação
    (Camada 1 apenas). Contrato de API original previa `?estado&
-   classificacao&origem&de&ate&minhas&cursor`. Camadas 2–4 (filtro por
+classificacao&origem&de&ate&minhas&cursor`. Camadas 2–4 (filtro por
    estado, paginação por cursor, demais filtros) ainda não implementadas.
 
 9. **Módulo Feed** (comentários, respostas, menções `@`/`#`) — não

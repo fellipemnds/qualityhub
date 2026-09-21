@@ -11,7 +11,7 @@ import { DecisaoInput } from "../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../compartilhado/registro/estados-editaveis.js";
 import { registroRepository } from "../../compartilhado/registro/registro.repository.js";
 import { classificacaoRepository } from "./classificacao.repository.js";
-import { classificacaoPublicacaoSchema, ClassificacaoRascunhoInput } from "./classificacao.schema.js";
+import { classificacaoFechamentoSchema, classificacaoPublicacaoSchema, ClassificacaoRascunhoInput } from "./classificacao.schema.js";
 import { ncRepository } from "./nc.repository.js";
 
 export const classificacaoService = {
@@ -104,7 +104,7 @@ export const classificacaoService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, classificacao, (dadosParaValidar) => classificacaoPublicacaoSchema.parse(dadosParaValidar), "CLASSIFICAR");
+            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, classificacao, (dadosParaValidar) => classificacaoFechamentoSchema.parse(dadosParaValidar), "CLASSIFICAR");
 
             return { ...registroSubmetido, ...classificacao };
         })
