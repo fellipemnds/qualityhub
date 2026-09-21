@@ -25,7 +25,7 @@ export const investigacaoRepository = {
         });
     },
 
-    async buscaPorIdInvestigacao(tx: ClientePrisma, id: string) {
+    async buscarPorId(tx: ClientePrisma, id: string) {
         return tx.investigacao.findUnique({
             where: { id }
         });
