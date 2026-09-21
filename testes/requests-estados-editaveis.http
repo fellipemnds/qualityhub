@@ -1,0 +1,292 @@
+@baseUrl = http://localhost:3333
+
+### ===========================================================
+### Testes da regra ESTADOS_EDITAVEIS (RASCUNHO + ABERTO editaveis,
+### EM_APROVACAO/FECHADO/CANCELADO bloqueados) em NC, Contencao e
+### Classificacao. Investigacao ja foi coberta em requests-investigacao.http
+### ===========================================================
+
+### Login como Editor
+# @name loginEditor
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "editor@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Login como Aprovador
+# @name loginAprovador
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "aprovador@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Login como Gerente
+# @name loginGerente
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "gerente@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+
+### ===========================================================
+### NC
+### ===========================================================
+
+### Cria e publica uma NC
+# @name ncEditavel
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "titulo": "NC para testar edicao apos publicar",
+    "descricao": "Confirma que editar funciona em ABERTO e bloqueia em EM_APROVACAO/FECHADO.",
+    "requisitoViolado": "N/A",
+    "processoAfetado": "N/A",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Publica
+POST {{baseUrl}}/nc/{{ncEditavel.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Edita ja publicada — espera 200 (ABERTO agora e editavel)
+PATCH {{baseUrl}}/nc/{{ncEditavel.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Descricao atualizada apos publicacao, deve funcionar."
+}
+
+### Define aprovador
+PUT {{baseUrl}}/registros/{{ncEditavel.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "3b6cc42f-26e8-46fa-b28c-20d72ac02197"
+    //"usuarioId": "COLE_O_ID_DO_APROVADOR_AQUI"
+}
+
+### Submete
+POST {{baseUrl}}/nc/{{ncEditavel.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Editar durante EM_APROVACAO — espera 409
+PATCH {{baseUrl}}/nc/{{ncEditavel.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Tentando editar durante avaliacao, deve ser rejeitado."
+}
+
+### Decide - aprova, fecha
+POST {{baseUrl}}/nc/{{ncEditavel.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### Editar depois de FECHADO — espera 409
+PATCH {{baseUrl}}/nc/{{ncEditavel.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Tentando editar apos fechamento, deve ser rejeitado."
+}
+
+
+### ===========================================================
+### Contencao
+### ===========================================================
+
+### Cria uma NC nova, para nao interferir na anterior
+# @name ncParaContencao
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "titulo": "NC de apoio para testar edicao de contencao",
+    "descricao": "Apenas para gerar uma contencao de teste.",
+    "requisitoViolado": "N/A",
+    "processoAfetado": "N/A",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Publica
+POST {{baseUrl}}/nc/{{ncParaContencao.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Cria e publica uma Contencao
+# @name contencaoEditavel
+POST {{baseUrl}}/nc/{{ncParaContencao.response.body.id}}/contencoes
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Contencao para testar edicao apos publicar."
+}
+
+### Publica
+POST {{baseUrl}}/contencoes/{{contencaoEditavel.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Edita ja publicada — espera 200
+PATCH {{baseUrl}}/contencoes/{{contencaoEditavel.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "executadaEm": "2026-09-15T14:30:00.000Z",
+    "disposicao": "CORRIGIDO"
+}
+
+### Define aprovador
+PUT {{baseUrl}}/registros/{{contencaoEditavel.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "3b6cc42f-26e8-46fa-b28c-20d72ac02197"
+    //"usuarioId": "COLE_O_ID_DO_APROVADOR_AQUI"
+}
+
+### Submete
+POST {{baseUrl}}/contencoes/{{contencaoEditavel.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Editar durante EM_APROVACAO — espera 409
+PATCH {{baseUrl}}/contencoes/{{contencaoEditavel.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "disposicao": "ANULADO"
+}
+
+### Decide - aprova, fecha
+POST {{baseUrl}}/contencoes/{{contencaoEditavel.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### Editar depois de FECHADO — espera 409
+PATCH {{baseUrl}}/contencoes/{{contencaoEditavel.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "disposicao": "EM_ANALISE"
+}
+
+
+### ===========================================================
+### Classificacao
+### ===========================================================
+
+### Cria uma NC nova, para nao interferir nas anteriores
+# @name ncParaClassificacao
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "titulo": "NC de apoio para testar edicao de classificacao",
+    "descricao": "Apenas para gerar uma classificacao de teste.",
+    "requisitoViolado": "N/A",
+    "processoAfetado": "N/A",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Publica
+POST {{baseUrl}}/nc/{{ncParaClassificacao.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Cria e publica uma Classificacao (precisa ser Aprovador, RN-20)
+# @name classificacaoEditavel
+POST {{baseUrl}}/nc/{{ncParaClassificacao.response.body.id}}/classificacoes
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "valor": "MAIOR",
+    "justificativa": "Justificativa inicial para testar edicao apos publicar."
+}
+
+### Publica
+POST {{baseUrl}}/classificacoes/{{classificacaoEditavel.response.body.id}}/publicar
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### Edita ja publicada — espera 200
+PATCH {{baseUrl}}/classificacoes/{{classificacaoEditavel.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "justificativa": "Justificativa atualizada apos publicacao, deve funcionar."
+}
+
+### Define aprovador (o proprio Aprovador Teste, auto-aprovacao)
+PUT {{baseUrl}}/registros/{{classificacaoEditavel.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "3b6cc42f-26e8-46fa-b28c-20d72ac02197"
+    //"usuarioId": "COLE_O_ID_DO_APROVADOR_AQUI"
+}
+
+### Submete
+POST {{baseUrl}}/classificacoes/{{classificacaoEditavel.response.body.id}}/submeter
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### Editar durante EM_APROVACAO — espera 409
+PATCH {{baseUrl}}/classificacoes/{{classificacaoEditavel.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "justificativa": "Tentando editar durante avaliacao, deve ser rejeitado."
+}
+
+### Decide - aprova, fecha
+POST {{baseUrl}}/classificacoes/{{classificacaoEditavel.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### Editar depois de FECHADO — espera 409
+PATCH {{baseUrl}}/classificacoes/{{classificacaoEditavel.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "justificativa": "Tentando editar apos fechamento, deve ser rejeitado."
+}

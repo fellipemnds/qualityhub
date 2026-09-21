@@ -1,0 +1,338 @@
+@baseUrl = http://localhost:3333
+
+### ===========================================================
+### Fluxo completo de Investigacao, integrado com NC e atribuicao
+### Pressupoe que setup-usuarios-teste.sql ja foi rodado
+### ===========================================================
+
+### Login como Editor
+# @name loginEditor
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "editor@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Cria a NC-mae
+# @name criarNC
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "titulo": "Vazamento de oleo na linha 2",
+    "descricao": "Identificado vazamento de oleo hidraulico durante inspecao de rotina na linha 2 de producao.",
+    "requisitoViolado": "Procedimento PO-07, item 4.3 - inspecao de recebimento",
+    "processoAfetado": "Linha de Producao 2",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Publica a NC
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### ===========================================================
+### Investigacao — conduzida pelo Editor (colaborador), nao exige APROVADOR
+### ===========================================================
+
+### Cria a Investigacao para essa NC (sem causaDireta/causaRaiz ainda)
+# @name criarInvestigacao
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/investigacoes
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "realProblema": "Vedacao da bomba hidraulica apresentou desgaste prematuro, causando vazamento continuo de oleo."
+}
+
+### Salva/edita o rascunho, avancando a investigacao
+PATCH {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "metodo": "A3_SPS",
+    "conteudo": {
+        "percepcaoInicial": "Vazamento constante na linha 2",
+        "descricao": "Oleo hidraulico vazando na base da bomba",
+        "ishikawa": { "metodo": "Troca de vedacao fora do padrao" }
+    }
+}
+
+### Publica a Investigacao (RASCUNHO -> ABERTO, gera codigo)
+POST {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Completa a investigacao com causa direta e causa raiz, JA PUBLICADA
+### (agora permitido: ESTADOS_EDITAVEIS inclui ABERTO)
+PATCH {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "causaDireta": "Vedacao de material incompativel com o fluido hidraulico utilizado na maquina.",
+    "causaRaiz": "Procedimento de manutencao nao especifica o material correto de vedacao para este modelo de bomba."
+}
+
+### ===========================================================
+### Define o aprovador desta Investigacao (modulo atribuicao)
+### ===========================================================
+
+### Login como Gerente (tem DEFINIR_APROVADOR)
+# @name loginGerente
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "gerente@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Define o Aprovador Teste como aprovador desta Investigacao
+PUT {{baseUrl}}/registros/{{criarInvestigacao.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "COLE_O_ID_DO_APROVADOR_AQUI"
+}
+
+### ===========================================================
+### Submeter e decidir
+### ===========================================================
+
+### Submeter a Investigacao (ABERTO -> EM_APROVACAO)
+POST {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### NOVO MODO DE FALHA — Editar durante EM_APROVACAO deve continuar
+### bloqueado, mesmo com a regra mais permissiva — espera 409
+PATCH {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "causaRaiz": "Tentando editar durante avaliacao, isso deveria ser rejeitado."
+}
+
+### Login como Aprovador
+# @name loginAprovador
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "aprovador@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Decidir - aprovar (EM_APROVACAO -> FECHADO)
+POST {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### NOVO MODO DE FALHA — Editar depois de FECHADO deve continuar
+### bloqueado — espera 409
+PATCH {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "causaRaiz": "Tentando editar apos fechamento, isso deveria ser rejeitado."
+}
+
+### ===========================================================
+### Leitura
+### ===========================================================
+
+### Busca a Investigacao por id
+GET {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Lista todas as investigacoes (sem filtro)
+GET {{baseUrl}}/investigacoes
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Lista as investigacoes filtrando por essa NC especifica
+GET {{baseUrl}}/investigacoes?naoConformidadeId={{criarNC.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### ===========================================================
+### Cancelamento (item separado)
+### ===========================================================
+
+### Cria uma segunda Investigacao, so para testar cancelamento
+# @name investigacaoParaCancelar
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/investigacoes
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "realProblema": "Investigacao criada apenas para testar o fluxo de cancelamento, causa direta identificada estava errada."
+}
+
+### Publica
+POST {{baseUrl}}/investigacoes/{{investigacaoParaCancelar.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Edita, ja publicada, confirmando que ainda funciona (ABERTO) antes
+### de cancelar
+PATCH {{baseUrl}}/investigacoes/{{investigacaoParaCancelar.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "causaDireta": "Causa identificada errada, sera cancelada em seguida."
+}
+
+### Cancela (GERENTE ou o aprovador do item podem cancelar)
+POST {{baseUrl}}/investigacoes/{{investigacaoParaCancelar.response.body.id}}/cancelar
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "motivo": "Real problema identificado incorretamente, sera aberta nova investigacao."
+}
+
+### NOVO MODO DE FALHA — Editar depois de CANCELADO deve ser bloqueado
+### — espera 409
+PATCH {{baseUrl}}/investigacoes/{{investigacaoParaCancelar.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "causaRaiz": "Tentando editar apos cancelamento, isso deveria ser rejeitado."
+}
+
+### ===========================================================
+### Excluir rascunho (item separado)
+### ===========================================================
+
+### Cria uma terceira Investigacao, so para testar exclusao
+# @name investigacaoParaExcluir
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/investigacoes
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "realProblema": "Esta investigacao vai ser excluida em seguida, apenas para testar a rota de exclusao."
+}
+
+### Exclui (204 esperado)
+DELETE {{baseUrl}}/investigacoes/{{investigacaoParaExcluir.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Confirma que sumiu (404 esperado)
+GET {{baseUrl}}/investigacoes/{{investigacaoParaExcluir.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+
+### ===========================================================
+### MODOS DE FALHA (gerais, ja conhecidos do padrao)
+### ===========================================================
+
+### 1 — Submeter uma Investigacao ainda em RASCUNHO (sem publicar) — espera 409
+# @name investigacaoEstados
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/investigacoes
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "realProblema": "Investigacao para testar transicoes invalidas de estado."
+}
+
+### Tentar submeter direto, ainda em RASCUNHO — espera 409
+POST {{baseUrl}}/investigacoes/{{investigacaoEstados.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Publica normalmente
+POST {{baseUrl}}/investigacoes/{{investigacaoEstados.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Define aprovador (necessario para separar a checagem de aprovador
+### da checagem de RN-24 no teste seguinte)
+PUT {{baseUrl}}/registros/{{investigacaoEstados.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "3b6cc42f-26e8-46fa-b28c-20d72ac02197"
+    //"usuarioId": "COLE_O_ID_DO_APROVADOR_AQUI"
+}
+
+### 2 — Submeter SEM causaRaiz preenchida (RN-24), MAS com aprovador ja
+### definido — agora a falha deve vir de fato da validacao — espera 400
+POST {{baseUrl}}/investigacoes/{{investigacaoEstados.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### 3 — Criar Investigacao para NC inexistente — espera 404
+POST {{baseUrl}}/nc/00000000-0000-0000-0000-000000000000/investigacoes
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "realProblema": "Esta NC nao existe, deveria falhar com 404."
+}
+
+### 4 — Login como Visualizador
+# @name loginVisualizador
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "visualizador@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Visualizador tentando criar Investigacao — espera 403
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/investigacoes
+Content-Type: application/json
+Authorization: Bearer {{loginVisualizador.response.body.token}}
+
+{
+    "realProblema": "Este request deveria ser rejeitado."
+}
+
+### 5 — Metodo invalido no PATCH (fora do enum) — espera 400
+PATCH {{baseUrl}}/investigacoes/{{investigacaoEstados.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "metodo": "SEIS_SIGMA"
+}
+
+### 6 — Login como QA (papel APROVADOR, mas nao sera colaborador desta investigacao)
+# @name loginQA
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "qa@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### QA (nao e colaborador desta investigacao) tenta editar — espera 403
+PATCH {{baseUrl}}/investigacoes/{{investigacaoEstados.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginQA.response.body.token}}
+
+{
+    "realProblema": "QA tentando editar uma investigacao que nao e sua."
+}
+
+### 7 — Cancelar uma Investigacao ja FECHADA — espera 409
+POST {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}/cancelar
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "motivo": "Tentativa de cancelar algo que ja foi fechado."
+}
