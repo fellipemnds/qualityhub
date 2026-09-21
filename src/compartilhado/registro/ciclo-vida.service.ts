@@ -140,7 +140,7 @@ export const cicloVidaService = {
         return dadoAtualizado;
     },
 
-    async decidir(tx: ClientePrisma, registroId: string, ator: { id: string, papeis: Papel[] }, dados: { decisao: Decisao, motivo?: string }) {
+    async decidir(tx: ClientePrisma, registroId: string, ator: { id: string, papeis: Papel[] }, dados: { decisao: Decisao, motivo?: string }, fecharAoAprovarUltimoPortao: boolean = true) {
         const registro = await registroRepository.buscarPorId(tx, registroId);
 
         if (registro === null) {
@@ -152,7 +152,6 @@ export const cicloVidaService = {
         }
 
         const papel = temPapel(ator, "APROVAR");
-
         const atribuicao = await atribuicaoRepository.ehAprovador(tx, registroId, ator.id);
 
         if (!papel || !atribuicao) {
@@ -188,6 +187,9 @@ export const cicloVidaService = {
         else if (aprovacao.decisao === "APROVADO" && registro.portaoAtual + 1 < portoesPorTipo[registro.tipo].length) {
             const novoPortao = registro.portaoAtual + 1
             registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "ABERTO", portaoAtual: novoPortao })
+        }
+        else if (aprovacao.decisao === "APROVADO" && !fecharAoAprovarUltimoPortao) {
+            registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "ABERTO" })
         }
         else {
             registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "FECHADO" })

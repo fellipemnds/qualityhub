@@ -6,6 +6,6 @@ export const portoesPorTipo: Record<TipoRegistro, PortaoAprovacao[]> = {
     CLASSIFICACAO: ["UNICA"],
     CONTENCAO: ["UNICA"],
     INVESTIGACAO: ["UNICA"],
-    ACAO_CORRETIVA: ["PLANO", "EXECUCAO"],
+    ACAO_CORRETIVA: ["PLANO"],
     VERIFICACAO: []
 }

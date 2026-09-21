@@ -51,6 +51,7 @@ model Registro {
   classificacao   Classificacao?
   investigacao    Investigacao?
   acaoCorretiva   AcaoCorretiva?
+  verificacao     Verificacao?
   atribuicoes     Atribuicao[]
   aprovacoes      Aprovacao[]
   reaberturas     Reabertura[]
@@ -325,9 +326,9 @@ enum ClassificacaoHipotese {
 }
 
 model Hipotese {
-  id             String                @id @default(uuid(7))
+  id             String                 @id @default(uuid(7))
   investigacaoId String
-  investigacao   Investigacao          @relation(fields: [investigacaoId], references: [id], onDelete: Cascade)
+  investigacao   Investigacao           @relation(fields: [investigacaoId], references: [id], onDelete: Cascade)
   descricao      String?
   numeroIshikawa Int?
   classificacao  ClassificacaoHipotese?
@@ -345,27 +346,21 @@ model AcaoCorretiva {
   prazo             DateTime?
   executadoEm       DateTime?
   evidencia         String?
+  verificacoes      Verificacao[]
+}
+
+model Verificacao {
+  id              String        @id
+  registro        Registro      @relation(fields: [id], references: [id], onDelete: Cascade)
+  acaoCorretivaId String
+  acaoCorretiva   AcaoCorretiva @relation(fields: [acaoCorretivaId], references: [id])
+  prazo           DateTime?
+  eficaz          Boolean?
+  evidencia       String?
+  verificadoEm    DateTime?
 }
 
 //----------------
-
-// model Investigacao {
-//   id                Int             @id @default(autoincrement())
-//   naoConformidadeId Int
-//   naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id])
-//   responsavelId     Int
-//   responsavel       Usuario         @relation("InvestigacaoResponsavel", fields: [responsavelId], references: [id])
-
-//   causaRaiz   String
-//   metodologia String?
-//   abrangencia String?
-
-//   anexos Anexo[]
-//   acoes  Acao[]
-
-//   criadoEm     DateTime @default(now())
-//   atualizadoEm DateTime @updatedAt
-// }
 
 // model Anexo {
 //   id           Int    @id @default(autoincrement())
@@ -393,91 +388,6 @@ model AcaoCorretiva {
 
 //   enviadoPorId Int
 //   enviadoPor   Usuario @relation("AnexoEnviadoPor", fields: [enviadoPorId], references: [id])
-// }
-
-// model Acao {
-//   id             Int       @id @default(autoincrement())
-//   descricao      String
-//   efeitoEsperado String
-//   prazo          DateTime
-//   concluidaEm    DateTime?
-
-//   investigacaoId Int
-//   investigacao   Investigacao @relation(fields: [investigacaoId], references: [id])
-
-//   responsavelId Int
-//   responsavel   Usuario @relation("AcaoResponsavel", fields: [responsavelId], references: [id])
-
-//   anexos       Anexo[]
-//   verificacoes Verificacao[]
-
-//   criadoEm     DateTime @default(now())
-//   atualizadoEm DateTime @updatedAt
-// }
-
-// enum ResultadoVerificacao {
-//   PENDENTE
-//   EFICAZ
-//   PARCIALMENTE_EFICAZ
-//   NAO_EFICAZ
-// }
-
-// model Verificacao {
-//   id           Int                  @id @default(autoincrement())
-//   resultado    ResultadoVerificacao @default(PENDENTE)
-//   conclusao    String?
-//   dataAlvo     DateTime
-//   verificadoEm DateTime?
-
-//   acaoId Int
-//   acao   Acao @relation(fields: [acaoId], references: [id])
-
-//   responsavelId Int
-//   responsavel   Usuario @relation("VerificacaoResponsavel", fields: [responsavelId], references: [id])
-
-//   anexos Anexo[]
-
-//   criadoEm     DateTime @default(now())
-//   atualizadoEm DateTime @updatedAt
-// }
-
-// enum PortaoAprovacao {
-//   CLASSIFICACAO
-//   ENCERRAMENTO_CONTENCAO
-//   ENCERRAMENTO_INVESTIGACAO
-//   ENCERRAMENTO_NC
-//   AUTORIZACAO_CONCESSAO
-// }
-
-// model Aprovacao {
-//   id     Int             @id @default(autoincrement())
-//   portao PortaoAprovacao
-
-//   autoaprovacao Boolean @default(false)
-//   justificativa String?
-
-//   naoConformidadeId Int
-//   naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id])
-
-//   aprovadorId Int
-//   aprovador   Usuario @relation("AprovacaoResponsavel", fields: [aprovadorId], references: [id])
-
-//   criadoEm DateTime @default(now())
-// }
-
-// model TrilhaAuditoria {
-//   id            Int     @id @default(autoincrement())
-//   entidade      String
-//   entidadeId    Int
-//   acao          String
-//   campo         String?
-//   valorAnterior String?
-//   valorNovo     String?
-
-//   usuarioId Int
-//   usuario   Usuario @relation("TrilhaAuditoriaUsuario", fields: [usuarioId], references: [id])
-
-//   criadoEm DateTime @default(now())
 // }
 
 // model Comentario {

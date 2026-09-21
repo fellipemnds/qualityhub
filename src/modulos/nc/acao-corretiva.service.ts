@@ -76,28 +76,73 @@ export const acaoCorretivaService = {
         });
     },
 
-    // REVISAR: submeter precisa saber em qual portão está (PLANO=0, EXECUCAO=1)
-    // para escolher o schema certo. Fiz a leitura de portaoAtual aqui.
+    // ACAO_CORRETIVA agora tem um unico portao (PLANO) — esta e a UNICA
+    // submissao que existe no ciclo de vida desta entidade. A execucao
+    // nunca e submetida para aprovacao; ela e registrada e finalizada
+    // direto via finalizarExecucaoAcaoCorretiva, sem passar por EM_APROVACAO.
     async submeterAcaoCorretiva(registroId: string, ator: { id: string, papeis: Papel[] }) {
         return prisma.$transaction(async (tx) => {
-            const registro = await registroRepository.buscarPorId(tx, registroId);
-            if (registro === null) throw new NaoEncontradoError("Item não encontrado.");
-
             const acaoCorretiva = await acaoCorretivaRepository.buscarPorId(tx, registroId);
             if (acaoCorretiva === null) throw new NaoEncontradoError("Item não encontrado.");
 
-            const schema = registro.portaoAtual === 0 ? acaoCorretivaPlanoSchema : acaoCorretivaExecucaoSchema;
-
-            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, acaoCorretiva, (d) => schema.parse(d));
+            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, acaoCorretiva, (d) => acaoCorretivaPlanoSchema.parse(d));
             return { ...registroSubmetido, ...acaoCorretiva };
         });
     },
 
+    // fecharAoAprovarUltimoPortao = false: aprovar o PLANO volta o item
+    // para ABERTO (autorizando a execucao) em vez de fechar — mesmo sendo
+    // o unico portao.
     async decidirAcaoCorretiva(registroId: string, ator: { id: string, papeis: Papel[] }, dados: DecisaoInput) {
         return prisma.$transaction(async (tx) => {
-            const registroDecidido = await cicloVidaService.decidir(tx, registroId, ator, dados);
+            const registroDecidido = await cicloVidaService.decidir(tx, registroId, ator, dados, false);
             const acaoCorretiva = await acaoCorretivaRepository.buscarPorId(tx, registroId);
             return { ...registroDecidido, ...acaoCorretiva };
+        });
+    },
+
+    // Leva o item de ABERTO (plano ja aprovado, portaoAtual continua 0
+    // porque decidir() com fecharAoAprovarUltimoPortao=false nao incrementa)
+    // direto para FECHADO, sem aprovacao — feito pelo colaborador que
+    // executou, exige executadoEm/evidencia preenchidos (RN-25).
+    async finalizarExecucaoAcaoCorretiva(registroId: string, ator: { id: string, papeis: Papel[] }) {
+        return prisma.$transaction(async (tx) => {
+            const registro = await registroRepository.buscarPorId(tx, registroId);
+
+            if (registro === null) {
+                throw new NaoEncontradoError("Item não encontrado.");
+            }
+
+            if (registro.estado !== "ABERTO" || registro.portaoAtual !== 0) {
+                throw new TransicaoInvalidaError('O plano precisa estar aprovado antes de finalizar a execução.');
+            }
+
+            const papel = temPapel(ator, "SUBMETER");
+            const atribuicao = await atribuicaoRepository.ehColaborador(tx, registroId, ator.id);
+
+            if (!papel || !atribuicao) {
+                throw new SemPermissaoError("Você não tem permissões suficientes para finalizar esta execução.");
+            }
+
+            const acaoCorretiva = await acaoCorretivaRepository.buscarPorId(tx, registroId);
+            if (acaoCorretiva === null) {
+                throw new NaoEncontradoError("Item não encontrado.");
+            }
+
+            acaoCorretivaExecucaoSchema.parse(acaoCorretiva);
+
+            const registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "FECHADO" });
+
+            await auditoriaRepository.registrar(tx, {
+                entidade: EntidadeAuditada[registro.tipo],
+                entidadeId: registro.id,
+                acao: "FINALIZAR_EXECUCAO",
+                usuarioId: ator.id,
+                antes: registro,
+                depois: registroAtualizado
+            });
+
+            return { ...registroAtualizado, ...acaoCorretiva };
         });
     },
 

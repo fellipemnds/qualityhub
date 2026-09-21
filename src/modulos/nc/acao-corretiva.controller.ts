@@ -35,6 +35,11 @@ export const acaoCorretivaController = {
         return reply.status(200).send(acaoCorretiva);
     },
 
+    async finalizarExecucaoAcaoCorretiva(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
+        const acaoCorretiva = await acaoCorretivaService.finalizarExecucaoAcaoCorretiva(request.params.id, request.user);
+        return reply.status(200).send(acaoCorretiva);
+    },
+
     async cancelarAcaoCorretiva(request: FastifyRequest<{ Params: { id: string }, Body: { motivo: string } }>, reply: FastifyReply) {
         const acaoCorretiva = await acaoCorretivaService.cancelarAcaoCorretiva(request.params.id, request.user, request.body.motivo);
         return reply.status(200).send(acaoCorretiva);
