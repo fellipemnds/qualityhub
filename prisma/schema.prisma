@@ -49,6 +49,7 @@ model Registro {
   naoConformidade NaoConformidade?
   contencao       Contencao?
   classificacao   Classificacao?
+  investigacao    Investigacao?
   atribuicoes     Atribuicao[]
   aprovacoes      Aprovacao[]
   reaberturas     Reabertura[]
@@ -85,17 +86,18 @@ model NaoConformidade {
   riscosRevisados String?
   mudancasSGQ     String?
 
-  registro      Registro        @relation(fields: [id], references: [id], onDelete: Cascade)
-  contencoes    Contencao[]
+  registro       Registro        @relation(fields: [id], references: [id], onDelete: Cascade)
+  contencoes     Contencao[]
   classificacoes Classificacao[]
+  investigacoes  Investigacao[]
 }
 
 // Classificação
 
 model Classificacao {
-  id                String          @id
-  registro          Registro        @relation(fields: [id], references: [id], onDelete: Cascade)
-  naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id], onDelete: Cascade)
+  id                String           @id
+  registro          Registro         @relation(fields: [id], references: [id], onDelete: Cascade)
+  naoConformidade   NaoConformidade  @relation(fields: [naoConformidadeId], references: [id], onDelete: Cascade)
   naoConformidadeId String
   valor             ClassificacaoNC?
   justificativa     String?
@@ -292,6 +294,24 @@ model Contencao {
   descricao         String?
   executadaEm       DateTime?
   disposicao        Disposicao?
+}
+
+// Investigacao
+
+enum MetodoInvestigacao {
+  A3_SPS
+}
+
+model Investigacao {
+  id                String              @id
+  registro          Registro            @relation(fields: [id], references: [id], onDelete: Cascade)
+  naoConformidade   NaoConformidade     @relation(fields: [naoConformidadeId], references: [id], onDelete: Cascade)
+  naoConformidadeId String
+  realProblema      String?
+  metodo            MetodoInvestigacao?
+  conteudo          Json?
+  causaDireta       String?
+  causaRaiz         String?
 }
 
 //----------------

@@ -9,6 +9,56 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Entidade `Investigacao` — modelo simplificado em relação ao documento
+
+- **`conclusao` e `causaRaiz` fundidos num único campo (`causaRaiz`)** —
+  documento original tinha os dois separados; decisão de Matthew que a
+  conclusão da investigação **é** a causa raiz identificada, sem sentido
+  prático em duplicar. RN-24 ("conclusão preenchida e ≥1 causa raiz")
+  vira, na prática, uma única checagem: `causaRaiz` preenchida.
+- **`CausaRaiz` deixou de ser tabela própria** (o documento previa
+  `causas CausaRaiz[]`, pensada para 1:N). Depois de mapear o processo
+  real com a analista, ficou claro que cada Investigação tem **uma
+  única** causa raiz (1:1) — virou campo de texto simples
+  (`causaRaiz: String?`) direto em `Investigacao`, buscável por palavra-
+  chave sem precisar de tabela/agregação separada.
+- **`realProblema` novo campo**, também dentro de `Investigacao` — cada
+  Real Problema identificado a partir da NC gera sua própria
+  Investigação (1 real problema = 1 investigação; uma NC pode ter
+  várias). Diferente de `NaoConformidade.requisitoViolado` (constatação
+  imediata na criação da NC) — `realProblema` é resultado de um processo
+  de análise (etapa do A3 SPS), descoberto depois, não declarado de
+  cara.
+- **Estrutura completa da entidade ainda em desenho** (pendente):
+  `Hipotese` (testes de hipótese do A3 SPS, classificados em
+  `CAUSA_DIRETA | FATOR_CONTRIBUINTE | SEM_RELACAO`) e a forma como
+  `AcaoCorretiva` vai apontar para "o que ela resolve" (a causa raiz de
+  uma investigação, ou uma hipótese específica) — decisão de usar duas
+  FKs nuláveis (`investigacaoId`/`hipoteseId`, nunca as duas ao mesmo
+  tempo, checado no service, não no banco) ainda não implementada.
+
+### Entidade `Investigacao` — decisão de metodologia (produto, não técnica)
+
+- **`MetodoInvestigacao` divergiu do documento original.** O documento
+  previa `CINCO_PORQUES|ISHIKAWA|OITO_D` como opções isoladas. Depois de
+  conversa com a analista de qualidade, decidido usar **só `A3_SPS`**
+  por ora — metodologia composta (baseada na experiência prévia da
+  analista na Novo Nordisk) que já **inclui** Ishikawa e 5 Porquês como
+  etapas internas do próprio fluxo, dentro do `conteudo: Json` da
+  Investigação. `PEOPLE_SUDOKU` foi cogitado e descartado por ora — nem
+  Matthew nem a analista têm certeza da estrutura completa dele; revisar
+  quando (se) isso for mapeado com confiança.
+- **Estrutura esperada do `conteudo` (Json) para `A3_SPS`** — documentada
+  aqui porque o banco não valida isso (é JSON livre), mas o frontend vai
+  precisar seguir essa sequência ao montar o formulário:
+  `PERCEPÇÃO INICIAL → DESCRIÇÃO → REAL PROBLEMA → ISHIKAWA → CAUSA
+DIRETA → 5 PORQUÊS → CAUSA RAIZ → CONTRAMEDIDAS → CHECK DE
+EFETIVIDADE`. A "causa raiz" identificada ao final do processo é a
+  mesma que deve ser **extraída** e registrada como uma linha real em
+  `CausaRaiz` (RN-24 exige ≥1) — o campo dentro do JSON é rascunho do
+  processo, a linha em `CausaRaiz` é o dado consultável ("quais causas
+  mais se repetem?").
+
 ### Modelagem / Schema
 
 - **`Registro`**: sem `atualizadoPorId`/`atualizadoPor` — quem atualizou por
@@ -61,7 +111,7 @@ documento de arquitetura.
   sozinha, é uma combinação manual (`ehGerente || ehAprovadorDoItem`).
 - **`decidir`**: não usa `podeExecutar` genérico — usa checagem estrita
   (`temPapel(ator, "APROVAR")` + `ehAprovador` especificamente, não
-  `ehColaborador`), porque RN-16 exige ser *o* aprovador designado, não
+  `ehColaborador`), porque RN-16 exige ser _o_ aprovador designado, não
   qualquer colaborador com papel `APROVADOR`.
 
 ### Catálogos e enums
@@ -148,7 +198,6 @@ documento de arquitetura.
 - `classificacao.schema.ts`: sem schema de fechamento — nenhum campo só
   faz sentido "depois de tudo decidido" nesta entidade.
 
-
 - **`nc.schema.ts`**: campo `cliente` estava `.optional()`, mas dados vindos
   do Prisma trazem `null` (não `undefined`) para colunas nuláveis não
   preenchidas — o Zod rejeitava. Corrigido para `.nullish()` (aceita
@@ -183,7 +232,7 @@ documento de arquitetura.
   fato removidos (após dedupe e após filtrar quem já não era colaborador).
 - `definirAprovador` valida que o **alvo** (não o ator) tem papel
   `APROVADOR` antes de atribuí-lo; segue o padrão "hard delete do vigente
-  + insert" para respeitar o índice único parcial.
+  - insert" para respeitar o índice único parcial.
 - Ambas as operações de lote (`adicionarColaboradores`/`removerColaboradores`)
   usam filtro "B2": separam quem já satisfaz a condição (já é/não é
   colaborador) do que precisa de fato ser processado, devolvendo os dois
@@ -218,7 +267,7 @@ documento de arquitetura.
 
 1. **Catálogo de ações de auditoria** (`acoes-auditadas.ts`) — ainda usa
    strings soltas no campo `acao` de cada chamada a `auditoriaRepository.
-   registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
+registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
    `EXCLUIR_RASCUNHO`, `SUBMETER`, `APROVADO`/`REPROVADO`, `REABRIR`,
    `CANCELAR`, `DEFINIR_SENHA`. Falta ainda `CONCLUIR` (quando
    `Verificacao` for modelada). Quando reescrito como enum tipado, revisar
@@ -255,7 +304,7 @@ documento de arquitetura.
 
 8. **Listagem de NCs (`listarNC`)** — hoje sem filtros nem paginação
    (Camada 1 apenas). Contrato de API original previa `?estado&
-   classificacao&origem&de&ate&minhas&cursor`. Camadas 2–4 (filtro por
+classificacao&origem&de&ate&minhas&cursor`. Camadas 2–4 (filtro por
    estado, paginação por cursor, demais filtros) ainda não implementadas.
 
 9. **Módulo Feed** (comentários, respostas, menções `@`/`#`) — não
