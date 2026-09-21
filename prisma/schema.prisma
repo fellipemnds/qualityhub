@@ -50,6 +50,7 @@ model Registro {
   contencao       Contencao?
   classificacao   Classificacao?
   investigacao    Investigacao?
+  acaoCorretiva   AcaoCorretiva?
   atribuicoes     Atribuicao[]
   aprovacoes      Aprovacao[]
   reaberturas     Reabertura[]
@@ -86,10 +87,11 @@ model NaoConformidade {
   riscosRevisados String?
   mudancasSGQ     String?
 
-  registro       Registro        @relation(fields: [id], references: [id], onDelete: Cascade)
-  contencoes     Contencao[]
-  classificacoes Classificacao[]
-  investigacoes  Investigacao[]
+  registro        Registro        @relation(fields: [id], references: [id], onDelete: Cascade)
+  contencoes      Contencao[]
+  classificacoes  Classificacao[]
+  investigacoes   Investigacao[]
+  acoesCorretivas AcaoCorretiva[]
 }
 
 // Classificação
@@ -312,6 +314,37 @@ model Investigacao {
   conteudo          Json?
   causaDireta       String?
   causaRaiz         String?
+  hipoteses         Hipotese[]
+  acoesCorretivas   AcaoCorretiva[]
+}
+
+enum ClassificacaoHipotese {
+  CAUSA_DIRETA
+  FATOR_CONTRIBUINTE
+  SEM_RELACAO
+}
+
+model Hipotese {
+  id             String                @id @default(uuid(7))
+  investigacaoId String
+  investigacao   Investigacao          @relation(fields: [investigacaoId], references: [id], onDelete: Cascade)
+  descricao      String?
+  numeroIshikawa Int?
+  classificacao  ClassificacaoHipotese?
+}
+
+// Acão Corretiva
+model AcaoCorretiva {
+  id                String          @id
+  registro          Registro        @relation(fields: [id], references: [id], onDelete: Cascade)
+  naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id], onDelete: Cascade)
+  naoConformidadeId String
+  investigacaoId    String?
+  investigacao      Investigacao?   @relation(fields: [investigacaoId], references: [id])
+  descricao         String?
+  prazo             DateTime?
+  executadoEm       DateTime?
+  evidencia         String?
 }
 
 //----------------

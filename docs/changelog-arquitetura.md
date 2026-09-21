@@ -9,6 +9,32 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Bug real corrigido: `submeter` não validava conteúdo obrigatório
+
+- **`submeterInvestigacao`/`submeterClassificacao` usavam o schema de
+  publicação** (campos nullish) em vez de um schema de fechamento
+  (campos obrigatórios) — permitindo submeter (e, por consequência,
+  aprovar/fechar, já que ambas têm portão único) itens sem
+  `causaRaiz`/`causaDireta` (Investigação, violando RN-24) ou sem
+  `valor`/`justificativa` (Classificação). Descoberto testando RN-24 na
+  prática.
+- **`classificacaoFechamentoSchema` recriado** (tinha sido removido por
+  parecer redundante com a publicação — mas os dois eram idênticos só
+  porque a base nunca exigia nada; o problema estava um nível abaixo).
+- **A régua consolidada**: `publicar` usa o schema de publicação
+  (permissivo, permite conteúdo incompleto — a entidade "existe como
+  evidência ISO" mas pode continuar em edição); `submeter` usa o schema
+  de fechamento (exige tudo, porque é o último portão de qualidade antes
+  de uma decisão que pode fechar definitivamente). `NC` e `Contencao`
+  não tinham esse bug porque seus campos essenciais já eram obrigatórios
+  desde a base (só o rascunho os relaxa via `.partial()`) — só
+  `Investigacao`/`Classificacao` tinham campos opcionais mesmo na base,
+  exigindo o schema de fechamento separado para `submeter`.
+- Controller/routes de `submeter` não precisaram de nenhuma mudança — o
+  schema de fechamento valida dados **já persistidos** (buscados do
+  banco dentro do service), não o corpo da requisição de submeter, que
+  não tem corpo.
+
 ### Regra geral revisada: edição permitida além de `RASCUNHO`
 
 - **Descoberta ao testar `Investigacao`**: publicar não deveria travar o
@@ -92,8 +118,8 @@ documento de arquitetura.
   aqui porque o banco não valida isso (é JSON livre), mas o frontend vai
   precisar seguir essa sequência ao montar o formulário:
   `PERCEPÇÃO INICIAL → DESCRIÇÃO → REAL PROBLEMA → ISHIKAWA → CAUSA
-DIRETA → 5 PORQUÊS → CAUSA RAIZ → CONTRAMEDIDAS → CHECK DE
-EFETIVIDADE`. A "causa raiz" identificada ao final do processo é a
+  DIRETA → 5 PORQUÊS → CAUSA RAIZ → CONTRAMEDIDAS → CHECK DE
+  EFETIVIDADE`. A "causa raiz" identificada ao final do processo é a
   mesma que deve ser **extraída** e registrada como uma linha real em
   `CausaRaiz` (RN-24 exige ≥1) — o campo dentro do JSON é rascunho do
   processo, a linha em `CausaRaiz` é o dado consultável ("quais causas
@@ -151,7 +177,7 @@ EFETIVIDADE`. A "causa raiz" identificada ao final do processo é a
   sozinha, é uma combinação manual (`ehGerente || ehAprovadorDoItem`).
 - **`decidir`**: não usa `podeExecutar` genérico — usa checagem estrita
   (`temPapel(ator, "APROVAR")` + `ehAprovador` especificamente, não
-  `ehColaborador`), porque RN-16 exige ser _o_ aprovador designado, não
+  `ehColaborador`), porque RN-16 exige ser *o* aprovador designado, não
   qualquer colaborador com papel `APROVADOR`.
 
 ### Catálogos e enums
@@ -238,6 +264,7 @@ EFETIVIDADE`. A "causa raiz" identificada ao final do processo é a
 - `classificacao.schema.ts`: sem schema de fechamento — nenhum campo só
   faz sentido "depois de tudo decidido" nesta entidade.
 
+
 - **`nc.schema.ts`**: campo `cliente` estava `.optional()`, mas dados vindos
   do Prisma trazem `null` (não `undefined`) para colunas nuláveis não
   preenchidas — o Zod rejeitava. Corrigido para `.nullish()` (aceita
@@ -272,7 +299,7 @@ EFETIVIDADE`. A "causa raiz" identificada ao final do processo é a
   fato removidos (após dedupe e após filtrar quem já não era colaborador).
 - `definirAprovador` valida que o **alvo** (não o ator) tem papel
   `APROVADOR` antes de atribuí-lo; segue o padrão "hard delete do vigente
-  - insert" para respeitar o índice único parcial.
+  + insert" para respeitar o índice único parcial.
 - Ambas as operações de lote (`adicionarColaboradores`/`removerColaboradores`)
   usam filtro "B2": separam quem já satisfaz a condição (já é/não é
   colaborador) do que precisa de fato ser processado, devolvendo os dois
@@ -307,7 +334,7 @@ EFETIVIDADE`. A "causa raiz" identificada ao final do processo é a
 
 1. **Catálogo de ações de auditoria** (`acoes-auditadas.ts`) — ainda usa
    strings soltas no campo `acao` de cada chamada a `auditoriaRepository.
-registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
+   registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
    `EXCLUIR_RASCUNHO`, `SUBMETER`, `APROVADO`/`REPROVADO`, `REABRIR`,
    `CANCELAR`, `DEFINIR_SENHA`. Falta ainda `CONCLUIR` (quando
    `Verificacao` for modelada). Quando reescrito como enum tipado, revisar
@@ -344,7 +371,7 @@ registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
 
 8. **Listagem de NCs (`listarNC`)** — hoje sem filtros nem paginação
    (Camada 1 apenas). Contrato de API original previa `?estado&
-classificacao&origem&de&ate&minhas&cursor`. Camadas 2–4 (filtro por
+   classificacao&origem&de&ate&minhas&cursor`. Camadas 2–4 (filtro por
    estado, paginação por cursor, demais filtros) ainda não implementadas.
 
 9. **Módulo Feed** (comentários, respostas, menções `@`/`#`) — não

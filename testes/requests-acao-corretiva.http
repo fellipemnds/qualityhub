@@ -1,0 +1,350 @@
+@baseUrl = http://localhost:3333
+
+### ===========================================================
+### Fluxo completo de AcaoCorretiva (dois portoes: PLANO -> EXECUCAO)
+### Integrado com Investigacao, Hipotese e atribuicao
+### Pressupoe que setup-usuarios-teste.sql ja foi rodado
+### ===========================================================
+
+### Login como Editor
+# @name loginEditor
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "editor@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Login como Gerente
+# @name loginGerente
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "gerente@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Login como Aprovador
+# @name loginAprovador
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "aprovador@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### ===========================================================
+### Prepara a NC e a Investigacao, ja com causa raiz identificada
+### ===========================================================
+
+### Cria a NC-mae
+# @name criarNC
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "titulo": "Vazamento de oleo na linha 2",
+    "descricao": "Identificado vazamento de oleo hidraulico durante inspecao de rotina na linha 2 de producao.",
+    "requisitoViolado": "Procedimento PO-07, item 4.3 - inspecao de recebimento",
+    "processoAfetado": "Linha de Producao 2",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Publica a NC
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Cria a Investigacao
+# @name criarInvestigacao
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/investigacoes
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "realProblema": "Vedacao da bomba hidraulica apresentou desgaste prematuro, causando vazamento continuo de oleo."
+}
+
+### Publica a Investigacao (fica editavel em ABERTO)
+POST {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Completa causa direta e causa raiz
+PATCH {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "metodo": "A3_SPS",
+    "causaDireta": "Vedacao de material incompativel com o fluido hidraulico utilizado na maquina.",
+    "causaRaiz": "Procedimento de manutencao nao especifica o material correto de vedacao para este modelo de bomba."
+}
+
+### Define aprovador da Investigacao
+PUT {{baseUrl}}/registros/{{criarInvestigacao.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "1f4b773f-d13b-482a-90df-5594fd21a8e8"
+    //"usuarioId": "COLE_O_ID_DO_APROVADOR_AQUI"
+}
+
+### Submete e aprova a Investigacao (fecha)
+POST {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+###
+POST {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+
+### ===========================================================
+### AcaoCorretiva — Portao 1: PLANO
+### ===========================================================
+
+### Cria a AcaoCorretiva, vinculada a Investigacao (sem descricao/prazo ainda)
+# @name criarAcao
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/acoes-corretivas
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "investigacaoId": "{{criarInvestigacao.response.body.id}}"
+}
+
+### Publica (RASCUNHO -> ABERTO, gera codigo)
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Completa descricao e prazo (exigidos no portao PLANO)
+PATCH {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Atualizar o procedimento de manutencao para especificar o material correto de vedacao, compativel com o fluido hidraulico utilizado.",
+    "prazo": "2026-10-15T00:00:00.000Z"
+}
+
+### Define aprovador da AcaoCorretiva
+PUT {{baseUrl}}/registros/{{criarAcao.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "1f4b773f-d13b-482a-90df-5594fd21a8e8"
+    //"usuarioId": "COLE_O_ID_DO_APROVADOR_AQUI"
+}
+
+### Submete o PLANO (ABERTO -> EM_APROVACAO, portaoAtual = 0)
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Aprova o PLANO — volta para ABERTO, portaoAtual passa a 1, execucao autorizada
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+
+### ===========================================================
+### AcaoCorretiva — Portao 2: EXECUCAO
+### ===========================================================
+
+### Confirma que ainda esta ABERTO (nao fechou, tem um segundo portao)
+GET {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Tenta submeter de novo SEM executadoEm/evidencia (RN-25) — espera 400
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Completa executadoEm e evidencia (exigidos no portao EXECUCAO)
+PATCH {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "executadoEm": "2026-10-10T09:00:00.000Z",
+    "evidencia": "Procedimento PO-07 revisado e publicado na intranet, versao 3.0, com especificacao do material de vedacao correto."
+}
+
+### Submete o EXECUCAO (ABERTO -> EM_APROVACAO, portaoAtual = 1)
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Aprova o EXECUCAO — era o ultimo portao, fecha
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### Confirma que fechou
+GET {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+
+### ===========================================================
+### Leitura
+### ===========================================================
+
+### Lista todas as acoes corretivas
+GET {{baseUrl}}/acoes-corretivas
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Lista filtrando por essa NC
+GET {{baseUrl}}/acoes-corretivas?naoConformidadeId={{criarNC.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+
+### ===========================================================
+### MODOS DE FALHA
+### ===========================================================
+
+### 1 — Criar AcaoCorretiva para NC inexistente — espera 404
+POST {{baseUrl}}/nc/00000000-0000-0000-0000-000000000000/acoes-corretivas
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Esta NC nao existe, deveria falhar com 404."
+}
+
+### 2 — Login como Visualizador
+# @name loginVisualizador
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "visualizador@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Visualizador tentando criar AcaoCorretiva — espera 403
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/acoes-corretivas
+Content-Type: application/json
+Authorization: Bearer {{loginVisualizador.response.body.token}}
+
+{
+    "descricao": "Este request deveria ser rejeitado."
+}
+
+### 3 — Cria uma segunda AcaoCorretiva, para testar submeter no PLANO
+### sem descricao/prazo preenchidos
+# @name acaoEstados
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/acoes-corretivas
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "investigacaoId": "{{criarInvestigacao.response.body.id}}"
+}
+
+### Publica
+POST {{baseUrl}}/acoes-corretivas/{{acaoEstados.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Define aprovador (necessario para separar a checagem de aprovador
+### da checagem de campos obrigatorios do portao)
+PUT {{baseUrl}}/registros/{{acaoEstados.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "1f4b773f-d13b-482a-90df-5594fd21a8e8"
+    //"usuarioId": "COLE_O_ID_DO_APROVADOR_AQUI"
+}
+
+### Tenta submeter o PLANO SEM descricao/prazo — espera 400
+POST {{baseUrl}}/acoes-corretivas/{{acaoEstados.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### 4 — Submeter sem aprovador definido ainda — espera 409
+# @name acaoSemAprovador
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/acoes-corretivas
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Acao corretiva de teste, sem aprovador definido.",
+    "prazo": "2026-11-01T00:00:00.000Z"
+}
+
+### Publica
+POST {{baseUrl}}/acoes-corretivas/{{acaoSemAprovador.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Tenta submeter sem aprovador — espera 409
+POST {{baseUrl}}/acoes-corretivas/{{acaoSemAprovador.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### 5 — Login como QA (papel APROVADOR, mas nao sera o aprovador designado
+### desta acao corretiva)
+# @name loginQA
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "qa@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Define o Aprovador Teste (nao o QA) como aprovador
+PUT {{baseUrl}}/registros/{{acaoSemAprovador.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "1f4b773f-d13b-482a-90df-5594fd21a8e8"
+    //"usuarioId": "COLE_O_ID_DO_APROVADOR_AQUI"
+}
+
+### Submete o PLANO
+POST {{baseUrl}}/acoes-corretivas/{{acaoSemAprovador.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### QA (tem papel APROVADOR, mas NAO e o aprovador designado) tenta
+### decidir — espera 403
+POST {{baseUrl}}/acoes-corretivas/{{acaoSemAprovador.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginQA.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### 6 — Cancelar uma AcaoCorretiva ja FECHADA (a primeira, que fechou
+### no fluxo principal) — espera 409
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/cancelar
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "motivo": "Tentativa de cancelar algo que ja foi fechado."
+}
+
+### 7 — Editar depois de FECHADO — espera 409
+PATCH {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "evidencia": "Tentando editar apos fechamento, deveria ser rejeitado."
+}

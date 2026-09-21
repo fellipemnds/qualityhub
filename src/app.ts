@@ -10,6 +10,7 @@ import { atribuicaoRoutes } from "./compartilhado/atribuicao/atribuicao.routes.j
 import { contencaoRoutes } from "./modulos/nc/contencao.routes.js";
 import { classificacaoRoutes } from "./modulos/nc/classificacao.routes.js";
 import { investigacaoRoutes } from "./modulos/nc/investigacao.routes.js";
+import { acaoCorretivaRoutes } from "./modulos/nc/acao-corretiva.routes.js";
 
 const app = Fastify({
     logger: true,
@@ -36,6 +37,7 @@ app.register(atribuicaoRoutes);
 app.register(contencaoRoutes);
 app.register(classificacaoRoutes);
 app.register(investigacaoRoutes);
+app.register(acaoCorretivaRoutes);
 
 app.setErrorHandler((erro, request, reply) => {
     if (erro instanceof ZodError) {

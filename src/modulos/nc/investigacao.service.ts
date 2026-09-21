@@ -10,6 +10,8 @@ import { cicloVidaService } from "../../compartilhado/registro/ciclo-vida.servic
 import { DecisaoInput } from "../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../compartilhado/registro/estados-editaveis.js";
 import { registroRepository } from "../../compartilhado/registro/registro.repository.js";
+import { hipoteseRepository } from "./hipotese.repository.js";
+import { hipoteseFechamentoSchema } from "./hipotese.schema.js";
 import { investigacaoRepository } from "./investigacao.repository.js";
 import { investigacaoFechamentoSchema, investigacaoPublicacaoSchema, InvestigacaoRascunhoInput } from "./investigacao.schema.js";
 import { ncRepository } from "./nc.repository.js";
@@ -99,9 +101,13 @@ export const investigacaoService = {
     async submeterInvestigacao(registroId: string, ator: { id: string, papeis: Papel[] }) {
         return prisma.$transaction(async (tx) => {
             const investigacao = await investigacaoRepository.buscarPorId(tx, registroId);
-
             if (investigacao === null) {
                 throw new NaoEncontradoError("Item não encontrado.");
+            }
+
+            const hipoteses = await hipoteseRepository.listarPorInvestigacao(tx, registroId);
+            for (const hipotese of hipoteses) {
+                hipoteseFechamentoSchema.parse(hipotese);
             }
 
             const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, investigacao, (dadosParaValidar) => investigacaoFechamentoSchema.parse(dadosParaValidar));
