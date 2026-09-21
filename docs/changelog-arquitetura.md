@@ -9,6 +9,37 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Entidades `Hipotese` e `AcaoCorretiva` — completas e testadas
+
+- **`AcaoCorretiva` aponta só para `Investigacao`** (`investigacaoId String?`),
+  não para `Hipotese` individual — rollback de uma decisão anterior.
+  Rastrear "essa ação resolve esse fator contribuinte específico" foi
+  considerado controle excessivo; o julgamento de quais fatores
+  contribuintes precisam de ação fica com o QA na aprovação (`decidir`
+  com `REPROVADO` + motivo), não estruturado no banco.
+- **`Hipotese` não tem ciclo de vida próprio** — não é uma entidade
+  filha de `Registro` (sem publicar/submeter/decidir/rotas dedicadas).
+  É gerida inteiramente dentro do fluxo de `Investigacao`
+  (`hipotese.repository.ts` com `criar`/`atualizar`/`listarPorInvestigacao`/
+  `excluir`, sem `service` próprio). Campos: `descricao`,
+  `numeroIshikawa` (referência simples por número de posição — o
+  Ishikawa em si continua livre dentro do `conteudo: Json` da
+  investigação, decisão preservada), `classificacao`
+  (`CAUSA_DIRETA | FATOR_CONTRIBUINTE | SEM_RELACAO`).
+- **`descricao`/`classificacao` de `Hipotese` são nuláveis no banco** —
+  hipóteses podem ser criadas incompletas durante o processo, só
+  precisam estar completas na hora de submeter a Investigação.
+  `submeterInvestigacao` agora também valida cada `Hipotese` existente
+  contra `hipoteseFechamentoSchema`, além da checagem de `causaRaiz`
+  (RN-24) já existente.
+- **`submeterAcaoCorretiva` escolhe o schema de validação pelo
+  `portaoAtual`** (`0` → `acaoCorretivaPlanoSchema`, exige `descricao`+
+  `prazo`; `1` → `acaoCorretivaExecucaoSchema`, exige também
+  `executadoEm`+`evidencia`, RN-25) — primeira vez que uma entidade usa
+  os dois portões (`PLANO`, `EXECUCAO`) de verdade; `cicloVidaService`
+  não precisou de nenhuma mudança nova além da parametrização de `acao`
+  já feita para `Classificacao`.
+
 ### Bug real corrigido: `submeter` não validava conteúdo obrigatório
 
 - **`submeterInvestigacao`/`submeterClassificacao` usavam o schema de
