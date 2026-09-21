@@ -9,6 +9,26 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Entidade `Investigacao` — service completo
+
+- Usa as ações **padrão** (`GERENCIAR_RASCUNHO`, `PUBLICAR`, `SUBMETER`),
+  não `CLASSIFICAR` — diferente de `Classificacao`, investigação é
+  conduzida pelo colaborador (`EDITOR`), com aprovação do `APROVADOR`
+  só no final (portão `UNICA`), não exclusiva de `APROVADOR` do início
+  ao fim.
+- **Tem `cancelarInvestigacao`**, mas **não tem** `reabrirInvestigacao` —
+  mesmo raciocínio de `Contencao`: uma investigação pode ser abandonada
+  no meio (ex.: causa direta identificada errada, ou reclassificação da
+  NC invalida a linha de investigação em curso), mas nunca reaberta —
+  uma nova investigação é criada, mantendo evidente no histórico que a
+  anterior foi cancelada e outra tomou seu lugar.
+- `Prisma.JsonNull` necessário no repository (`criar`/`atualizar`) para
+  o campo `conteudo: Json?` — `null` puro do JavaScript não é aceito
+  pelo Prisma nesse tipo de campo (ambiguidade entre "coluna vazia" e
+  "valor JSON `null` armazenado"). A conversão precisa vir **depois**
+  do espalhamento de `...dados` no objeto `data`, nunca antes — spread
+  posterior sobrescreve o anterior.
+
 ### Entidade `Investigacao` — modelo simplificado em relação ao documento
 
 - **`conclusao` e `causaRaiz` fundidos num único campo (`causaRaiz`)** —
@@ -52,8 +72,8 @@ documento de arquitetura.
   aqui porque o banco não valida isso (é JSON livre), mas o frontend vai
   precisar seguir essa sequência ao montar o formulário:
   `PERCEPÇÃO INICIAL → DESCRIÇÃO → REAL PROBLEMA → ISHIKAWA → CAUSA
-DIRETA → 5 PORQUÊS → CAUSA RAIZ → CONTRAMEDIDAS → CHECK DE
-EFETIVIDADE`. A "causa raiz" identificada ao final do processo é a
+  DIRETA → 5 PORQUÊS → CAUSA RAIZ → CONTRAMEDIDAS → CHECK DE
+  EFETIVIDADE`. A "causa raiz" identificada ao final do processo é a
   mesma que deve ser **extraída** e registrada como uma linha real em
   `CausaRaiz` (RN-24 exige ≥1) — o campo dentro do JSON é rascunho do
   processo, a linha em `CausaRaiz` é o dado consultável ("quais causas
@@ -111,7 +131,7 @@ EFETIVIDADE`. A "causa raiz" identificada ao final do processo é a
   sozinha, é uma combinação manual (`ehGerente || ehAprovadorDoItem`).
 - **`decidir`**: não usa `podeExecutar` genérico — usa checagem estrita
   (`temPapel(ator, "APROVAR")` + `ehAprovador` especificamente, não
-  `ehColaborador`), porque RN-16 exige ser _o_ aprovador designado, não
+  `ehColaborador`), porque RN-16 exige ser *o* aprovador designado, não
   qualquer colaborador com papel `APROVADOR`.
 
 ### Catálogos e enums
@@ -198,6 +218,7 @@ EFETIVIDADE`. A "causa raiz" identificada ao final do processo é a
 - `classificacao.schema.ts`: sem schema de fechamento — nenhum campo só
   faz sentido "depois de tudo decidido" nesta entidade.
 
+
 - **`nc.schema.ts`**: campo `cliente` estava `.optional()`, mas dados vindos
   do Prisma trazem `null` (não `undefined`) para colunas nuláveis não
   preenchidas — o Zod rejeitava. Corrigido para `.nullish()` (aceita
@@ -232,7 +253,7 @@ EFETIVIDADE`. A "causa raiz" identificada ao final do processo é a
   fato removidos (após dedupe e após filtrar quem já não era colaborador).
 - `definirAprovador` valida que o **alvo** (não o ator) tem papel
   `APROVADOR` antes de atribuí-lo; segue o padrão "hard delete do vigente
-  - insert" para respeitar o índice único parcial.
+  + insert" para respeitar o índice único parcial.
 - Ambas as operações de lote (`adicionarColaboradores`/`removerColaboradores`)
   usam filtro "B2": separam quem já satisfaz a condição (já é/não é
   colaborador) do que precisa de fato ser processado, devolvendo os dois
@@ -267,7 +288,7 @@ EFETIVIDADE`. A "causa raiz" identificada ao final do processo é a
 
 1. **Catálogo de ações de auditoria** (`acoes-auditadas.ts`) — ainda usa
    strings soltas no campo `acao` de cada chamada a `auditoriaRepository.
-registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
+   registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
    `EXCLUIR_RASCUNHO`, `SUBMETER`, `APROVADO`/`REPROVADO`, `REABRIR`,
    `CANCELAR`, `DEFINIR_SENHA`. Falta ainda `CONCLUIR` (quando
    `Verificacao` for modelada). Quando reescrito como enum tipado, revisar
@@ -304,7 +325,7 @@ registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
 
 8. **Listagem de NCs (`listarNC`)** — hoje sem filtros nem paginação
    (Camada 1 apenas). Contrato de API original previa `?estado&
-classificacao&origem&de&ate&minhas&cursor`. Camadas 2–4 (filtro por
+   classificacao&origem&de&ate&minhas&cursor`. Camadas 2–4 (filtro por
    estado, paginação por cursor, demais filtros) ainda não implementadas.
 
 9. **Módulo Feed** (comentários, respostas, menções `@`/`#`) — não
@@ -317,3 +338,15 @@ classificacao&origem&de&ate&minhas&cursor`. Camadas 2–4 (filtro por
 11. **Arquivos de teste manual** (`requests.http`, `requests-modos-falha.http`,
     `requests-contencao.http`, `setup-usuarios-teste.sql`) reorganizados
     da raiz do projeto para a pasta `testes/`.
+
+12. **Reorganizar `modulos/nc/` em subpastas por entidade** (`nc/contencao/`,
+    `nc/classificacao/`, `nc/investigacao/`, etc.) — a pasta está
+    acumulando muitos arquivos soltos com prefixo (`contencao.schema.ts`,
+    `contencao.repository.ts`...). Adiar até todas as seis entidades
+    estarem prontas, para não fazer o refactor de mover arquivos e
+    ajustar imports no meio do caminho.
+
+13. **Criar tipo `Ator`** (`{ id: string, papeis: Papel[] }`), provavelmente
+    em `compartilhado/entidades/ator.ts`, e substituir a repetição desse
+    tipo inline em toda função de service/controller do projeto — hoje
+    escrito por extenso dezenas de vezes.
