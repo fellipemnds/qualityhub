@@ -5,12 +5,15 @@ import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from ".
 import { temPapel } from "../../compartilhado/permissoes/pode-executar.js"
 import { cicloVidaService } from "../../compartilhado/registro/ciclo-vida.service.js"
 import { ncRepository } from "./nc.repository.js"
-import { ncPublicacaoSchema, NCRascunhoInput } from "./nc.schema.js"
+import { ncFechamentoSchema, ncPublicacaoSchema, NCRascunhoInput } from "./nc.schema.js"
 import { DecisaoInput } from "../../compartilhado/registro/decidir.schema.js"
 import { registroRepository } from "../../compartilhado/registro/registro.repository.js"
 import { auditoriaRepository } from "../../compartilhado/auditoria/auditoria.repository.js"
 import { EntidadeAuditada } from "../../compartilhado/auditoria/entidades-auditadas.js"
 import { ESTADOS_EDITAVEIS } from "../../compartilhado/registro/estados-editaveis.js"
+import { classificacaoRepository } from "./classificacao.repository.js"
+import { investigacaoRepository } from "./investigacao.repository.js"
+import { contencaoRepository } from "./contencao.repository.js"
 
 export const ncService = {
     async criarRascunhoNC(ator: { id: string, papeis: Papel[] }, dados: NCRascunhoInput) {
@@ -96,10 +99,31 @@ export const ncService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, nc, (dadosParaValidar) => ncPublicacaoSchema.parse(dadosParaValidar));
+            const classificacoes = await classificacaoRepository.listarClassificacoes(tx, { naoConformidadeId: registroId });
+            const temClassificacaoFechada = classificacoes.some((c) => c.registro.estado === "FECHADO");
+
+            if (!temClassificacaoFechada) {
+                throw new TransicaoInvalidaError("É necessário ao menos uma Classificação FECHADA para submeter esta Não Conformidade para fechamento.");
+            }
+
+            const investigacoes = await investigacaoRepository.listarInvestigacoes(tx, { naoConformidadeId: registroId });
+            const temInvestigacaoFechada = investigacoes.some((i) => i.registro.estado === "FECHADO");
+
+            if (!temInvestigacaoFechada) {
+                throw new TransicaoInvalidaError("É necessário ao menos uma Investigação FECHADA para submeter esta Não Conformidade para fechamento.");
+            }
+
+            const contencoes = await contencaoRepository.listarContencoes(tx, { naoConformidadeId: registroId });
+            const temContencaoPendente = contencoes.some((c) => c.registro.estado !== "FECHADO" && c.registro.estado !== "CANCELADO");
+
+            if (temContencaoPendente) {
+                throw new TransicaoInvalidaError("Existe uma Contenção pendente — ela precisa estar FECHADA ou CANCELADA para submeter esta Não Conformidade para fechamento.");
+            }
+
+            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, nc, (dadosParaValidar) => ncFechamentoSchema.parse(dadosParaValidar));
 
             return { ...registroSubmetido, ...nc };
-        })
+        });
     },
 
     async decidirNC(registroId: string, ator: { id: string, papeis: Papel[] }, dados: DecisaoInput) {

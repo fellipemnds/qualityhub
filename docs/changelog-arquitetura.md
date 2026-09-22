@@ -9,6 +9,106 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Entidade `Verificacao` — completa e testada; MVP de backend fechado
+
+- **`Verificacao` nunca é criada diretamente pelo usuário** — nasce
+  automaticamente dentro de `finalizarExecucaoAcaoCorretiva`, já em
+  `ABERTO` (pula `RASCUNHO` de propósito), com código gerado via
+  `sequenciaService` (mesma lógica de `publicar`), `prazo` calculado
+  (`hoje + diasParaVerificar`, informado pelo colaborador ao finalizar),
+  `instrucoesVerificacao` copiado do plano da `AcaoCorretiva`, e o mesmo
+  usuário atualmente atribuído como `APROVADOR` da `AcaoCorretiva` já
+  atribuído como **`APROVADOR` e `COLABORADOR`** da `Verificacao` nova
+  (as duas — evita um passo manual extra para a mesma pessoa poder
+  editar e depois concluir).
+- Por nascer sempre já publicada, `publicarVerificacao` foi removida do
+  service/controller/routes — nunca haveria uso real para essa rota.
+- `Verificacao.eficaz: Boolean?` virou `Verificacao.resultado:
+ResultadoVerificacao?` (enum: `EFICAZ`, `PARCIALMENTE_EFICAZ`,
+  `NAO_EFICAZ`) — RN-23 passa a ser "qualquer resultado diferente de
+  `EFICAZ` bloqueia o fechamento da NC e exige nova Ação Corretiva".
+  `Verificacao.evidencia` renomeado para `Verificacao.conclusao`
+  (`AcaoCorretiva.evidencia` mantém o nome antigo — propósito diferente).
+- Duas linhas de auditoria em `finalizarExecucaoAcaoCorretiva`: uma para
+  o fechamento da Ação Corretiva (`FINALIZAR_EXECUCAO`), outra para o
+  nascimento da Verificação (`GERAR_VERIFICACAO`) — a auditoria genérica
+  de `criarRascunho` não é suficiente aqui porque a Verificação nasce
+  por um caminho não convencional (pula rascunho, já ganha código,
+  atribuições automáticas), então precisa de um registro próprio.
+- **Conclusão sem portão** (`VERIFICACAO: []`), usando `cicloVidaService.
+concluir` já existente desde a Fase 1 — exige colaborador com papel
+  `APROVADOR` (`CONCLUIR_VERIFICACAO`), sem aprovação adicional.
+- **Todas as seis entidades do domínio (NC, Contenção, Classificação,
+  Investigação, Ação Corretiva, Verificação) estão completas e testadas
+  de ponta a ponta** — fecha o MVP de backend do ciclo ISO 9001 completo
+  de não conformidade, da detecção ao fechamento com verificação de
+  eficácia.
+
+### `AcaoCorretiva` — mudança de arquitetura para portão único
+
+- **`ACAO_CORRETIVA` passou de dois portões (`["PLANO", "EXECUCAO"]`) para
+  um só (`["PLANO"]`)** — decisão de produto: o QA só aprova o plano;
+  a execução em si não precisa de aprovação separada, só precisa
+  acontecer e ser registrada (`executadoEm`/`evidencia`).
+- **`cicloVidaService.decidir` ganhou parâmetro
+  `fecharAoAprovarUltimoPortao: boolean = true`** — quando `false`,
+  aprovar o último (e único, no caso de Ação Corretiva) portão volta o
+  item para `ABERTO` em vez de `FECHADO`. Valor padrão preserva o
+  comportamento de todas as outras cinco entidades sem nenhuma mudança
+  nas chamadas existentes. `decidirAcaoCorretiva` passa `false`.
+- **`submeterAcaoCorretiva` sempre usa `acaoCorretivaPlanoSchema`** —
+  não existe mais uma segunda submissão para a execução (ela nunca passa
+  por `EM_APROVACAO`).
+- **Nova função `finalizarExecucaoAcaoCorretiva`** — transição própria,
+  fora do `cicloVidaService` genérico (não reaproveita `concluir`, que
+  exige zero portões). Leva o item de `ABERTO` (`portaoAtual` continua
+  `0`, nunca foi incrementado, porque o `decidir` com
+  `fecharAoAprovarUltimoPortao: false` só muda `estado`) direto para
+  `FECHADO`, exigindo `executadoEm`/`evidencia` preenchidos
+  (`acaoCorretivaExecucaoSchema`), sem aprovação — feito pelo próprio
+  colaborador.
+
+### `Verificacao` — decisões de modelagem em andamento (código pendente)
+
+Conversa em curso, decisões já tomadas mas **ainda não aplicadas** em
+nenhum arquivo (nem schema Prisma, nem código):
+
+1. **`AcaoCorretiva` ganha campo `instrucoesVerificacao: String?`** —
+   preenchido no momento do plano (junto com `descricao`/`prazo`),
+   descrevendo como o QA deve conduzir a verificação depois.
+2. **Ao finalizar a execução, a pessoa informa um número de dias**
+   (não uma data) — o sistema calcula `prazo = hoje + esses dias` e
+   grava na `Verificacao` recém-criada. `finalizarExecucaoAcaoCorretiva`
+   precisa de um parâmetro novo para isso (dias, não `Date` direto como
+   estava na primeira tentativa).
+3. **`instrucoesVerificacao` é copiado de `AcaoCorretiva` para dentro
+   da `Verificacao`** recém-criada, no mesmo momento — nome do campo em
+   `Verificacao` ainda a decidir (mesmo nome, ou algo como
+   `comoVerificar`).
+4. **`Verificacao.evidencia` renomeado para `Verificacao.conclusao`**
+   (só em `Verificacao` — `AcaoCorretiva.evidencia` continua com esse
+   nome, propósito diferente: evidência de execução vs. conclusão da
+   análise do QA).
+5. **`Verificacao.eficaz: Boolean?` vira `Verificacao.resultado:
+ResultadoVerificacao?`**, um enum novo com três valores: `EFICAZ`,
+   `PARCIALMENTE_EFICAZ`, `NAO_EFICAZ` (sem `PENDENTE` — redundante com
+   o próprio `estado` do Registro). RN-23 passa a ser "qualquer
+   resultado diferente de `EFICAZ` bloqueia o fechamento da NC e exige
+   nova Ação Corretiva" — `PARCIALMENTE_EFICAZ` tem a mesma consequência
+   prática de `NAO_EFICAZ`, só mais preciso informativamente. Enum
+   desacoplado (`compartilhado/entidades/resultado-verificacao.ts`)
+   ainda a criar.
+6. **Ainda não decidido**: se a `Verificacao` recém-criada nasce com
+   algum colaborador/aprovador atribuído automaticamente, ou se isso
+   fica como passo manual via `atribuicaoService` depois.
+
+**Próximos passos, na ordem**: ajustar `schema.prisma` (`AcaoCorretiva.
+instrucoesVerificacao`, `Verificacao.conclusao`/`resultado` +
+`ResultadoVerificacao`), migration, criar o enum desacoplado, reescrever
+`finalizarExecucaoAcaoCorretiva` com o parâmetro de dias e a cópia de
+`instrucoesVerificacao`, e então gerar `verificacao.schema/repository/
+service/controller/routes.ts` do zero (nunca foram criados).
+
 ### Entidades `Hipotese` e `AcaoCorretiva` — completas e testadas
 
 - **`AcaoCorretiva` aponta só para `Investigacao`** (`investigacaoId String?`),
@@ -149,8 +249,8 @@ documento de arquitetura.
   aqui porque o banco não valida isso (é JSON livre), mas o frontend vai
   precisar seguir essa sequência ao montar o formulário:
   `PERCEPÇÃO INICIAL → DESCRIÇÃO → REAL PROBLEMA → ISHIKAWA → CAUSA
-  DIRETA → 5 PORQUÊS → CAUSA RAIZ → CONTRAMEDIDAS → CHECK DE
-  EFETIVIDADE`. A "causa raiz" identificada ao final do processo é a
+DIRETA → 5 PORQUÊS → CAUSA RAIZ → CONTRAMEDIDAS → CHECK DE
+EFETIVIDADE`. A "causa raiz" identificada ao final do processo é a
   mesma que deve ser **extraída** e registrada como uma linha real em
   `CausaRaiz` (RN-24 exige ≥1) — o campo dentro do JSON é rascunho do
   processo, a linha em `CausaRaiz` é o dado consultável ("quais causas
@@ -208,7 +308,7 @@ documento de arquitetura.
   sozinha, é uma combinação manual (`ehGerente || ehAprovadorDoItem`).
 - **`decidir`**: não usa `podeExecutar` genérico — usa checagem estrita
   (`temPapel(ator, "APROVAR")` + `ehAprovador` especificamente, não
-  `ehColaborador`), porque RN-16 exige ser *o* aprovador designado, não
+  `ehColaborador`), porque RN-16 exige ser _o_ aprovador designado, não
   qualquer colaborador com papel `APROVADOR`.
 
 ### Catálogos e enums
@@ -295,7 +395,6 @@ documento de arquitetura.
 - `classificacao.schema.ts`: sem schema de fechamento — nenhum campo só
   faz sentido "depois de tudo decidido" nesta entidade.
 
-
 - **`nc.schema.ts`**: campo `cliente` estava `.optional()`, mas dados vindos
   do Prisma trazem `null` (não `undefined`) para colunas nuláveis não
   preenchidas — o Zod rejeitava. Corrigido para `.nullish()` (aceita
@@ -330,7 +429,7 @@ documento de arquitetura.
   fato removidos (após dedupe e após filtrar quem já não era colaborador).
 - `definirAprovador` valida que o **alvo** (não o ator) tem papel
   `APROVADOR` antes de atribuí-lo; segue o padrão "hard delete do vigente
-  + insert" para respeitar o índice único parcial.
+  - insert" para respeitar o índice único parcial.
 - Ambas as operações de lote (`adicionarColaboradores`/`removerColaboradores`)
   usam filtro "B2": separam quem já satisfaz a condição (já é/não é
   colaborador) do que precisa de fato ser processado, devolvendo os dois
@@ -365,7 +464,7 @@ documento de arquitetura.
 
 1. **Catálogo de ações de auditoria** (`acoes-auditadas.ts`) — ainda usa
    strings soltas no campo `acao` de cada chamada a `auditoriaRepository.
-   registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
+registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
    `EXCLUIR_RASCUNHO`, `SUBMETER`, `APROVADO`/`REPROVADO`, `REABRIR`,
    `CANCELAR`, `DEFINIR_SENHA`. Falta ainda `CONCLUIR` (quando
    `Verificacao` for modelada). Quando reescrito como enum tipado, revisar
@@ -402,7 +501,7 @@ documento de arquitetura.
 
 8. **Listagem de NCs (`listarNC`)** — hoje sem filtros nem paginação
    (Camada 1 apenas). Contrato de API original previa `?estado&
-   classificacao&origem&de&ate&minhas&cursor`. Camadas 2–4 (filtro por
+classificacao&origem&de&ate&minhas&cursor`. Camadas 2–4 (filtro por
    estado, paginação por cursor, demais filtros) ainda não implementadas.
 
 9. **Módulo Feed** (comentários, respostas, menções `@`/`#`) — não
