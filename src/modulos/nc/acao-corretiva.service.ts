@@ -13,6 +13,9 @@ import { registroRepository } from "../../compartilhado/registro/registro.reposi
 import { acaoCorretivaRepository } from "./acao-corretiva.repository.js";
 import { acaoCorretivaExecucaoSchema, acaoCorretivaPlanoSchema, acaoCorretivaPublicacaoSchema, AcaoCorretivaRascunhoInput } from "./acao-corretiva.schema.js";
 import { ncRepository } from "./nc.repository.js";
+import { prefixoPorTipo } from "../../compartilhado/registro/prefixos.js";
+import { sequenciaService } from "../../compartilhado/sequencia/sequencia.service.js";
+import { verificacaoRepository } from "./verificacao.repository.js";
 
 export const acaoCorretivaService = {
     async criarRascunhoAcaoCorretiva(ator: { id: string, papeis: Papel[] }, naoConformidadeId: string, dados: AcaoCorretivaRascunhoInput & { investigacaoId?: string }) {
@@ -101,11 +104,19 @@ export const acaoCorretivaService = {
         });
     },
 
-    // Leva o item de ABERTO (plano ja aprovado, portaoAtual continua 0
-    // porque decidir() com fecharAoAprovarUltimoPortao=false nao incrementa)
+    // Leva o item de ABERTO (plano ja aprovado, portaoAtual continua 0)
     // direto para FECHADO, sem aprovacao — feito pelo colaborador que
     // executou, exige executadoEm/evidencia preenchidos (RN-25).
-    async finalizarExecucaoAcaoCorretiva(registroId: string, ator: { id: string, papeis: Papel[] }) {
+    //
+    // Na mesma transacao, ja nasce a Verificacao correspondente:
+    // - direto em ABERTO (nunca passa por RASCUNHO — nasce pronta, o
+    //   sistema garante instrucoesVerificacao/prazo preenchidos)
+    // - com codigo gerado, como qualquer publicacao
+    // - com prazo = hoje + diasParaVerificar
+    // - com instrucoesVerificacao copiado do plano da Acao Corretiva
+    // - com o mesmo aprovador atualmente atribuido a Acao Corretiva,
+    //   ja atribuido tambem como aprovador da Verificacao nova
+    async finalizarExecucaoAcaoCorretiva(registroId: string, ator: { id: string, papeis: Papel[] }, diasParaVerificar: number) {
         return prisma.$transaction(async (tx) => {
             const registro = await registroRepository.buscarPorId(tx, registroId);
 
@@ -131,7 +142,33 @@ export const acaoCorretivaService = {
 
             acaoCorretivaExecucaoSchema.parse(acaoCorretiva);
 
+            const aprovador = await atribuicaoRepository.buscarAprovador(tx, registroId);
+            if (aprovador === null) {
+                throw new TransicaoInvalidaError("Este item não possui um aprovador definido, não é possível gerar a verificação.");
+            }
+
             const registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "FECHADO" });
+
+            const prazoVerificacao = new Date(Date.now() + (diasParaVerificar * 24 * 60 * 60 * 1000));
+
+            const registroVerificacao = await cicloVidaService.criarRascunho(tx, { tipo: "VERIFICACAO", criadoPorId: ator.id });
+
+            const prefixo = prefixoPorTipo["VERIFICACAO"];
+            const anoAtual = new Date().getFullYear();
+            const codigoVerificacao = await sequenciaService.proximoCodigo(tx, prefixo, anoAtual);
+
+            const verificacaoRegistroAtualizado = await registroRepository.atualizar(tx, registroVerificacao.id, { estado: "ABERTO", codigo: codigoVerificacao });
+
+            const verificacao = await verificacaoRepository.criar(tx, {
+                id: registroVerificacao.id,
+                acaoCorretivaId: registroId,
+                instrucoesVerificacao: acaoCorretiva.instrucoesVerificacao,
+                prazo: prazoVerificacao
+            });
+
+
+
+            await atribuicaoRepository.inserirAtribuicao(tx, registroVerificacao.id, aprovador.usuarioId, ator.id, "APROVADOR");
 
             await auditoriaRepository.registrar(tx, {
                 entidade: EntidadeAuditada[registro.tipo],
@@ -142,7 +179,20 @@ export const acaoCorretivaService = {
                 depois: registroAtualizado
             });
 
-            return { ...registroAtualizado, ...acaoCorretiva };
+            await auditoriaRepository.registrar(tx, {
+                entidade: EntidadeAuditada["VERIFICACAO"],
+                entidadeId: registroVerificacao.id,
+                acao: "GERAR_VERIFICACAO",
+                usuarioId: ator.id,
+                antes: undefined,
+                depois: { ...verificacaoRegistroAtualizado, ...verificacao }
+            });
+
+            return {
+                ...registroAtualizado,
+                ...acaoCorretiva,
+                verificacaoGerada: { ...verificacaoRegistroAtualizado, ...verificacao }
+            };
         });
     },
 

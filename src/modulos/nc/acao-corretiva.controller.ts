@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { acaoCorretivaService } from "./acao-corretiva.service.js";
-import { AcaoCorretivaRascunhoInput } from "./acao-corretiva.schema.js";
+import { AcaoCorretivaRascunhoInput, FinalizarExecucaoInput } from "./acao-corretiva.schema.js";
 import { DecisaoInput } from "../../compartilhado/registro/decidir.schema.js";
 import { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
 
@@ -35,8 +35,8 @@ export const acaoCorretivaController = {
         return reply.status(200).send(acaoCorretiva);
     },
 
-    async finalizarExecucaoAcaoCorretiva(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
-        const acaoCorretiva = await acaoCorretivaService.finalizarExecucaoAcaoCorretiva(request.params.id, request.user);
+    async finalizarExecucaoAcaoCorretiva(request: FastifyRequest<{ Params: { id: string }, Body: FinalizarExecucaoInput }>, reply: FastifyReply) {
+        const acaoCorretiva = await acaoCorretivaService.finalizarExecucaoAcaoCorretiva(request.params.id, request.user, request.body.diasParaVerificar);
         return reply.status(200).send(acaoCorretiva);
     },
 

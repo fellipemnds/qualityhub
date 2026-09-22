@@ -342,11 +342,22 @@ model AcaoCorretiva {
   naoConformidadeId String
   investigacaoId    String?
   investigacao      Investigacao?   @relation(fields: [investigacaoId], references: [id])
-  descricao         String?
-  prazo             DateTime?
-  executadoEm       DateTime?
-  evidencia         String?
-  verificacoes      Verificacao[]
+
+  descricao             String?
+  prazo                 DateTime?
+  executadoEm           DateTime?
+  evidencia             String?
+  instrucoesVerificacao String?
+
+  verificacoes Verificacao[]
+}
+
+// Verificação
+
+enum ResultadoVerificacao {
+  EFICAZ
+  PARCIALMENTE_EFICAZ
+  NAO_EFICAZ
 }
 
 model Verificacao {
@@ -354,10 +365,12 @@ model Verificacao {
   registro        Registro      @relation(fields: [id], references: [id], onDelete: Cascade)
   acaoCorretivaId String
   acaoCorretiva   AcaoCorretiva @relation(fields: [acaoCorretivaId], references: [id])
-  prazo           DateTime?
-  eficaz          Boolean?
-  evidencia       String?
-  verificadoEm    DateTime?
+
+  instrucoesVerificacao String?
+  prazo                 DateTime?
+  resultado             ResultadoVerificacao?
+  conclusao             String?
+  verificadoEm          DateTime?
 }
 
 //----------------

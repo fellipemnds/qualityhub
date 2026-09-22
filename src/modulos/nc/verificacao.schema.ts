@@ -1,17 +1,19 @@
 import z from "zod";
+import { ResultadoVerificacao } from "../../compartilhado/entidades/resultado-verificacao.js";
 
 export const verificacaoBaseSchema = z.object({
+    instrucoesVerificacao: z.string().nullish(),
     prazo: z.coerce.date().nullish(),
-    eficaz: z.boolean().nullish(),
-    evidencia: z.string().min(1).nullish(),
+    resultado: z.enum(ResultadoVerificacao).nullish(),
+    conclusao: z.string().min(1).nullish(),
     verificadoEm: z.coerce.date().nullish()
 });
 
 export const verificacaoRascunhoSchema = verificacaoBaseSchema.partial();
 
 export const verificacaoConclusaoSchema = verificacaoBaseSchema.extend({
-    eficaz: z.boolean(),
-    evidencia: z.string().min(1),
+    resultado: z.enum(ResultadoVerificacao),
+    conclusao: z.string().min(1),
     verificadoEm: z.coerce.date()
 });
 

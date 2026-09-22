@@ -11,6 +11,7 @@ import { contencaoRoutes } from "./modulos/nc/contencao.routes.js";
 import { classificacaoRoutes } from "./modulos/nc/classificacao.routes.js";
 import { investigacaoRoutes } from "./modulos/nc/investigacao.routes.js";
 import { acaoCorretivaRoutes } from "./modulos/nc/acao-corretiva.routes.js";
+import { verificacaoRoutes } from "./modulos/nc/verificacao.routes.js";
 
 const app = Fastify({
     logger: true,
@@ -38,6 +39,7 @@ app.register(contencaoRoutes);
 app.register(classificacaoRoutes);
 app.register(investigacaoRoutes);
 app.register(acaoCorretivaRoutes);
+app.register(verificacaoRoutes);
 
 app.setErrorHandler((erro, request, reply) => {
     if (erro instanceof ZodError) {
