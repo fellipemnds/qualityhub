@@ -1,0 +1,355 @@
+@baseUrl = http://localhost:3333
+
+### ===========================================================
+### Fluxo completo: NC -> Investigacao -> AcaoCorretiva (portao unico)
+### -> finalizar execucao -> Verificacao gerada automaticamente -> concluir
+### Pressupoe que setup-usuarios-teste.sql ja foi rodado
+### ===========================================================
+
+### Login como Editor
+# @name loginEditor
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "editor@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Login como Gerente
+# @name loginGerente
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "gerente@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Login como Aprovador
+# @name loginAprovador
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "aprovador@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### ===========================================================
+### NC + Investigacao (ja fechada, causa raiz identificada)
+### ===========================================================
+
+### Cria a NC
+# @name criarNC
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "titulo": "Vazamento de oleo na linha 2",
+    "descricao": "Identificado vazamento de oleo hidraulico durante inspecao de rotina na linha 2 de producao.",
+    "requisitoViolado": "Procedimento PO-07, item 4.3 - inspecao de recebimento",
+    "processoAfetado": "Linha de Producao 2",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Publica a NC
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Cria a Investigacao
+# @name criarInvestigacao
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/investigacoes
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "realProblema": "Vedacao da bomba hidraulica apresentou desgaste prematuro, causando vazamento continuo de oleo."
+}
+
+### Publica
+POST {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Completa causa direta e causa raiz
+PATCH {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "metodo": "A3_SPS",
+    "causaDireta": "Vedacao de material incompativel com o fluido hidraulico utilizado na maquina.",
+    "causaRaiz": "Procedimento de manutencao nao especifica o material correto de vedacao para este modelo de bomba."
+}
+
+### Define aprovador
+PUT {{baseUrl}}/registros/{{criarInvestigacao.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "1f4b773f-d13b-482a-90df-5594fd21a8e8"
+    //"usuarioId": "COLE_O_ID_DO_APROVADOR_AQUI"
+}
+
+### Submete e aprova (fecha)
+POST {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+###
+POST {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+
+### ===========================================================
+### AcaoCorretiva — Portao unico: PLANO
+### ===========================================================
+
+### Cria vinculada a Investigacao, ja com instrucoesVerificacao (exigido no plano)
+# @name criarAcao
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/acoes-corretivas
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "investigacaoId": "{{criarInvestigacao.response.body.id}}"
+}
+
+### Publica
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Completa descricao, prazo e instrucoesVerificacao (todos exigidos no PLANO)
+PATCH {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Atualizar o procedimento de manutencao para especificar o material correto de vedacao, compativel com o fluido hidraulico utilizado.",
+    "prazo": "2026-10-15T00:00:00.000Z",
+    "instrucoesVerificacao": "Apos 30 dias de uso, inspecionar visualmente a vedacao instalada e confirmar ausencia de vazamento na linha 2 durante um ciclo completo de producao."
+}
+
+### Define aprovador
+PUT {{baseUrl}}/registros/{{criarAcao.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "1f4b773f-d13b-482a-90df-5594fd21a8e8"
+    //"usuarioId": "COLE_O_ID_DO_APROVADOR_AQUI"
+}
+
+### Submete o PLANO (unica submissao que existe para AcaoCorretiva agora)
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Aprova o PLANO — volta para ABERTO (fecharAoAprovarUltimoPortao=false),
+### NAO fecha, autoriza a execucao
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### Confirma que ainda esta ABERTO, nao fechou
+GET {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+
+### ===========================================================
+### Executa e finaliza — aqui nasce a Verificacao automaticamente
+### ===========================================================
+
+### Registra a execucao (exigido para finalizar)
+PATCH {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "executadoEm": "2026-10-10T09:00:00.000Z",
+    "evidencia": "Procedimento PO-07 revisado e publicado na intranet, versao 3.0, com especificacao do material de vedacao correto."
+}
+
+### Finaliza a execucao (SEM aprovacao) — a AcaoCorretiva fecha, e a
+### Verificacao nasce automaticamente, ja ABERTA, com o mesmo Aprovador
+### atribuido, prazo = hoje + 30 dias
+# @name finalizarExecucao
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/finalizar-execucao
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "diasParaVerificar": 30
+}
+
+### Confirma que a AcaoCorretiva fechou
+GET {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+
+### ===========================================================
+### Verificacao — ja nasceu ABERTA, com codigo, prazo e instrucoes
+### ===========================================================
+
+### Busca a Verificacao gerada (pegue o id de "verificacaoGerada" na
+### resposta de finalizar-execucao acima e cole aqui)
+GET {{baseUrl}}/verificacoes/01a0c96a-1913-734c-878e-87f2ae7aef10
+//GET {{baseUrl}}/verificacoes/COLE_O_ID_DA_VERIFICACAO_GERADA
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### Lista verificacoes filtrando pela AcaoCorretiva
+GET {{baseUrl}}/verificacoes?acaoCorretivaId={{criarAcao.response.body.id}}
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### O Aprovador (ja atribuido automaticamente) edita, registrando o resultado
+### Nota: quem edita precisa ser COLABORADOR — o aprovador foi atribuido como
+### APROVADOR, nao COLABORADOR. Usamos o Editor aqui, que tambem nao e
+### colaborador desta verificacao especifica -- ver secao de modos de falha
+### abaixo para o teste correto dessa checagem.
+
+### Adiciona o Aprovador tambem como colaborador, para poder editar e concluir
+### (ele e quem vai executar a verificacao fisica e depois concluir)
+POST {{baseUrl}}/registros/01a0c96a-1913-734c-878e-87f2ae7aef10/colaboradores
+//POST {{baseUrl}}/registros/COLE_O_ID_DA_VERIFICACAO_GERADA/colaboradores
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "colaboradores": ["1f4b773f-d13b-482a-90df-5594fd21a8e8"]
+}
+
+### Agora o Aprovador (colaborador + aprovador desta verificacao) preenche
+### o resultado
+PATCH {{baseUrl}}/verificacoes/01a0c96a-1913-734c-878e-87f2ae7aef10
+//PATCH {{baseUrl}}/verificacoes/COLE_O_ID_DA_VERIFICACAO_GERADA
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "resultado": "EFICAZ",
+    "conclusao": "Apos 30 dias de uso, nenhum vazamento foi observado na linha 2. A vedacao com o material correto resolveu o problema.",
+    "verificadoEm": "2026-11-09T10:00:00.000Z"
+}
+
+### Conclui a Verificacao (sem portao, vai direto para FECHADO)
+POST {{baseUrl}}/verificacoes/01a0c96a-1913-734c-878e-87f2ae7aef10/concluir
+//POST {{baseUrl}}/verificacoes/COLE_O_ID_DA_VERIFICACAO_GERADA/concluir
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### Confirma que fechou
+GET {{baseUrl}}/verificacoes/01a0c96a-1913-734c-878e-87f2ae7aef10
+//GET {{baseUrl}}/verificacoes/COLE_O_ID_DA_VERIFICACAO_GERADA
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+
+### ===========================================================
+### MODOS DE FALHA
+### ===========================================================
+
+### 1 — Login como Visualizador
+# @name loginVisualizador
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "visualizador@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+### Visualizador tentando listar verificacoes — funciona (VISUALIZAR
+### inclui todos os papeis exceto ADMIN), so para confirmar leitura
+GET {{baseUrl}}/verificacoes
+Authorization: Bearer {{loginVisualizador.response.body.token}}
+
+### 2 — Tentar finalizar execucao SEM ter registrado executadoEm/evidencia
+### primeiro (usa uma nova AcaoCorretiva) — espera 400
+# @name acaoSemExecucao
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/acoes-corretivas
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Acao corretiva de teste, sem execucao registrada ainda.",
+    "prazo": "2026-11-01T00:00:00.000Z",
+    "instrucoesVerificacao": "Instrucoes de teste."
+}
+
+### Publica
+POST {{baseUrl}}/acoes-corretivas/{{acaoSemExecucao.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Define aprovador
+PUT {{baseUrl}}/registros/{{acaoSemExecucao.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "1f4b773f-d13b-482a-90df-5594fd21a8e8"
+}
+
+### Submete e aprova o plano
+POST {{baseUrl}}/acoes-corretivas/{{acaoSemExecucao.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+###
+POST {{baseUrl}}/acoes-corretivas/{{acaoSemExecucao.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### Tenta finalizar SEM ter preenchido executadoEm/evidencia — espera 400
+POST {{baseUrl}}/acoes-corretivas/{{acaoSemExecucao.response.body.id}}/finalizar-execucao
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "diasParaVerificar": 15
+}
+
+### 3 — Tentar finalizar execucao ANTES do plano ser aprovado — espera 409
+# @name acaoPlanoNaoAprovado
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/acoes-corretivas
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Acao corretiva de teste, plano ainda nao aprovado.",
+    "prazo": "2026-11-01T00:00:00.000Z",
+    "instrucoesVerificacao": "Instrucoes de teste."
+}
+
+### Publica (fica ABERTO, mas portaoAtual=0 e ainda nao foi decidido)
+POST {{baseUrl}}/acoes-corretivas/{{acaoPlanoNaoAprovado.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Tenta finalizar direto, sem nunca submeter/aprovar — espera 409
+POST {{baseUrl}}/acoes-corretivas/{{acaoPlanoNaoAprovado.response.body.id}}/finalizar-execucao
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "diasParaVerificar": 15
+}
+
+### 4 — diasParaVerificar invalido (negativo) — espera 400
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/finalizar-execucao
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "diasParaVerificar": -5
+}

@@ -165,9 +165,7 @@ export const acaoCorretivaService = {
                 instrucoesVerificacao: acaoCorretiva.instrucoesVerificacao,
                 prazo: prazoVerificacao
             });
-
-
-
+            await atribuicaoRepository.inserirAtribuicao(tx, registroVerificacao.id, aprovador.usuarioId, ator.id, "COLABORADOR");
             await atribuicaoRepository.inserirAtribuicao(tx, registroVerificacao.id, aprovador.usuarioId, ator.id, "APROVADOR");
 
             await auditoriaRepository.registrar(tx, {
