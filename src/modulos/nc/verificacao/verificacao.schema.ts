@@ -1,5 +1,5 @@
 import z from "zod";
-import { ResultadoVerificacao } from "../../compartilhado/entidades/resultado-verificacao.js";
+import { ResultadoVerificacao } from "../../../compartilhado/entidades/resultado-verificacao.js";
 
 export const verificacaoBaseSchema = z.object({
     instrucoesVerificacao: z.string().nullish(),

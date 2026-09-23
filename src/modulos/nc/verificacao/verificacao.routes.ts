@@ -1,11 +1,11 @@
 import type { FastifyInstance } from "fastify";
 import { verificacaoController } from "./verificacao.controller.js";
-import { autenticar } from "../../middlewares/autenticar.js";
+import { autenticar } from "../../../middlewares/autenticar.js";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 import { verificacaoRascunhoSchema } from "./verificacao.schema.js";
-import { motivoSchema } from "../../compartilhado/registro/motivo.schema.js";
-import { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
+import { motivoSchema } from "../../../compartilhado/registro/motivo.schema.js";
+import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 
 export async function verificacaoRoutes(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({

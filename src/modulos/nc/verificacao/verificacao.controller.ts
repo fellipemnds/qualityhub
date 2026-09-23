@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { verificacaoService } from "./verificacao.service.js";
 import { VerificacaoRascunhoInput } from "./verificacao.schema.js";
-import { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
+import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 
 export const verificacaoController = {
     async atualizarVerificacao(request: FastifyRequest<{ Params: { id: string }, Body: VerificacaoRascunhoInput }>, reply: FastifyReply) {

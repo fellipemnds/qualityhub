@@ -1,5 +1,5 @@
-import { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
-import { ClientePrisma } from "../../compartilhado/prisma/tipos.js";
+import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
 import { ContencaoRascunhoInput } from "./contencao.schema.js";
 
 export const contencaoRepository = {

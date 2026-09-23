@@ -1,6 +1,6 @@
-import { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
-import { ClientePrisma } from "../../compartilhado/prisma/tipos.js";
-import { Prisma } from "../../generated/prisma/client.js";
+import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
+import { Prisma } from "../../../generated/prisma/client.js";
 import { InvestigacaoRascunhoInput } from "./investigacao.schema.js";
 
 export const investigacaoRepository = {

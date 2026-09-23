@@ -1,20 +1,20 @@
-import { atribuicaoRepository } from "../../compartilhado/atribuicao/atribuicao.repository.js";
-import { auditoriaRepository } from "../../compartilhado/auditoria/auditoria.repository.js";
-import { EntidadeAuditada } from "../../compartilhado/auditoria/entidades-auditadas.js";
-import { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
-import { Papel } from "../../compartilhado/entidades/papeis.js";
-import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../compartilhado/errors/errors.js";
-import { temPapel } from "../../compartilhado/permissoes/pode-executar.js";
-import { prisma } from "../../compartilhado/prisma/cliente.js";
-import { cicloVidaService } from "../../compartilhado/registro/ciclo-vida.service.js";
-import { ESTADOS_EDITAVEIS } from "../../compartilhado/registro/estados-editaveis.js";
-import { registroRepository } from "../../compartilhado/registro/registro.repository.js";
-import { acaoCorretivaRepository } from "./acao-corretiva.repository.js";
+import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
+import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
+import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
+import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import { Ator } from "../../../compartilhado/entidades/ator.js";
+import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js";
+import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
+import { prisma } from "../../../compartilhado/prisma/cliente.js";
+import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
+import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
+import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
+import { acaoCorretivaRepository } from "../acao-corretiva/acao-corretiva.repository.js";
 import { verificacaoRepository } from "./verificacao.repository.js";
 import { verificacaoConclusaoSchema, VerificacaoRascunhoInput } from "./verificacao.schema.js";
 
 export const verificacaoService = {
-    async atualizarVerificacao(registroId: string, ator: { id: string, papeis: Papel[] }, dados: VerificacaoRascunhoInput) {
+    async atualizarVerificacao(registroId: string, ator: Ator, dados: VerificacaoRascunhoInput) {
         return prisma.$transaction(async (tx) => {
             const registro = await registroRepository.buscarPorId(tx, registroId);
             if (registro === null) throw new NaoEncontradoError("Item não encontrado.");
@@ -59,7 +59,7 @@ export const verificacaoService = {
     //   ambas com o mesmo motivo automatico citando o codigo da
     //   Verificacao. Uma nova Investigacao teria que ser criada depois,
     //   manualmente, pelo colaborador — isso nao acontece aqui.
-    async concluirVerificacao(registroId: string, ator: { id: string, papeis: Papel[] }) {
+    async concluirVerificacao(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
             const verificacao = await verificacaoRepository.buscarPorId(tx, registroId);
             if (verificacao === null) throw new NaoEncontradoError("Item não encontrado.");
@@ -101,13 +101,13 @@ export const verificacaoService = {
         });
     },
 
-    async excluirRascunhoVerificacao(registroId: string, ator: { id: string, papeis: Papel[] }) {
+    async excluirRascunhoVerificacao(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
             return cicloVidaService.excluirRascunho(tx, registroId, ator);
         });
     },
 
-    async cancelarVerificacao(registroId: string, ator: { id: string, papeis: Papel[] }, motivo: string) {
+    async cancelarVerificacao(registroId: string, ator: Ator, motivo: string) {
         return prisma.$transaction(async (tx) => {
             const registroCancelado = await cicloVidaService.cancelar(tx, registroId, ator, motivo);
             const verificacao = await verificacaoRepository.buscarPorId(tx, registroId);
@@ -115,7 +115,7 @@ export const verificacaoService = {
         });
     },
 
-    async buscarPorIdVerificacao(registroId: string, ator: { id: string, papeis: Papel[] }) {
+    async buscarPorIdVerificacao(registroId: string, ator: Ator) {
         const registro = await registroRepository.buscarPorId(prisma, registroId);
         if (registro === null) throw new NaoEncontradoError("Item não encontrado.");
 
@@ -126,7 +126,7 @@ export const verificacaoService = {
         return { ...registro, ...verificacao };
     },
 
-    async listarVerificacoes(ator: { id: string, papeis: Papel[] }, filtros: { acaoCorretivaId?: string, estado?: EstadoRegistro }) {
+    async listarVerificacoes(ator: Ator, filtros: { acaoCorretivaId?: string, estado?: EstadoRegistro }) {
         const papel = temPapel(ator, "VISUALIZAR");
         if (!papel) throw new SemPermissaoError("Você não tem permissões suficientes para visualizar.");
 

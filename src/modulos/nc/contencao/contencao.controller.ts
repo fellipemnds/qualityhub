@@ -1,8 +1,8 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { contencaoService } from "./contencao.service.js";
 import { ContencaoRascunhoInput } from "./contencao.schema.js";
-import { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
-import { DecisaoInput } from "../../compartilhado/registro/decidir.schema.js";
+import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 
 export const contencaoController = {
     async criarRascunhoContencao(request: FastifyRequest<{ Params: { naoConformidadeId: string }, Body: ContencaoRascunhoInput }>, reply: FastifyReply) {

@@ -1,10 +1,10 @@
 import type { FastifyInstance } from "fastify";
 import { ncController } from "./nc.controller.js";
-import { autenticar } from "../../middlewares/autenticar.js"
+import { autenticar } from "../../../middlewares/autenticar.js"
 import { ZodTypeProvider } from "fastify-type-provider-zod";
-import { ncRascunhoSchema } from "./nc.schema.js";
-import { decisaoSchema } from "../../compartilhado/registro/decidir.schema.js";
-import { motivoSchema } from "../../compartilhado/registro/motivo.schema.js";
+import { ncFiltrosListagemSchema, ncRascunhoSchema } from "./nc.schema.js";
+import { decisaoSchema } from "../../../compartilhado/registro/decidir.schema.js";
+import { motivoSchema } from "../../../compartilhado/registro/motivo.schema.js";
 import z from "zod";
 
 export async function ncRoutes(app: FastifyInstance) {
@@ -107,6 +107,9 @@ export async function ncRoutes(app: FastifyInstance) {
         method: "GET",
         url: "/nc",
         onRequest: [autenticar],
+        schema: {
+            querystring: ncFiltrosListagemSchema
+        },
         handler: ncController.listarNC
     });
 }

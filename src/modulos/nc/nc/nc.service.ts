@@ -1,22 +1,23 @@
-import { prisma } from "../../compartilhado/prisma/cliente.js"
-import { atribuicaoRepository } from "../../compartilhado/atribuicao/atribuicao.repository.js"
-import { Papel } from "../../compartilhado/entidades/papeis.js"
-import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../compartilhado/errors/errors.js"
-import { temPapel } from "../../compartilhado/permissoes/pode-executar.js"
-import { cicloVidaService } from "../../compartilhado/registro/ciclo-vida.service.js"
+import { prisma } from "../../../compartilhado/prisma/cliente.js"
+import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js"
+import { Ator } from "../../../compartilhado/entidades/ator.js"
+import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js"
+import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js"
+import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js"
 import { ncRepository } from "./nc.repository.js"
-import { ncFechamentoSchema, ncPublicacaoSchema, NCRascunhoInput } from "./nc.schema.js"
-import { DecisaoInput } from "../../compartilhado/registro/decidir.schema.js"
-import { registroRepository } from "../../compartilhado/registro/registro.repository.js"
-import { auditoriaRepository } from "../../compartilhado/auditoria/auditoria.repository.js"
-import { EntidadeAuditada } from "../../compartilhado/auditoria/entidades-auditadas.js"
-import { ESTADOS_EDITAVEIS } from "../../compartilhado/registro/estados-editaveis.js"
-import { classificacaoRepository } from "./classificacao.repository.js"
-import { investigacaoRepository } from "./investigacao.repository.js"
-import { contencaoRepository } from "./contencao.repository.js"
+import { ncFechamentoSchema, NCFiltrosListagemInput, ncPublicacaoSchema, NCRascunhoInput } from "./nc.schema.js"
+import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js"
+import { registroRepository } from "../../../compartilhado/registro/registro.repository.js"
+import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js"
+import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js"
+import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js"
+import { classificacaoRepository } from "../classificacao/classificacao.repository.js"
+import { investigacaoRepository } from "../investigacao/investigacao.repository.js"
+import { contencaoRepository } from "../contencao/contencao.repository.js"
+import { LIMITE_PADRAO_PAGINACAO, paginar } from "../../../compartilhado/registro/paginacao-cursor.js"
 
 export const ncService = {
-    async criarRascunhoNC(ator: { id: string, papeis: Papel[] }, dados: NCRascunhoInput) {
+    async criarRascunhoNC(ator: Ator, dados: NCRascunhoInput) {
         return prisma.$transaction(async (tx) => {
             const papel = temPapel(ator, "GERENCIAR_RASCUNHO");
 
@@ -34,7 +35,7 @@ export const ncService = {
         })
     },
 
-    async atualizarNC(registroId: string, ator: { id: string, papeis: Papel[] }, dados: NCRascunhoInput) {
+    async atualizarNC(registroId: string, ator: Ator, dados: NCRascunhoInput) {
         return prisma.$transaction(async (tx) => {
             const registro = await registroRepository.buscarPorId(tx, registroId);
 
@@ -69,7 +70,7 @@ export const ncService = {
         })
     },
 
-    async excluirRascunhoNC(registroId: string, ator: { id: string, papeis: Papel[] }) {
+    async excluirRascunhoNC(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
             const registroExcluido = await cicloVidaService.excluirRascunho(tx, registroId, ator);
 
@@ -77,7 +78,7 @@ export const ncService = {
         })
     },
 
-    async publicarNC(registroId: string, ator: { id: string, papeis: Papel[] }) {
+    async publicarNC(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
             const nc = await ncRepository.buscarPorId(tx, registroId);
 
@@ -91,7 +92,7 @@ export const ncService = {
         })
     },
 
-    async submeterNC(registroId: string, ator: { id: string, papeis: Papel[] }) {
+    async submeterNC(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
             const nc = await ncRepository.buscarPorId(tx, registroId);
 
@@ -126,7 +127,7 @@ export const ncService = {
         });
     },
 
-    async decidirNC(registroId: string, ator: { id: string, papeis: Papel[] }, dados: DecisaoInput) {
+    async decidirNC(registroId: string, ator: Ator, dados: DecisaoInput) {
         return prisma.$transaction(async (tx) => {
             const registroDecidido = await cicloVidaService.decidir(tx, registroId, ator, dados);
             const nc = await ncRepository.buscarPorId(tx, registroId);
@@ -135,7 +136,7 @@ export const ncService = {
         })
     },
 
-    async reabrirNC(registroId: string, ator: { id: string, papeis: Papel[] }, motivo: string) {
+    async reabrirNC(registroId: string, ator: Ator, motivo: string) {
         return prisma.$transaction(async (tx) => {
             const registroReaberto = await cicloVidaService.reabrir(tx, registroId, ator, motivo);
             const nc = await ncRepository.buscarPorId(tx, registroId);
@@ -144,7 +145,7 @@ export const ncService = {
         })
     },
 
-    async cancelarNC(registroId: string, ator: { id: string, papeis: Papel[] }, motivo: string) {
+    async cancelarNC(registroId: string, ator: Ator, motivo: string) {
         return prisma.$transaction(async (tx) => {
             const registroCancelado = await cicloVidaService.cancelar(tx, registroId, ator, motivo);
             const nc = await ncRepository.buscarPorId(tx, registroId);
@@ -153,7 +154,7 @@ export const ncService = {
         })
     },
 
-    async buscarPorIdNC(registroId: string, ator: { id: string, papeis: Papel[] }) {
+    async buscarPorIdNC(registroId: string, ator: Ator) {
         const registro = await registroRepository.buscarPorId(prisma, registroId);
 
         if (registro === null) {
@@ -171,20 +172,22 @@ export const ncService = {
         return { ...registro, ...nc };
     },
 
-    async listarNC(ator: { id: string, papeis: Papel[] }) {
+    async listarNC(ator: Ator, filtros: NCFiltrosListagemInput) {
         const papel = temPapel(ator, "VISUALIZAR");
 
         if (!papel) {
             throw new SemPermissaoError("Você não tem permissões suficientes para visualizar.");
         }
 
-        const registros = await registroRepository.listar(prisma, { tipo: "NAO_CONFORMIDADE" });
+        const ncs = await ncRepository.listar(prisma, ator.id, filtros);
 
-        const ncCompleta = registros.map((item) => {
-            const { naoConformidade, ...resto } = item;
-            return { ...naoConformidade, ...resto };
+        const registros = ncs.map((item) => {
+            const { registro, ...resto } = item;
+            return { ...registro, ...resto };
         });
 
-        return ncCompleta;
+        const resultadosPagina = paginar(registros, filtros.limit ?? LIMITE_PADRAO_PAGINACAO);
+
+        return resultadosPagina;
     }
 }

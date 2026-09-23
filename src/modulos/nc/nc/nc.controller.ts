@@ -1,8 +1,8 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
 import { ncService } from "./nc.service.js";
-import { NCRascunhoInput } from "./nc.schema.js";
-import { DecisaoInput } from "../../compartilhado/registro/decidir.schema.js";
-import { MotivoInput } from "../../compartilhado/registro/motivo.schema.js";
+import { NCFiltrosListagemInput, NCRascunhoInput } from "./nc.schema.js";
+import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
+import { MotivoInput } from "../../../compartilhado/registro/motivo.schema.js";
 
 export const ncController = {
     async criarRascunhoNC(request: FastifyRequest<{ Body: NCRascunhoInput }>, reply: FastifyReply) {
@@ -90,10 +90,11 @@ export const ncController = {
         return reply.status(200).send(ncBuscada);
     },
 
-    async listarNC(request: FastifyRequest, reply: FastifyReply) {
+    async listarNC(request: FastifyRequest<{ Querystring: NCFiltrosListagemInput }>, reply: FastifyReply) {
         const ator = request.user;
+        const filtros = request.query;
 
-        const ncListada = await ncService.listarNC(ator);
+        const ncListada = await ncService.listarNC(ator, filtros);
 
         return reply.status(200).send(ncListada);
     }

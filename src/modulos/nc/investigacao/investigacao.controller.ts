@@ -1,8 +1,8 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { investigacaoService } from "./investigacao.service.js";
 import { InvestigacaoRascunhoInput } from "./investigacao.schema.js";
-import { DecisaoInput } from "../../compartilhado/registro/decidir.schema.js";
-import { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
+import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
+import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 
 export const investigacaoController = {
     async criarRascunhoInvestigacao(request: FastifyRequest<{ Params: { naoConformidadeId: string }, Body: InvestigacaoRascunhoInput }>, reply: FastifyReply) {

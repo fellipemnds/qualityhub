@@ -1,5 +1,5 @@
 import z from "zod";
-import { MetodoInvestigacao } from "../../compartilhado/entidades/metodo-investigacao.js";
+import { MetodoInvestigacao } from "../../../compartilhado/entidades/metodo-investigacao.js";
 
 export const investigacaoBaseSchema = z.object({
     realProblema: z.string().min(20),

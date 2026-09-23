@@ -1,5 +1,5 @@
 import z from "zod";
-import { ClassificacaoHipotese } from "../../compartilhado/entidades/classificacao-hipotese.js";
+import { ClassificacaoHipotese } from "../../../compartilhado/entidades/classificacao-hipotese.js";
 
 export const hipoteseBaseSchema = z.object({
     descricao: z.string().min(1).nullish(),

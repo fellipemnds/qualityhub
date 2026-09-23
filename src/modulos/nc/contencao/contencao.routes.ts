@@ -1,12 +1,12 @@
 import type { FastifyInstance } from "fastify";
 import { contencaoController } from "./contencao.controller.js";
-import { autenticar } from "../../middlewares/autenticar.js";
+import { autenticar } from "../../../middlewares/autenticar.js";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 import { contencaoRascunhoSchema } from "./contencao.schema.js";
-import { decisaoSchema } from "../../compartilhado/registro/decidir.schema.js";
-import { motivoSchema } from "../../compartilhado/registro/motivo.schema.js";
-import { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
+import { decisaoSchema } from "../../../compartilhado/registro/decidir.schema.js";
+import { motivoSchema } from "../../../compartilhado/registro/motivo.schema.js";
+import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 
 export async function contencaoRoutes(app: FastifyInstance) {
 

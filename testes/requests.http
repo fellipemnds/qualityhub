@@ -129,7 +129,8 @@ Content-Type: application/json
 Authorization: Bearer {{loginGerenteParaAtribuir.response.body.token}}
 
 {
-    "usuarioId": "3b6cc42f-26e8-46fa-b28c-20d72ac02197"
+    "usuarioId": "1f4b773f-d13b-482a-90df-5594fd21a8e8"
+    //"usuarioId": "ID_DO_APROVADOR"
 }
 
 ### Adiciona o QA como colaborador extra desta NC (usando o Editor, que já tem GERENCIAR_COLABORADORES)
@@ -139,7 +140,8 @@ Content-Type: application/json
 Authorization: Bearer {{loginEditor.response.body.token}}
 
 {
-    "colaboradores": ["3b6cc42f-26e8-46fa-b28c-20d72ac02197"]
+    "colaboradores": ["90e8e073-598c-484b-bb77-0f5b7963efc6"]
+    //"colaboradores": ["ID_DO_COLABORADOR"]
 }
 
 ### ===========================================================

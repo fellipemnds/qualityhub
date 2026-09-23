@@ -1,8 +1,8 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { acaoCorretivaService } from "./acao-corretiva.service.js";
 import { AcaoCorretivaRascunhoInput, FinalizarExecucaoInput } from "./acao-corretiva.schema.js";
-import { DecisaoInput } from "../../compartilhado/registro/decidir.schema.js";
-import { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
+import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
+import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 
 export const acaoCorretivaController = {
     async criarRascunhoAcaoCorretiva(request: FastifyRequest<{ Params: { naoConformidadeId: string }, Body: AcaoCorretivaRascunhoInput & { investigacaoId?: string } }>, reply: FastifyReply) {

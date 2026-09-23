@@ -72,12 +72,11 @@ enum ClassificacaoNC {
 }
 
 model NaoConformidade {
-  id                 String           @id
-  titulo             String?
-  descricao          String?
-  requisitoViolado   String?
-  processoAfetado    String?
-  classificacaoAtual ClassificacaoNC?
+  id               String  @id
+  titulo           String?
+  descricao        String?
+  requisitoViolado String?
+  processoAfetado  String?
 
   setorId     Int?
   setor       Setor?    @relation(fields: [setorId], references: [id])

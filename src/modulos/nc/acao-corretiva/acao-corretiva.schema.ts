@@ -1,6 +1,7 @@
 import z from "zod";
 
 export const acaoCorretivaBaseSchema = z.object({
+    investigacaoId: z.uuid().nullish(),
     descricao: z.string().min(20).nullish(),
     prazo: z.coerce.date().nullish(),
     executadoEm: z.coerce.date().nullish(),

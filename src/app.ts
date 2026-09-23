@@ -5,13 +5,13 @@ import { ZodError } from "zod";
 import { AppError } from "./compartilhado/errors/errors.js";
 import { authRoutes } from "./modulos/auth/auth.routes.js";
 import { usuarioRoutes } from "./modulos/usuario/usuario.routes.js";
-import { ncRoutes } from "./modulos/nc/nc.routes.js";
+import { ncRoutes } from "./modulos/nc/nc/nc.routes.js";
 import { atribuicaoRoutes } from "./compartilhado/atribuicao/atribuicao.routes.js";
-import { contencaoRoutes } from "./modulos/nc/contencao.routes.js";
-import { classificacaoRoutes } from "./modulos/nc/classificacao.routes.js";
-import { investigacaoRoutes } from "./modulos/nc/investigacao.routes.js";
-import { acaoCorretivaRoutes } from "./modulos/nc/acao-corretiva.routes.js";
-import { verificacaoRoutes } from "./modulos/nc/verificacao.routes.js";
+import { contencaoRoutes } from "./modulos/nc/contencao/contencao.routes.js";
+import { classificacaoRoutes } from "./modulos/nc/classificacao/classificacao.routes.js";
+import { investigacaoRoutes } from "./modulos/nc/investigacao/investigacao.routes.js";
+import { acaoCorretivaRoutes } from "./modulos/nc/acao-corretiva/acao-corretiva.routes.js";
+import { verificacaoRoutes } from "./modulos/nc/verificacao/verificacao.routes.js";
 
 const app = Fastify({
     logger: true,

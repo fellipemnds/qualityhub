@@ -5,7 +5,7 @@ import { EntidadeAuditada } from "../auditoria/entidades-auditadas.js"
 import { cancelamentoRepository } from "../cancelamento/cancelamento.repository.js"
 import { Acao } from "../entidades/acoes.js"
 import { Decisao } from "../entidades/decisao.js"
-import { Papel } from "../entidades/papeis.js"
+import { Ator } from "../entidades/ator.js"
 import { TipoRegistro } from "../entidades/tipos-registro.js"
 import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError, ValidacaoError } from "../errors/errors.js"
 import { podeExecutar, temPapel } from "../permissoes/pode-executar.js"
@@ -32,7 +32,7 @@ export const cicloVidaService = {
         return registro;
     },
 
-    async publicar(tx: ClientePrisma, registroId: string, ator: { id: string, papeis: Papel[] }, dados: unknown, validador: (dados: unknown) => unknown, acao: Acao = "PUBLICAR") {
+    async publicar(tx: ClientePrisma, registroId: string, ator: Ator, dados: unknown, validador: (dados: unknown) => unknown, acao: Acao = "PUBLICAR") {
         const registro = await registroRepository.buscarPorId(tx, registroId);
 
         if (registro === null) {
@@ -70,7 +70,7 @@ export const cicloVidaService = {
         return registroAtualizado;
     },
 
-    async excluirRascunho(tx: ClientePrisma, registroId: string, ator: { id: string, papeis: Papel[] }, acao: Acao = "GERENCIAR_RASCUNHO") {
+    async excluirRascunho(tx: ClientePrisma, registroId: string, ator: Ator, acao: Acao = "GERENCIAR_RASCUNHO") {
         const registro = await registroRepository.buscarPorId(tx, registroId);
 
         if (registro === null) {
@@ -101,7 +101,7 @@ export const cicloVidaService = {
         return registroDeletado;
     },
 
-    async submeter(tx: ClientePrisma, registroId: string, ator: { id: string, papeis: Papel[] }, dados: unknown, validador: (dados: unknown) => unknown, acao: Acao = "SUBMETER") {
+    async submeter(tx: ClientePrisma, registroId: string, ator: Ator, dados: unknown, validador: (dados: unknown) => unknown, acao: Acao = "SUBMETER") {
         const registro = await registroRepository.buscarPorId(tx, registroId);
 
         if (registro === null) {
@@ -140,7 +140,7 @@ export const cicloVidaService = {
         return dadoAtualizado;
     },
 
-    async decidir(tx: ClientePrisma, registroId: string, ator: { id: string, papeis: Papel[] }, dados: { decisao: Decisao, motivo?: string }, fecharAoAprovarUltimoPortao: boolean = true) {
+    async decidir(tx: ClientePrisma, registroId: string, ator: Ator, dados: { decisao: Decisao, motivo?: string }, fecharAoAprovarUltimoPortao: boolean = true) {
         const registro = await registroRepository.buscarPorId(tx, registroId);
 
         if (registro === null) {
@@ -207,7 +207,7 @@ export const cicloVidaService = {
         return registroAtualizado;
     },
 
-    async concluir(tx: ClientePrisma, registroId: string, ator: { id: string, papeis: Papel[] }, dados: unknown, validador: (dados: unknown) => unknown) {
+    async concluir(tx: ClientePrisma, registroId: string, ator: Ator, dados: unknown, validador: (dados: unknown) => unknown) {
         const registro = await registroRepository.buscarPorId(tx, registroId);
 
         if (registro === null) {
@@ -242,7 +242,7 @@ export const cicloVidaService = {
         return dadoAtualizado;
     },
 
-    async reabrir(tx: ClientePrisma, registroId: string, ator: { id: string, papeis: Papel[] }, motivo: string) {
+    async reabrir(tx: ClientePrisma, registroId: string, ator: Ator, motivo: string) {
         const registro = await registroRepository.buscarPorId(tx, registroId);
 
         if (registro === null) {
@@ -275,7 +275,7 @@ export const cicloVidaService = {
         return registroAtualizado;
     },
 
-    async cancelar(tx: ClientePrisma, registroId: string, ator: { id: string, papeis: Papel[] }, motivo: string) {
+    async cancelar(tx: ClientePrisma, registroId: string, ator: Ator, motivo: string) {
         const registro = await registroRepository.buscarPorId(tx, registroId);
 
         if (registro === null) {

@@ -1,21 +1,21 @@
-import { atribuicaoRepository } from "../../compartilhado/atribuicao/atribuicao.repository.js";
-import { auditoriaRepository } from "../../compartilhado/auditoria/auditoria.repository.js";
-import { EntidadeAuditada } from "../../compartilhado/auditoria/entidades-auditadas.js";
-import { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
-import { Papel } from "../../compartilhado/entidades/papeis.js";
-import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../compartilhado/errors/errors.js";
-import { temPapel } from "../../compartilhado/permissoes/pode-executar.js";
-import { prisma } from "../../compartilhado/prisma/cliente.js";
-import { cicloVidaService } from "../../compartilhado/registro/ciclo-vida.service.js";
-import { DecisaoInput } from "../../compartilhado/registro/decidir.schema.js";
-import { ESTADOS_EDITAVEIS } from "../../compartilhado/registro/estados-editaveis.js";
-import { registroRepository } from "../../compartilhado/registro/registro.repository.js";
+import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
+import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
+import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
+import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import { Ator } from "../../../compartilhado/entidades/ator.js";
+import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js";
+import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
+import { prisma } from "../../../compartilhado/prisma/cliente.js";
+import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
+import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
+import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
+import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
 import { classificacaoRepository } from "./classificacao.repository.js";
 import { classificacaoFechamentoSchema, classificacaoPublicacaoSchema, ClassificacaoRascunhoInput } from "./classificacao.schema.js";
-import { ncRepository } from "./nc.repository.js";
+import { ncRepository } from "../nc/nc.repository.js";
 
 export const classificacaoService = {
-    async criarRascunhoClassificacao(ator: { id: string, papeis: Papel[] }, naoConformidadeId: string, dados: ClassificacaoRascunhoInput) {
+    async criarRascunhoClassificacao(ator: Ator, naoConformidadeId: string, dados: ClassificacaoRascunhoInput) {
         return prisma.$transaction(async (tx) => {
             const papel = temPapel(ator, "CLASSIFICAR");
 
@@ -39,7 +39,7 @@ export const classificacaoService = {
         })
     },
 
-    async atualizarClassificacao(registroId: string, ator: { id: string, papeis: Papel[] }, dados: ClassificacaoRascunhoInput) {
+    async atualizarClassificacao(registroId: string, ator: Ator, dados: ClassificacaoRascunhoInput) {
         return prisma.$transaction(async (tx) => {
             const registro = await registroRepository.buscarPorId(tx, registroId);
 
@@ -74,7 +74,7 @@ export const classificacaoService = {
         })
     },
 
-    async excluirRascunhoClassificacao(registroId: string, ator: { id: string, papeis: Papel[] }) {
+    async excluirRascunhoClassificacao(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
             const registroExcluido = await cicloVidaService.excluirRascunho(tx, registroId, ator, "CLASSIFICAR");
 
@@ -82,7 +82,7 @@ export const classificacaoService = {
         })
     },
 
-    async publicarClassificacao(registroId: string, ator: { id: string, papeis: Papel[] }) {
+    async publicarClassificacao(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
             const classificacao = await classificacaoRepository.buscarPorId(tx, registroId);
 
@@ -96,7 +96,7 @@ export const classificacaoService = {
         })
     },
 
-    async submeterClassificacao(registroId: string, ator: { id: string, papeis: Papel[] }) {
+    async submeterClassificacao(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
             const classificacao = await classificacaoRepository.buscarPorId(tx, registroId);
 
@@ -110,7 +110,7 @@ export const classificacaoService = {
         })
     },
 
-    async decidirClassificacao(registroId: string, ator: { id: string, papeis: Papel[] }, dados: DecisaoInput) {
+    async decidirClassificacao(registroId: string, ator: Ator, dados: DecisaoInput) {
         return prisma.$transaction(async (tx) => {
             const registroDecidido = await cicloVidaService.decidir(tx, registroId, ator, dados);
             const classificacao = await classificacaoRepository.buscarPorId(tx, registroId);
@@ -119,7 +119,7 @@ export const classificacaoService = {
         })
     },
 
-    async buscarPorIdClassificacao(registroId: string, ator: { id: string, papeis: Papel[] }) {
+    async buscarPorIdClassificacao(registroId: string, ator: Ator) {
         const registro = await registroRepository.buscarPorId(prisma, registroId);
 
         if (registro === null) {
@@ -136,7 +136,7 @@ export const classificacaoService = {
         return { ...registro, ...classificacao };
     },
 
-    async listarClassificacoes(ator: { id: string, papeis: Papel[] }, filtros: {
+    async listarClassificacoes(ator: Ator, filtros: {
         naoConformidadeId?: string,
         estado?: EstadoRegistro
     }) {

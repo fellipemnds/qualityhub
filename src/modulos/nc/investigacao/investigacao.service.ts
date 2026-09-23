@@ -1,23 +1,23 @@
-import { atribuicaoRepository } from "../../compartilhado/atribuicao/atribuicao.repository.js";
-import { auditoriaRepository } from "../../compartilhado/auditoria/auditoria.repository.js";
-import { EntidadeAuditada } from "../../compartilhado/auditoria/entidades-auditadas.js";
-import { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
-import { Papel } from "../../compartilhado/entidades/papeis.js";
-import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../compartilhado/errors/errors.js";
-import { temPapel } from "../../compartilhado/permissoes/pode-executar.js";
-import { prisma } from "../../compartilhado/prisma/cliente.js";
-import { cicloVidaService } from "../../compartilhado/registro/ciclo-vida.service.js";
-import { DecisaoInput } from "../../compartilhado/registro/decidir.schema.js";
-import { ESTADOS_EDITAVEIS } from "../../compartilhado/registro/estados-editaveis.js";
-import { registroRepository } from "../../compartilhado/registro/registro.repository.js";
+import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
+import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
+import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
+import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import { Ator } from "../../../compartilhado/entidades/ator.js";
+import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js";
+import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
+import { prisma } from "../../../compartilhado/prisma/cliente.js";
+import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
+import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
+import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
+import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
 import { hipoteseRepository } from "./hipotese.repository.js";
 import { hipoteseFechamentoSchema } from "./hipotese.schema.js";
 import { investigacaoRepository } from "./investigacao.repository.js";
 import { investigacaoFechamentoSchema, investigacaoPublicacaoSchema, InvestigacaoRascunhoInput } from "./investigacao.schema.js";
-import { ncRepository } from "./nc.repository.js";
+import { ncRepository } from "../nc/nc.repository.js";
 
 export const investigacaoService = {
-    async criarRascunhoInvestigacao(ator: { id: string, papeis: Papel[] }, naoConformidadeId: string, dados: InvestigacaoRascunhoInput) {
+    async criarRascunhoInvestigacao(ator: Ator, naoConformidadeId: string, dados: InvestigacaoRascunhoInput) {
         return prisma.$transaction(async (tx) => {
             const papel = temPapel(ator, "GERENCIAR_RASCUNHO");
 
@@ -41,7 +41,7 @@ export const investigacaoService = {
         });
     },
 
-    async atualizarInvestigacao(registroId: string, ator: { id: string, papeis: Papel[] }, dados: InvestigacaoRascunhoInput) {
+    async atualizarInvestigacao(registroId: string, ator: Ator, dados: InvestigacaoRascunhoInput) {
         return prisma.$transaction(async (tx) => {
             const registro = await registroRepository.buscarPorId(tx, registroId);
 
@@ -76,7 +76,7 @@ export const investigacaoService = {
         });
     },
 
-    async excluirRascunhoInvestigacao(registroId: string, ator: { id: string, papeis: Papel[] }) {
+    async excluirRascunhoInvestigacao(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
             const registroExcluido = await cicloVidaService.excluirRascunho(tx, registroId, ator);
 
@@ -84,7 +84,7 @@ export const investigacaoService = {
         });
     },
 
-    async publicarInvestigacao(registroId: string, ator: { id: string, papeis: Papel[] }) {
+    async publicarInvestigacao(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
             const investigacao = await investigacaoRepository.buscarPorId(tx, registroId);
 
@@ -98,7 +98,7 @@ export const investigacaoService = {
         });
     },
 
-    async submeterInvestigacao(registroId: string, ator: { id: string, papeis: Papel[] }) {
+    async submeterInvestigacao(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
             const investigacao = await investigacaoRepository.buscarPorId(tx, registroId);
             if (investigacao === null) {
@@ -116,7 +116,7 @@ export const investigacaoService = {
         });
     },
 
-    async decidirInvestigacao(registroId: string, ator: { id: string, papeis: Papel[] }, dados: DecisaoInput) {
+    async decidirInvestigacao(registroId: string, ator: Ator, dados: DecisaoInput) {
         return prisma.$transaction(async (tx) => {
             const registroDecidido = await cicloVidaService.decidir(tx, registroId, ator, dados);
             const investigacao = await investigacaoRepository.buscarPorId(tx, registroId);
@@ -125,7 +125,7 @@ export const investigacaoService = {
         });
     },
 
-    async cancelarInvestigacao(registroId: string, ator: { id: string, papeis: Papel[] }, motivo: string) {
+    async cancelarInvestigacao(registroId: string, ator: Ator, motivo: string) {
         return prisma.$transaction(async (tx) => {
             const registroCancelado = await cicloVidaService.cancelar(tx, registroId, ator, motivo);
             const investigacao = await investigacaoRepository.buscarPorId(tx, registroId);
@@ -134,7 +134,7 @@ export const investigacaoService = {
         });
     },
 
-    async buscarPorIdInvestigacao(registroId: string, ator: { id: string, papeis: Papel[] }) {
+    async buscarPorIdInvestigacao(registroId: string, ator: Ator) {
         const papel = temPapel(ator, "VISUALIZAR");
 
         if (!papel) {
@@ -152,7 +152,7 @@ export const investigacaoService = {
         return { ...registro, ...investigacao };
     },
 
-    async listarInvestigacoes(ator: { id: string, papeis: Papel[] }, filtros: {
+    async listarInvestigacoes(ator: Ator, filtros: {
         naoConformidadeId?: string,
         estado?: EstadoRegistro
     }) {

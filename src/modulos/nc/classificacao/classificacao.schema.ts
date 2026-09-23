@@ -1,5 +1,5 @@
 import z from "zod";
-import { ClassificacaoNC } from "../../compartilhado/entidades/classificacao-nc.js";
+import { ClassificacaoNC } from "../../../compartilhado/entidades/classificacao-nc.js";
 
 export const classificacaoBaseSchema = z.object({
     valor: z.enum(ClassificacaoNC).nullish(),

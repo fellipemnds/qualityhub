@@ -1,8 +1,8 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { classificacaoService } from "./classificacao.service.js";
 import { ClassificacaoRascunhoInput } from "./classificacao.schema.js";
-import { DecisaoInput } from "../../compartilhado/registro/decidir.schema.js";
-import { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
+import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
+import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 
 export const classificacaoController = {
     async criarRascunhoClassificacao(request: FastifyRequest<{ Params: { naoConformidadeId: string }, Body: ClassificacaoRascunhoInput }>, reply: FastifyReply) {

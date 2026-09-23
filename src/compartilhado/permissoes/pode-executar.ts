@@ -1,14 +1,14 @@
-import { Papel } from "../entidades/papeis.js";
+import { Ator } from "../entidades/ator.js";
 import { Acao } from "../entidades/acoes.js";
 import { catalogo } from "./catalogo.js";
 import { atribuicaoRepository } from "../atribuicao/atribuicao.repository.js";
 import { ClientePrisma } from "../prisma/tipos.js";
 
-export function temPapel(ator: { id: string, papeis: Papel[] }, acao: Acao): boolean {
+export function temPapel(ator: Ator, acao: Acao): boolean {
     return ator.papeis.some((papel) => catalogo[acao].includes(papel));
 };
 
-export async function podeExecutar(cliente: ClientePrisma, ator: { id: string, papeis: Papel[] }, acao: Acao, registroId: string): Promise<boolean> {
+export async function podeExecutar(cliente: ClientePrisma, ator: Ator, acao: Acao, registroId: string): Promise<boolean> {
     if (!temPapel(ator, acao)) return false;
 
     const temAtribuicao =

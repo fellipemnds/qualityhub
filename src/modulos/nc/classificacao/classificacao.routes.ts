@@ -1,11 +1,11 @@
 import type { FastifyInstance } from "fastify";
 import { classificacaoController } from "./classificacao.controller.js";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
-import { autenticar } from "../../middlewares/autenticar.js";
+import { autenticar } from "../../../middlewares/autenticar.js";
 import z from "zod";
 import { classificacaoRascunhoSchema } from "./classificacao.schema.js";
-import { decisaoSchema } from "../../compartilhado/registro/decidir.schema.js";
-import { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
+import { decisaoSchema } from "../../../compartilhado/registro/decidir.schema.js";
+import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 
 export async function classificacaoRoutes(app: FastifyInstance) {
 

@@ -1,12 +1,12 @@
 import type { FastifyInstance } from "fastify";
 import { acaoCorretivaController } from "./acao-corretiva.controller.js";
-import { autenticar } from "../../middlewares/autenticar.js";
+import { autenticar } from "../../../middlewares/autenticar.js";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 import { acaoCorretivaRascunhoSchema, finalizarExecucaoSchema } from "./acao-corretiva.schema.js";
-import { decisaoSchema } from "../../compartilhado/registro/decidir.schema.js";
-import { motivoSchema } from "../../compartilhado/registro/motivo.schema.js";
-import { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
+import { decisaoSchema } from "../../../compartilhado/registro/decidir.schema.js";
+import { motivoSchema } from "../../../compartilhado/registro/motivo.schema.js";
+import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 
 export async function acaoCorretivaRoutes(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({

@@ -1,4 +1,4 @@
-import { ClientePrisma } from "../../compartilhado/prisma/tipos.js";
+import { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
 import { HipoteseRascunhoInput } from "./hipotese.schema.js";
 
 export const hipoteseRepository = {

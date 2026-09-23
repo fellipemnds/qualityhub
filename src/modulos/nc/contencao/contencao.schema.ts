@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Disposicao } from "../../compartilhado/entidades/disposicao.js";
+import { Disposicao } from "../../../compartilhado/entidades/disposicao.js";
 
 export const contencaoBaseSchema = z.object({
     descricao: z.string().min(20),

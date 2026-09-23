@@ -1,0 +1,1032 @@
+@baseUrl = http://localhost:3333
+
+### ===========================================================
+### Health check
+### ===========================================================
+
+### Servidor no ar?
+GET {{baseUrl}}/
+
+### ===========================================================
+### FLUXO COMPLETO — todos os módulos, ponta a ponta, feliz + falhas
+###
+### Uma NC só, encadeada por inteiro:
+###   NC -> Contenção -> Classificação -> Investigação -> fechamento
+###   da NC -> AçãoCorretiva -> Verificação (+ ramos automáticos de
+###   PARCIALMENTE_EFICAZ e NAO_EFICAZ)
+###
+### Os modos de falha ATÔMICOS de cada entidade (CRUD, enums inválidos,
+### etc.) já estão exaustivamente cobertos nos arquivos por entidade
+### (requests-contencao.http, requests-classificacao.http, ...). Este
+### arquivo foca no que eles não têm: a cadeia real de dependências
+### entre as seis entidades, incluindo as guardas de transição entre
+### elas (RN-12, RN-20, RN-21, RN-24) e os dois ramos automáticos de
+### Verificação (RN implícitas descritas no changelog de arquitetura).
+###
+### Pressupõe que setup-usuarios-teste.sql já foi rodado.
+###
+### Antes de começar: com o Prisma Studio aberto, pegue na tabela
+### "Usuario" o id de aprovador@teste.com, qa@teste.com e
+### editor@teste.com, e cole nas 3 variáveis abaixo.
+### ===========================================================
+
+@aprovadorId = 1f4b773f-d13b-482a-90df-5594fd21a8e8
+@qaId = 90e8e073-598c-484b-bb77-0f5b7963efc6
+@editorId = 8bd09398-2169-4ee7-b97e-b72ebf7a3eea
+
+### ===========================================================
+### 0. Login — um por papel, reaproveitado no arquivo inteiro
+### ===========================================================
+
+# @name loginEditor
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "editor@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+###
+# @name loginGerente
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "gerente@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+###
+# @name loginAprovador
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "aprovador@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+###
+# @name loginQA
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "qa@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+###
+# @name loginVisualizador
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "visualizador@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+###
+# @name loginSemPapel
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "sempapel@teste.com",
+    "senha": "SenhaDeTeste123!"
+}
+
+
+### ===========================================================
+### 1. NC — criar, editar, listar, publicar
+### ===========================================================
+
+### Visualizador tentando criar NC — espera 403
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginVisualizador.response.body.token}}
+
+{
+    "titulo": "Teste de permissão",
+    "descricao": "Este request deveria ser rejeitado, Visualizador não pode criar.",
+    "requisitoViolado": "N/A",
+    "processoAfetado": "N/A",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Sem Papel tentando criar NC — espera 403 (papeis: [] nega, não libera)
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginSemPapel.response.body.token}}
+
+{
+    "titulo": "Teste de permissão",
+    "descricao": "Este request deveria ser rejeitado, sem papel nenhum não pode criar.",
+    "requisitoViolado": "N/A",
+    "processoAfetado": "N/A",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Título curto demais (menos de 5 caracteres) — espera 400
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "titulo": "Oi",
+    "descricao": "Este request deveria ser rejeitado, título curto demais.",
+    "requisitoViolado": "N/A",
+    "processoAfetado": "N/A",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### detectadoEm no futuro — espera 400
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "titulo": "Data no futuro",
+    "descricao": "Este request deveria ser rejeitado, detectadoEm não pode ser no futuro.",
+    "requisitoViolado": "N/A",
+    "processoAfetado": "N/A",
+    "setorId": 1,
+    "detectadoEm": "2099-01-01T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Cria a NC-mãe de verdade, a que vai carregar o fluxo inteiro
+# @name criarNC
+POST {{baseUrl}}/nc
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "titulo": "Vazamento de óleo na linha 2",
+    "descricao": "Identificado vazamento de óleo hidráulico durante inspeção de rotina na linha 2 de produção.",
+    "requisitoViolado": "Procedimento PO-07, item 4.3 - inspeção de recebimento",
+    "processoAfetado": "Linha de Produção 2",
+    "setorId": 1,
+    "detectadoEm": "2026-09-10T10:00:00.000Z",
+    "origem": "OPERACAO"
+}
+
+### Salva rascunho (edição parcial)
+PATCH {{baseUrl}}/nc/{{criarNC.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Identificado vazamento de óleo hidráulico durante inspeção de rotina na linha 2 de produção. Volume estimado: 2 litros."
+}
+
+### Lista todas as NCs
+GET {{baseUrl}}/nc
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Publica a NC (RASCUNHO -> ABERTO, gera código)
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Tenta definir o Editor como aprovador — Editor não tem papel
+### APROVADOR, a validação de atribuicao.service deve rejeitar — espera 400
+PUT {{baseUrl}}/registros/{{criarNC.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "{{editorId}}"
+}
+
+### Define o Aprovador Teste como aprovador da NC (precisa de um definido
+### para o fechamento mais adiante)
+PUT {{baseUrl}}/registros/{{criarNC.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "{{aprovadorId}}"
+}
+
+
+### ===========================================================
+### 2. Guarda de fechamento da NC (RN-21) — tentar submeter cedo
+### demais, antes de ter Classificação/Investigação FECHADA — espera 409
+### ===========================================================
+
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+
+### ===========================================================
+### 3. Contenção — fluxo completo + falhas
+### ===========================================================
+
+### Cria a Contenção desta NC
+# @name criarContencao
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/contencoes
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Retrabalho realizado na peça com defeito, substituindo a vedação danificada."
+}
+
+### Criar Contenção para NC inexistente — espera 404
+POST {{baseUrl}}/nc/00000000-0000-0000-0000-000000000000/contencoes
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Esta NC não existe, deveria falhar com 404."
+}
+
+### Salva o rascunho com disposição inválida (fora do enum) — espera 400
+PATCH {{baseUrl}}/contencoes/{{criarContencao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "disposicao": "XPTO_INVALIDO"
+}
+
+### Agora salva certo — inclui executadaEm e disposicao (exigidos no fechamento)
+PATCH {{baseUrl}}/contencoes/{{criarContencao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "executadaEm": "2026-09-15T14:30:00.000Z",
+    "disposicao": "CORRIGIDO"
+}
+
+### QA (tem papel EDITOR, mas NÃO é colaborador desta Contenção) tenta
+### editar — espera 403
+PATCH {{baseUrl}}/contencoes/{{criarContencao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginQA.response.body.token}}
+
+{
+    "descricao": "QA tentando editar uma contenção que não é dele."
+}
+
+### Publica a Contenção (RASCUNHO -> ABERTO, gera código)
+POST {{baseUrl}}/contencoes/{{criarContencao.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Filtro de estado inválido na listagem — espera 400
+GET {{baseUrl}}/contencoes?estado=XPTO_INVALIDO
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Define o Aprovador Teste como aprovador desta Contenção
+PUT {{baseUrl}}/registros/{{criarContencao.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "{{aprovadorId}}"
+}
+
+### Submete (ABERTO -> EM_APROVACAO)
+POST {{baseUrl}}/contencoes/{{criarContencao.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Decide - aprova (EM_APROVACAO -> FECHADO, Contenção só tem 1 portão)
+POST {{baseUrl}}/contencoes/{{criarContencao.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### Confirma que fechou — a partir daqui não há Contenção pendente,
+### uma das três condições da guarda RN-21 está satisfeita
+GET {{baseUrl}}/contencoes/{{criarContencao.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+
+### ===========================================================
+### 4. Classificação (RN-20) — só APROVADOR/GERENTE + falhas
+### ===========================================================
+
+### Editor (sem papel APROVADOR) tentando criar Classificação — espera 403
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/classificacoes
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "valor": "MAIOR",
+    "justificativa": "Este request deveria ser rejeitado, Editor não tem papel APROVADOR."
+}
+
+### Justificativa curta demais (menos de 20 caracteres) — espera 400
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/classificacoes
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "valor": "MAIOR",
+    "justificativa": "Curta demais"
+}
+
+### Cria a Classificação de verdade (Aprovador Teste, que tem papel APROVADOR)
+# @name criarClassificacao
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/classificacoes
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "valor": "MAIOR",
+    "justificativa": "Vazamento afeta diretamente a segurança operacional e a qualidade do produto final entregue ao cliente."
+}
+
+### Valor inválido no PATCH (fora do enum MAIOR/MENOR) — espera 400
+PATCH {{baseUrl}}/classificacoes/{{criarClassificacao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "valor": "GRAVISSIMA"
+}
+
+### Editor tentando publicar — espera 403 (RN-20 vale para publicar também)
+POST {{baseUrl}}/classificacoes/{{criarClassificacao.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Publica de verdade (RASCUNHO -> ABERTO, gera código)
+POST {{baseUrl}}/classificacoes/{{criarClassificacao.response.body.id}}/publicar
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### Submeter SEM aprovador definido ainda — espera 409
+POST {{baseUrl}}/classificacoes/{{criarClassificacao.response.body.id}}/submeter
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### Define o QA como aprovador desta Classificação (de propósito
+### diferente do Aprovador Teste, para testar a checagem estrita abaixo)
+PUT {{baseUrl}}/registros/{{criarClassificacao.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "{{qaId}}"
+}
+
+### Agora sim, submete (ABERTO -> EM_APROVACAO)
+POST {{baseUrl}}/classificacoes/{{criarClassificacao.response.body.id}}/submeter
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### O Aprovador Teste (tem papel certo, mas NÃO é o aprovador designado
+### — foi o QA quem foi designado) tenta decidir — espera 403
+POST {{baseUrl}}/classificacoes/{{criarClassificacao.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### O QA (aprovador designado de verdade) decide - aprova (EM_APROVACAO
+### -> FECHADO, Classificação só tem 1 portão)
+POST {{baseUrl}}/classificacoes/{{criarClassificacao.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginQA.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### Confirma que fechou — segunda condição da guarda RN-21 satisfeita
+GET {{baseUrl}}/classificacoes/{{criarClassificacao.response.body.id}}
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+
+### ===========================================================
+### 5. Investigação — conduzida pelo Editor, editável em ABERTO + falhas
+### ===========================================================
+
+### Cria a Investigação desta NC
+# @name criarInvestigacao
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/investigacoes
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "realProblema": "Vedação da bomba hidráulica apresentou desgaste prematuro, causando vazamento contínuo de óleo."
+}
+
+### Visualizador tentando criar Investigação — espera 403
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/investigacoes
+Content-Type: application/json
+Authorization: Bearer {{loginVisualizador.response.body.token}}
+
+{
+    "realProblema": "Este request deveria ser rejeitado, Visualizador não pode criar."
+}
+
+### Método inválido no PATCH (fora do enum) — espera 400
+PATCH {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "metodo": "SEIS_SIGMA"
+}
+
+### Salva o rascunho de verdade, avançando a investigação
+PATCH {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "metodo": "A3_SPS",
+    "conteudo": {
+        "percepcaoInicial": "Vazamento constante na linha 2",
+        "descricao": "Óleo hidráulico vazando na base da bomba",
+        "ishikawa": { "metodo": "Troca de vedação fora do padrão" }
+    }
+}
+
+### Publica a Investigação (RASCUNHO -> ABERTO, gera código)
+POST {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Define aprovador
+PUT {{baseUrl}}/registros/{{criarInvestigacao.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "{{aprovadorId}}"
+}
+
+### Submeter SEM causaRaiz preenchida ainda (RN-24) — espera 400
+POST {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Completa causa direta e causa raiz, JÁ PUBLICADA (permitido:
+### ESTADOS_EDITAVEIS inclui ABERTO — a pegadinha desta entidade)
+PATCH {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "causaDireta": "Vedação de material incompatível com o fluido hidráulico utilizado na máquina.",
+    "causaRaiz": "Procedimento de manutenção não especifica o material correto de vedação para este modelo de bomba."
+}
+
+### QA (tem papel EDITOR, mas NÃO é colaborador desta Investigação)
+### tenta editar — espera 403
+PATCH {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginQA.response.body.token}}
+
+{
+    "realProblema": "QA tentando editar uma investigação que não é sua."
+}
+
+### Agora sim, submete (ABERTO -> EM_APROVACAO)
+POST {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Editar durante EM_APROVACAO continua bloqueado, mesmo sendo
+### editável em ABERTO — espera 409
+PATCH {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "causaRaiz": "Tentando editar durante avaliação, isso deveria ser rejeitado."
+}
+
+### Decide - aprova (EM_APROVACAO -> FECHADO)
+POST {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### Editar depois de FECHADO continua bloqueado — espera 409
+PATCH {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "causaRaiz": "Tentando editar após fechamento, isso deveria ser rejeitado."
+}
+
+### Cancelar uma Investigação já FECHADA — espera 409
+POST {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}/cancelar
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "motivo": "Tentativa de cancelar algo que já foi fechado."
+}
+
+### Confirma que fechou — terceira e última condição da guarda RN-21 satisfeita
+GET {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+
+### ===========================================================
+### 6. Fechar a NC — guarda RN-21 agora satisfeita + campos de
+### fechamento (riscosRevisados/mudancasSGQ) + RN-12
+### ===========================================================
+
+### Submete de novo — a guarda de Classificação/Investigação/Contenção
+### passa agora, MAS falta riscosRevisados/mudancasSGQ (exigidos só no
+### fechamento, nunca preenchidos até aqui) — espera 400
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Preenche os campos de fechamento
+PATCH {{baseUrl}}/nc/{{criarNC.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "riscosRevisados": "Risco de contaminação do produto reavaliado, mitigado pela troca do material de vedação.",
+    "mudancasSGQ": "Procedimento PO-07 será atualizado para especificar o material de vedação compatível."
+}
+
+### Agora sim, submete de verdade (ABERTO -> EM_APROVACAO)
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Decide - aprova (EM_APROVACAO -> FECHADO, NC só tem 1 portão)
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### RN-12 — adiciona o QA como colaborador extra desta NC
+POST {{baseUrl}}/registros/{{criarNC.response.body.id}}/colaboradores
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "colaboradores": ["{{qaId}}"]
+}
+
+### Remove o QA — deve funcionar, ainda sobra o Editor
+DELETE {{baseUrl}}/registros/{{criarNC.response.body.id}}/colaboradores
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "colaboradores": ["{{qaId}}"]
+}
+
+### Tenta remover o ÚLTIMO colaborador restante (Editor) — espera 409 (RN-12)
+DELETE {{baseUrl}}/registros/{{criarNC.response.body.id}}/colaboradores
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "colaboradores": ["{{editorId}}"]
+}
+
+
+### ===========================================================
+### 7. AçãoCorretiva (portão único: PLANO) + falhas
+### ===========================================================
+
+### Criar AçãoCorretiva para NC inexistente — espera 404
+POST {{baseUrl}}/nc/00000000-0000-0000-0000-000000000000/acoes-corretivas
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Esta NC não existe, deveria falhar com 404."
+}
+
+### Visualizador tentando criar AçãoCorretiva — espera 403
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/acoes-corretivas
+Content-Type: application/json
+Authorization: Bearer {{loginVisualizador.response.body.token}}
+
+{
+    "descricao": "Este request deveria ser rejeitado."
+}
+
+### Cria a AçãoCorretiva, vinculada à Investigação já fechada (mesmo a
+### NC estando FECHADA, criar uma AçãoCorretiva continua permitido —
+### é assim que o fluxo continua depois do fechamento)
+# @name criarAcao
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/acoes-corretivas
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "investigacaoId": "{{criarInvestigacao.response.body.id}}"
+}
+
+### Publica (RASCUNHO -> ABERTO, gera código)
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Submeter sem aprovador definido ainda — espera 409. A checagem de
+### aprovador acontece ANTES da validação dos campos do portão
+### (ciclo-vida.service.ts), por isso este teste precisa vir primeiro,
+### com descrição/prazo/instruções ainda vazios mesmo — senão o 409
+### mascararia o 400 do teste seguinte.
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Define o Aprovador Teste como aprovador
+PUT {{baseUrl}}/registros/{{criarAcao.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "{{aprovadorId}}"
+}
+
+### Agora com aprovador definido, tenta submeter o PLANO sem
+### descrição/prazo/instruções — espera 400 (chegou na validação de campos)
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Completa descrição, prazo e instruções de verificação (todos
+### exigidos no portão PLANO)
+PATCH {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Atualizar o procedimento de manutenção para especificar o material correto de vedação, compatível com o fluido hidráulico utilizado.",
+    "prazo": "2026-10-15T00:00:00.000Z",
+    "instrucoesVerificacao": "Após 30 dias de uso, inspecionar visualmente a vedação instalada e confirmar ausência de vazamento na linha 2 durante um ciclo completo de produção."
+}
+
+### Submete o PLANO (ABERTO -> EM_APROVACAO, portaoAtual = 0)
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### QA (papel APROVADOR, mas NÃO é o aprovador designado) tenta decidir
+### — espera 403, checagem estrita manual
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginQA.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### O Aprovador Teste (designado de verdade) aprova o PLANO — volta
+### para ABERTO (fecharAoAprovarUltimoPortao=false), NÃO fecha, autoriza
+### a execução
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### Confirma que ainda está ABERTO, não fechou
+GET {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Tenta finalizar a execução SEM ter registrado executadoEm/evidência
+### primeiro (RN-25) — espera 400
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/finalizar-execucao
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "diasParaVerificar": 30
+}
+
+### diasParaVerificar inválido (negativo) — espera 400
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/finalizar-execucao
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "diasParaVerificar": -5
+}
+
+### Registra a execução (exigido para finalizar)
+PATCH {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "executadoEm": "2026-10-10T09:00:00.000Z",
+    "evidencia": "Procedimento PO-07 revisado e publicado na intranet, versão 3.0, com especificação do material de vedação correto."
+}
+
+### Finaliza a execução (SEM aprovação) — a AçãoCorretiva fecha, e a
+### Verificação nasce automaticamente, já ABERTA, com o mesmo Aprovador
+### atribuído, prazo = hoje + 30 dias. A resposta já traz o id dela em
+### "verificacaoGerada", sem precisar copiar nada manualmente.
+# @name finalizarExecucao
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}/finalizar-execucao
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "diasParaVerificar": 30
+}
+
+### Confirma que a AçãoCorretiva fechou
+GET {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Editar depois de FECHADO — espera 409
+PATCH {{baseUrl}}/acoes-corretivas/{{criarAcao.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "evidencia": "Tentando editar após fechamento, deveria ser rejeitado."
+}
+
+
+### ===========================================================
+### 8. Verificação #1 — resultado EFICAZ, fim de linha
+### ===========================================================
+
+### Busca a Verificação recém-gerada
+GET {{baseUrl}}/verificacoes/{{finalizarExecucao.response.body.verificacaoGerada.id}}
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### Visualizador listando verificações — funciona (VISUALIZAR inclui
+### todos os papéis exceto ADMIN), só para confirmar leitura
+GET {{baseUrl}}/verificacoes
+Authorization: Bearer {{loginVisualizador.response.body.token}}
+
+### Adiciona o Aprovador também como colaborador (ele foi atribuído
+### automaticamente só como APROVADOR — para editar/concluir precisa
+### também ser COLABORADOR)
+POST {{baseUrl}}/registros/{{finalizarExecucao.response.body.verificacaoGerada.id}}/colaboradores
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "colaboradores": ["{{aprovadorId}}"]
+}
+
+### Registra o resultado EFICAZ
+PATCH {{baseUrl}}/verificacoes/{{finalizarExecucao.response.body.verificacaoGerada.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "resultado": "EFICAZ",
+    "conclusao": "Após 30 dias de uso, nenhum vazamento foi observado na linha 2. A vedação com o material correto resolveu o problema.",
+    "verificadoEm": "2026-11-09T10:00:00.000Z"
+}
+
+### Conclui (sem portão, vai direto para FECHADO). EFICAZ não dispara
+### nenhuma lógica automática — fim desta linha.
+POST {{baseUrl}}/verificacoes/{{finalizarExecucao.response.body.verificacaoGerada.id}}/concluir
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### Confirma que fechou
+GET {{baseUrl}}/verificacoes/{{finalizarExecucao.response.body.verificacaoGerada.id}}
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+
+### ===========================================================
+### 9. Ramo automático — PARCIALMENTE_EFICAZ nasce uma NOVA
+### AçãoCorretiva (rascunho), apontando pra mesma Investigação
+### ===========================================================
+
+### Segunda AçãoCorretiva, mesma Investigação
+# @name criarAcao2
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/acoes-corretivas
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "investigacaoId": "{{criarInvestigacao.response.body.id}}"
+}
+
+### Publica
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao2.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Completa os campos do PLANO
+PATCH {{baseUrl}}/acoes-corretivas/{{criarAcao2.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Segunda tentativa: reforçar a inspeção periódica da vedação, além da troca de material já feita.",
+    "prazo": "2026-12-01T00:00:00.000Z",
+    "instrucoesVerificacao": "Inspecionar a vedação a cada 15 dias por 60 dias, registrando fotos de cada inspeção."
+}
+
+### Define aprovador e aprova o PLANO
+PUT {{baseUrl}}/registros/{{criarAcao2.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "{{aprovadorId}}"
+}
+
+### Submete
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao2.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Aprova — volta pra ABERTO
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao2.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### Registra execução
+PATCH {{baseUrl}}/acoes-corretivas/{{criarAcao2.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "executadoEm": "2026-11-20T09:00:00.000Z",
+    "evidencia": "Inspeções quinzenais registradas, com fotos anexadas ao relatório interno."
+}
+
+### Finaliza — gera a segunda Verificação
+# @name finalizarExecucao2
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao2.response.body.id}}/finalizar-execucao
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "diasParaVerificar": 20
+}
+
+### Adiciona o Aprovador como colaborador desta Verificação
+POST {{baseUrl}}/registros/{{finalizarExecucao2.response.body.verificacaoGerada.id}}/colaboradores
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "colaboradores": ["{{aprovadorId}}"]
+}
+
+### Registra resultado PARCIALMENTE_EFICAZ — a causa raiz estava certa,
+### mas a ação tomada não foi suficiente
+PATCH {{baseUrl}}/verificacoes/{{finalizarExecucao2.response.body.verificacaoGerada.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "resultado": "PARCIALMENTE_EFICAZ",
+    "conclusao": "Vedação segue firme, mas foi observado um leve gotejamento residual não presente antes.",
+    "verificadoEm": "2026-12-10T10:00:00.000Z"
+}
+
+### Conclui — deve disparar a criação automática de uma NOVA
+### AçãoCorretiva (rascunho), vinculada à mesma Investigação
+POST {{baseUrl}}/verificacoes/{{finalizarExecucao2.response.body.verificacaoGerada.id}}/concluir
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### Confirma: lista AçõesCorretivas RASCUNHO desta NC — deve aparecer
+### uma nova, criada automaticamente, sem nenhuma chamada manual a
+### POST /nc/.../acoes-corretivas
+GET {{baseUrl}}/acoes-corretivas?naoConformidadeId={{criarNC.response.body.id}}&estado=RASCUNHO
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+
+### ===========================================================
+### 10. Ramo automático — NAO_EFICAZ reabre a Investigação E a NC,
+### mesmo as duas já estando FECHADAS
+### ===========================================================
+
+### Terceira AçãoCorretiva, mesma Investigação
+# @name criarAcao3
+POST {{baseUrl}}/nc/{{criarNC.response.body.id}}/acoes-corretivas
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "investigacaoId": "{{criarInvestigacao.response.body.id}}"
+}
+
+### Publica
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao3.response.body.id}}/publicar
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Completa os campos do PLANO
+PATCH {{baseUrl}}/acoes-corretivas/{{criarAcao3.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "descricao": "Terceira tentativa: trocar o modelo da bomba inteira, não só a vedação.",
+    "prazo": "2027-01-15T00:00:00.000Z",
+    "instrucoesVerificacao": "Monitorar a bomba nova por 45 dias, checando vazamento a cada semana."
+}
+
+### Define aprovador e aprova o PLANO
+PUT {{baseUrl}}/registros/{{criarAcao3.response.body.id}}/aprovador
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "usuarioId": "{{aprovadorId}}"
+}
+
+### Submete
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao3.response.body.id}}/submeter
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Aprova — volta pra ABERTO
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao3.response.body.id}}/decidir
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "decisao": "APROVADO"
+}
+
+### Registra execução
+PATCH {{baseUrl}}/acoes-corretivas/{{criarAcao3.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "executadoEm": "2027-01-10T09:00:00.000Z",
+    "evidencia": "Bomba nova instalada, modelo com vedação reforçada de fábrica."
+}
+
+### Finaliza — gera a terceira Verificação
+# @name finalizarExecucao3
+POST {{baseUrl}}/acoes-corretivas/{{criarAcao3.response.body.id}}/finalizar-execucao
+Content-Type: application/json
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+{
+    "diasParaVerificar": 45
+}
+
+### Adiciona o Aprovador como colaborador desta Verificação
+POST {{baseUrl}}/registros/{{finalizarExecucao3.response.body.verificacaoGerada.id}}/colaboradores
+Content-Type: application/json
+Authorization: Bearer {{loginGerente.response.body.token}}
+
+{
+    "colaboradores": ["{{aprovadorId}}"]
+}
+
+### Registra resultado NAO_EFICAZ — a causa raiz identificada estava errada
+PATCH {{baseUrl}}/verificacoes/{{finalizarExecucao3.response.body.verificacaoGerada.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+{
+    "resultado": "NAO_EFICAZ",
+    "conclusao": "Vazamento voltou a ocorrer mesmo com a bomba nova — a causa raiz identificada estava incompleta.",
+    "verificadoEm": "2027-02-25T10:00:00.000Z"
+}
+
+### Conclui — deve reabrir automaticamente a Investigação original E a
+### NC, ambas hoje FECHADAS
+POST {{baseUrl}}/verificacoes/{{finalizarExecucao3.response.body.verificacaoGerada.id}}/concluir
+Authorization: Bearer {{loginAprovador.response.body.token}}
+
+### Confirma: a Investigação original deve estar ABERTO de novo
+GET {{baseUrl}}/investigacoes/{{criarInvestigacao.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+### Confirma: a NC deve estar ABERTO de novo, mesmo tendo fechado lá
+### atrás na seção 6
+GET {{baseUrl}}/nc/{{criarNC.response.body.id}}
+Authorization: Bearer {{loginEditor.response.body.token}}
+
+
+### ===========================================================
+### 11. Modos de falha genéricos residuais (autenticação e 404 vs 500)
+### ===========================================================
+
+### Sem header Authorization — espera 401
+GET {{baseUrl}}/nc
+
+### Token corrompido/inválido — espera 401
+GET {{baseUrl}}/nc
+Authorization: Bearer token.invalido.aqui
+
+### UUID com formato válido, mas que não existe em Verificação — espera
+### 404, nunca 500 (confirma que buscarPorId === null está tratado
+### também na entidade mais nova)
+GET {{baseUrl}}/verificacoes/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{loginEditor.response.body.token}}

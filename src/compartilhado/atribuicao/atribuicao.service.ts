@@ -1,5 +1,5 @@
 import { prisma } from "../prisma/cliente.js"
-import { Papel } from "../entidades/papeis.js"
+import { Ator } from "../entidades/ator.js"
 import { atribuicaoRepository } from "./atribuicao.repository.js"
 import { registroRepository } from "../registro/registro.repository.js"
 import { temPapel } from "../permissoes/pode-executar.js"
@@ -9,7 +9,7 @@ import { EntidadeAuditada } from "../auditoria/entidades-auditadas.js"
 import { usuarioRepository } from "../../modulos/usuario/usuario.repository.js"
 
 export const atribuicaoService = {
-    async adicionarColaboradores(registroId: string, colaboradoresId: string[], ator: { id: string, papeis: Papel[] }) {
+    async adicionarColaboradores(registroId: string, colaboradoresId: string[], ator: Ator) {
         return prisma.$transaction(async (tx) => {
             const registro = await registroRepository.buscarPorId(tx, registroId);
 
@@ -55,7 +55,7 @@ export const atribuicaoService = {
         })
     },
 
-    async removerColaboradores(registroId: string, colaboradoresId: string[], ator: { id: string, papeis: Papel[] }) {
+    async removerColaboradores(registroId: string, colaboradoresId: string[], ator: Ator) {
         return prisma.$transaction(async (tx) => {
             const registro = await registroRepository.buscarPorId(tx, registroId);
 
@@ -107,7 +107,7 @@ export const atribuicaoService = {
         })
     },
 
-    async definirAprovador(registroId: string, aprovadorId: string, ator: { id: string, papeis: Papel[] }) {
+    async definirAprovador(registroId: string, aprovadorId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
             const registro = await registroRepository.buscarPorId(tx, registroId);
 
