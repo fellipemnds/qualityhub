@@ -9,6 +9,101 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Filtros de listagem de NC, tipo `Ator`, reorganização em subpastas, e três bugs de schema de fechamento
+
+- **Reorganização de `modulos/nc/` em subpastas por entidade** — resolve a
+  pendência #12. `nc/nc/`, `nc/contencao/`, `nc/classificacao/`,
+  `nc/investigacao/` (com `hipotese.*` junto — continua sem ciclo de vida
+  próprio, decisão já registrada, sem rota HTTP dedicada), `nc/acao-corretiva/`,
+  `nc/verificacao/`. Feito via `git mv` + ajuste de imports relativos,
+  sem mudança de lógica.
+
+- **Tipo `Ator` criado** (`compartilhado/entidades/ator.ts`,
+  `{ id: string, papeis: Papel[] }`) — resolve a pendência #13.
+  Substituídas 65 ocorrências do tipo inline em 10 arquivos
+  (`pode-executar.ts`, `atribuicao.service.ts`, `ciclo-vida.service.ts`,
+  os seis `*.service.ts` de entidade, `usuario.service.ts`).
+  `types/fastify-jwt.d.ts` também passou a referenciar `Ator` para o
+  `request.user`, em vez de repetir o shape uma terceira vez.
+
+- **Filtros de listagem de NC implementados** (resolve a pendência #8):
+  `GET /nc` aceita `estado`, `origem`, `classificacao`, `de`/`ate` (sobre
+  `detectadoEm`), `minhas`, e paginação por `cursor`/`limit`.
+  - `ncRepository.listar` reescrito para entrar por `NaoConformidade.
+findMany` direto, igual às outras cinco entidades — antes entrava por
+    `registroRepository.listar` (Registro-primeiro), única exceção ao
+    padrão. `NaoConformidade.id` é o mesmo valor de `Registro.id` (chave
+    compartilhada), então o cursor filtra/ordena direto ali.
+  - `classificacao` filtra via `NaoConformidade.classificacoes` (relação
+    já existente), exigindo `some: { valor, registro: { estado: "FECHADO" } }`
+    — decisão consciente de **não** reviver o campo denormalizado
+    `classificacaoAtual` (ver item abaixo): uma NC pode ter mais de uma
+    Classificação ao longo da vida, e "qual é a atual" é regra de negócio
+    que ninguém definiu; join ao vivo reflete o banco sem inventar isso.
+  - `minhas` filtra via `Registro.atribuicoes` (`some: { usuarioId }`) —
+    "atribuído a mim" (colaborador ou aprovador), não "criado por mim".
+  - Novo helper compartilhado `compartilhado/registro/paginacao-cursor.ts`:
+    schema Zod (`cursor`, `limit`, teto de 100) + função `paginar`, que
+    corta o resultado de uma busca por `limit + 1` e calcula o próximo
+    cursor. Só exige `{ id: string }` — nenhuma entidade específica —
+    pensado pra ser reaproveitado pelas outras cinco quando precisarem
+    de paginação.
+  - `ncFiltrosListagemSchema`/`NCFiltrosListagemInput` centralizados em
+    `nc.schema.ts`, reaproveitados em `nc.routes.ts`, `nc.controller.ts`,
+    `nc.service.ts` e `nc.repository.ts` — schema único, tipo inferido,
+    nunca reescrito à mão (mesmo padrão de todo outro input do projeto).
+
+- **Campo órfão `NaoConformidade.classificacaoAtual` removido via
+  migration** (`remove_classificacao_atual_orfa`). Existia desde a Fase 0
+  (antes de `Classificacao` virar entidade própria com ciclo de vida
+  completo) e nunca foi escrito por nenhuma função do código — dado morto
+  do desenho original, confirmado via `git log -S` até o commit que o
+  criou. Se um dia a analista de qualidade definir de propósito o que
+  significa "a classificação atual" de uma NC com múltiplas
+  Classificações, isso volta como campo real, com semântica por trás —
+  não como cache de conveniência.
+
+- **Três bugs da mesma família corrigidos — schema de fechamento existia,
+  mas nunca era usado como validador de `submeter`.** Achados testando
+  `testes/requests-fluxo-completo.http` (novo arquivo, encadeia as seis
+  entidades ponta a ponta, feliz + modos de falha, criado nesta sessão):
+  1. `nc.schema.ts` — `riscosRevisados`/`mudancasSGQ` só existiam no
+     `.extend()` de `ncFechamentoSchema`, nunca em `ncBaseSchema`. Como
+     `PATCH /nc/:id` valida contra `ncRascunhoSchema` (derivado do base),
+     o Zod descartava os dois campos silenciosamente — a NC nunca
+     conseguia ser fechada de verdade pela API. Corrigido movendo os dois
+     pro `ncBaseSchema` como `.nullish()`, igual ao padrão de
+     Contenção/Investigação.
+  2. `acao-corretiva.schema.ts` — mesmo problema com `investigacaoId`: só
+     existia como intersecção de tipo TypeScript manual em
+     `acao-corretiva.controller/service/repository.ts` (sem efeito em
+     runtime), nunca no schema Zod real. Toda `AcaoCorretiva` criada
+     nascia com `investigacaoId: null`, silencioso até o ramo `NAO_EFICAZ`
+     da Verificação (o único que checa essa vinculação pra reabrir a
+     Investigação). Corrigido adicionando `investigacaoId: z.uuid()
+.nullish()` ao `acaoCorretivaBaseSchema`.
+  3. `contencao.service.ts` — `submeterContencao` validava contra
+     `contencaoPublicacaoSchema` (campos opcionais) em vez de
+     `contencaoFechamentoSchema` (campos obrigatórios) — era exatamente a
+     lacuna já anotada na seção "Entidade `Contencao`" abaixo, reaparecida
+     ao conferir se as outras entidades tinham o mesmo bug do item 1.
+     Corrigido trocando o validador de `submeterContencao`. Testado via
+     curl: sem `executadaEm`/`disposicao` → 400; preenchidos → 200.
+
+- **Auditoria em `criarUsuario` adicionada** — `EntidadeAuditada.USUARIO`
+  + `acao: "CRIAR_USUARIO"`, mesmo padrão de `authService.definirSenha`.
+  (`atualizarNC` já registrava auditoria desde antes desta sessão — a
+  pendência original sobre isso estava parcialmente desatualizada.)
+
+- **Lacuna nova identificada, ainda sem decisão de design**: o módulo
+  `usuario` só tem `POST /usuarios` (criar). Não existe listagem/busca de
+  usuário, não existe revogar um papel específico (`usuarioPapelRepository`
+  só tem `concederPapel`), e não existe inativar um usuário (`Usuario` sem
+  campo `ativo`/`desativadoEm`). `authService.fazerLogin` não checa nada
+  disso porque não há o que checar. Relevante pra um sistema de
+  aprovações (ex.: alguém sair da empresa e continuar como aprovador
+  válido). Ver pendência nova na lista abaixo.
+
 ### Entidade `Verificacao` — completa e testada; MVP de backend fechado
 
 - **`Verificacao` nunca é criada diretamente pelo usuário** — nasce
@@ -358,11 +453,11 @@ EFETIVIDADE`. A "causa raiz" identificada ao final do processo é a
   segunda contenção pra mesma NC, filtro de estado inválido, e a
   checagem de atribuição específica — alguém com papel certo mas sem
   ser colaborador daquela contenção específica).
-- **Lacuna identificada, ainda não resolvida**: `contencaoFechamentoSchema`
-  existe mas nenhuma função do `service` o utiliza — mesma lacuna de
-  `ncFechamentoSchema` em NC. Revisar junto quando decidirmos como/quando
-  a validação de fechamento deveria disparar (relacionado a
-  `submeterNCParaFechamento`, ainda bloqueada).
+- ~~**Lacuna identificada, ainda não resolvida**: `contencaoFechamentoSchema`
+  existe mas nenhuma função do `service` o utiliza~~ — **RESOLVIDO.**
+  `submeterContencao` agora usa `contencaoFechamentoSchema` como validador.
+  Ver seção "Filtros de listagem de NC, tipo `Ator`..." no topo do
+  documento.
 
 ### Entidade `Classificacao` — completa e testada
 
@@ -466,9 +561,11 @@ EFETIVIDADE`. A "causa raiz" identificada ao final do processo é a
    strings soltas no campo `acao` de cada chamada a `auditoriaRepository.
 registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
    `EXCLUIR_RASCUNHO`, `SUBMETER`, `APROVADO`/`REPROVADO`, `REABRIR`,
-   `CANCELAR`, `DEFINIR_SENHA`. Falta ainda `CONCLUIR` (quando
-   `Verificacao` for modelada). Quando reescrito como enum tipado, revisar
-   todas as funções já escritas para trocar strings soltas pelo tipo.
+   `CANCELAR`, `DEFINIR_SENHA`, `CRIAR_USUARIO`, `ADICIONAR_COLABORADORES`,
+   `REMOVER_COLABORADOR`, `DEFINIR_APROVADOR`, `FINALIZAR_EXECUCAO`,
+   `GERAR_VERIFICACAO`, `CONCLUIR_VERIFICACAO`. Quando reescrito como enum
+   tipado, revisar todas as funções já escritas para trocar strings soltas
+   pelo tipo.
 
 2. **`ADICIONAR_COLABORADOR`** sem checagem de atribuição prévia — mesma
    pergunta que gerou o desmembramento de `DEFINIR_APROVADOR` ainda precisa
@@ -499,10 +596,10 @@ registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
    ainda bloqueada. Depende das quatro entidades filhas restantes:
    `Classificacao`, `Investigacao`, `AcaoCorretiva`, `Verificacao`.
 
-8. **Listagem de NCs (`listarNC`)** — hoje sem filtros nem paginação
-   (Camada 1 apenas). Contrato de API original previa `?estado&
-classificacao&origem&de&ate&minhas&cursor`. Camadas 2–4 (filtro por
-   estado, paginação por cursor, demais filtros) ainda não implementadas.
+8. ~~**Listagem de NCs (`listarNC`)** — hoje sem filtros nem paginação~~ —
+   **RESOLVIDO.** `GET /nc` aceita `estado`, `origem`, `classificacao`,
+   `de`/`ate`, `minhas` e `cursor`/`limit`. Ver seção "Filtros de listagem
+   de NC, tipo `Ator`..." no topo do documento.
 
 9. **Módulo Feed** (comentários, respostas, menções `@`/`#`) — não
    iniciado. Depende do módulo `nc/` estar mais maduro.
@@ -515,14 +612,21 @@ classificacao&origem&de&ate&minhas&cursor`. Camadas 2–4 (filtro por
     `requests-contencao.http`, `setup-usuarios-teste.sql`) reorganizados
     da raiz do projeto para a pasta `testes/`.
 
-12. **Reorganizar `modulos/nc/` em subpastas por entidade** (`nc/contencao/`,
-    `nc/classificacao/`, `nc/investigacao/`, etc.) — a pasta está
-    acumulando muitos arquivos soltos com prefixo (`contencao.schema.ts`,
-    `contencao.repository.ts`...). Adiar até todas as seis entidades
-    estarem prontas, para não fazer o refactor de mover arquivos e
-    ajustar imports no meio do caminho.
+12. ~~**Reorganizar `modulos/nc/` em subpastas por entidade**~~ —
+    **RESOLVIDO.** `nc/nc/`, `nc/contencao/`, `nc/classificacao/`,
+    `nc/investigacao/`, `nc/acao-corretiva/`, `nc/verificacao/`.
 
-13. **Criar tipo `Ator`** (`{ id: string, papeis: Papel[] }`), provavelmente
-    em `compartilhado/entidades/ator.ts`, e substituir a repetição desse
-    tipo inline em toda função de service/controller do projeto — hoje
-    escrito por extenso dezenas de vezes.
+13. ~~**Criar tipo `Ator`**~~ — **RESOLVIDO.**
+    `compartilhado/entidades/ator.ts`, 65 ocorrências substituídas em 10
+    arquivos. Ver seção "Filtros de listagem de NC, tipo `Ator`..." no
+    topo do documento.
+
+14. **Gerenciamento de usuários** — o módulo `usuario` só tem `POST
+    /usuarios` (criar). Faltam: listagem/busca (nem por email), revogar
+    um papel específico (`usuarioPapelRepository` só tem `concederPapel`,
+    sem `revogarPapel`, sem campo `revogadoEm` em `UsuarioPapel`), e
+    inativar um usuário (`Usuario` sem campo `ativo`/`desativadoEm` —
+    `authService.fazerLogin` não tem o que checar). Descoberta desta
+    sessão, sem decisão de design ainda sobre como deveria funcionar
+    (revogar papel × inativar usuário × os dois, e o que acontece com
+    atribuições/registros que a pessoa já tinha).

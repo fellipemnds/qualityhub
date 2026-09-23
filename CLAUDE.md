@@ -57,10 +57,15 @@ o banco.
 - **Todo módulo de entidade segue**: `<entidade>.schema.ts` (base/
   rascunho/publicação/fechamento, conforme necessário) →
   `<entidade>.repository.ts` → `<entidade>.service.ts` →
-  `<entidade>.controller.ts` → `<entidade>.routes.ts`, todos dentro de
-  `modulos/nc/` (entidades filhas pertencem à NC, não têm módulo
-  próprio). Pendente: reorganizar em subpastas por entidade quando
-  houver tempo — está tudo solto e prefixado por enquanto.
+  `<entidade>.controller.ts` → `<entidade>.routes.ts`, cada um em sua
+  própria subpasta dentro de `modulos/nc/` (`nc/nc/`, `nc/contencao/`,
+  `nc/classificacao/`, `nc/investigacao/` — com `hipotese.*` junto, sem
+  módulo próprio —, `nc/acao-corretiva/`, `nc/verificacao/`; entidades
+  filhas pertencem à NC, não têm módulo fora dessa árvore).
+- **Tipo `Ator`** (`compartilhado/entidades/ator.ts`,
+  `{ id: string, papeis: Papel[] }`) — usado em toda função de
+  service/controller que recebe quem está executando a ação, e também
+  no tipo do `request.user` (`types/fastify-jwt.d.ts`).
 
 ## Particularidades por entidade (as pegadinhas reais)
 
@@ -98,18 +103,19 @@ Sem suite automatizada ainda — testes manuais em `testes/*.http` (REST
 Client do VS Code) e `testes/setup-usuarios-teste.sql` (popula 8
 usuários cobrindo cada combinação de papel). Ao mexer numa entidade,
 vale rodar o `.http` correspondente antes de considerar a mudança
-pronta.
+pronta. `testes/requests-fluxo-completo.http` encadeia as seis entidades
+ponta a ponta (feliz + modos de falha) — bom ponto de partida pra
+qualquer mudança que atravesse mais de uma entidade.
+`requests-acao-corretiva.http` está desatualizado (ainda descreve o
+modelo antigo de dois portões).
 
 ## O que falta (backend)
 
-- Auditoria em `atualizarNC`/`criarUsuario` — pendência registrada, não
-  bloqueante.
-- Filtros de listagem além de `estado`/`naoConformidadeId` (contrato de
-  API original previa `classificacao`, `origem`, `de`/`ate`, `minhas`,
-  `cursor`) — não implementados ainda.
+- Gerenciamento de usuários — módulo `usuario` só tem `POST /usuarios`
+  (criar). Falta listagem/busca, revogar um papel específico, e inativar
+  um usuário (`Usuario` sem campo `ativo`/`desativadoEm`).
 - Módulo Feed (comentários, menções) — não iniciado.
 - Documentação OpenAPI — não iniciada.
-- Reorganização de `modulos/nc/` em subpastas — adiada.
 - Fase 3 (frontend) e Fase 4 (testes automatizados, deploy) — não
   iniciadas.
 
