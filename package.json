@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch src/server.ts"
+    "dev": "tsx watch src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write ."
   },
   "repository": {
     "type": "git",
@@ -20,6 +23,7 @@
   },
   "homepage": "https://github.com/fellipemnds/qualityhub#readme",
   "devDependencies": {
+    "@biomejs/biome": "2.5.14",
     "@types/bcrypt": "^6.0.0",
     "@types/node": "^26.4.1",
     "dotenv": "^17.4.2",
