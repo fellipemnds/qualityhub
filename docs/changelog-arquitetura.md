@@ -9,6 +9,22 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Planejamento em seis documentos; shadcn/ui no lugar do Mantine
+
+- **Planejamento reorganizado** em `docs/prd.md` (produto),
+  `docs/fluxo-app.md` (telas e navegação) e `docs/ui-ux.md` (fundações
+  visuais, componentes, wireframes), com TRD, Esquema Backend e Plano de
+  Implementação a seguir. Decisões de produto revisadas com a analista
+  ficam no PRD (§9); este changelog continua sendo o registro das
+  decisões de arquitetura.
+- **Frontend usará shadcn/ui (Radix + Tailwind), não Mantine** — diverge
+  do ADR-28 do documento original. Escolha de Matthew. Consequências
+  registradas em `docs/ui-ux.md` §1.1: Tailwind entra na stack, e
+  complementos são necessários para o que o shadcn/ui não traz pronto
+  (TanStack Table, react-day-picker, Sonner, Tiptap para menções,
+  react-dropzone para anexos). Regra: nenhuma biblioteca além dessas
+  sem registrar o motivo aqui.
+
 ### Filtros de listagem de NC, tipo `Ator`, reorganização em subpastas, e três bugs de schema de fechamento
 
 - **Reorganização de `modulos/nc/` em subpastas por entidade** — resolve a

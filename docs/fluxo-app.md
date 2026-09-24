@@ -7,6 +7,10 @@
 > `docs/prd.md`.
 >
 > **Status:** v1 (2026-09-24). Decisões de navegação na §1 e §10.
+>
+> **Vocabulário:** este documento usa os termos do sistema (Submeter,
+> Colaborador). **Na tela**, os textos seguem o glossário de
+> `docs/ui-ux.md` §10.2 (ex.: "Enviar para aprovação", "Responsável").
 
 ---
 

@@ -17,7 +17,9 @@ produto: funcional e sem risco de falha vale mais que entregar rápido.
 ações por estado, "Minhas pendências", lacunas de backend L1–L9):
 `docs/fluxo-app.md`.
 Em andamento (2026-09): reorganizar o planejamento em seis documentos —
-PRD (feito), Fluxo do App (feito), UI/UX, TRD, Esquema Backend, Plano de
+PRD (feito), Fluxo do App (feito), UI/UX (feito — `docs/ui-ux.md`;
+wireframes no Figma pendentes; identidade visual a definir), TRD,
+Esquema Backend, Plano de
 Implementação.
 
 ## Como este projeto foi construído (workflow com Claude)
@@ -33,7 +35,8 @@ validado 4 vezes), pode gerar direto.
 
 Node.js 24, TypeScript 7, Fastify 5 (com `fastify-type-provider-zod`),
 Prisma 7, PostgreSQL 17, Zod 4. Ambiente: WSL2/Ubuntu, Docker Compose para
-o banco.
+o banco. Frontend (planejado, não iniciado): React + Vite + **shadcn/ui**
+(não Mantine — ver changelog) + Tailwind.
 
 ## Arquitetura em uma página
 
