@@ -420,7 +420,7 @@ O Git leva o código de um computador para o outro, mas **nem tudo que o projeto
 | `.env` (segredos) | **Nunca** | Cada máquina tem o seu; as **chaves** precisam ser as mesmas do `.env.example` |
 | Extensão do Biome no VS Code | Só a recomendação | Aceitar a sugestão que o VS Code mostra ao abrir o projeto |
 | Chave SSH, login do `gh` | Não | Uma vez por máquina |
-| Memória e conversa do Claude Code | Não | O Claude de cada máquina lê o `CLAUDE.md` — por isso ele precisa estar sempre atualizado (linha **"Em andamento"**) |
+| Memória e conversa do Claude Code | Não | O Claude de cada máquina lê o `CLAUDE.md` e o **`handoff.md`** (estado da sessão) — por isso o `handoff.md` precisa estar sempre atualizado |
 
 O `npm run preparar` faz três coisas, nesta ordem: `npm ci` (instala exatamente as versões do `package-lock.json`), `prisma generate` (gera o cliente do Prisma) e `prisma migrate deploy` (aplica no banco as migrations que ainda não foram aplicadas). Pode rodar quantas vezes quiser: se nada mudou, ele só confere. Leva cerca de 1 minuto.
 
@@ -509,7 +509,7 @@ npm run lint
 
 1. Diga ao Claude Code: **"vou trocar de computador"**. Ele vai:
    - conferir que o código compila e passa no lint (`npm run typecheck` e `npm run lint`);
-   - atualizar a linha **"Em andamento"** do `CLAUDE.md` com o que foi feito e o que vem a seguir;
+   - atualizar o **`handoff.md`** com onde paramos, o que falhou e o próximo passo;
    - propor o commit na branch da fase (e pedir sua aprovação, como sempre).
 2. Envie a branch para o GitHub:
 
@@ -538,7 +538,7 @@ git pull
 npm run preparar
 ```
 
-4. Abra o Claude Code na pasta do projeto e diga: **"continuar de onde parei"**. Ele lê o `CLAUDE.md` e retoma pela linha "Em andamento".
+4. Abra o Claude Code na pasta do projeto e diga: **"continuar de onde parei"**. Ele lê o `handoff.md` e retoma pelo "Próximo passo".
 
 ### 12.3 Regras para não ter problema
 

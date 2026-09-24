@@ -25,7 +25,7 @@ Decidido com Matthew em 2026-09-24:
 | **Git** | **Uma branch e um Pull Request por fase.** O CI roda no PR; só entra na `main` com tudo verde |
 | **Bug** | Começa por um **teste que falha**; o conserto faz passar (TRD §9.4) |
 | **Arquivos `.http`** | Cada um é **apagado** quando um teste automático cobre o mesmo fluxo |
-| **Dois computadores** | Matthew alterna entre trabalho e casa: **push ao sair, `git pull` + `npm run preparar` ao chegar**, e o bloco "Em andamento" do `CLAUDE.md` sempre atualizado (`SETUP.md` §12) |
+| **Dois computadores** | Matthew alterna entre trabalho e casa: **push ao sair, `git pull` + `npm run preparar` ao chegar**, e o `handoff.md` sempre atualizado (`SETUP.md` §12) |
 
 ### 1.1 Pronto quando (vale para toda fase)
 

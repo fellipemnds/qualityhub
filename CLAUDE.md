@@ -22,17 +22,17 @@ entregar rápido.
 | `docs/changelog-arquitetura.md` | Registro de toda decisão de arquitetura e divergência do documento original. **Leia antes de propor mudança estrutural** |
 | `docs/arquitetura.md` | Documento de design **original** (histórico). Onde diverge dos documentos acima, eles valem |
 
-**Em andamento** (atualizar sempre que Matthew trocar de computador ou
-fechar uma etapa — é por aqui que a próxima sessão retoma):
-- **Fase A1** (aprender testes), branch `fase/a1-testes`. A0 concluída
-  e mesclada (PR #1).
-- Feito na A1: fluxo de trabalho entre dois computadores (`SETUP.md`
-  §12, script `npm run preparar`, configuração do VS Code versionada).
-- `gh` instalado e autenticado no computador do trabalho (falta o de
-  casa — `SETUP.md` §12).
-- **Próximo:** conceitos de teste, de dois em dois (plano, A1). Depois,
-  Matthew configura Vitest + Testcontainers e escreve os primeiros
-  testes.
+## ⚠️ Início de toda sessão: ler `handoff.md`
+
+**Antes de qualquer outra coisa, leia o `handoff.md`** (na raiz). Ele
+guarda o estado da sessão anterior: objetivo, onde paramos, arquivos no
+meio de uma mudança, o que falhou e o próximo passo. Depois de ler,
+confira a branch (`git status`) e diga a Matthew, em poucas linhas, de
+onde vamos retomar.
+
+**No fim de toda sessão** (ou quando Matthew disser "vou trocar de
+computador"), atualize o `handoff.md` — as mesmas 6 seções, apontando
+para os outros documentos em vez de repetir o que já está neles.
 
 Ainda pendente fora do código: hospedagem (TRD §10.6), identidade
 visual.
@@ -53,13 +53,13 @@ de Matthew, salvo pedido explícito.
 **Dois computadores:** Matthew alterna entre o do trabalho e o de casa
 (mesmo ambiente: Windows + WSL2 + Docker Desktop + nvm). Seguir o
 `SETUP.md` §12. Quando ele disser **"vou trocar de computador"**: rodar
-`npm run typecheck` e `npm run lint`, atualizar o bloco "Em andamento"
-acima, propor o commit na branch da fase e lembrá-lo do `git push`.
-Quando disser **"continuar de onde parei"**: conferir branch
+`npm run typecheck` e `npm run lint`, atualizar o `handoff.md`, propor o
+commit na branch da fase e lembrá-lo do `git push`. Quando disser
+**"continuar de onde parei"**: ler o `handoff.md`, conferir a branch
 (`git status`), lembrar do `npm run preparar` se ele ainda não rodou, e
-retomar pelo "Em andamento". Memória e conversas do Claude **não**
+retomar pelo "Próximo passo". Memória e conversas do Claude **não**
 passam de uma máquina para a outra — o que precisa sobreviver vai para
-este arquivo.
+o `handoff.md` (estado) ou para este arquivo (regras).
 
 ## Como trabalhamos (workflow com Claude)
 
