@@ -587,6 +587,11 @@ EFETIVIDADE`. A "causa raiz" identificada ao final do processo é a
 
 ## Pendências em aberto
 
+> **A partir de 2026-09-24, a lista viva de trabalho é
+> `docs/plano-implementacao.md`** (com a fase de cada item na tabela de
+> rastreabilidade, §8). A lista abaixo fica como histórico; as
+> pendências ainda abertas nela já estão no plano.
+
 1. **Catálogo de ações de auditoria** (`acoes-auditadas.ts`) — ainda usa
    strings soltas no campo `acao` de cada chamada a `auditoriaRepository.
 registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,

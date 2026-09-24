@@ -2,37 +2,42 @@
 
 Sistema de gestão de Não Conformidades (ISO 9001:2015, cláusula 10.2),
 construído do zero por Matthew, aprendendo backend full-stack no processo.
-Este arquivo é o ponto de entrada rápido — a fonte de verdade detalhada é
-`docs/changelog-arquitetura.md`, que registra toda decisão de arquitetura,
-com o porquê e as divergências em relação ao documento de design original.
+Este arquivo é o ponto de entrada rápido.
 
-**Leia `docs/changelog-arquitetura.md` antes de propor qualquer mudança
-estrutural** — ele existe justamente para não repetir discussões já
-resolvidas.
+**Princípio do produto:** funcional e sem risco de falha vale mais que
+entregar rápido.
 
-**Requisitos de produto** (escopo do MVP, regras de negócio RN-xx,
-permissões, decisões com a analista): `docs/prd.md`. Princípio do
-produto: funcional e sem risco de falha vale mais que entregar rápido.
-**Telas e navegação** (mapa de telas, etapa calculada da NC, jornadas,
-ações por estado, "Minhas pendências", lacunas de backend L1–L9):
-`docs/fluxo-app.md`.
-Em andamento (2026-09): reorganizar o planejamento em seis documentos —
-PRD (feito), Fluxo do App (feito), UI/UX (feito — `docs/ui-ux.md`;
-wireframes no Figma pendentes; identidade visual a definir), TRD (feito
-— `docs/trd.md`: sessão em cookie com checagem a cada requisição,
-testes antes das correções, OpenAPI + Orval, ADR-33 a ADR-38; hospedagem
-ainda a decidir), Esquema Backend (feito — `docs/esquema-backend.md`:
-mudanças de schema M1–M5, valores calculados, contrato da API com rotas
-novas, correções B1–B8), Plano de Implementação.
+## Documentos (planejamento concluído em 2026-09-24)
 
-## Como este projeto foi construído (workflow com Claude)
+| Documento | Responde |
+|---|---|
+| `docs/prd.md` | O quê e por quê: escopo do MVP, regras de negócio RN-xx, permissões, decisões com a analista |
+| `docs/fluxo-app.md` | Telas, navegação, etapa calculada da NC, jornadas, ações por estado, "Minhas pendências" |
+| `docs/ui-ux.md` | Fundações visuais, componentes (shadcn/ui), wireframes em texto, textos da tela |
+| `docs/trd.md` | Stack, sessão, API, anexos, testes, infraestrutura, hospedagem, ADR-33 a ADR-38 |
+| `docs/esquema-backend.md` | Modelo de dados, mudanças M1–M5, valores calculados, contrato da API, correções B1–B8 |
+| `docs/plano-implementacao.md` | **Ordem de execução**: fases A0–A6 (fundação do backend), B (design), C0–C8 (frontend em fatias), D (produção) |
+| `docs/changelog-arquitetura.md` | Registro de toda decisão de arquitetura e divergência do documento original. **Leia antes de propor mudança estrutural** |
+| `docs/arquitetura.md` | Documento de design **original** (histórico). Onde diverge dos documentos acima, eles valem |
+
+**Próximo passo:** fase **A0** do plano (preparação), depois **A1**
+(aprender testes). Ainda pendente fora do código: hospedagem (TRD
+§10.6), identidade visual.
+
+## Como trabalhamos (workflow com Claude)
 
 Matthew é iniciante em desenvolvimento full-stack, aprendendo no processo.
-O padrão de trabalho até agora foi: Claude explica o conceito, Matthew
-escreve o código, Claude revisa. **Ao propor mudanças, prefira explicar o
-raciocínio e perguntar antes de reescrever grandes blocos** — mas para
-tarefas repetitivas/mecânicas (gerar o 5º arquivo seguindo um padrão já
-validado 4 vezes), pode gerar direto.
+**Claude explica o conceito, Matthew escreve o núcleo, Claude revisa**;
+o que é repetição de padrão já validado, Claude gera direto. **Ao propor
+mudanças, prefira explicar o raciocínio e perguntar antes de reescrever
+grandes blocos.**
+
+A partir do plano de implementação:
+- **Uma branch e um Pull Request por fase**; CI verde para entrar na `main`.
+- **Bug começa por um teste que falha.**
+- Cada fase termina com o checklist "pronto quando" (plano §1.1).
+- Commits: Matthew pede; push, ele faz (não há credencial do GitHub
+  neste ambiente).
 
 ## Stack
 
@@ -124,29 +129,16 @@ o banco. Frontend (planejado, não iniciado): React + Vite + **shadcn/ui**
 
 ## Testes
 
-Sem suite automatizada ainda — testes manuais em `testes/*.http` (REST
-Client do VS Code) e `testes/setup-usuarios-teste.sql` (popula 8
-usuários cobrindo cada combinação de papel). Ao mexer numa entidade,
-vale rodar o `.http` correspondente antes de considerar a mudança
-pronta. `testes/requests-fluxo-completo.http` encadeia as seis entidades
-ponta a ponta (feliz + modos de falha) — bom ponto de partida pra
-qualquer mudança que atravesse mais de uma entidade.
-`requests-acao-corretiva.http` está desatualizado (ainda descreve o
-modelo antigo de dois portões).
+Sem suite automatizada ainda — ela nasce nas fases A1/A2 do plano
+(Vitest + `app.inject()` + Testcontainers, TRD §9). Até lá, testes
+manuais em `testes/*.http` (REST Client do VS Code) e
+`testes/setup-usuarios-teste.sql` (8 usuários cobrindo cada combinação
+de papel). `testes/requests-fluxo-completo.http` encadeia as seis
+entidades ponta a ponta. `requests-acao-corretiva.http` está
+desatualizado (modelo antigo de dois portões) e sai na fase A0. Cada
+`.http` é apagado quando um teste automático cobre o mesmo fluxo.
 
-## O que falta (backend)
+## O que falta
 
-- Gerenciamento de usuários — módulo `usuario` só tem `POST /usuarios`
-  (criar). Falta listagem/busca, revogar um papel específico, e inativar
-  um usuário (`Usuario` sem campo `ativo`/`desativadoEm`). Regra definida
-  no PRD (RN-43).
-- Módulo Feed (comentários, menções) — não iniciado; **faz parte do MVP**.
-- Decididos no PRD, não iniciados: anexos (RF-18), "Minhas pendências"
-  (RF-17), relatórios (RF-19), cadastro de setores (RF-20), etapa
-  calculada da NC (RF-16).
-- Documentação OpenAPI — não iniciada.
-- Fase 3 (frontend) e Fase 4 (testes automatizados, deploy) — não
-  iniciadas.
-
-Lista completa e detalhada de pendências: seção final de
-`docs/changelog-arquitetura.md`.
+Tudo está em `docs/plano-implementacao.md`, com a fase de cada item
+(tabela de rastreabilidade, §8).
