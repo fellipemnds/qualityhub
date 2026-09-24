@@ -1,6 +1,6 @@
 export const ClassificacaoNC = {
     MAIOR: "MAIOR",
-    MENOR: "MENOR"
+    MENOR: "MENOR",
 } as const;
 
-export type ClassificacaoNC = typeof ClassificacaoNC[keyof typeof ClassificacaoNC];
+export type ClassificacaoNC = (typeof ClassificacaoNC)[keyof typeof ClassificacaoNC];

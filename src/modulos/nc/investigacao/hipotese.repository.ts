@@ -20,5 +20,5 @@ export const hipoteseRepository = {
 
     async excluir(tx: ClientePrisma, id: string) {
         return tx.hipotese.delete({ where: { id } });
-    }
-}
+    },
+};

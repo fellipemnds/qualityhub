@@ -1,21 +1,31 @@
-import { FastifyRequest, FastifyReply } from "fastify";
-import { classificacaoService } from "./classificacao.service.js";
-import { ClassificacaoRascunhoInput } from "./classificacao.schema.js";
-import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
+import { FastifyReply, FastifyRequest } from "fastify";
 import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
+import { ClassificacaoRascunhoInput } from "./classificacao.schema.js";
+import { classificacaoService } from "./classificacao.service.js";
 
 export const classificacaoController = {
-    async criarRascunhoClassificacao(request: FastifyRequest<{ Params: { naoConformidadeId: string }, Body: ClassificacaoRascunhoInput }>, reply: FastifyReply) {
+    async criarRascunhoClassificacao(
+        request: FastifyRequest<{ Params: { naoConformidadeId: string }; Body: ClassificacaoRascunhoInput }>,
+        reply: FastifyReply,
+    ) {
         const dados = request.body;
         const ator = request.user;
         const naoConformidadeId = request.params.naoConformidadeId;
 
-        const classificacaoRascunho = await classificacaoService.criarRascunhoClassificacao(ator, naoConformidadeId, dados);
+        const classificacaoRascunho = await classificacaoService.criarRascunhoClassificacao(
+            ator,
+            naoConformidadeId,
+            dados,
+        );
 
         return reply.status(201).send(classificacaoRascunho);
     },
 
-    async atualizarClassificacao(request: FastifyRequest<{ Params: { id: string }, Body: ClassificacaoRascunhoInput }>, reply: FastifyReply) {
+    async atualizarClassificacao(
+        request: FastifyRequest<{ Params: { id: string }; Body: ClassificacaoRascunhoInput }>,
+        reply: FastifyReply,
+    ) {
         const dados = request.body;
         const id = request.params.id;
         const ator = request.user;
@@ -52,7 +62,10 @@ export const classificacaoController = {
         return reply.status(200).send(classificacaoSubmetida);
     },
 
-    async decidirClassificacao(request: FastifyRequest<{ Params: { id: string }, Body: DecisaoInput }>, reply: FastifyReply) {
+    async decidirClassificacao(
+        request: FastifyRequest<{ Params: { id: string }; Body: DecisaoInput }>,
+        reply: FastifyReply,
+    ) {
         const id = request.params.id;
         const ator = request.user;
         const dados = request.body;
@@ -71,12 +84,15 @@ export const classificacaoController = {
         return reply.status(200).send(classificacaoBuscada);
     },
 
-    async listarClassificacoes(request: FastifyRequest<{ Querystring: { naoConformidadeId?: string, estado?: EstadoRegistro } }>, reply: FastifyReply) {
+    async listarClassificacoes(
+        request: FastifyRequest<{ Querystring: { naoConformidadeId?: string; estado?: EstadoRegistro } }>,
+        reply: FastifyReply,
+    ) {
         const ator = request.user;
         const filtros = request.query;
 
         const classificacoesListadas = await classificacaoService.listarClassificacoes(ator, filtros);
 
         return reply.status(200).send(classificacoesListadas);
-    }
-}
+    },
+};

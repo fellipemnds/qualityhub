@@ -1,8 +1,8 @@
 import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
-import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { Ator } from "../../../compartilhado/entidades/ator.js";
+import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js";
 import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
@@ -11,7 +11,7 @@ import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-edita
 import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
 import { acaoCorretivaRepository } from "../acao-corretiva/acao-corretiva.repository.js";
 import { verificacaoRepository } from "./verificacao.repository.js";
-import { verificacaoConclusaoSchema, VerificacaoRascunhoInput } from "./verificacao.schema.js";
+import { VerificacaoRascunhoInput, verificacaoConclusaoSchema } from "./verificacao.schema.js";
 
 export const verificacaoService = {
     async atualizarVerificacao(registroId: string, ator: Ator, dados: VerificacaoRascunhoInput) {
@@ -19,7 +19,7 @@ export const verificacaoService = {
             const registro = await registroRepository.buscarPorId(tx, registroId);
             if (registro === null) throw new NaoEncontradoError("Item não encontrado.");
             if (!ESTADOS_EDITAVEIS.includes(registro.estado)) {
-                throw new TransicaoInvalidaError('Este item não pode mais ser editado neste estado.');
+                throw new TransicaoInvalidaError("Este item não pode mais ser editado neste estado.");
             }
 
             const papel = temPapel(ator, "CONCLUIR_VERIFICACAO");
@@ -37,7 +37,7 @@ export const verificacaoService = {
                 acao: "SALVAR_RASCUNHO",
                 usuarioId: ator.id,
                 antes,
-                depois: atualizada
+                depois: atualizada,
             });
 
             return atualizada;
@@ -64,7 +64,9 @@ export const verificacaoService = {
             const verificacao = await verificacaoRepository.buscarPorId(tx, registroId);
             if (verificacao === null) throw new NaoEncontradoError("Item não encontrado.");
 
-            const registroConcluido = await cicloVidaService.concluir(tx, registroId, ator, verificacao, (d) => verificacaoConclusaoSchema.parse(d));
+            const registroConcluido = await cicloVidaService.concluir(tx, registroId, ator, verificacao, (d) =>
+                verificacaoConclusaoSchema.parse(d),
+            );
 
             const acaoCorretiva = await acaoCorretivaRepository.buscarPorId(tx, verificacao.acaoCorretivaId);
             if (acaoCorretiva === null) {
@@ -77,20 +79,31 @@ export const verificacaoService = {
             }
 
             if (verificacao.resultado === "PARCIALMENTE_EFICAZ") {
-                const novoRegistro = await cicloVidaService.criarRascunho(tx, { tipo: "ACAO_CORRETIVA", criadoPorId: registroAcaoCorretiva.criadoPorId });
+                const novoRegistro = await cicloVidaService.criarRascunho(tx, {
+                    tipo: "ACAO_CORRETIVA",
+                    criadoPorId: registroAcaoCorretiva.criadoPorId,
+                });
                 await acaoCorretivaRepository.criar(tx, {
                     id: novoRegistro.id,
                     naoConformidadeId: acaoCorretiva.naoConformidadeId,
-                    investigacaoId: acaoCorretiva.investigacaoId ?? undefined
+                    investigacaoId: acaoCorretiva.investigacaoId ?? undefined,
                 });
-                await atribuicaoRepository.inserirAtribuicao(tx, novoRegistro.id, registroAcaoCorretiva.criadoPorId, ator.id, "COLABORADOR");
+                await atribuicaoRepository.inserirAtribuicao(
+                    tx,
+                    novoRegistro.id,
+                    registroAcaoCorretiva.criadoPorId,
+                    ator.id,
+                    "COLABORADOR",
+                );
             }
 
             if (verificacao.resultado === "NAO_EFICAZ") {
                 const motivoAutomatico = `Verificação ${registroConcluido.codigo} foi concluída com resultado Não Eficaz.`;
 
                 if (acaoCorretiva.investigacaoId === null) {
-                    throw new TransicaoInvalidaError("Esta Ação Corretiva não está vinculada a uma Investigação — não é possível reabrir automaticamente.");
+                    throw new TransicaoInvalidaError(
+                        "Esta Ação Corretiva não está vinculada a uma Investigação — não é possível reabrir automaticamente.",
+                    );
                 }
 
                 await cicloVidaService.reabrir(tx, acaoCorretiva.investigacaoId, ator, motivoAutomatico);
@@ -126,7 +139,7 @@ export const verificacaoService = {
         return { ...registro, ...verificacao };
     },
 
-    async listarVerificacoes(ator: Ator, filtros: { acaoCorretivaId?: string, estado?: EstadoRegistro }) {
+    async listarVerificacoes(ator: Ator, filtros: { acaoCorretivaId?: string; estado?: EstadoRegistro }) {
         const papel = temPapel(ator, "VISUALIZAR");
         if (!papel) throw new SemPermissaoError("Você não tem permissões suficientes para visualizar.");
 
@@ -135,5 +148,5 @@ export const verificacaoService = {
             const { registro, ...resto } = item;
             return { ...registro, ...resto };
         });
-    }
-}
+    },
+};

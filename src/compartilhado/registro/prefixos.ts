@@ -6,5 +6,5 @@ export const prefixoPorTipo: Record<TipoRegistro, string> = {
     CONTENCAO: "CT",
     INVESTIGACAO: "IV",
     ACAO_CORRETIVA: "AC",
-    VERIFICACAO: "VE"
+    VERIFICACAO: "VE",
 };

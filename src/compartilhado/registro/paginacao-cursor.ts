@@ -4,7 +4,7 @@ export const LIMITE_PADRAO_PAGINACAO = 20;
 
 export const paginacaoCursorSchema = z.object({
     cursor: z.uuid().optional(),
-    limit: z.coerce.number().int().positive().max(100).optional()
+    limit: z.coerce.number().int().positive().max(100).optional(),
 });
 
 export type PaginacaoCursorInput = z.infer<typeof paginacaoCursorSchema>;
@@ -17,7 +17,7 @@ export function paginar<T extends { id: string }>(itens: T[], limit: number) {
     } else {
         itensDaPagina = itens;
         proximoCursor = null;
-    };
+    }
 
     return { itensDaPagina, proximoCursor };
-};
+}

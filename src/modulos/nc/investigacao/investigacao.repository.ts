@@ -4,13 +4,13 @@ import { Prisma } from "../../../generated/prisma/client.js";
 import { InvestigacaoRascunhoInput } from "./investigacao.schema.js";
 
 export const investigacaoRepository = {
-    async criar(tx: ClientePrisma, dados: InvestigacaoRascunhoInput & { id: string, naoConformidadeId: string }) {
+    async criar(tx: ClientePrisma, dados: InvestigacaoRascunhoInput & { id: string; naoConformidadeId: string }) {
         const conteudo = dados.conteudo === null ? Prisma.JsonNull : dados.conteudo;
         return tx.investigacao.create({
             data: {
                 ...dados,
-                conteudo
-            }
+                conteudo,
+            },
         });
     },
 
@@ -20,29 +20,32 @@ export const investigacaoRepository = {
             where: { id },
             data: {
                 ...dados,
-                conteudo
-            }
+                conteudo,
+            },
         });
     },
 
     async buscarPorId(tx: ClientePrisma, id: string) {
         return tx.investigacao.findUnique({
-            where: { id }
+            where: { id },
         });
     },
 
-    async listarInvestigacoes(tx: ClientePrisma, filtros: {
-        naoConformidadeId?: string,
-        estado?: EstadoRegistro
-    }) {
+    async listarInvestigacoes(
+        tx: ClientePrisma,
+        filtros: {
+            naoConformidadeId?: string;
+            estado?: EstadoRegistro;
+        },
+    ) {
         return tx.investigacao.findMany({
             where: {
                 naoConformidadeId: filtros.naoConformidadeId,
                 registro: {
-                    estado: filtros.estado
-                }
+                    estado: filtros.estado,
+                },
             },
-            include: { registro: true }
+            include: { registro: true },
         });
-    }
-}
+    },
+};

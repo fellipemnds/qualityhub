@@ -7,5 +7,5 @@ export const portoesPorTipo: Record<TipoRegistro, PortaoAprovacao[]> = {
     CONTENCAO: ["UNICA"],
     INVESTIGACAO: ["UNICA"],
     ACAO_CORRETIVA: ["PLANO"],
-    VERIFICACAO: []
-}
+    VERIFICACAO: [],
+};

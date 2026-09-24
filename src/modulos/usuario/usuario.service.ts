@@ -1,14 +1,14 @@
 import crypto from "node:crypto";
+import { auditoriaRepository } from "../../compartilhado/auditoria/auditoria.repository.js";
+import { EntidadeAuditada } from "../../compartilhado/auditoria/entidades-auditadas.js";
 import { Ator } from "../../compartilhado/entidades/ator.js";
 import { SemPermissaoError, ValidacaoError } from "../../compartilhado/errors/errors.js";
 import { temPapel } from "../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../compartilhado/prisma/cliente.js";
-import { usuarioPapelRepository } from "./usuario-papel.repository.js";
+import { tokenAcessoRepository } from "../auth/token-acesso.repository.js";
 import { usuarioRepository } from "./usuario.repository.js";
 import { CriarUsuarioInput } from "./usuario.schema.js";
-import { tokenAcessoRepository } from "../auth/token-acesso.repository.js";
-import { auditoriaRepository } from "../../compartilhado/auditoria/auditoria.repository.js";
-import { EntidadeAuditada } from "../../compartilhado/auditoria/entidades-auditadas.js";
+import { usuarioPapelRepository } from "./usuario-papel.repository.js";
 
 export const usuarioService = {
     async criarUsuario(ator: Ator, dados: CriarUsuarioInput) {
@@ -33,8 +33,8 @@ export const usuarioService = {
                 await usuarioPapelRepository.concederPapel(tx, {
                     usuarioId: usuario.id,
                     papel,
-                    concedidoPorId: ator.id
-                })
+                    concedidoPorId: ator.id,
+                });
             }
 
             await auditoriaRepository.registrar(tx, {
@@ -43,8 +43,8 @@ export const usuarioService = {
                 acao: "CRIAR_USUARIO",
                 usuarioId: ator.id,
                 antes: undefined,
-                depois: usuario
-            })
+                depois: usuario,
+            });
 
             const token = crypto.randomBytes(32).toString("hex");
             const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
@@ -53,10 +53,10 @@ export const usuarioService = {
                 usuarioId: usuario.id,
                 tipo: "CONVITE",
                 tokenHash,
-                expiraEm: new Date(Date.now() + (72 * 60 * 60 * 1000))
-            })
+                expiraEm: new Date(Date.now() + 72 * 60 * 60 * 1000),
+            });
 
             return { usuario, token };
         });
-    }
-}
+    },
+};

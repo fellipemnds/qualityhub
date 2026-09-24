@@ -3,7 +3,7 @@ export const EstadoRegistro = {
     ABERTO: "ABERTO",
     EM_APROVACAO: "EM_APROVACAO",
     FECHADO: "FECHADO",
-    CANCELADO: "CANCELADO"
+    CANCELADO: "CANCELADO",
 } as const;
 
-export type EstadoRegistro = typeof EstadoRegistro[keyof typeof EstadoRegistro];
+export type EstadoRegistro = (typeof EstadoRegistro)[keyof typeof EstadoRegistro];

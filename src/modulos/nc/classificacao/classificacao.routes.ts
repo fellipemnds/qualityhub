@@ -1,23 +1,22 @@
 import type { FastifyInstance } from "fastify";
-import { classificacaoController } from "./classificacao.controller.js";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
-import { autenticar } from "../../../middlewares/autenticar.js";
 import z from "zod";
-import { classificacaoRascunhoSchema } from "./classificacao.schema.js";
-import { decisaoSchema } from "../../../compartilhado/registro/decidir.schema.js";
 import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import { decisaoSchema } from "../../../compartilhado/registro/decidir.schema.js";
+import { autenticar } from "../../../middlewares/autenticar.js";
+import { classificacaoController } from "./classificacao.controller.js";
+import { classificacaoRascunhoSchema } from "./classificacao.schema.js";
 
 export async function classificacaoRoutes(app: FastifyInstance) {
-
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
         url: "/nc/:naoConformidadeId/classificacoes",
         onRequest: [autenticar],
         schema: {
             params: z.object({ naoConformidadeId: z.uuid() }),
-            body: classificacaoRascunhoSchema
+            body: classificacaoRascunhoSchema,
         },
-        handler: classificacaoController.criarRascunhoClassificacao
+        handler: classificacaoController.criarRascunhoClassificacao,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -26,9 +25,9 @@ export async function classificacaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
-            body: classificacaoRascunhoSchema
+            body: classificacaoRascunhoSchema,
         },
-        handler: classificacaoController.atualizarClassificacao
+        handler: classificacaoController.atualizarClassificacao,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -36,9 +35,9 @@ export async function classificacaoRoutes(app: FastifyInstance) {
         url: "/classificacoes/:id",
         onRequest: [autenticar],
         schema: {
-            params: z.object({ id: z.uuid() })
+            params: z.object({ id: z.uuid() }),
         },
-        handler: classificacaoController.excluirRascunhoClassificacao
+        handler: classificacaoController.excluirRascunhoClassificacao,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -46,9 +45,9 @@ export async function classificacaoRoutes(app: FastifyInstance) {
         url: "/classificacoes/:id/publicar",
         onRequest: [autenticar],
         schema: {
-            params: z.object({ id: z.uuid() })
+            params: z.object({ id: z.uuid() }),
         },
-        handler: classificacaoController.publicarClassificacao
+        handler: classificacaoController.publicarClassificacao,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -56,9 +55,9 @@ export async function classificacaoRoutes(app: FastifyInstance) {
         url: "/classificacoes/:id/submeter",
         onRequest: [autenticar],
         schema: {
-            params: z.object({ id: z.uuid() })
+            params: z.object({ id: z.uuid() }),
         },
-        handler: classificacaoController.submeterClassificacao
+        handler: classificacaoController.submeterClassificacao,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -67,9 +66,9 @@ export async function classificacaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
-            body: decisaoSchema
+            body: decisaoSchema,
         },
-        handler: classificacaoController.decidirClassificacao
+        handler: classificacaoController.decidirClassificacao,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -77,9 +76,9 @@ export async function classificacaoRoutes(app: FastifyInstance) {
         url: "/classificacoes/:id",
         onRequest: [autenticar],
         schema: {
-            params: z.object({ id: z.uuid() })
+            params: z.object({ id: z.uuid() }),
         },
-        handler: classificacaoController.buscarPorIdClassificacao
+        handler: classificacaoController.buscarPorIdClassificacao,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -89,11 +88,9 @@ export async function classificacaoRoutes(app: FastifyInstance) {
         schema: {
             querystring: z.object({
                 naoConformidadeId: z.string().min(1).optional(),
-                estado: z.enum(EstadoRegistro).optional()
-            })
+                estado: z.enum(EstadoRegistro).optional(),
+            }),
         },
-        handler: classificacaoController.listarClassificacoes
+        handler: classificacaoController.listarClassificacoes,
     });
-
-
 }

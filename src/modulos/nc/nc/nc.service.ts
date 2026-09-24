@@ -1,20 +1,20 @@
-import { prisma } from "../../../compartilhado/prisma/cliente.js"
-import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js"
-import { Ator } from "../../../compartilhado/entidades/ator.js"
-import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js"
-import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js"
-import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js"
-import { ncRepository } from "./nc.repository.js"
-import { ncFechamentoSchema, NCFiltrosListagemInput, ncPublicacaoSchema, NCRascunhoInput } from "./nc.schema.js"
-import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js"
-import { registroRepository } from "../../../compartilhado/registro/registro.repository.js"
-import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js"
-import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js"
-import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js"
-import { classificacaoRepository } from "../classificacao/classificacao.repository.js"
-import { investigacaoRepository } from "../investigacao/investigacao.repository.js"
-import { contencaoRepository } from "../contencao/contencao.repository.js"
-import { LIMITE_PADRAO_PAGINACAO, paginar } from "../../../compartilhado/registro/paginacao-cursor.js"
+import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
+import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
+import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
+import { Ator } from "../../../compartilhado/entidades/ator.js";
+import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js";
+import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
+import { prisma } from "../../../compartilhado/prisma/cliente.js";
+import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
+import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
+import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
+import { LIMITE_PADRAO_PAGINACAO, paginar } from "../../../compartilhado/registro/paginacao-cursor.js";
+import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
+import { classificacaoRepository } from "../classificacao/classificacao.repository.js";
+import { contencaoRepository } from "../contencao/contencao.repository.js";
+import { investigacaoRepository } from "../investigacao/investigacao.repository.js";
+import { ncRepository } from "./nc.repository.js";
+import { NCFiltrosListagemInput, NCRascunhoInput, ncFechamentoSchema, ncPublicacaoSchema } from "./nc.schema.js";
 
 export const ncService = {
     async criarRascunhoNC(ator: Ator, dados: NCRascunhoInput) {
@@ -25,14 +25,17 @@ export const ncService = {
                 throw new SemPermissaoError("Você não tem permissões suficientes para criar um novo rascunho.");
             }
 
-            const registro = await cicloVidaService.criarRascunho(tx, { tipo: "NAO_CONFORMIDADE", criadoPorId: ator.id });
+            const registro = await cicloVidaService.criarRascunho(tx, {
+                tipo: "NAO_CONFORMIDADE",
+                criadoPorId: ator.id,
+            });
 
             const nc = await ncRepository.criar(tx, { id: registro.id, ...dados });
 
             await atribuicaoRepository.inserirAtribuicao(tx, registro.id, ator.id, ator.id, "COLABORADOR");
 
             return { ...registro, ...nc };
-        })
+        });
     },
 
     async atualizarNC(registroId: string, ator: Ator, dados: NCRascunhoInput) {
@@ -44,7 +47,7 @@ export const ncService = {
             }
 
             if (!ESTADOS_EDITAVEIS.includes(registro.estado)) {
-                throw new TransicaoInvalidaError('O item precisa estar no status "Rascunho" ou "Aberto".')
+                throw new TransicaoInvalidaError('O item precisa estar no status "Rascunho" ou "Aberto".');
             }
 
             const papel = temPapel(ator, "GERENCIAR_RASCUNHO");
@@ -63,11 +66,11 @@ export const ncService = {
                 acao: "SALVAR_RASCUNHO",
                 usuarioId: ator.id,
                 antes: ncAntes,
-                depois: ncAtualizada
-            })
+                depois: ncAtualizada,
+            });
 
             return ncAtualizada;
-        })
+        });
     },
 
     async excluirRascunhoNC(registroId: string, ator: Ator) {
@@ -75,7 +78,7 @@ export const ncService = {
             const registroExcluido = await cicloVidaService.excluirRascunho(tx, registroId, ator);
 
             return registroExcluido;
-        })
+        });
     },
 
     async publicarNC(registroId: string, ator: Ator) {
@@ -86,10 +89,12 @@ export const ncService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            const registroPublicado = await cicloVidaService.publicar(tx, registroId, ator, nc, (dadosParaValidar) => ncPublicacaoSchema.parse(dadosParaValidar));
+            const registroPublicado = await cicloVidaService.publicar(tx, registroId, ator, nc, (dadosParaValidar) =>
+                ncPublicacaoSchema.parse(dadosParaValidar),
+            );
 
             return { ...registroPublicado, ...nc };
-        })
+        });
     },
 
     async submeterNC(registroId: string, ator: Ator) {
@@ -100,28 +105,42 @@ export const ncService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            const classificacoes = await classificacaoRepository.listarClassificacoes(tx, { naoConformidadeId: registroId });
+            const classificacoes = await classificacaoRepository.listarClassificacoes(tx, {
+                naoConformidadeId: registroId,
+            });
             const temClassificacaoFechada = classificacoes.some((c) => c.registro.estado === "FECHADO");
 
             if (!temClassificacaoFechada) {
-                throw new TransicaoInvalidaError("É necessário ao menos uma Classificação FECHADA para submeter esta Não Conformidade para fechamento.");
+                throw new TransicaoInvalidaError(
+                    "É necessário ao menos uma Classificação FECHADA para submeter esta Não Conformidade para fechamento.",
+                );
             }
 
-            const investigacoes = await investigacaoRepository.listarInvestigacoes(tx, { naoConformidadeId: registroId });
+            const investigacoes = await investigacaoRepository.listarInvestigacoes(tx, {
+                naoConformidadeId: registroId,
+            });
             const temInvestigacaoFechada = investigacoes.some((i) => i.registro.estado === "FECHADO");
 
             if (!temInvestigacaoFechada) {
-                throw new TransicaoInvalidaError("É necessário ao menos uma Investigação FECHADA para submeter esta Não Conformidade para fechamento.");
+                throw new TransicaoInvalidaError(
+                    "É necessário ao menos uma Investigação FECHADA para submeter esta Não Conformidade para fechamento.",
+                );
             }
 
             const contencoes = await contencaoRepository.listarContencoes(tx, { naoConformidadeId: registroId });
-            const temContencaoPendente = contencoes.some((c) => c.registro.estado !== "FECHADO" && c.registro.estado !== "CANCELADO");
+            const temContencaoPendente = contencoes.some(
+                (c) => c.registro.estado !== "FECHADO" && c.registro.estado !== "CANCELADO",
+            );
 
             if (temContencaoPendente) {
-                throw new TransicaoInvalidaError("Existe uma Contenção pendente — ela precisa estar FECHADA ou CANCELADA para submeter esta Não Conformidade para fechamento.");
+                throw new TransicaoInvalidaError(
+                    "Existe uma Contenção pendente — ela precisa estar FECHADA ou CANCELADA para submeter esta Não Conformidade para fechamento.",
+                );
             }
 
-            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, nc, (dadosParaValidar) => ncFechamentoSchema.parse(dadosParaValidar));
+            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, nc, (dadosParaValidar) =>
+                ncFechamentoSchema.parse(dadosParaValidar),
+            );
 
             return { ...registroSubmetido, ...nc };
         });
@@ -133,7 +152,7 @@ export const ncService = {
             const nc = await ncRepository.buscarPorId(tx, registroId);
 
             return { ...registroDecidido, ...nc };
-        })
+        });
     },
 
     async reabrirNC(registroId: string, ator: Ator, motivo: string) {
@@ -142,7 +161,7 @@ export const ncService = {
             const nc = await ncRepository.buscarPorId(tx, registroId);
 
             return { ...registroReaberto, ...nc };
-        })
+        });
     },
 
     async cancelarNC(registroId: string, ator: Ator, motivo: string) {
@@ -151,14 +170,14 @@ export const ncService = {
             const nc = await ncRepository.buscarPorId(tx, registroId);
 
             return { ...registroCancelado, ...nc };
-        })
+        });
     },
 
     async buscarPorIdNC(registroId: string, ator: Ator) {
         const registro = await registroRepository.buscarPorId(prisma, registroId);
 
         if (registro === null) {
-            throw new NaoEncontradoError("Item não encontrado.")
+            throw new NaoEncontradoError("Item não encontrado.");
         }
 
         const nc = await ncRepository.buscarPorId(prisma, registroId);
@@ -189,5 +208,5 @@ export const ncService = {
         const resultadosPagina = paginar(registros, filtros.limit ?? LIMITE_PADRAO_PAGINACAO);
 
         return resultadosPagina;
-    }
-}
+    },
+};

@@ -3,44 +3,52 @@ import { TipoRegistro } from "../entidades/tipos-registro.js";
 import { ClientePrisma } from "../prisma/tipos.js";
 
 export const registroRepository = {
-    async criar(tx: ClientePrisma, dados: {
-        tipo: TipoRegistro, criadoPorId: string
-    }) {
+    async criar(
+        tx: ClientePrisma,
+        dados: {
+            tipo: TipoRegistro;
+            criadoPorId: string;
+        },
+    ) {
         return tx.registro.create({
             data: {
                 tipo: dados.tipo,
-                criadoPorId: dados.criadoPorId
-            }
-        })
+                criadoPorId: dados.criadoPorId,
+            },
+        });
     },
 
     async buscarPorId(tx: ClientePrisma, id: string) {
         return tx.registro.findUnique({
-            where: { id }
+            where: { id },
         });
     },
 
-    async atualizar(tx: ClientePrisma, id: string, dados: {
-        estado?: EstadoRegistro,
-        codigo?: string,
-        portaoAtual?: number
-    }) {
+    async atualizar(
+        tx: ClientePrisma,
+        id: string,
+        dados: {
+            estado?: EstadoRegistro;
+            codigo?: string;
+            portaoAtual?: number;
+        },
+    ) {
         return tx.registro.update({
             where: { id },
-            data: dados
+            data: dados,
         });
     },
 
     async excluir(tx: ClientePrisma, id: string) {
         return tx.registro.delete({
-            where: { id }
-        })
+            where: { id },
+        });
     },
 
     async listar(tx: ClientePrisma, filtros: { tipo: TipoRegistro }) {
         return tx.registro.findMany({
             where: filtros,
-            include: { naoConformidade: true }
-        })
-    }
-}
+            include: { naoConformidade: true },
+        });
+    },
+};

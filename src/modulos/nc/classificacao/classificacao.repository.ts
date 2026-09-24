@@ -3,35 +3,38 @@ import { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
 import { ClassificacaoRascunhoInput } from "./classificacao.schema.js";
 
 export const classificacaoRepository = {
-    async criar(tx: ClientePrisma, dados: ClassificacaoRascunhoInput & { id: string, naoConformidadeId: string }) {
+    async criar(tx: ClientePrisma, dados: ClassificacaoRascunhoInput & { id: string; naoConformidadeId: string }) {
         return tx.classificacao.create({ data: dados });
     },
 
     async buscarPorId(tx: ClientePrisma, id: string) {
         return tx.classificacao.findUnique({
-            where: { id }
-        })
+            where: { id },
+        });
     },
 
     async atualizar(tx: ClientePrisma, id: string, dados: ClassificacaoRascunhoInput) {
         return tx.classificacao.update({
             where: { id },
-            data: dados
-        })
+            data: dados,
+        });
     },
 
-    async listarClassificacoes(tx: ClientePrisma, filtros: {
-        naoConformidadeId?: string,
-        estado?: EstadoRegistro
-    }) {
+    async listarClassificacoes(
+        tx: ClientePrisma,
+        filtros: {
+            naoConformidadeId?: string;
+            estado?: EstadoRegistro;
+        },
+    ) {
         return tx.classificacao.findMany({
             where: {
                 naoConformidadeId: filtros.naoConformidadeId,
                 registro: {
-                    estado: filtros.estado
-                }
+                    estado: filtros.estado,
+                },
             },
-            include: { registro: true }
-        })
-    }
-}
+            include: { registro: true },
+        });
+    },
+};

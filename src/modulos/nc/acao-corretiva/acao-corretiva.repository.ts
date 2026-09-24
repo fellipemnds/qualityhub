@@ -3,7 +3,7 @@ import { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
 import { AcaoCorretivaRascunhoInput } from "./acao-corretiva.schema.js";
 
 export const acaoCorretivaRepository = {
-    async criar(tx: ClientePrisma, dados: AcaoCorretivaRascunhoInput & { id: string, naoConformidadeId: string }) {
+    async criar(tx: ClientePrisma, dados: AcaoCorretivaRascunhoInput & { id: string; naoConformidadeId: string }) {
         return tx.acaoCorretiva.create({ data: dados });
     },
 
@@ -15,13 +15,13 @@ export const acaoCorretivaRepository = {
         return tx.acaoCorretiva.update({ where: { id }, data: dados });
     },
 
-    async listar(tx: ClientePrisma, filtros: { naoConformidadeId?: string, estado?: EstadoRegistro }) {
+    async listar(tx: ClientePrisma, filtros: { naoConformidadeId?: string; estado?: EstadoRegistro }) {
         return tx.acaoCorretiva.findMany({
             where: {
                 naoConformidadeId: filtros.naoConformidadeId,
-                registro: { estado: filtros.estado }
+                registro: { estado: filtros.estado },
             },
-            include: { registro: true }
+            include: { registro: true },
         });
-    }
-}
+    },
+};
