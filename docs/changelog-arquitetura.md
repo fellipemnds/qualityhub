@@ -572,16 +572,15 @@ registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
    tipado, revisar todas as funções já escritas para trocar strings soltas
    pelo tipo.
 
-2. **`ADICIONAR_COLABORADOR`** sem checagem de atribuição prévia — mesma
-   pergunta que gerou o desmembramento de `DEFINIR_APROVADOR` ainda precisa
-   ser formalmente revisada quando escrevermos `atribuicao.service`
-   completo (as funções de escrita além de `adicionarColaboradores`, que
-   já existe em `atribuicao.repository.ts`).
+2. ~~**`ADICIONAR_COLABORADOR`** sem checagem de atribuição prévia~~ —
+   **RESOLVIDO.** Virou `GERENCIAR_COLABORADORES` no módulo `atribuicao/`,
+   sem checagem de atribuição prévia; mantido de propósito na revisão do
+   PRD (`docs/prd.md`, Q9 / RN-18).
 
-3. **`criarRascunhoNC`** atribui só o criador como colaborador (RN-14) —
-   adicionar colaboradores extras no mesmo passo da criação fica para uma
-   chamada separada, à rota `POST /registros/:id/colaboradores` (ainda não
-   escrita).
+3. ~~**`criarRascunhoNC`** atribui só o criador como colaborador~~ —
+   **RESOLVIDO em parte.** A rota `POST /registros/:id/colaboradores` já
+   existe. O PRD (Q10 / RF-01) decidiu que a criação da NC aceita
+   colaboradores no mesmo passo — implementação pendente.
 
 4. **`fazerLogin`** deveria auditar tentativas de login, inclusive falhas
    (útil para detectar força bruta) — isso muda a natureza da função (hoje
@@ -597,9 +596,13 @@ registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
    completo (schema, repository, service, controller, routes), testado
    via API de ponta a ponta. Ver seção "Entidade `Contencao`" acima.
 
-7. **`submeterNCParaFechamento`** (a guarda de fechamento, RN-21 a RN-23) —
-   ainda bloqueada. Depende das quatro entidades filhas restantes:
-   `Classificacao`, `Investigacao`, `AcaoCorretiva`, `Verificacao`.
+7. ~~**`submeterNCParaFechamento`** (a guarda de fechamento) ainda
+   bloqueada~~ — **implementada** em `submeterNC`, mas a regra foi revista
+   no PRD (`docs/prd.md`, Q1 / RN-21): passa a exigir também todos os
+   planos de Ação Corretiva aprovados. Junto, a reação a `NAO_EFICAZ` deve
+   reabrir só o que estiver fechado (Q2 — hoje dá erro se a NC estiver
+   aberta) e `PARCIALMENTE_EFICAZ` deve copiar todos os colaboradores (Q3).
+   Implementação pendente.
 
 8. ~~**Listagem de NCs (`listarNC`)** — hoje sem filtros nem paginação~~ —
    **RESOLVIDO.** `GET /nc` aceita `estado`, `origem`, `classificacao`,

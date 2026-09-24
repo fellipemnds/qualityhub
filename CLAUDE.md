@@ -10,6 +10,13 @@ com o porquê e as divergências em relação ao documento de design original.
 estrutural** — ele existe justamente para não repetir discussões já
 resolvidas.
 
+**Requisitos de produto** (escopo do MVP, regras de negócio RN-xx,
+permissões, decisões com a analista): `docs/prd.md`. Princípio do
+produto: funcional e sem risco de falha vale mais que entregar rápido.
+Em andamento (2026-09): reorganizar o planejamento em seis documentos —
+PRD (feito), Fluxo do App, UI/UX, TRD, Esquema Backend, Plano de
+Implementação.
+
 ## Como este projeto foi construído (workflow com Claude)
 
 Matthew é iniciante em desenvolvimento full-stack, aprendendo no processo.
@@ -95,7 +102,11 @@ o banco.
   exige ≥1 `Classificacao` FECHADA, ≥1 `Investigacao` FECHADA, nenhuma
   `Contencao` pendente. **Não** espera `AcaoCorretiva`/`Verificacao` —
   essas continuam depois do fechamento, e podem reabrir a NC via o
-  mecanismo acima.
+  mecanismo acima. **Regra revista no PRD, ainda não implementada**:
+  passa a exigir todos os planos de `AcaoCorretiva` aprovados (RN-21);
+  `NAO_EFICAZ` deve reabrir só o que estiver fechado (hoje dá erro se a
+  NC estiver aberta); `PARCIALMENTE_EFICAZ` deve copiar todos os
+  colaboradores da ação anterior.
 
 ## Testes
 
@@ -113,8 +124,12 @@ modelo antigo de dois portões).
 
 - Gerenciamento de usuários — módulo `usuario` só tem `POST /usuarios`
   (criar). Falta listagem/busca, revogar um papel específico, e inativar
-  um usuário (`Usuario` sem campo `ativo`/`desativadoEm`).
-- Módulo Feed (comentários, menções) — não iniciado.
+  um usuário (`Usuario` sem campo `ativo`/`desativadoEm`). Regra definida
+  no PRD (RN-43).
+- Módulo Feed (comentários, menções) — não iniciado; **faz parte do MVP**.
+- Decididos no PRD, não iniciados: anexos (RF-18), "Minhas pendências"
+  (RF-17), relatórios (RF-19), cadastro de setores (RF-20), etapa
+  calculada da NC (RF-16).
 - Documentação OpenAPI — não iniciada.
 - Fase 3 (frontend) e Fase 4 (testes automatizados, deploy) — não
   iniciadas.
