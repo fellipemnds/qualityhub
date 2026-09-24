@@ -1,5 +1,5 @@
-import { Acao } from "../entidades/acoes.js";
-import { Papel } from "../entidades/papeis.js";
+import type { Acao } from "../entidades/acoes.js";
+import type { Papel } from "../entidades/papeis.js";
 
 export const catalogo: Record<Acao, Papel[]> = {
     GERENCIAR_RASCUNHO: ["EDITOR", "GERENTE"],
@@ -15,5 +15,5 @@ export const catalogo: Record<Acao, Papel[]> = {
     GERENCIAR_USUARIOS: ["ADMIN"],
     COMENTAR: ["EDITOR", "APROVADOR", "GERENTE"],
     GERAR_RELATORIOS: ["GERENTE"],
-    VISUALIZAR: ["VISUALIZADOR", "EDITOR", "APROVADOR", "GERENTE"]
-}
+    VISUALIZAR: ["VISUALIZADOR", "EDITOR", "APROVADOR", "GERENTE"],
+};

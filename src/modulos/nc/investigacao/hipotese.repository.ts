@@ -1,5 +1,5 @@
-import { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
-import { HipoteseRascunhoInput } from "./hipotese.schema.js";
+import type { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
+import type { HipoteseRascunhoInput } from "./hipotese.schema.js";
 
 export const hipoteseRepository = {
     async criar(tx: ClientePrisma, investigacaoId: string, dados: HipoteseRascunhoInput) {
@@ -20,5 +20,5 @@ export const hipoteseRepository = {
 
     async excluir(tx: ClientePrisma, id: string) {
         return tx.hipotese.delete({ where: { id } });
-    }
-}
+    },
+};

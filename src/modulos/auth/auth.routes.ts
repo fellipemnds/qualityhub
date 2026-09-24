@@ -1,23 +1,23 @@
-import { FastifyInstance } from "fastify";
-import { ZodTypeProvider } from "fastify-type-provider-zod";
-import { definirSenhaSchema, loginSchema } from "./auth.schema.js";
+import type { FastifyInstance } from "fastify";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { authController } from "./auth.controller.js";
+import { definirSenhaSchema, loginSchema } from "./auth.schema.js";
 
 export async function authRoutes(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
         url: "/auth/definir-senha",
         schema: {
-            body: definirSenhaSchema
+            body: definirSenhaSchema,
         },
-        handler: authController.definirSenha
+        handler: authController.definirSenha,
     });
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
         url: "/auth/login",
         schema: {
-            body: loginSchema
+            body: loginSchema,
         },
-        handler: authController.login
+        handler: authController.login,
     });
 }

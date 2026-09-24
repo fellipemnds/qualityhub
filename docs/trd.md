@@ -576,6 +576,7 @@ Entram no Plano de Implementação:
 | `partialIndexes` do Prisma é *preview* | Mantido; coberto por teste (um aprovador por item) |
 | Mudança na API quebrar o frontend sem aviso | Cliente gerado pelo Orval + TypeScript |
 | Guarda de fechamento contornável por alguma rota nova | Fechamento só pelo ciclo de vida; teste de que nenhuma rota altera `estado` diretamente |
+| **Vulnerabilidades nas dependências do Prisma 7** (`npm audit`, 2026-09-24): `deepmerge-ts` (estouro de pilha com objetos recursivos) e `mysql2` (vazamento de credencial e DoS), ambas de severidade alta | Risco prático baixo: o `deepmerge-ts` só junta a configuração do Prisma, que vem de arquivo nosso; o `mysql2` só é usado com MySQL, e usamos PostgreSQL. **Nunca rodar `npm audit fix --force`**: a "correção" rebaixa para o Prisma 6 e quebra o projeto. Reavaliar a cada atualização do Prisma |
 
 ---
 

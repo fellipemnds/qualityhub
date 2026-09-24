@@ -1,10 +1,10 @@
-import type { FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyRequest } from "fastify";
 import { NaoAutenticadoError } from "../compartilhado/errors/errors.js";
 
-export async function autenticar(request: FastifyRequest, reply: FastifyReply) {
+export async function autenticar(request: FastifyRequest) {
     try {
         await request.jwtVerify();
-    } catch (error) {
+    } catch {
         throw new NaoAutenticadoError();
     }
 }

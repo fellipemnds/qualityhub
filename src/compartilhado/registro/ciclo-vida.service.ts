@@ -1,23 +1,23 @@
-import { aprovacaoRepository } from "../aprovacao/aprovacao.repository.js"
-import { atribuicaoRepository } from "../atribuicao/atribuicao.repository.js"
-import { auditoriaRepository } from "../auditoria/auditoria.repository.js"
-import { EntidadeAuditada } from "../auditoria/entidades-auditadas.js"
-import { cancelamentoRepository } from "../cancelamento/cancelamento.repository.js"
-import { Acao } from "../entidades/acoes.js"
-import { Decisao } from "../entidades/decisao.js"
-import { Ator } from "../entidades/ator.js"
-import { TipoRegistro } from "../entidades/tipos-registro.js"
-import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError, ValidacaoError } from "../errors/errors.js"
-import { podeExecutar, temPapel } from "../permissoes/pode-executar.js"
-import { ClientePrisma } from "../prisma/tipos.js"
-import { reaberturaRepository } from "../reabertura/reabertura.repository.js"
-import { sequenciaService } from "../sequencia/sequencia.service.js"
-import { portoesPorTipo } from "./portoes.js"
-import { prefixoPorTipo } from "./prefixos.js"
-import { registroRepository } from "./registro.repository.js"
+import { aprovacaoRepository } from "../aprovacao/aprovacao.repository.js";
+import { atribuicaoRepository } from "../atribuicao/atribuicao.repository.js";
+import { auditoriaRepository } from "../auditoria/auditoria.repository.js";
+import { EntidadeAuditada } from "../auditoria/entidades-auditadas.js";
+import { cancelamentoRepository } from "../cancelamento/cancelamento.repository.js";
+import type { Acao } from "../entidades/acoes.js";
+import type { Ator } from "../entidades/ator.js";
+import type { Decisao } from "../entidades/decisao.js";
+import type { TipoRegistro } from "../entidades/tipos-registro.js";
+import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError, ValidacaoError } from "../errors/errors.js";
+import { podeExecutar, temPapel } from "../permissoes/pode-executar.js";
+import type { ClientePrisma } from "../prisma/tipos.js";
+import { reaberturaRepository } from "../reabertura/reabertura.repository.js";
+import { sequenciaService } from "../sequencia/sequencia.service.js";
+import { portoesPorTipo } from "./portoes.js";
+import { prefixoPorTipo } from "./prefixos.js";
+import { registroRepository } from "./registro.repository.js";
 
 export const cicloVidaService = {
-    async criarRascunho(tx: ClientePrisma, dados: { tipo: TipoRegistro, criadoPorId: string }) {
+    async criarRascunho(tx: ClientePrisma, dados: { tipo: TipoRegistro; criadoPorId: string }) {
         const registro = await registroRepository.criar(tx, dados);
 
         await auditoriaRepository.registrar(tx, {
@@ -26,13 +26,20 @@ export const cicloVidaService = {
             acao: "CRIAR_RASCUNHO",
             usuarioId: registro.criadoPorId,
             antes: undefined,
-            depois: registro
+            depois: registro,
         });
 
         return registro;
     },
 
-    async publicar(tx: ClientePrisma, registroId: string, ator: Ator, dados: unknown, validador: (dados: unknown) => unknown, acao: Acao = "PUBLICAR") {
+    async publicar(
+        tx: ClientePrisma,
+        registroId: string,
+        ator: Ator,
+        dados: unknown,
+        validador: (dados: unknown) => unknown,
+        acao: Acao = "PUBLICAR",
+    ) {
         const registro = await registroRepository.buscarPorId(tx, registroId);
 
         if (registro === null) {
@@ -46,7 +53,7 @@ export const cicloVidaService = {
         const podeEditar = await podeExecutar(tx, ator, acao, registroId);
 
         if (!podeEditar) {
-            throw new SemPermissaoError("Você não pode realizar esta ação pois você não está atribuido neste item.")
+            throw new SemPermissaoError("Você não pode realizar esta ação pois você não está atribuido neste item.");
         }
 
         validador(dados);
@@ -64,8 +71,8 @@ export const cicloVidaService = {
             acao: "PUBLICAR",
             usuarioId: ator.id,
             antes: registro,
-            depois: registroAtualizado
-        })
+            depois: registroAtualizado,
+        });
 
         return registroAtualizado;
     },
@@ -95,13 +102,20 @@ export const cicloVidaService = {
             acao: "EXCLUIR_RASCUNHO",
             usuarioId: ator.id,
             antes: registroDeletado,
-            depois: undefined
+            depois: undefined,
         });
 
         return registroDeletado;
     },
 
-    async submeter(tx: ClientePrisma, registroId: string, ator: Ator, dados: unknown, validador: (dados: unknown) => unknown, acao: Acao = "SUBMETER") {
+    async submeter(
+        tx: ClientePrisma,
+        registroId: string,
+        ator: Ator,
+        dados: unknown,
+        validador: (dados: unknown) => unknown,
+        acao: Acao = "SUBMETER",
+    ) {
         const registro = await registroRepository.buscarPorId(tx, registroId);
 
         if (registro === null) {
@@ -115,7 +129,9 @@ export const cicloVidaService = {
         const podeSubmeter = await podeExecutar(tx, ator, acao, registroId);
 
         if (!podeSubmeter) {
-            throw new SemPermissaoError("Você não pode realizar esta ação pois você não está atribuido neste item ou não possui as permissões necessárias.");
+            throw new SemPermissaoError(
+                "Você não pode realizar esta ação pois você não está atribuido neste item ou não possui as permissões necessárias.",
+            );
         }
 
         const temAprovador = await atribuicaoRepository.existeAprovador(tx, registroId);
@@ -134,13 +150,19 @@ export const cicloVidaService = {
             acao: "SUBMETER",
             usuarioId: ator.id,
             antes: registro,
-            depois: dadoAtualizado
+            depois: dadoAtualizado,
         });
 
         return dadoAtualizado;
     },
 
-    async decidir(tx: ClientePrisma, registroId: string, ator: Ator, dados: { decisao: Decisao, motivo?: string }, fecharAoAprovarUltimoPortao: boolean = true) {
+    async decidir(
+        tx: ClientePrisma,
+        registroId: string,
+        ator: Ator,
+        dados: { decisao: Decisao; motivo?: string },
+        fecharAoAprovarUltimoPortao: boolean = true,
+    ) {
         const registro = await registroRepository.buscarPorId(tx, registroId);
 
         if (registro === null) {
@@ -155,17 +177,19 @@ export const cicloVidaService = {
         const atribuicao = await atribuicaoRepository.ehAprovador(tx, registroId, ator.id);
 
         if (!papel || !atribuicao) {
-            throw new SemPermissaoError("Você não pode realizar esta ação pois você não está atribuido neste item ou não possui as permissões necessárias.");
+            throw new SemPermissaoError(
+                "Você não pode realizar esta ação pois você não está atribuido neste item ou não possui as permissões necessárias.",
+            );
         }
 
         if (dados.decisao === "REPROVADO" && (!dados.motivo || dados.motivo.trim() === "")) {
-            throw new ValidacaoError("O motivo é obrigatório em caso de reprovação!")
+            throw new ValidacaoError("O motivo é obrigatório em caso de reprovação!");
         }
 
         const portaoDecidido = portoesPorTipo[registro.tipo][registro.portaoAtual];
 
         if (portaoDecidido === undefined) {
-            throw new TransicaoInvalidaError("Estado de portao inconsistente.")
+            throw new TransicaoInvalidaError("Estado de portao inconsistente.");
         }
 
         const autoAprovacao = ator.id === registro.criadoPorId;
@@ -176,23 +200,26 @@ export const cicloVidaService = {
             decisao: dados.decisao,
             motivo: dados.motivo,
             aprovadorId: ator.id,
-            autoAprovacao
-        })
+            autoAprovacao,
+        });
 
-        let registroAtualizado;
+        let registroAtualizado: Awaited<ReturnType<typeof registroRepository.atualizar>>;
 
         if (aprovacao.decisao === "REPROVADO") {
-            registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "ABERTO" })
-        }
-        else if (aprovacao.decisao === "APROVADO" && registro.portaoAtual + 1 < portoesPorTipo[registro.tipo].length) {
-            const novoPortao = registro.portaoAtual + 1
-            registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "ABERTO", portaoAtual: novoPortao })
-        }
-        else if (aprovacao.decisao === "APROVADO" && !fecharAoAprovarUltimoPortao) {
-            registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "ABERTO" })
-        }
-        else {
-            registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "FECHADO" })
+            registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "ABERTO" });
+        } else if (
+            aprovacao.decisao === "APROVADO" &&
+            registro.portaoAtual + 1 < portoesPorTipo[registro.tipo].length
+        ) {
+            const novoPortao = registro.portaoAtual + 1;
+            registroAtualizado = await registroRepository.atualizar(tx, registroId, {
+                estado: "ABERTO",
+                portaoAtual: novoPortao,
+            });
+        } else if (aprovacao.decisao === "APROVADO" && !fecharAoAprovarUltimoPortao) {
+            registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "ABERTO" });
+        } else {
+            registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "FECHADO" });
         }
 
         await auditoriaRepository.registrar(tx, {
@@ -201,13 +228,19 @@ export const cicloVidaService = {
             acao: aprovacao.decisao,
             usuarioId: ator.id,
             antes: registro,
-            depois: registroAtualizado
-        })
+            depois: registroAtualizado,
+        });
 
         return registroAtualizado;
     },
 
-    async concluir(tx: ClientePrisma, registroId: string, ator: Ator, dados: unknown, validador: (dados: unknown) => unknown) {
+    async concluir(
+        tx: ClientePrisma,
+        registroId: string,
+        ator: Ator,
+        dados: unknown,
+        validador: (dados: unknown) => unknown,
+    ) {
         const registro = await registroRepository.buscarPorId(tx, registroId);
 
         if (registro === null) {
@@ -215,7 +248,9 @@ export const cicloVidaService = {
         }
 
         if (registro.estado !== "ABERTO" || portoesPorTipo[registro.tipo].length !== 0) {
-            throw new TransicaoInvalidaError('O item não pode ser concluído pois não está no status "ABERTO" ou não está no portão correto!');
+            throw new TransicaoInvalidaError(
+                'O item não pode ser concluído pois não está no status "ABERTO" ou não está no portão correto!',
+            );
         }
 
         const papel = temPapel(ator, "CONCLUIR_VERIFICACAO");
@@ -223,10 +258,12 @@ export const cicloVidaService = {
         const atribuicao = await atribuicaoRepository.ehColaborador(tx, registroId, ator.id);
 
         if (!papel || !atribuicao) {
-            throw new SemPermissaoError("Você não pode realizar esta ação pois você não está atribuido neste item ou não possui as permissões necessárias.");
+            throw new SemPermissaoError(
+                "Você não pode realizar esta ação pois você não está atribuido neste item ou não possui as permissões necessárias.",
+            );
         }
 
-        const dadoValidado = validador(dados);
+        validador(dados);
 
         const dadoAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "FECHADO" });
 
@@ -236,7 +273,7 @@ export const cicloVidaService = {
             acao: "CONCLUIR_VERIFICACAO",
             usuarioId: ator.id,
             antes: registro,
-            depois: dadoAtualizado
+            depois: dadoAtualizado,
         });
 
         return dadoAtualizado;
@@ -249,19 +286,26 @@ export const cicloVidaService = {
             throw new NaoEncontradoError("O item não foi encontrado");
         }
 
-        if (registro.estado !== "FECHADO" || (!motivo || motivo.trim() === "")) {
-            throw new TransicaoInvalidaError('O item não pode ser concluído pois não está no status "FECHADO" ou porque o motivo está em branco!');
+        if (registro.estado !== "FECHADO" || !motivo || motivo.trim() === "") {
+            throw new TransicaoInvalidaError(
+                'O item não pode ser concluído pois não está no status "FECHADO" ou porque o motivo está em branco!',
+            );
         }
 
         const papel = temPapel(ator, "REABRIR");
 
         if (!papel) {
-            throw new SemPermissaoError("Você não pode realizar esta ação pois você não possui as permissões necessárias.");
+            throw new SemPermissaoError(
+                "Você não pode realizar esta ação pois você não possui as permissões necessárias.",
+            );
         }
 
         await reaberturaRepository.criar(tx, { registroId, reabertoPorId: ator.id, motivo });
 
-        const registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "ABERTO", portaoAtual: 0 })
+        const registroAtualizado = await registroRepository.atualizar(tx, registroId, {
+            estado: "ABERTO",
+            portaoAtual: 0,
+        });
 
         await auditoriaRepository.registrar(tx, {
             entidade: EntidadeAuditada[registroAtualizado.tipo],
@@ -269,8 +313,8 @@ export const cicloVidaService = {
             acao: "REABRIR",
             usuarioId: ator.id,
             antes: registro,
-            depois: registroAtualizado
-        })
+            depois: registroAtualizado,
+        });
 
         return registroAtualizado;
     },
@@ -282,8 +326,10 @@ export const cicloVidaService = {
             throw new NaoEncontradoError("O item não foi encontrado");
         }
 
-        if ((registro.estado === "FECHADO" || registro.estado === "CANCELADO") || motivo.trim() === "") {
-            throw new TransicaoInvalidaError('O item não pode ser concluído pois já está no status "FECHADO/CANCELADO" ou porque o motivo está em branco!');
+        if (registro.estado === "FECHADO" || registro.estado === "CANCELADO" || motivo.trim() === "") {
+            throw new TransicaoInvalidaError(
+                'O item não pode ser concluído pois já está no status "FECHADO/CANCELADO" ou porque o motivo está em branco!',
+            );
         }
 
         const gerente = ator.papeis.includes("GERENTE");
@@ -291,12 +337,14 @@ export const cicloVidaService = {
         const atribuicao = await atribuicaoRepository.ehAprovador(tx, registroId, ator.id);
 
         if (!gerente && !atribuicao) {
-            throw new SemPermissaoError("Você não pode realizar esta ação pois você não possui as permissões necessárias.");
+            throw new SemPermissaoError(
+                "Você não pode realizar esta ação pois você não possui as permissões necessárias.",
+            );
         }
 
         await cancelamentoRepository.criar(tx, { registroId, canceladoPorId: ator.id, motivo });
 
-        const registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "CANCELADO" })
+        const registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "CANCELADO" });
 
         await auditoriaRepository.registrar(tx, {
             entidade: EntidadeAuditada[registroAtualizado.tipo],
@@ -304,9 +352,9 @@ export const cicloVidaService = {
             acao: "CANCELAR",
             usuarioId: ator.id,
             antes: registro,
-            depois: registroAtualizado
-        })
+            depois: registroAtualizado,
+        });
 
         return registroAtualizado;
-    }
-}
+    },
+};

@@ -4,4 +4,4 @@ export const ClassificacaoHipotese = {
     SEM_RELACAO: "SEM_RELACAO",
 } as const;
 
-export type ClassificacaoHipotese = typeof ClassificacaoHipotese[keyof typeof ClassificacaoHipotese];
+export type ClassificacaoHipotese = (typeof ClassificacaoHipotese)[keyof typeof ClassificacaoHipotese];

@@ -7,4 +7,3 @@ app.listen({ port: 3333 }, (erro, endereco) => {
     }
     console.log(`Servidor rodando em: ${endereco}`);
 });
-

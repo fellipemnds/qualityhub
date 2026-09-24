@@ -9,6 +9,34 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Fase A0 — preparação (branch `fase/a0-preparacao`)
+
+- **Biome 2.5.14** adotado como formatador e linter (TRD §9.5), com
+  versão **exata** no `package.json` (uma atualização do formatador pode
+  reformatar arquivos sozinha; atualizar é decisão deliberada, com
+  commit próprio). Configuração escolhida para **mexer o mínimo** no
+  código existente: 4 espaços (o código já usava) e 120 colunas (com o
+  padrão de 80, 526 linhas seriam quebradas; com 120, 94). JSON com 2
+  espaços, o padrão que o npm usa ao reescrever o `package.json`.
+- A formatação foi um **commit separado** (`style:`), e a equivalência
+  foi verificada: antes × depois pelo esbuild, ignorando espaços e
+  quebras de linha, só mudaram ordem de imports, `;` soltos e um
+  parêntese redundante num `||`.
+- Correções de lint sem mudar regra de negócio, com uma melhoria: o
+  handler de erro 500 passa a logar por `request.log` (inclui o id da
+  requisição) em vez de `app.log`.
+- Removidos: barramento de eventos (ADR-38), modelos comentados no
+  `schema.prisma`, `requests-acao-corretiva.http`. `ignoreTrailingSlash`
+  migrado para `routerOptions` (pendência 5 — resolvida; o aviso
+  `FSTDEP022` sumiu e `/nc` × `/nc/` seguem na mesma rota).
+- Scripts `test` e `build` **adiados**: `test` entra com o Vitest (A1),
+  `build` com o Dockerfile (D1). Criá-los antes seria deixar algo pela
+  metade.
+- `npm audit` aponta 4 vulnerabilidades altas **herdadas do Prisma 7**
+  (`deepmerge-ts`, `mysql2`), sem correção na linha 7.x; risco prático
+  baixo, registrado no TRD §13. `npm audit fix --force` rebaixaria para
+  o Prisma 6 — não usar.
+
 ### Planejamento em seis documentos; shadcn/ui no lugar do Mantine
 
 - **Planejamento reorganizado** em `docs/prd.md` (produto),
@@ -627,10 +655,9 @@ registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
    só leitura, via `prisma` direto, sem transação) e precisa ser desenhado
    com cuidado antes de implementar.
 
-5. **`ignoreTrailingSlash`** em `app.ts` usa a forma deprecada
-   (`Fastify({ ignoreTrailingSlash: true })`, aviso `FSTDEP022`). Migrar
-   para `Fastify({ routerOptions: { ignoreTrailingSlash: true } })` numa
-   passada de manutenção — não bloqueia nada agora.
+5. ~~**`ignoreTrailingSlash`** em `app.ts` usa a forma deprecada~~ —
+   **RESOLVIDO na fase A0**: migrado para
+   `Fastify({ routerOptions: { ignoreTrailingSlash: true } })`.
 
 6. ~~**`contencao/`** em estado intermediário~~ — **RESOLVIDO.** Módulo
    completo (schema, repository, service, controller, routes), testado

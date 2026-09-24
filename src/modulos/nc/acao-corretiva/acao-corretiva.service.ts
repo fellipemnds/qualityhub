@@ -1,21 +1,26 @@
 import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
-import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
-import { Ator } from "../../../compartilhado/entidades/ator.js";
+import type { Ator } from "../../../compartilhado/entidades/ator.js";
+import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js";
 import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
 import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
-import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
+import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
-import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
-import { acaoCorretivaRepository } from "./acao-corretiva.repository.js";
-import { acaoCorretivaExecucaoSchema, acaoCorretivaPlanoSchema, acaoCorretivaPublicacaoSchema, AcaoCorretivaRascunhoInput } from "./acao-corretiva.schema.js";
-import { ncRepository } from "../nc/nc.repository.js";
 import { prefixoPorTipo } from "../../../compartilhado/registro/prefixos.js";
+import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
 import { sequenciaService } from "../../../compartilhado/sequencia/sequencia.service.js";
+import { ncRepository } from "../nc/nc.repository.js";
 import { verificacaoRepository } from "../verificacao/verificacao.repository.js";
+import { acaoCorretivaRepository } from "./acao-corretiva.repository.js";
+import {
+    type AcaoCorretivaRascunhoInput,
+    acaoCorretivaExecucaoSchema,
+    acaoCorretivaPlanoSchema,
+    acaoCorretivaPublicacaoSchema,
+} from "./acao-corretiva.schema.js";
 
 export const acaoCorretivaService = {
     async criarRascunhoAcaoCorretiva(ator: Ator, naoConformidadeId: string, dados: AcaoCorretivaRascunhoInput) {
@@ -27,7 +32,11 @@ export const acaoCorretivaService = {
             if (nc === null) throw new NaoEncontradoError("A Não Conformidade não existe ou não foi encontrada");
 
             const registro = await cicloVidaService.criarRascunho(tx, { tipo: "ACAO_CORRETIVA", criadoPorId: ator.id });
-            const acaoCorretiva = await acaoCorretivaRepository.criar(tx, { id: registro.id, naoConformidadeId, ...dados });
+            const acaoCorretiva = await acaoCorretivaRepository.criar(tx, {
+                id: registro.id,
+                naoConformidadeId,
+                ...dados,
+            });
 
             await atribuicaoRepository.inserirAtribuicao(tx, registro.id, ator.id, ator.id, "COLABORADOR");
 
@@ -40,12 +49,13 @@ export const acaoCorretivaService = {
             const registro = await registroRepository.buscarPorId(tx, registroId);
             if (registro === null) throw new NaoEncontradoError("Item não encontrado.");
             if (!ESTADOS_EDITAVEIS.includes(registro.estado)) {
-                throw new TransicaoInvalidaError('Este item não pode mais ser editado neste estado.');
+                throw new TransicaoInvalidaError("Este item não pode mais ser editado neste estado.");
             }
 
             const papel = temPapel(ator, "GERENCIAR_RASCUNHO");
             const atribuicao = await atribuicaoRepository.ehColaborador(tx, registroId, ator.id);
-            if (!papel || !atribuicao) throw new SemPermissaoError("Você não tem permissões suficientes para atualizar este item.");
+            if (!papel || !atribuicao)
+                throw new SemPermissaoError("Você não tem permissões suficientes para atualizar este item.");
 
             const antes = await acaoCorretivaRepository.buscarPorId(tx, registroId);
             const atualizada = await acaoCorretivaRepository.atualizar(tx, registroId, dados);
@@ -56,7 +66,7 @@ export const acaoCorretivaService = {
                 acao: "SALVAR_RASCUNHO",
                 usuarioId: ator.id,
                 antes,
-                depois: atualizada
+                depois: atualizada,
             });
 
             return atualizada;
@@ -74,7 +84,9 @@ export const acaoCorretivaService = {
             const acaoCorretiva = await acaoCorretivaRepository.buscarPorId(tx, registroId);
             if (acaoCorretiva === null) throw new NaoEncontradoError("Item não encontrado.");
 
-            const registroPublicado = await cicloVidaService.publicar(tx, registroId, ator, acaoCorretiva, (d) => acaoCorretivaPublicacaoSchema.parse(d));
+            const registroPublicado = await cicloVidaService.publicar(tx, registroId, ator, acaoCorretiva, (d) =>
+                acaoCorretivaPublicacaoSchema.parse(d),
+            );
             return { ...registroPublicado, ...acaoCorretiva };
         });
     },
@@ -88,7 +100,9 @@ export const acaoCorretivaService = {
             const acaoCorretiva = await acaoCorretivaRepository.buscarPorId(tx, registroId);
             if (acaoCorretiva === null) throw new NaoEncontradoError("Item não encontrado.");
 
-            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, acaoCorretiva, (d) => acaoCorretivaPlanoSchema.parse(d));
+            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, acaoCorretiva, (d) =>
+                acaoCorretivaPlanoSchema.parse(d),
+            );
             return { ...registroSubmetido, ...acaoCorretiva };
         });
     },
@@ -125,7 +139,7 @@ export const acaoCorretivaService = {
             }
 
             if (registro.estado !== "ABERTO" || registro.portaoAtual !== 0) {
-                throw new TransicaoInvalidaError('O plano precisa estar aprovado antes de finalizar a execução.');
+                throw new TransicaoInvalidaError("O plano precisa estar aprovado antes de finalizar a execução.");
             }
 
             const papel = temPapel(ator, "SUBMETER");
@@ -144,29 +158,49 @@ export const acaoCorretivaService = {
 
             const aprovador = await atribuicaoRepository.buscarAprovador(tx, registroId);
             if (aprovador === null) {
-                throw new TransicaoInvalidaError("Este item não possui um aprovador definido, não é possível gerar a verificação.");
+                throw new TransicaoInvalidaError(
+                    "Este item não possui um aprovador definido, não é possível gerar a verificação.",
+                );
             }
 
             const registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "FECHADO" });
 
-            const prazoVerificacao = new Date(Date.now() + (diasParaVerificar * 24 * 60 * 60 * 1000));
+            const prazoVerificacao = new Date(Date.now() + diasParaVerificar * 24 * 60 * 60 * 1000);
 
-            const registroVerificacao = await cicloVidaService.criarRascunho(tx, { tipo: "VERIFICACAO", criadoPorId: ator.id });
+            const registroVerificacao = await cicloVidaService.criarRascunho(tx, {
+                tipo: "VERIFICACAO",
+                criadoPorId: ator.id,
+            });
 
             const prefixo = prefixoPorTipo["VERIFICACAO"];
             const anoAtual = new Date().getFullYear();
             const codigoVerificacao = await sequenciaService.proximoCodigo(tx, prefixo, anoAtual);
 
-            const verificacaoRegistroAtualizado = await registroRepository.atualizar(tx, registroVerificacao.id, { estado: "ABERTO", codigo: codigoVerificacao });
+            const verificacaoRegistroAtualizado = await registroRepository.atualizar(tx, registroVerificacao.id, {
+                estado: "ABERTO",
+                codigo: codigoVerificacao,
+            });
 
             const verificacao = await verificacaoRepository.criar(tx, {
                 id: registroVerificacao.id,
                 acaoCorretivaId: registroId,
                 instrucoesVerificacao: acaoCorretiva.instrucoesVerificacao,
-                prazo: prazoVerificacao
+                prazo: prazoVerificacao,
             });
-            await atribuicaoRepository.inserirAtribuicao(tx, registroVerificacao.id, aprovador.usuarioId, ator.id, "COLABORADOR");
-            await atribuicaoRepository.inserirAtribuicao(tx, registroVerificacao.id, aprovador.usuarioId, ator.id, "APROVADOR");
+            await atribuicaoRepository.inserirAtribuicao(
+                tx,
+                registroVerificacao.id,
+                aprovador.usuarioId,
+                ator.id,
+                "COLABORADOR",
+            );
+            await atribuicaoRepository.inserirAtribuicao(
+                tx,
+                registroVerificacao.id,
+                aprovador.usuarioId,
+                ator.id,
+                "APROVADOR",
+            );
 
             await auditoriaRepository.registrar(tx, {
                 entidade: EntidadeAuditada[registro.tipo],
@@ -174,7 +208,7 @@ export const acaoCorretivaService = {
                 acao: "FINALIZAR_EXECUCAO",
                 usuarioId: ator.id,
                 antes: registro,
-                depois: registroAtualizado
+                depois: registroAtualizado,
             });
 
             await auditoriaRepository.registrar(tx, {
@@ -183,13 +217,13 @@ export const acaoCorretivaService = {
                 acao: "GERAR_VERIFICACAO",
                 usuarioId: ator.id,
                 antes: undefined,
-                depois: { ...verificacaoRegistroAtualizado, ...verificacao }
+                depois: { ...verificacaoRegistroAtualizado, ...verificacao },
             });
 
             return {
                 ...registroAtualizado,
                 ...acaoCorretiva,
-                verificacaoGerada: { ...verificacaoRegistroAtualizado, ...verificacao }
+                verificacaoGerada: { ...verificacaoRegistroAtualizado, ...verificacao },
             };
         });
     },
@@ -213,7 +247,7 @@ export const acaoCorretivaService = {
         return { ...registro, ...acaoCorretiva };
     },
 
-    async listarAcoesCorretivas(ator: Ator, filtros: { naoConformidadeId?: string, estado?: EstadoRegistro }) {
+    async listarAcoesCorretivas(ator: Ator, filtros: { naoConformidadeId?: string; estado?: EstadoRegistro }) {
         const papel = temPapel(ator, "VISUALIZAR");
         if (!papel) throw new SemPermissaoError("Você não tem permissões suficientes para visualizar.");
 
@@ -222,5 +256,5 @@ export const acaoCorretivaService = {
             const { registro, ...resto } = item;
             return { ...registro, ...resto };
         });
-    }
-}
+    },
+};

@@ -6,8 +6,8 @@ export const investigacaoBaseSchema = z.object({
     metodo: z.enum(MetodoInvestigacao).nullish(),
     conteudo: z.json().nullish(),
     causaDireta: z.string().min(20).nullish(),
-    causaRaiz: z.string().min(20).nullish()
-})
+    causaRaiz: z.string().min(20).nullish(),
+});
 
 export const investigacaoRascunhoSchema = investigacaoBaseSchema.partial();
 export const investigacaoPublicacaoSchema = investigacaoBaseSchema;
@@ -15,7 +15,7 @@ export const investigacaoFechamentoSchema = investigacaoBaseSchema.extend({
     metodo: z.enum(MetodoInvestigacao),
     conteudo: z.json(),
     causaDireta: z.string().min(20),
-    causaRaiz: z.string().min(20)
+    causaRaiz: z.string().min(20),
 });
 
 export type InvestigacaoBaseInput = z.infer<typeof investigacaoBaseSchema>;

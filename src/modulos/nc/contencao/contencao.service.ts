@@ -1,18 +1,22 @@
 import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
-import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
-import { Ator } from "../../../compartilhado/entidades/ator.js";
+import type { Ator } from "../../../compartilhado/entidades/ator.js";
+import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js";
 import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
 import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
-import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
+import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
 import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
-import { contencaoRepository } from "./contencao.repository.js";
-import { contencaoFechamentoSchema, contencaoPublicacaoSchema, ContencaoRascunhoInput } from "./contencao.schema.js";
 import { ncRepository } from "../nc/nc.repository.js";
+import { contencaoRepository } from "./contencao.repository.js";
+import {
+    type ContencaoRascunhoInput,
+    contencaoFechamentoSchema,
+    contencaoPublicacaoSchema,
+} from "./contencao.schema.js";
 
 export const contencaoService = {
     async criarRascunhoContencao(ator: Ator, naoConformidadeId: string, dados: ContencaoRascunhoInput) {
@@ -36,7 +40,7 @@ export const contencaoService = {
             await atribuicaoRepository.inserirAtribuicao(tx, registro.id, ator.id, ator.id, "COLABORADOR");
 
             return { ...registro, ...contencao };
-        })
+        });
     },
 
     async atualizarContencao(registroId: string, ator: Ator, dados: ContencaoRascunhoInput) {
@@ -48,7 +52,7 @@ export const contencaoService = {
             }
 
             if (!ESTADOS_EDITAVEIS.includes(registro.estado)) {
-                throw new TransicaoInvalidaError('O item precisa estar no status "Rascunho" ou "Aberto".')
+                throw new TransicaoInvalidaError('O item precisa estar no status "Rascunho" ou "Aberto".');
             }
 
             const papel = temPapel(ator, "GERENCIAR_RASCUNHO");
@@ -67,19 +71,19 @@ export const contencaoService = {
                 acao: "SALVAR_RASCUNHO",
                 usuarioId: ator.id,
                 antes: contencaoAntes,
-                depois: contencaoAtualizada
-            })
+                depois: contencaoAtualizada,
+            });
 
             return contencaoAtualizada;
-        })
+        });
     },
 
     async excluirRascunhoContencao(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
             const registroExcluido = await cicloVidaService.excluirRascunho(tx, registroId, ator);
 
-            return registroExcluido
-        })
+            return registroExcluido;
+        });
     },
 
     async publicarContencao(registroId: string, ator: Ator) {
@@ -90,10 +94,16 @@ export const contencaoService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            const registroPublicado = await cicloVidaService.publicar(tx, registroId, ator, contencao, (dadosParaValidar) => contencaoPublicacaoSchema.parse(dadosParaValidar));
+            const registroPublicado = await cicloVidaService.publicar(
+                tx,
+                registroId,
+                ator,
+                contencao,
+                (dadosParaValidar) => contencaoPublicacaoSchema.parse(dadosParaValidar),
+            );
 
             return { ...registroPublicado, ...contencao };
-        })
+        });
     },
 
     async submeterContencao(registroId: string, ator: Ator) {
@@ -104,10 +114,16 @@ export const contencaoService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, contencao, (dadosParaValidar) => contencaoFechamentoSchema.parse(dadosParaValidar));
+            const registroSubmetido = await cicloVidaService.submeter(
+                tx,
+                registroId,
+                ator,
+                contencao,
+                (dadosParaValidar) => contencaoFechamentoSchema.parse(dadosParaValidar),
+            );
 
             return { ...registroSubmetido, ...contencao };
-        })
+        });
     },
 
     async decidirContencao(registroId: string, ator: Ator, dados: DecisaoInput) {
@@ -116,7 +132,7 @@ export const contencaoService = {
             const contencao = await contencaoRepository.buscarPorId(tx, registroId);
 
             return { ...registroDecidido, ...contencao };
-        })
+        });
     },
 
     async cancelarContencao(registroId: string, ator: Ator, motivo: string) {
@@ -125,14 +141,14 @@ export const contencaoService = {
             const contencao = await contencaoRepository.buscarPorId(tx, registroId);
 
             return { ...registroCancelado, ...contencao };
-        })
+        });
     },
 
     async buscarPorIdContencao(registroId: string, ator: Ator) {
         const registro = await registroRepository.buscarPorId(prisma, registroId);
 
         if (registro === null) {
-            throw new NaoEncontradoError("Item não encontrado.")
+            throw new NaoEncontradoError("Item não encontrado.");
         }
         const papel = temPapel(ator, "VISUALIZAR");
 
@@ -145,10 +161,13 @@ export const contencaoService = {
         return { ...registro, ...contencao };
     },
 
-    async listarContencoes(ator: Ator, filtros: {
-        naoConformidadeId?: string,
-        estado?: EstadoRegistro
-    }) {
+    async listarContencoes(
+        ator: Ator,
+        filtros: {
+            naoConformidadeId?: string;
+            estado?: EstadoRegistro;
+        },
+    ) {
         const papel = temPapel(ator, "VISUALIZAR");
 
         if (!papel) {
@@ -163,5 +182,5 @@ export const contencaoService = {
         });
 
         return contencaoCompleta;
-    }
-}
+    },
+};

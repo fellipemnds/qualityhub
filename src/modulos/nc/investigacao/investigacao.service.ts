@@ -1,20 +1,24 @@
 import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
-import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
-import { Ator } from "../../../compartilhado/entidades/ator.js";
+import type { Ator } from "../../../compartilhado/entidades/ator.js";
+import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js";
 import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
 import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
-import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
+import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
 import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
+import { ncRepository } from "../nc/nc.repository.js";
 import { hipoteseRepository } from "./hipotese.repository.js";
 import { hipoteseFechamentoSchema } from "./hipotese.schema.js";
 import { investigacaoRepository } from "./investigacao.repository.js";
-import { investigacaoFechamentoSchema, investigacaoPublicacaoSchema, InvestigacaoRascunhoInput } from "./investigacao.schema.js";
-import { ncRepository } from "../nc/nc.repository.js";
+import {
+    type InvestigacaoRascunhoInput,
+    investigacaoFechamentoSchema,
+    investigacaoPublicacaoSchema,
+} from "./investigacao.schema.js";
 
 export const investigacaoService = {
     async criarRascunhoInvestigacao(ator: Ator, naoConformidadeId: string, dados: InvestigacaoRascunhoInput) {
@@ -33,7 +37,11 @@ export const investigacaoService = {
 
             const registro = await cicloVidaService.criarRascunho(tx, { tipo: "INVESTIGACAO", criadoPorId: ator.id });
 
-            const investigacao = await investigacaoRepository.criar(tx, { id: registro.id, naoConformidadeId, ...dados });
+            const investigacao = await investigacaoRepository.criar(tx, {
+                id: registro.id,
+                naoConformidadeId,
+                ...dados,
+            });
 
             await atribuicaoRepository.inserirAtribuicao(tx, registro.id, ator.id, ator.id, "COLABORADOR");
 
@@ -50,7 +58,7 @@ export const investigacaoService = {
             }
 
             if (!ESTADOS_EDITAVEIS.includes(registro.estado)) {
-                throw new TransicaoInvalidaError('O item precisa estar no status "Rascunho" ou "Aberto".')
+                throw new TransicaoInvalidaError('O item precisa estar no status "Rascunho" ou "Aberto".');
             }
 
             const papel = temPapel(ator, "GERENCIAR_RASCUNHO");
@@ -69,7 +77,7 @@ export const investigacaoService = {
                 acao: "SALVAR_RASCUNHO",
                 usuarioId: ator.id,
                 antes: investigacaoAntes,
-                depois: investigacaoAtualizada
+                depois: investigacaoAtualizada,
             });
 
             return investigacaoAtualizada;
@@ -92,7 +100,13 @@ export const investigacaoService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            const registroPublicado = await cicloVidaService.publicar(tx, registroId, ator, investigacao, (dadosParaValidar) => investigacaoPublicacaoSchema.parse(dadosParaValidar));
+            const registroPublicado = await cicloVidaService.publicar(
+                tx,
+                registroId,
+                ator,
+                investigacao,
+                (dadosParaValidar) => investigacaoPublicacaoSchema.parse(dadosParaValidar),
+            );
 
             return { ...registroPublicado, ...investigacao };
         });
@@ -110,7 +124,13 @@ export const investigacaoService = {
                 hipoteseFechamentoSchema.parse(hipotese);
             }
 
-            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, investigacao, (dadosParaValidar) => investigacaoFechamentoSchema.parse(dadosParaValidar));
+            const registroSubmetido = await cicloVidaService.submeter(
+                tx,
+                registroId,
+                ator,
+                investigacao,
+                (dadosParaValidar) => investigacaoFechamentoSchema.parse(dadosParaValidar),
+            );
 
             return { ...registroSubmetido, ...investigacao };
         });
@@ -152,10 +172,13 @@ export const investigacaoService = {
         return { ...registro, ...investigacao };
     },
 
-    async listarInvestigacoes(ator: Ator, filtros: {
-        naoConformidadeId?: string,
-        estado?: EstadoRegistro
-    }) {
+    async listarInvestigacoes(
+        ator: Ator,
+        filtros: {
+            naoConformidadeId?: string;
+            estado?: EstadoRegistro;
+        },
+    ) {
         const papel = temPapel(ator, "VISUALIZAR");
 
         if (!papel) {
@@ -170,5 +193,5 @@ export const investigacaoService = {
         });
 
         return investigacaoCompleta;
-    }
-}
+    },
+};

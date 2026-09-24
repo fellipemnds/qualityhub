@@ -1,18 +1,22 @@
 import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
-import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
-import { Ator } from "../../../compartilhado/entidades/ator.js";
+import type { Ator } from "../../../compartilhado/entidades/ator.js";
+import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js";
 import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
 import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
-import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
+import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
 import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
-import { classificacaoRepository } from "./classificacao.repository.js";
-import { classificacaoFechamentoSchema, classificacaoPublicacaoSchema, ClassificacaoRascunhoInput } from "./classificacao.schema.js";
 import { ncRepository } from "../nc/nc.repository.js";
+import { classificacaoRepository } from "./classificacao.repository.js";
+import {
+    type ClassificacaoRascunhoInput,
+    classificacaoFechamentoSchema,
+    classificacaoPublicacaoSchema,
+} from "./classificacao.schema.js";
 
 export const classificacaoService = {
     async criarRascunhoClassificacao(ator: Ator, naoConformidadeId: string, dados: ClassificacaoRascunhoInput) {
@@ -31,12 +35,16 @@ export const classificacaoService = {
 
             const registro = await cicloVidaService.criarRascunho(tx, { tipo: "CLASSIFICACAO", criadoPorId: ator.id });
 
-            const classificacao = await classificacaoRepository.criar(tx, { id: registro.id, naoConformidadeId, ...dados });
+            const classificacao = await classificacaoRepository.criar(tx, {
+                id: registro.id,
+                naoConformidadeId,
+                ...dados,
+            });
 
             await atribuicaoRepository.inserirAtribuicao(tx, registro.id, ator.id, ator.id, "COLABORADOR");
 
             return { ...registro, ...classificacao };
-        })
+        });
     },
 
     async atualizarClassificacao(registroId: string, ator: Ator, dados: ClassificacaoRascunhoInput) {
@@ -48,7 +56,7 @@ export const classificacaoService = {
             }
 
             if (!ESTADOS_EDITAVEIS.includes(registro.estado)) {
-                throw new TransicaoInvalidaError('O item precisa estar no status "Rascunho" ou "Aberto".')
+                throw new TransicaoInvalidaError('O item precisa estar no status "Rascunho" ou "Aberto".');
             }
 
             const papel = temPapel(ator, "CLASSIFICAR");
@@ -67,11 +75,11 @@ export const classificacaoService = {
                 acao: "SALVAR_RASCUNHO",
                 usuarioId: ator.id,
                 antes: classificacaoAntes,
-                depois: classificacaoAtualizada
-            })
+                depois: classificacaoAtualizada,
+            });
 
             return classificacaoAtualizada;
-        })
+        });
     },
 
     async excluirRascunhoClassificacao(registroId: string, ator: Ator) {
@@ -79,7 +87,7 @@ export const classificacaoService = {
             const registroExcluido = await cicloVidaService.excluirRascunho(tx, registroId, ator, "CLASSIFICAR");
 
             return registroExcluido;
-        })
+        });
     },
 
     async publicarClassificacao(registroId: string, ator: Ator) {
@@ -90,10 +98,17 @@ export const classificacaoService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            const registroPublicado = await cicloVidaService.publicar(tx, registroId, ator, classificacao, (dadosParaValidar) => classificacaoPublicacaoSchema.parse(dadosParaValidar), "CLASSIFICAR");
+            const registroPublicado = await cicloVidaService.publicar(
+                tx,
+                registroId,
+                ator,
+                classificacao,
+                (dadosParaValidar) => classificacaoPublicacaoSchema.parse(dadosParaValidar),
+                "CLASSIFICAR",
+            );
 
             return { ...registroPublicado, ...classificacao };
-        })
+        });
     },
 
     async submeterClassificacao(registroId: string, ator: Ator) {
@@ -104,10 +119,17 @@ export const classificacaoService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, classificacao, (dadosParaValidar) => classificacaoFechamentoSchema.parse(dadosParaValidar), "CLASSIFICAR");
+            const registroSubmetido = await cicloVidaService.submeter(
+                tx,
+                registroId,
+                ator,
+                classificacao,
+                (dadosParaValidar) => classificacaoFechamentoSchema.parse(dadosParaValidar),
+                "CLASSIFICAR",
+            );
 
             return { ...registroSubmetido, ...classificacao };
-        })
+        });
     },
 
     async decidirClassificacao(registroId: string, ator: Ator, dados: DecisaoInput) {
@@ -116,14 +138,14 @@ export const classificacaoService = {
             const classificacao = await classificacaoRepository.buscarPorId(tx, registroId);
 
             return { ...registroDecidido, ...classificacao };
-        })
+        });
     },
 
     async buscarPorIdClassificacao(registroId: string, ator: Ator) {
         const registro = await registroRepository.buscarPorId(prisma, registroId);
 
         if (registro === null) {
-            throw new NaoEncontradoError("Item não encontrado.")
+            throw new NaoEncontradoError("Item não encontrado.");
         }
         const papel = temPapel(ator, "VISUALIZAR");
 
@@ -136,10 +158,13 @@ export const classificacaoService = {
         return { ...registro, ...classificacao };
     },
 
-    async listarClassificacoes(ator: Ator, filtros: {
-        naoConformidadeId?: string,
-        estado?: EstadoRegistro
-    }) {
+    async listarClassificacoes(
+        ator: Ator,
+        filtros: {
+            naoConformidadeId?: string;
+            estado?: EstadoRegistro;
+        },
+    ) {
         const papel = temPapel(ator, "VISUALIZAR");
 
         if (!papel) {
@@ -154,5 +179,5 @@ export const classificacaoService = {
         });
 
         return classificacaoCompleta;
-    }
-}
+    },
+};

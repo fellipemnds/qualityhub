@@ -1,24 +1,23 @@
 import type { FastifyInstance } from "fastify";
-import { contencaoController } from "./contencao.controller.js";
-import { autenticar } from "../../../middlewares/autenticar.js";
-import { ZodTypeProvider } from "fastify-type-provider-zod";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
-import { contencaoRascunhoSchema } from "./contencao.schema.js";
+import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { decisaoSchema } from "../../../compartilhado/registro/decidir.schema.js";
 import { motivoSchema } from "../../../compartilhado/registro/motivo.schema.js";
-import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import { autenticar } from "../../../middlewares/autenticar.js";
+import { contencaoController } from "./contencao.controller.js";
+import { contencaoRascunhoSchema } from "./contencao.schema.js";
 
 export async function contencaoRoutes(app: FastifyInstance) {
-
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
         url: "/nc/:naoConformidadeId/contencoes",
         onRequest: [autenticar],
         schema: {
             params: z.object({ naoConformidadeId: z.uuid() }),
-            body: contencaoRascunhoSchema
+            body: contencaoRascunhoSchema,
         },
-        handler: contencaoController.criarRascunhoContencao
+        handler: contencaoController.criarRascunhoContencao,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -27,9 +26,9 @@ export async function contencaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
-            body: contencaoRascunhoSchema
+            body: contencaoRascunhoSchema,
         },
-        handler: contencaoController.atualizarContencao
+        handler: contencaoController.atualizarContencao,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -39,7 +38,7 @@ export async function contencaoRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ id: z.uuid() }),
         },
-        handler: contencaoController.excluirRascunhoContencao
+        handler: contencaoController.excluirRascunhoContencao,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -49,7 +48,7 @@ export async function contencaoRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ id: z.uuid() }),
         },
-        handler: contencaoController.publicarContencao
+        handler: contencaoController.publicarContencao,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -59,7 +58,7 @@ export async function contencaoRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ id: z.uuid() }),
         },
-        handler: contencaoController.submeterContencao
+        handler: contencaoController.submeterContencao,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -68,9 +67,9 @@ export async function contencaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
-            body: decisaoSchema
+            body: decisaoSchema,
         },
-        handler: contencaoController.decidirContencao
+        handler: contencaoController.decidirContencao,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -79,9 +78,9 @@ export async function contencaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
-            body: motivoSchema
+            body: motivoSchema,
         },
-        handler: contencaoController.cancelarContencao
+        handler: contencaoController.cancelarContencao,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -91,7 +90,7 @@ export async function contencaoRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ id: z.uuid() }),
         },
-        handler: contencaoController.buscarPorIdContencao
+        handler: contencaoController.buscarPorIdContencao,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -101,9 +100,9 @@ export async function contencaoRoutes(app: FastifyInstance) {
         schema: {
             querystring: z.object({
                 naoConformidadeId: z.string().min(1).optional(),
-                estado: z.enum(EstadoRegistro).optional()
-            })
+                estado: z.enum(EstadoRegistro).optional(),
+            }),
         },
-        handler: contencaoController.listarContencoes
+        handler: contencaoController.listarContencoes,
     });
 }

@@ -1,21 +1,31 @@
-import { FastifyRequest, FastifyReply } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
+import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
+import type { InvestigacaoRascunhoInput } from "./investigacao.schema.js";
 import { investigacaoService } from "./investigacao.service.js";
-import { InvestigacaoRascunhoInput } from "./investigacao.schema.js";
-import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
-import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 
 export const investigacaoController = {
-    async criarRascunhoInvestigacao(request: FastifyRequest<{ Params: { naoConformidadeId: string }, Body: InvestigacaoRascunhoInput }>, reply: FastifyReply) {
+    async criarRascunhoInvestigacao(
+        request: FastifyRequest<{ Params: { naoConformidadeId: string }; Body: InvestigacaoRascunhoInput }>,
+        reply: FastifyReply,
+    ) {
         const dados = request.body;
         const ator = request.user;
         const naoConformidadeId = request.params.naoConformidadeId;
 
-        const investigacaoRascunho = await investigacaoService.criarRascunhoInvestigacao(ator, naoConformidadeId, dados);
+        const investigacaoRascunho = await investigacaoService.criarRascunhoInvestigacao(
+            ator,
+            naoConformidadeId,
+            dados,
+        );
 
         return reply.status(201).send(investigacaoRascunho);
     },
 
-    async atualizarInvestigacao(request: FastifyRequest<{ Params: { id: string }, Body: InvestigacaoRascunhoInput }>, reply: FastifyReply) {
+    async atualizarInvestigacao(
+        request: FastifyRequest<{ Params: { id: string }; Body: InvestigacaoRascunhoInput }>,
+        reply: FastifyReply,
+    ) {
         const dados = request.body;
         const ator = request.user;
         const id = request.params.id;
@@ -52,7 +62,10 @@ export const investigacaoController = {
         return reply.status(200).send(investigacaoSubmetida);
     },
 
-    async decidirInvestigacao(request: FastifyRequest<{ Params: { id: string }, Body: DecisaoInput }>, reply: FastifyReply) {
+    async decidirInvestigacao(
+        request: FastifyRequest<{ Params: { id: string }; Body: DecisaoInput }>,
+        reply: FastifyReply,
+    ) {
         const id = request.params.id;
         const ator = request.user;
         const dados = request.body;
@@ -62,7 +75,10 @@ export const investigacaoController = {
         return reply.status(200).send(investigacaoDecidida);
     },
 
-    async cancelarInvestigacao(request: FastifyRequest<{ Params: { id: string }, Body: { motivo: string } }>, reply: FastifyReply) {
+    async cancelarInvestigacao(
+        request: FastifyRequest<{ Params: { id: string }; Body: { motivo: string } }>,
+        reply: FastifyReply,
+    ) {
         const id = request.params.id;
         const ator = request.user;
         const dados = request.body.motivo;
@@ -81,12 +97,15 @@ export const investigacaoController = {
         return reply.status(200).send(investigacaoBuscada);
     },
 
-    async listarInvestigacoes(request: FastifyRequest<{ Querystring: { naoConformidadeId?: string, estado?: EstadoRegistro } }>, reply: FastifyReply) {
+    async listarInvestigacoes(
+        request: FastifyRequest<{ Querystring: { naoConformidadeId?: string; estado?: EstadoRegistro } }>,
+        reply: FastifyReply,
+    ) {
         const ator = request.user;
         const filtros = request.query;
 
         const investigacoesListadas = await investigacaoService.listarInvestigacoes(ator, filtros);
 
         return reply.status(200).send(investigacoesListadas);
-    }
-}
+    },
+};

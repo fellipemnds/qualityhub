@@ -1,8 +1,8 @@
-import type { FastifyRequest, FastifyReply } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
+import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
+import type { MotivoInput } from "../../../compartilhado/registro/motivo.schema.js";
+import type { NCFiltrosListagemInput, NCRascunhoInput } from "./nc.schema.js";
 import { ncService } from "./nc.service.js";
-import { NCFiltrosListagemInput, NCRascunhoInput } from "./nc.schema.js";
-import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
-import { MotivoInput } from "../../../compartilhado/registro/motivo.schema.js";
 
 export const ncController = {
     async criarRascunhoNC(request: FastifyRequest<{ Body: NCRascunhoInput }>, reply: FastifyReply) {
@@ -14,7 +14,7 @@ export const ncController = {
         return reply.status(201).send(ncRascunho);
     },
 
-    async atualizarNC(request: FastifyRequest<{ Params: { id: string }, Body: NCRascunhoInput }>, reply: FastifyReply) {
+    async atualizarNC(request: FastifyRequest<{ Params: { id: string }; Body: NCRascunhoInput }>, reply: FastifyReply) {
         const dados = request.body;
         const id = request.params.id;
         const ator = request.user;
@@ -51,7 +51,7 @@ export const ncController = {
         return reply.status(200).send(ncSubmetida);
     },
 
-    async decidirNC(request: FastifyRequest<{ Params: { id: string }, Body: DecisaoInput }>, reply: FastifyReply) {
+    async decidirNC(request: FastifyRequest<{ Params: { id: string }; Body: DecisaoInput }>, reply: FastifyReply) {
         const id = request.params.id;
         const ator = request.user;
         const dados = request.body;
@@ -61,7 +61,7 @@ export const ncController = {
         return reply.status(200).send(ncDecidida);
     },
 
-    async reabrirNC(request: FastifyRequest<{ Params: { id: string }, Body: MotivoInput }>, reply: FastifyReply) {
+    async reabrirNC(request: FastifyRequest<{ Params: { id: string }; Body: MotivoInput }>, reply: FastifyReply) {
         const id = request.params.id;
         const ator = request.user;
         const motivo = request.body.motivo;
@@ -71,7 +71,7 @@ export const ncController = {
         return reply.status(200).send(ncReaberta);
     },
 
-    async cancelarNC(request: FastifyRequest<{ Params: { id: string }, Body: MotivoInput }>, reply: FastifyReply) {
+    async cancelarNC(request: FastifyRequest<{ Params: { id: string }; Body: MotivoInput }>, reply: FastifyReply) {
         const id = request.params.id;
         const ator = request.user;
         const motivo = request.body.motivo;
@@ -97,5 +97,5 @@ export const ncController = {
         const ncListada = await ncService.listarNC(ator, filtros);
 
         return reply.status(200).send(ncListada);
-    }
-}
+    },
+};

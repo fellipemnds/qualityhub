@@ -3,7 +3,7 @@ export const Papel = {
     EDITOR: "EDITOR",
     APROVADOR: "APROVADOR",
     GERENTE: "GERENTE",
-    ADMIN: "ADMIN"
+    ADMIN: "ADMIN",
 } as const;
 
-export type Papel = typeof Papel[keyof typeof Papel];
+export type Papel = (typeof Papel)[keyof typeof Papel];

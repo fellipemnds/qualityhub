@@ -12,8 +12,7 @@ export const Acao = {
     GERENCIAR_USUARIOS: "GERENCIAR_USUARIOS", // ADMIN
     COMENTAR: "COMENTAR", // EDITOR, APROVADOR, GERENTE
     GERAR_RELATORIOS: "GERAR_RELATORIOS", // GERENTE
-    VISUALIZAR: "VISUALIZAR" // VISUALIZADOR, EDITOR, APROVADOR, GERENTE
-
+    VISUALIZAR: "VISUALIZAR", // VISUALIZADOR, EDITOR, APROVADOR, GERENTE
 } as const;
 
-export type Acao = typeof Acao[keyof typeof Acao];
+export type Acao = (typeof Acao)[keyof typeof Acao];

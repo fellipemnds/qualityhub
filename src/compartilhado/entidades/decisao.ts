@@ -1,6 +1,6 @@
 export const Decisao = {
     APROVADO: "APROVADO",
-    REPROVADO: "REPROVADO"
+    REPROVADO: "REPROVADO",
 } as const;
 
-export type Decisao = typeof Decisao[keyof typeof Decisao];
+export type Decisao = (typeof Decisao)[keyof typeof Decisao];

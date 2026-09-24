@@ -2,7 +2,7 @@ export const PortaoAprovacao = {
     FECHAMENTO: "FECHAMENTO",
     UNICA: "UNICA",
     PLANO: "PLANO",
-    EXECUCAO: "EXECUCAO"
+    EXECUCAO: "EXECUCAO",
 } as const;
 
-export type PortaoAprovacao = typeof PortaoAprovacao[keyof typeof PortaoAprovacao];
+export type PortaoAprovacao = (typeof PortaoAprovacao)[keyof typeof PortaoAprovacao];

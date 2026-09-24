@@ -1,12 +1,12 @@
-import { prisma } from "../prisma/cliente.js"
-import { Ator } from "../entidades/ator.js"
-import { atribuicaoRepository } from "./atribuicao.repository.js"
-import { registroRepository } from "../registro/registro.repository.js"
-import { temPapel } from "../permissoes/pode-executar.js"
-import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError, ValidacaoError } from "../errors/errors.js"
-import { auditoriaRepository } from "../auditoria/auditoria.repository.js"
-import { EntidadeAuditada } from "../auditoria/entidades-auditadas.js"
-import { usuarioRepository } from "../../modulos/usuario/usuario.repository.js"
+import { usuarioRepository } from "../../modulos/usuario/usuario.repository.js";
+import { auditoriaRepository } from "../auditoria/auditoria.repository.js";
+import { EntidadeAuditada } from "../auditoria/entidades-auditadas.js";
+import type { Ator } from "../entidades/ator.js";
+import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError, ValidacaoError } from "../errors/errors.js";
+import { temPapel } from "../permissoes/pode-executar.js";
+import { prisma } from "../prisma/cliente.js";
+import { registroRepository } from "../registro/registro.repository.js";
+import { atribuicaoRepository } from "./atribuicao.repository.js";
 
 export const atribuicaoService = {
     async adicionarColaboradores(registroId: string, colaboradoresId: string[], ator: Ator) {
@@ -31,15 +31,16 @@ export const atribuicaoService = {
                 const colaboradorEsta = await atribuicaoRepository.ehColaborador(tx, registroId, colaboradorId);
                 if (colaboradorEsta) {
                     colaboradoresExistentes.push(colaboradorId);
-                }
-                else {
+                } else {
                     colaboradoresNovos.push(colaboradorId);
                 }
             }
 
             const colaboradoresAdicionados = [];
             for (const colaboradorId of colaboradoresNovos) {
-                colaboradoresAdicionados.push(await atribuicaoRepository.inserirAtribuicao(tx, registroId, colaboradorId, ator.id, "COLABORADOR"));
+                colaboradoresAdicionados.push(
+                    await atribuicaoRepository.inserirAtribuicao(tx, registroId, colaboradorId, ator.id, "COLABORADOR"),
+                );
             }
 
             await auditoriaRepository.registrar(tx, {
@@ -48,11 +49,11 @@ export const atribuicaoService = {
                 acao: "ADICIONAR_COLABORADORES",
                 usuarioId: ator.id,
                 antes: undefined,
-                depois: colaboradoresAdicionados
-            })
+                depois: colaboradoresAdicionados,
+            });
 
             return { adicionados: colaboradoresAdicionados, jaEramColaboradores: colaboradoresExistentes };
-        })
+        });
     },
 
     async removerColaboradores(registroId: string, colaboradoresId: string[], ator: Ator) {
@@ -77,8 +78,7 @@ export const atribuicaoService = {
                 const colaboradorEsta = await atribuicaoRepository.ehColaborador(tx, registroId, colaboradorId);
                 if (colaboradorEsta) {
                     colaboradoresRemoviveis.push(colaboradorId);
-                }
-                else {
+                } else {
                     naoSaoColaboradores.push(colaboradorId);
                 }
             }
@@ -86,12 +86,14 @@ export const atribuicaoService = {
             const contagemColaboradores = await atribuicaoRepository.contarColaboradores(tx, registroId);
 
             if (contagemColaboradores - colaboradoresRemoviveis.length <= 0) {
-                throw new TransicaoInvalidaError("A atribuição dos colaboradores não pode estar vazia!")
+                throw new TransicaoInvalidaError("A atribuição dos colaboradores não pode estar vazia!");
             }
 
             const colaboradoresRemovidos = [];
             for (const colaboradorId of colaboradoresRemoviveis) {
-                colaboradoresRemovidos.push(await atribuicaoRepository.removerAtribuicao(tx, registroId, colaboradorId, "COLABORADOR"));
+                colaboradoresRemovidos.push(
+                    await atribuicaoRepository.removerAtribuicao(tx, registroId, colaboradorId, "COLABORADOR"),
+                );
             }
 
             await auditoriaRepository.registrar(tx, {
@@ -100,11 +102,11 @@ export const atribuicaoService = {
                 acao: "REMOVER_COLABORADOR",
                 usuarioId: ator.id,
                 antes: colaboradoresRemovidos,
-                depois: undefined
-            })
+                depois: undefined,
+            });
 
             return { removidos: colaboradoresRemovidos, naoEramColaboradores: naoSaoColaboradores };
-        })
+        });
     },
 
     async definirAprovador(registroId: string, aprovadorId: string, ator: Ator) {
@@ -122,11 +124,11 @@ export const atribuicaoService = {
             }
 
             const temPapelAprovador = dadosAprovador.papeisRecebidos.some(
-                (usuarioPapel) => usuarioPapel.papel === "APROVADOR"
+                (usuarioPapel) => usuarioPapel.papel === "APROVADOR",
             );
 
             if (!temPapelAprovador) {
-                throw new ValidacaoError('Este usuário não pode ser atribuído pois não tem o papel "APROVADOR".')
+                throw new ValidacaoError('Este usuário não pode ser atribuído pois não tem o papel "APROVADOR".');
             }
 
             const papelAtor = temPapel(ator, "DEFINIR_APROVADOR");
@@ -136,12 +138,23 @@ export const atribuicaoService = {
             }
 
             const aprovadorAtual = await atribuicaoRepository.buscarAprovador(tx, registroId);
-            let aprovadorAntigo;
-            if (aprovadorAtual !== null) {
-                aprovadorAntigo = await atribuicaoRepository.removerAtribuicao(tx, registroId, aprovadorAtual.usuarioId, "APROVADOR");
-            }
+            const aprovadorAntigo =
+                aprovadorAtual === null
+                    ? undefined
+                    : await atribuicaoRepository.removerAtribuicao(
+                          tx,
+                          registroId,
+                          aprovadorAtual.usuarioId,
+                          "APROVADOR",
+                      );
 
-            const novoAprovador = await atribuicaoRepository.inserirAtribuicao(tx, registroId, aprovadorId, ator.id, "APROVADOR");
+            const novoAprovador = await atribuicaoRepository.inserirAtribuicao(
+                tx,
+                registroId,
+                aprovadorId,
+                ator.id,
+                "APROVADOR",
+            );
 
             await auditoriaRepository.registrar(tx, {
                 entidade: EntidadeAuditada[registro.tipo],
@@ -149,10 +162,10 @@ export const atribuicaoService = {
                 acao: "DEFINIR_APROVADOR",
                 usuarioId: ator.id,
                 antes: aprovadorAntigo,
-                depois: novoAprovador
+                depois: novoAprovador,
             });
 
             return novoAprovador;
-        })
-    }
-}
+        });
+    },
+};

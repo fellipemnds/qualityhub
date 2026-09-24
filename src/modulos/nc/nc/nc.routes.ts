@@ -1,22 +1,21 @@
 import type { FastifyInstance } from "fastify";
-import { ncController } from "./nc.controller.js";
-import { autenticar } from "../../../middlewares/autenticar.js"
-import { ZodTypeProvider } from "fastify-type-provider-zod";
-import { ncFiltrosListagemSchema, ncRascunhoSchema } from "./nc.schema.js";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import z from "zod";
 import { decisaoSchema } from "../../../compartilhado/registro/decidir.schema.js";
 import { motivoSchema } from "../../../compartilhado/registro/motivo.schema.js";
-import z from "zod";
+import { autenticar } from "../../../middlewares/autenticar.js";
+import { ncController } from "./nc.controller.js";
+import { ncFiltrosListagemSchema, ncRascunhoSchema } from "./nc.schema.js";
 
 export async function ncRoutes(app: FastifyInstance) {
-
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
         url: "/nc",
         onRequest: [autenticar],
         schema: {
-            body: ncRascunhoSchema
+            body: ncRascunhoSchema,
         },
-        handler: ncController.criarRascunhoNC
+        handler: ncController.criarRascunhoNC,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -25,9 +24,9 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
-            body: ncRascunhoSchema
+            body: ncRascunhoSchema,
         },
-        handler: ncController.atualizarNC
+        handler: ncController.atualizarNC,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -35,9 +34,9 @@ export async function ncRoutes(app: FastifyInstance) {
         url: "/nc/:id",
         onRequest: [autenticar],
         schema: {
-            params: z.object({ id: z.uuid() })
+            params: z.object({ id: z.uuid() }),
         },
-        handler: ncController.excluirRascunhoNC
+        handler: ncController.excluirRascunhoNC,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -45,9 +44,9 @@ export async function ncRoutes(app: FastifyInstance) {
         url: "/nc/:id/publicar",
         onRequest: [autenticar],
         schema: {
-            params: z.object({ id: z.uuid() })
+            params: z.object({ id: z.uuid() }),
         },
-        handler: ncController.publicarNC
+        handler: ncController.publicarNC,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -55,9 +54,9 @@ export async function ncRoutes(app: FastifyInstance) {
         url: "/nc/:id/submeter",
         onRequest: [autenticar],
         schema: {
-            params: z.object({ id: z.uuid() })
+            params: z.object({ id: z.uuid() }),
         },
-        handler: ncController.submeterNC
+        handler: ncController.submeterNC,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -66,9 +65,9 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
-            body: decisaoSchema
+            body: decisaoSchema,
         },
-        handler: ncController.decidirNC
+        handler: ncController.decidirNC,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -77,9 +76,9 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
-            body: motivoSchema
+            body: motivoSchema,
         },
-        handler: ncController.reabrirNC
+        handler: ncController.reabrirNC,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -88,9 +87,9 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
-            body: motivoSchema
+            body: motivoSchema,
         },
-        handler: ncController.cancelarNC
+        handler: ncController.cancelarNC,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -98,9 +97,9 @@ export async function ncRoutes(app: FastifyInstance) {
         url: "/nc/:id",
         onRequest: [autenticar],
         schema: {
-            params: z.object({ id: z.uuid() })
+            params: z.object({ id: z.uuid() }),
         },
-        handler: ncController.buscarPorIdNC
+        handler: ncController.buscarPorIdNC,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -108,8 +107,8 @@ export async function ncRoutes(app: FastifyInstance) {
         url: "/nc",
         onRequest: [autenticar],
         schema: {
-            querystring: ncFiltrosListagemSchema
+            querystring: ncFiltrosListagemSchema,
         },
-        handler: ncController.listarNC
+        handler: ncController.listarNC,
     });
 }

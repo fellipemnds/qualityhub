@@ -1,9 +1,9 @@
-import { FastifyInstance } from "fastify";
-import { ZodTypeProvider } from "fastify-type-provider-zod";
-import { autenticar } from "../../middlewares/autenticar.js";
-import { colaboradoresSchema, definirAprovadorSchema } from "./atribuicao.schema.js";
-import { atribuicaoController } from "./atribuicao.controller.js";
+import type { FastifyInstance } from "fastify";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
+import { autenticar } from "../../middlewares/autenticar.js";
+import { atribuicaoController } from "./atribuicao.controller.js";
+import { colaboradoresSchema, definirAprovadorSchema } from "./atribuicao.schema.js";
 
 export async function atribuicaoRoutes(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -12,9 +12,9 @@ export async function atribuicaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
-            body: definirAprovadorSchema
+            body: definirAprovadorSchema,
         },
-        handler: atribuicaoController.definirAprovador
+        handler: atribuicaoController.definirAprovador,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -23,9 +23,9 @@ export async function atribuicaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
-            body: colaboradoresSchema
+            body: colaboradoresSchema,
         },
-        handler: atribuicaoController.adicionarColaboradores
+        handler: atribuicaoController.adicionarColaboradores,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -34,8 +34,8 @@ export async function atribuicaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
-            body: colaboradoresSchema
+            body: colaboradoresSchema,
         },
-        handler: atribuicaoController.removerColaboradores
+        handler: atribuicaoController.removerColaboradores,
     });
 }

@@ -1,11 +1,11 @@
 import crypto from "node:crypto";
-import { prisma } from "../../compartilhado/prisma/cliente.js";
-import { usuarioRepository } from "../usuario/usuario.repository.js";
-import { CredenciaisInvalidasError, ValidacaoError } from "../../compartilhado/errors/errors.js";
-import { tokenAcessoRepository } from "./token-acesso.repository.js";
 import bcrypt from "bcrypt";
 import { auditoriaRepository } from "../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../compartilhado/auditoria/entidades-auditadas.js";
+import { CredenciaisInvalidasError, ValidacaoError } from "../../compartilhado/errors/errors.js";
+import { prisma } from "../../compartilhado/prisma/cliente.js";
+import { usuarioRepository } from "../usuario/usuario.repository.js";
+import { tokenAcessoRepository } from "./token-acesso.repository.js";
 
 export const authService = {
     async definirSenha(token: string, senha: string) {
@@ -23,7 +23,7 @@ export const authService = {
 
             const agora = new Date(Date.now());
             if (tokenAcesso.expiraEm < agora) {
-                throw new ValidacaoError("Token expirado.")
+                throw new ValidacaoError("Token expirado.");
             }
 
             const senhaHash = await bcrypt.hash(senha, 10);
@@ -37,9 +37,9 @@ export const authService = {
                 acao: "DEFINIR_SENHA",
                 usuarioId: tokenAcesso.usuarioId,
                 antes: undefined,
-                depois: undefined
-            })
-        })
+                depois: undefined,
+            });
+        });
     },
 
     // Realiza o login, comparando o a senha com seu Hash e retorna o objeto usuário.
@@ -65,5 +65,5 @@ export const authService = {
         }
 
         return usuario;
-    }
-}
+    },
+};

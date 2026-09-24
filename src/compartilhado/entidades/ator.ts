@@ -1,4 +1,4 @@
-import { Papel } from "./papeis.js";
+import type { Papel } from "./papeis.js";
 
 export type Ator = {
     id: string;
