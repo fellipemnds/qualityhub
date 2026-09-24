@@ -401,3 +401,148 @@ Durante o uso comum, geralmente o primeiro push, pull ou clone do dia pede a pas
 ---
 
 **Se você chegou até aqui, você terá configurado tudo corretamente! PARABÉNS!** 
+
+---
+
+## 12. Trabalhando em dois computadores (trabalho × casa)
+
+O Git leva o código de um computador para o outro, mas **nem tudo que o projeto precisa está no Git**. Esta seção diz o que falta e como deixar as duas máquinas iguais.
+
+### O que viaja pelo Git e o que não viaja
+
+| O quê | Vai pelo Git? | Como deixar igual |
+|---|---|---|
+| Código, documentos, migrations, `.vscode/` | Sim | `git pull` |
+| `node_modules` (dependências) | Não | `npm run preparar` |
+| Cliente gerado do Prisma (`src/generated/`) | Não | `npm run preparar` |
+| Estrutura do banco de desenvolvimento | Não (o banco mora no Docker de cada máquina) | `npm run preparar` aplica as migrations que faltam |
+| Usuários de teste no banco | Não | `testes/setup-usuarios-teste.sql` (passo 12.1.7) |
+| `.env` (segredos) | **Nunca** | Cada máquina tem o seu; as **chaves** precisam ser as mesmas do `.env.example` |
+| Extensão do Biome no VS Code | Só a recomendação | Aceitar a sugestão que o VS Code mostra ao abrir o projeto |
+| Chave SSH, login do `gh` | Não | Uma vez por máquina |
+| Memória e conversa do Claude Code | Não | O Claude de cada máquina lê o `CLAUDE.md` — por isso ele precisa estar sempre atualizado (linha **"Em andamento"**) |
+
+O `npm run preparar` faz três coisas, nesta ordem: `npm ci` (instala exatamente as versões do `package-lock.json`), `prisma generate` (gera o cliente do Prisma) e `prisma migrate deploy` (aplica no banco as migrations que ainda não foram aplicadas). Pode rodar quantas vezes quiser: se nada mudou, ele só confere. Leva cerca de 1 minuto.
+
+### 12.1 Voltando a um computador parado há muito tempo
+
+Use na primeira vez que abrir o projeto num computador depois de dias ou semanas sem mexer nele.
+
+**1.** Abra o Docker Desktop e espere o status **"Engine running"**. Depois abra o Ubuntu e entre na pasta do projeto.
+
+**2.** Veja se ficou alguma coisa sem commit da última vez:
+
+```bash
+git status
+```
+
+Se aparecer algum arquivo modificado, **não apague nada**: abra o Claude Code e peça ajuda (ele pode guardar essas mudanças com `git stash` antes de continuar).
+
+**3.** Atualize a `main`:
+
+```bash
+git switch main
+```
+```bash
+git pull
+```
+
+**4.** Confira as ferramentas. O Node precisa ser o 24 e o Docker precisa responder:
+
+```bash
+node -v
+```
+```bash
+docker ps
+```
+
+Se o `docker ps` não listar o `qualityhub_db`, suba o banco:
+
+```bash
+docker compose up -d
+```
+
+**5.** Confira se o `.env` tem as mesmas chaves do `.env.example` (o comando só compara os **nomes**, nunca mostra os valores):
+
+```bash
+diff <(grep -oE '^[A-Z_]+' .env | sort) <(grep -oE '^[A-Z_]+' .env.example | sort) && echo "chaves iguais"
+```
+
+Se aparecer alguma chave faltando, copie a linha do `.env.example` para o `.env` e preencha o valor.
+
+**6.** Prepare a máquina:
+
+```bash
+npm run preparar
+```
+
+Depois de semanas parado, é normal ele aplicar várias migrations de uma vez. Se o passo das migrations **der erro** (o banco dessa máquina ficou diferente do esperado), o banco de desenvolvimento pode ser recriado do zero — ele só tem dados de teste:
+
+```bash
+npx prisma migrate reset
+```
+
+Ele pede confirmação, apaga o banco de desenvolvimento e recria com todas as migrations.
+
+**7.** Se o banco foi recriado (ou está vazio), recarregue os usuários de teste:
+
+```bash
+docker exec -i qualityhub_db psql -U qualityhub -d qualityhub < testes/setup-usuarios-teste.sql
+```
+
+**8.** Confirme que está tudo certo — os dois comandos precisam terminar sem erro:
+
+```bash
+npm run typecheck
+```
+```bash
+npm run lint
+```
+
+**9.** Abra o VS Code (`code .`). Se ele sugerir instalar a extensão **Biome**, aceite. Se o Prettier estiver instalado nessa máquina, desinstale-o (ele brigaria com o Biome na formatação).
+
+**10.** Se houver uma fase em andamento, vá para a branch dela (veja o próximo item, "Ao chegar").
+
+### 12.2 Trocando de computador no dia a dia
+
+**Ao sair** de um computador:
+
+1. Diga ao Claude Code: **"vou trocar de computador"**. Ele vai:
+   - conferir que o código compila e passa no lint (`npm run typecheck` e `npm run lint`);
+   - atualizar a linha **"Em andamento"** do `CLAUDE.md` com o que foi feito e o que vem a seguir;
+   - propor o commit na branch da fase (e pedir sua aprovação, como sempre).
+2. Envie a branch para o GitHub:
+
+```bash
+git push
+```
+
+**Ao chegar** no outro computador:
+
+1. Abra o Docker Desktop.
+2. Busque as novidades e vá para a branch da fase (troque `<branch>` pelo nome, ex.: `fase/a1-testes`):
+
+```bash
+git fetch
+```
+```bash
+git switch <branch>
+```
+```bash
+git pull
+```
+
+3. Prepare a máquina (sempre — é o que garante dependências, cliente do Prisma e banco em dia):
+
+```bash
+npm run preparar
+```
+
+4. Abra o Claude Code na pasta do projeto e diga: **"continuar de onde parei"**. Ele lê o `CLAUDE.md` e retoma pela linha "Em andamento".
+
+### 12.3 Regras para não ter problema
+
+- **Push ao sair, pull ao chegar.** Mexer na mesma branch nos dois computadores sem sincronizar gera conflito.
+- **Nunca commitar o `.env`.** Ele tem segredos; o `.gitignore` já o protege.
+- **A `main` é protegida:** mudanças entram só por Pull Request. O trabalho acontece sempre numa branch de fase.
+- **Nunca rodar `npm audit fix --force`:** a "correção" rebaixa o Prisma para a versão 6 e quebra o projeto (veja `docs/trd.md` §13).

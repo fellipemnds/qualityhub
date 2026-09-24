@@ -18,8 +18,11 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
-# Editores e agentes
-.vscode/
+# Editores e agentes (a configuração do VS Code do projeto é versionada,
+# para ser igual nos dois computadores — SETUP.md §12)
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 .idea/
 .claude/
 .cursor/

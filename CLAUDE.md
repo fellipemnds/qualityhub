@@ -4,6 +4,8 @@ Sistema de gestão de Não Conformidades (ISO 9001:2015, cláusula 10.2),
 construído do zero por Matthew, aprendendo backend full-stack no processo.
 Este arquivo é o ponto de entrada rápido.
 
+**Idioma: responder sempre em português do Brasil.**
+
 **Princípio do produto:** funcional e sem risco de falha vale mais que
 entregar rápido.
 
@@ -20,8 +22,15 @@ entregar rápido.
 | `docs/changelog-arquitetura.md` | Registro de toda decisão de arquitetura e divergência do documento original. **Leia antes de propor mudança estrutural** |
 | `docs/arquitetura.md` | Documento de design **original** (histórico). Onde diverge dos documentos acima, eles valem |
 
-**Próximo passo:** fase **A0** concluída na branch
-`fase/a0-preparacao` (aguardando PR). Depois, **A1** (aprender testes).
+**Em andamento** (atualizar sempre que Matthew trocar de computador ou
+fechar uma etapa — é por aqui que a próxima sessão retoma):
+- **Fase A1** (aprender testes), branch `fase/a1-testes`. A0 concluída
+  e mesclada (PR #1).
+- Feito na A1: fluxo de trabalho entre dois computadores (`SETUP.md`
+  §12, script `npm run preparar`, configuração do VS Code versionada).
+- **Próximo:** instalar e autenticar o `gh`; depois os conceitos de
+  teste (plano, A1).
+
 Ainda pendente fora do código: hospedagem (TRD §10.6), identidade
 visual.
 
@@ -33,9 +42,19 @@ servidor ligado há dias, nenhuma NC nova pode ser registrada).
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
-o Docker Desktop fechado o comando `docker` some do WSL. O `gh` não está
-instalado: o PR da A0 é aberto por Matthew no site do GitHub, e o `gh`
-entra no começo da A1.
+o Docker Desktop fechado o comando `docker` some do WSL. O `gh` ainda
+não está instalado (entra no começo da A1).
+
+**Dois computadores:** Matthew alterna entre o do trabalho e o de casa
+(mesmo ambiente: Windows + WSL2 + Docker Desktop + nvm). Seguir o
+`SETUP.md` §12. Quando ele disser **"vou trocar de computador"**: rodar
+`npm run typecheck` e `npm run lint`, atualizar o bloco "Em andamento"
+acima, propor o commit na branch da fase e lembrá-lo do `git push`.
+Quando disser **"continuar de onde parei"**: conferir branch
+(`git status`), lembrar do `npm run preparar` se ele ainda não rodou, e
+retomar pelo "Em andamento". Memória e conversas do Claude **não**
+passam de uma máquina para a outra — o que precisa sobreviver vai para
+este arquivo.
 
 ## Como trabalhamos (workflow com Claude)
 
@@ -64,7 +83,9 @@ o banco. Frontend (planejado, não iniciado): React + Vite + **shadcn/ui**
 
 **Comandos:** `npm run dev` (servidor com recarga) · `npm run typecheck`
 (`tsc --noEmit`) · `npm run lint` (Biome: formatação + lint + ordem dos
-imports) · `npm run lint:fix` (corrige o que é automático). O Biome
+imports) · `npm run lint:fix` (corrige o que é automático) ·
+`npm run preparar` (`npm ci` + `prisma generate` + `prisma migrate
+deploy` — deixa a máquina em dia depois de um `git pull`). O Biome
 (2.5.14, versão exata) usa 4 espaços e 120 colunas; JSON com 2 espaços.
 Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
 `npm run lint` precisa passar antes de todo commit de código.
