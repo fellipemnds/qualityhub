@@ -18,7 +18,7 @@ import { sequenciaService } from "../../../compartilhado/sequencia/sequencia.ser
 import { verificacaoRepository } from "../verificacao/verificacao.repository.js";
 
 export const acaoCorretivaService = {
-    async criarRascunhoAcaoCorretiva(ator: Ator, naoConformidadeId: string, dados: AcaoCorretivaRascunhoInput & { investigacaoId?: string }) {
+    async criarRascunhoAcaoCorretiva(ator: Ator, naoConformidadeId: string, dados: AcaoCorretivaRascunhoInput) {
         return prisma.$transaction(async (tx) => {
             const papel = temPapel(ator, "GERENCIAR_RASCUNHO");
             if (!papel) throw new SemPermissaoError("Você não tem permissões suficientes para criar um novo rascunho.");

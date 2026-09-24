@@ -5,7 +5,7 @@ import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js"
 import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 
 export const acaoCorretivaController = {
-    async criarRascunhoAcaoCorretiva(request: FastifyRequest<{ Params: { naoConformidadeId: string }, Body: AcaoCorretivaRascunhoInput & { investigacaoId?: string } }>, reply: FastifyReply) {
+    async criarRascunhoAcaoCorretiva(request: FastifyRequest<{ Params: { naoConformidadeId: string }, Body: AcaoCorretivaRascunhoInput }>, reply: FastifyReply) {
         const acaoCorretiva = await acaoCorretivaService.criarRascunhoAcaoCorretiva(request.user, request.params.naoConformidadeId, request.body);
         return reply.status(201).send(acaoCorretiva);
     },

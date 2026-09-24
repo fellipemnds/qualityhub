@@ -3,7 +3,7 @@ import { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
 import { AcaoCorretivaRascunhoInput } from "./acao-corretiva.schema.js";
 
 export const acaoCorretivaRepository = {
-    async criar(tx: ClientePrisma, dados: AcaoCorretivaRascunhoInput & { id: string, naoConformidadeId: string, investigacaoId?: string }) {
+    async criar(tx: ClientePrisma, dados: AcaoCorretivaRascunhoInput & { id: string, naoConformidadeId: string }) {
         return tx.acaoCorretiva.create({ data: dados });
     },
 

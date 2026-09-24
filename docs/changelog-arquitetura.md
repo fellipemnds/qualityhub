@@ -90,6 +90,11 @@ findMany` direto, igual às outras cinco entidades — antes entrava por
      Corrigido trocando o validador de `submeterContencao`. Testado via
      curl: sem `executadaEm`/`disposicao` → 400; preenchidos → 200.
 
+  Limpeza relacionada: as intersecções manuais `& { investigacaoId?: string }`
+  em `acao-corretiva.controller.ts`, `.service.ts` e `.repository.ts` (só
+  tinham efeito em compile-time, redundantes desde que o campo entrou no
+  schema Zod do item 2 acima) foram removidas numa sessão seguinte.
+
 - **Auditoria em `criarUsuario` adicionada** — `EntidadeAuditada.USUARIO`
   + `acao: "CRIAR_USUARIO"`, mesmo padrão de `authService.definirSenha`.
   (`atualizarNC` já registrava auditoria desde antes desta sessão — a
