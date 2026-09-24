@@ -28,8 +28,11 @@ fechar uma etapa — é por aqui que a próxima sessão retoma):
   e mesclada (PR #1).
 - Feito na A1: fluxo de trabalho entre dois computadores (`SETUP.md`
   §12, script `npm run preparar`, configuração do VS Code versionada).
-- **Próximo:** instalar e autenticar o `gh`; depois os conceitos de
-  teste (plano, A1).
+- `gh` instalado e autenticado no computador do trabalho (falta o de
+  casa — `SETUP.md` §12).
+- **Próximo:** conceitos de teste, de dois em dois (plano, A1). Depois,
+  Matthew configura Vitest + Testcontainers e escreve os primeiros
+  testes.
 
 Ainda pendente fora do código: hospedagem (TRD §10.6), identidade
 visual.
@@ -42,8 +45,10 @@ servidor ligado há dias, nenhuma NC nova pode ser registrada).
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
-o Docker Desktop fechado o comando `docker` some do WSL. O `gh` ainda
-não está instalado (entra no começo da A1).
+o Docker Desktop fechado o comando `docker` some do WSL. O `gh` está
+instalado e autenticado neste computador (escopos `repo` e `workflow`);
+Claude pode abrir PRs e ler o CI com ele. O `git push` continua sendo
+de Matthew, salvo pedido explícito.
 
 **Dois computadores:** Matthew alterna entre o do trabalho e o de casa
 (mesmo ambiente: Windows + WSL2 + Docker Desktop + nvm). Seguir o
@@ -59,8 +64,10 @@ este arquivo.
 ## Como trabalhamos (workflow com Claude)
 
 Matthew é iniciante em desenvolvimento full-stack, aprendendo no processo.
-**Claude explica o conceito, Matthew escreve o núcleo, Claude revisa**;
-o que é repetição de padrão já validado, Claude gera direto. **Ao propor
+**Claude explica o conceito, Matthew escreve, Claude revisa.** Matthew
+quer codar **tudo o que puder ser codado**, inclusive configuração
+(Vitest, CI, scripts); Claude só gera o que é **repetição** de um padrão
+que Matthew já escreveu e validou. **Ao propor
 mudanças, prefira explicar o raciocínio e perguntar antes de reescrever
 grandes blocos.**
 
