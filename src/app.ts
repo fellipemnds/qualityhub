@@ -15,7 +15,7 @@ import { verificacaoRoutes } from "./modulos/nc/verificacao/verificacao.routes.j
 
 const app = Fastify({
     logger: true,
-    ignoreTrailingSlash: true
+    routerOptions: { ignoreTrailingSlash: true }
 });
 
 app.setValidatorCompiler(validatorCompiler);
