@@ -207,7 +207,7 @@ Legenda: ✅ pronto · 🔧 pronto, com ajuste decidido · ⬜ a construir
 | RF-15 | Gerenciar usuários: listar/buscar, revogar papel, inativar (RN-43) | — | ⬜ |
 | RF-16 | Ver a etapa atual de cada NC na listagem e no detalhe | — | ⬜ |
 | RF-17 | **"Minhas pendências"**: o que aguarda a pessoa — itens para aprovar, para executar, verificações a concluir, prazos vencendo ou vencidos | — | ⬜ |
-| RF-18 | **Anexos** em qualquer item: imagens e PDF, com limite de tamanho, armazenados no servidor da empresa (RN-45) | 10.2.2 | ⬜ |
+| RF-18 | **Anexos** em qualquer item: imagens e PDF, com limite de tamanho, acessíveis só pelo sistema (RN-45; onde ficam guardados: TRD §8) | 10.2.2 | ⬜ |
 | RF-19 | **Relatórios do gestor**: (1) NCs abertas por setor e por origem; (2) tempo médio de detecção → fechamento, por período e classificação; (3) Ações Corretivas e Verificações atrasadas, e com quem estão; (4) eficácia e reincidência — distribuição dos resultados de verificação, NCs reabertas, causas-raiz que se repetem | — | ⬜ |
 | RF-20 | **Cadastro de setores** pelo `ADMIN` (RN-44) | — | ⬜ |
 

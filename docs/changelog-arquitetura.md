@@ -24,6 +24,15 @@ documento de arquitetura.
   (TanStack Table, react-day-picker, Sonner, Tiptap para menções,
   react-dropzone para anexos). Regra: nenhuma biblioteca além dessas
   sem registrar o motivo aqui.
+- **TRD** (`docs/trd.md`) registra os ADRs novos, 33 a 38: shadcn/ui;
+  anexos só via backend (onde ficam: junto com a hospedagem); sessão em
+  cookie httpOnly com usuário/papéis conferidos a cada requisição
+  (corrige o atraso de até 5 h para revogar papel, porque hoje os papéis
+  vão dentro do JWT); testes automáticos **antes** das correções de
+  regra; OpenAPI + Orval; remoção do barramento de eventos sem uso.
+  **ADR-30 (on-premise) em revisão**: sem TI envolvida e com volume
+  pequeno (54 NCs no total), as opções de hospedagem estão comparadas no
+  TRD §10.6.
 
 ### Filtros de listagem de NC, tipo `Ator`, reorganização em subpastas, e três bugs de schema de fechamento
 

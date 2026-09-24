@@ -18,9 +18,10 @@ ações por estado, "Minhas pendências", lacunas de backend L1–L9):
 `docs/fluxo-app.md`.
 Em andamento (2026-09): reorganizar o planejamento em seis documentos —
 PRD (feito), Fluxo do App (feito), UI/UX (feito — `docs/ui-ux.md`;
-wireframes no Figma pendentes; identidade visual a definir), TRD,
-Esquema Backend, Plano de
-Implementação.
+wireframes no Figma pendentes; identidade visual a definir), TRD (feito
+— `docs/trd.md`: sessão em cookie com checagem a cada requisição,
+testes antes das correções, OpenAPI + Orval, ADR-33 a ADR-38; hospedagem
+ainda a decidir), Esquema Backend, Plano de Implementação.
 
 ## Como este projeto foi construído (workflow com Claude)
 
