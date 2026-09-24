@@ -93,6 +93,8 @@ ele não é o aprovador designado.
 | `NAO_EFICAZ` reabre só o que estiver fechado (hoje dá erro) | RN-23 |
 | `PARCIALMENTE_EFICAZ` copia todos os colaboradores da ação anterior | RN-23 |
 | Criar NC já com colaboradores, num passo só | RF-01 |
+| Item filho herda o aprovador da NC | RN-46 |
+| Rascunho não pode ser cancelado, só excluído | RN-06 |
 
 **Funcionalidades novas:**
 
@@ -226,7 +228,7 @@ Legenda: ✅ pronto · 🔧 pronto, com ajuste decidido · ⬜ a construir
 | RN-03 | Código é imutável e único |
 | RN-04 | Reprovar exige motivo; o item volta a `ABERTO` no mesmo portão |
 | RN-05 | Reabrir exige motivo e fica registrado |
-| RN-06 | Cancelar exige motivo; nunca apaga; indisponível para `FECHADO` |
+| RN-06 | **(alterada)** Cancelar exige motivo; nunca apaga; vale **só para itens publicados** (`ABERTO` ou `EM_APROVACAO`). Rascunho não se cancela: exclui-se (RN-09) — Q14 |
 | RN-07 | Toda escrita gera registro de auditoria, junto e de forma indivisível |
 | RN-07b | **(nova)** Edição permitida em `RASCUNHO` e `ABERTO`; bloqueada a partir de `EM_APROVACAO` — publicar formaliza, não trava |
 
@@ -248,6 +250,7 @@ Legenda: ✅ pronto · 🔧 pronto, com ajuste decidido · ⬜ a construir
 | RN-16 | Aprovar/reprovar exige papel `APROVADOR` **e** ser **o** aprovador designado |
 | RN-17 | Reabrir exige só papel `APROVADOR`, sem atribuição |
 | RN-18 | **(alterada)** Dividida em duas: **gerenciar colaboradores** — qualquer `EDITOR`/`GERENTE`, **sem precisar já estar no item** (auto-organização do time; tudo auditado); **definir aprovador** — só `APROVADOR`/`GERENTE`, e o escolhido precisa ter papel `APROVADOR` |
+| RN-46 | **(nova)** Item filho **nasce com o aprovador da NC** (se a NC já tiver um), e pode ser trocado depois por quem pode definir aprovador. Filho publicado sem aprovador entra na **triagem**, junto com as NCs sem aprovador — Q13 |
 
 ### Fluxo da NC
 | ID | Regra |
@@ -257,7 +260,7 @@ Legenda: ✅ pronto · 🔧 pronto, com ajuste decidido · ⬜ a construir
 | RN-21 | **(alterada)** Submeter a NC para fechamento exige: ≥1 Classificação `FECHADA`; ≥1 Investigação `FECHADA`; ≥1 Ação Corretiva **com plano aprovado**, e **toda** Ação Corretiva não cancelada com plano aprovado; riscos revisados e mudanças no SGQ preenchidos. Execução e Verificação **não** travam o fechamento |
 | RN-22 | Contenção não é obrigatória; se existir, precisa estar `FECHADA` ou `CANCELADA` |
 | RN-23 | **(alterada)** Verificação com resultado diferente de `EFICAZ` dispara a reação automática da §5.4 |
-| RN-24 | **(alterada)** Investigação só é submetida com causa raiz e causa direta preenchidas e todas as hipóteses completas |
+| RN-24 | **(alterada)** Investigação só é submetida com método, conteúdo do A3, causa direta e causa raiz preenchidos, e todas as hipóteses completas |
 | RN-25 | **(alterada)** Ação Corretiva só é finalizada com data de execução e evidência — sem aprovação da execução |
 | RN-26 | **(alterada)** Reclassificar = nova Classificação; a anterior fica no histórico. *(O campo "classificação atual" na NC foi removido — ninguém definiu qual é "a atual" quando há várias.)* |
 | RN-41 | **(nova)** Verificação só é concluída por colaborador com papel `APROVADOR` |
@@ -344,8 +347,14 @@ em 2026-09-24.
 | Q11 | Métricas de sucesso | Planilha aposentada, auditoria passa com o sistema, zero falhas em uso → §2 |
 | Q12 | Quem mantém os setores? | `ADMIN`, por tela; setor em uso é desativado, não apagado → RN-44 |
 
-**Ainda em aberto** (técnico, não de produto — vai para o TRD): limite de
-tamanho dos anexos e onde ficam guardados no servidor.
+**Revisão cruzada dos documentos com o código** (2026-09-24, mesmo dia):
+
+| # | Pergunta | Decisão |
+|---|---|---|
+| Q13 | Item filho nasce sem aprovador, e só `APROVADOR`/`GERENTE` pode definir um — o colaborador fica travado para enviar, sem ninguém ser avisado | **Filho herda o aprovador da NC**; filho sem aprovador vai para a triagem → RN-46 |
+| Q14 | Rascunho pode ser cancelado, e vira item cancelado sem código, visível para sempre | **Rascunho só se exclui**; cancelar vale para itens publicados → RN-06 |
+
+Limite de tamanho e armazenamento dos anexos foram resolvidos no TRD (§8).
 
 ---
 
@@ -354,3 +363,4 @@ tamanho dos anexos e onde ficam guardados no servidor.
 | Data | Mudança |
 |---|---|
 | 2026-09-24 | v1 — consolidação de `arquitetura.md` + changelog + código; decisões Q1–Q12 |
+| 2026-09-24 | v1.1 — revisão cruzada com o código: RN-06 e RN-24 ajustadas, RN-46 nova (Q13, Q14) |

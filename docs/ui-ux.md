@@ -247,7 +247,7 @@ em `components/` (os do shadcn/ui, em `components/ui/`).
 
 ```
 ┌──────────────┬──────────────────────────────────────────────┐
-│ QualityHub   │  NC-2026-0042 › Investigação INV-2026-0007    │
+│ QualityHub   │  NC-2026-0042 › Investigação IV-2026-0007     │
 │              │──────────────────────────────────────────────│
 │ ◉ Pendências │                                              │
 │   (4)        │              conteúdo da tela                 │
@@ -298,7 +298,7 @@ VENCIDAS (1)
 └─────────────────────────────────────────────────────────────────┘
 APROVAR (2)
 ┌─────────────────────────────────────────────────────────────────┐
-│ ⧗ Aprovar         INV-2026-0007 · Vazamento na linha 3        →  │
+│ ⧗ Aprovar         IV-2026-0007 · Vazamento na linha 3         →  │
 │ ⧗ Aprovar         NC-2026-0038 · Fechamento                   →  │
 └─────────────────────────────────────────────────────────────────┘
 TRIAGEM (1)
@@ -308,8 +308,9 @@ TRIAGEM (1)
 ```
 
 Grupos na ordem: **Vencidas** → Aprovar → Corrigir → Verificar → Executar
-→ Submeter para fechamento → Triagem → Menções → Rascunhos. "Assumir" na
-triagem define a própria pessoa como aprovadora, sem precisar abrir a NC.
+→ Enviar para fechamento → Triagem → Menções → Rascunhos. "Assumir" na
+triagem define a própria pessoa como aprovadora (da NC ou do filho sem
+aprovador), sem precisar abrir o item.
 
 ### 7.2 T-04 Lista de NCs
 
@@ -332,24 +333,25 @@ Paginação por "Carregar mais" (a API usa cursor, não páginas numeradas).
 ```
 NC-2026-0042 · Vazamento na linha 3              ● Aberta  🔍 Em investigação
                                                   Contenção em andamento
-[ Submeter para fechamento (bloqueado ⓘ) ]  [ Salvar ]  [ Mais ▾ ]
+[ Enviar para fechamento (bloqueado ⓘ) ]  [ Salvar ]  [ Mais ▾ ]
 ┌──────────────────────────────────────────────┬─────────────────────────┐
 │ DADOS                                   [✎]  │ CHECKLIST DE FECHAMENTO │
 │ Descrição, requisito, processo, setor...     │ ✅ Classificação         │
-│                                              │ ❌ Investigação → INV-7  │
+│                                              │ ❌ Investigação → IV-7   │
 │ CLASSIFICAÇÃO                  [+ Nova]      │ ❌ Plano de ação         │
-│  CLS-2026-0011  Maior   ✓ Fechada            │ ❌ Riscos revisados      │
+│  CL-2026-0011  Maior   ✓ Fechada             │ ❌ Riscos revisados      │
 │ CONTENÇÃO                      [+ Nova]      │ ❌ Mudanças no SGQ       │
-│  CON-2026-0019  Corrigido  ● Aberta          │─────────────────────────│
-│ INVESTIGAÇÃO                   [+ Nova]      │ ATRIBUIÇÕES             │
-│  INV-2026-0007  Vazamento...  ⧗ Em aprovação │ Aprovador: Beltrana     │
-│ AÇÃO CORRETIVA                 [+ Nova]      │ Colaboradores: F, C, D  │
-│  (nenhuma ainda)                             │ [+ Adicionar]           │
-│ VERIFICAÇÃO                                  │─────────────────────────│
-│  (nasce ao finalizar uma ação)               │ ANEXOS (3)   [+ Enviar] │
+│  CT-2026-0019  Corrigido  ● Aberta           │ ✅ Aprovador definido    │
+│ INVESTIGAÇÃO                   [+ Nova]      │─────────────────────────│
+│  IV-2026-0007  Vazamento...  ⧗ Em aprovação  │ ATRIBUIÇÕES             │
+│ AÇÃO CORRETIVA                 [+ Nova]      │ Aprovador: Beltrana     │
+│  (nenhuma ainda)                             │ Responsáveis: F, C, D   │
+│ VERIFICAÇÃO                                  │ [+ Adicionar]           │
+│  (nasce ao finalizar uma ação)               │─────────────────────────│
+│                                              │ ANEXOS (3)   [+ Enviar] │
 ├──────────────────────────────────────────────┴─────────────────────────┤
 │ FEED                                                                   │
-│ 22/09 14:02  Beltrana submeteu INV-2026-0007 para aprovação            │
+│ 22/09 14:02  Fulana enviou IV-2026-0007 para aprovação                 │
 │ 21/09 09:15  Fulana: @Beltrana pode revisar a causa raiz?              │
 │ [ Escrever comentário… @ para mencionar, # para citar item ]           │
 └────────────────────────────────────────────────────────────────────────┘
@@ -377,8 +379,8 @@ EXECUÇÃO
 ### 7.5 T-07 Investigação A3 (só computador)
 
 ```
-NC-2026-0042 › INV-2026-0007 · Vazamento na linha 3        ● Aberta
-[ Submeter (bloqueado ⓘ) ]  [ Salvar ]  [ Mais ▾ ]
+NC-2026-0042 › IV-2026-0007 · Vazamento na linha 3        ● Aberta
+[ Enviar para aprovação (bloqueado ⓘ) ]  [ Salvar ]  [ Mais ▾ ]
 ┌────────────────────┬───────────────────────────────────────────────┐
 │ ÍNDICE A3          │ REAL PROBLEMA                                 │
 │ ✓ Percepção inicial│ [ texto                                     ] │
@@ -414,7 +416,7 @@ O índice fica fixo ao rolar. ✓ preenchida · ◐ parcial · ○ vazia.
 │ Processo afetado  ...  │
 │ Requisito violado ...  │
 │ Cliente (opcional)     │
-│ Colaboradores (opc.)   │
+│ Responsáveis (opc.)    │
 │ [📷 Tirar foto/anexar] │
 ├────────────────────────┤
 │ [Salvar rascunho][Publicar]│
@@ -560,3 +562,4 @@ nomes dos tokens.
 | Data | Mudança |
 |---|---|
 | 2026-09-24 | v1 — decisões iniciais e U1–U5 |
+| 2026-09-24 | v1.1 — revisão cruzada: wireframes com os termos do glossário (U1), prefixos reais dos códigos, aprovador no checklist, triagem inclui filhos |

@@ -173,6 +173,13 @@ reescreve as tabelas de menção **na mesma transação** (RN-35).
 `Aprovacao`, para o "Aprovado pelo próprio autor", RN-28), mesclados com
 os comentários por data.
 
+**Nem toda linha de auditoria vira evento no feed**, senão cada "Salvar"
+encheria a conversa. Entram: criação, publicação, envio para aprovação,
+aprovação/reprovação (com motivo), reabertura, cancelamento, finalizar
+execução, verificação gerada/concluída, mudança de atribuições e
+anexos. Edições de campos aparecem **agrupadas** ("Fulana editou os
+dados") sem detalhar o antes/depois — o detalhe continua na auditoria.
+
 ### M5 — Limpeza
 
 Apagar os modelos antigos `Anexo` e `Comentario` que estão **comentados**
@@ -189,6 +196,20 @@ existem mais).
 | Pendências | Consulta (§4.4) |
 | Catálogo de ações de auditoria tipado | Enum no **código**; a coluna continua `String`, porque a auditoria serve módulos futuros |
 | Tentativas de login com falha | Vão para o **log da aplicação**, não para a auditoria (E1) — `Auditoria.usuarioId` continua obrigatório |
+| Herança do aprovador da NC (RN-46) | Na criação do filho, o service copia a `Atribuicao` de aprovador da NC — mesma tabela de sempre |
+
+### Catálogo de permissões (código, não banco)
+
+Ações novas em `compartilhado/permissoes/catalogo.ts`:
+
+| Ação | Papéis | Usada em |
+|---|---|---|
+| `ANEXAR` | `EDITOR`, `APROVADOR`, `GERENTE` | Enviar e remover anexo (com atribuição de colaborador). `APROVADOR` entra porque o QA anexa evidência na Verificação |
+| `GERENCIAR_SETORES` | `ADMIN` | Criar, renomear, desativar e reativar setores |
+
+Comentar (`COMENTAR`), relatórios (`GERAR_RELATORIOS`) e usuários
+(`GERENCIAR_USUARIOS`) já existem. A busca de pessoas e o feed usam
+`VISUALIZAR`.
 
 ---
 
@@ -218,16 +239,31 @@ plano (B2), etapa da NC, guarda de fechamento (RN-21), pendência
 ### 4.3 Guarda de fechamento da NC (RN-21)
 
 Função que devolve a **lista do que falta** (TRD §5), com um item por
-requisito:
+requisito, em dois grupos:
+
+**Filhos** — definem a etapa *Pronta para fechamento* e a pendência
+"Submeter para fechamento":
 
 1. ≥1 Classificação `FECHADA`
 2. ≥1 Investigação `FECHADA`
 3. ≥1 Ação Corretiva **com plano aprovado**, e **toda** Ação Corretiva
    não cancelada com plano aprovado
 4. Nenhuma Contenção fora de `FECHADA`/`CANCELADA`
-5. `riscosRevisados` e `mudancasSGQ` preenchidos
 
-Lista vazia → pode submeter.
+**Envio** — preenchidos pelo colaborador depois que os filhos estão
+atendidos:
+
+5. `riscosRevisados` e `mudancasSGQ` preenchidos
+6. Aprovador da NC definido (RN-13)
+
+Lista vazia → pode submeter. A etapa e a pendência olham **só o grupo
+"Filhos"**; se olhassem os dois, a NC nunca chegaria a *Pronta para
+fechamento* sem alguém preencher os campos do envio antes — e ninguém
+seria avisado para preenchê-los (`fluxo-app.md` §4 e J6).
+
+**Submissão de qualquer item** usa o mesmo formato de lista: campos
+obrigatórios do schema de fechamento que faltam + aprovador definido
+(RN-13). É o que alimenta o `BotaoBloqueado` da tela.
 
 ### 4.4 Pendências (fluxo T-03)
 
@@ -236,14 +272,16 @@ Lista vazia → pode submeter.
 | Aprovar | Registro `EM_APROVACAO` em que a pessoa é o `APROVADOR` |
 | Corrigir | Registro `ABERTO`, pessoa colaboradora, e a **última** `Aprovacao` do item é `REPROVADO` |
 | Continuar rascunho | Registro `RASCUNHO`, pessoa colaboradora |
-| Triagem | NC `ABERTA` sem aprovador — para quem tem `APROVADOR` ou `GERENTE` |
+| Triagem | Registro **publicado** (`ABERTO`/`EM_APROVACAO`) sem aprovador — NC ou filho (RN-46) — para quem tem `APROVADOR` ou `GERENTE` |
 | Executar ação | Ação Corretiva `ABERTA`, plano aprovado, pessoa colaboradora |
 | Verificar | Verificação `ABERTA`, pessoa colaboradora |
-| Submeter para fechamento | NC `ABERTA`, guarda (§4.3) sem pendências, pessoa colaboradora |
+| Submeter para fechamento | NC `ABERTA`, grupo **"Filhos"** da guarda (§4.3) atendido, pessoa colaboradora |
 | Mencionado | `MencaoUsuario` da pessoa com `vistaEm` nulo |
 
 **Prazo:** Ação Corretiva sem `executadoEm` e Verificação `ABERTA` com
 `prazo` — vencido (`prazo < hoje`) ou vencendo (até 7 dias, fluxo F3).
+"Hoje" é o **dia em `America/Sao_Paulo`**, e a comparação é por dia, não
+por instante (TRD §6, B11).
 
 ### 4.5 Último motivo de reprovação (lacuna L7)
 
@@ -271,8 +309,8 @@ Os caminhos abaixo são mostrados **sem** o prefixo `/api`.
 
 | | Método e caminho | Quem | O que faz |
 |---|---|---|---|
-| Δ | `POST /auth/login` | Público | + `manterConectado`; responde com **cookie**, não com token no corpo; limite de tentativas |
-| = | `POST /auth/definir-senha` | Público (token) | Define a senha pelo convite; passa a atualizar `sessaoValidaDesde` |
+| Δ | `POST /auth/login` | Público | + `manterConectado`; responde com **cookie**, não com token no corpo; limite de tentativas; recusa usuário **inativo** com a mesma mensagem de qualquer falha (RN-38) |
+| Δ | `POST /auth/definir-senha` | Público (token) | Define a senha pelo convite (também serve para redefinir); passa a atualizar `sessaoValidaDesde`; recusa usuário inativo |
 | ＋ | `POST /auth/logout` | Logado | Apaga o cookie deste navegador |
 | ＋ | `POST /auth/sair-de-todos` | Logado | Atualiza `sessaoValidaDesde` |
 | ＋ | `GET /auth/eu` | Logado | id, nome, setor, papéis, `telaInicial` |
@@ -290,7 +328,7 @@ Os caminhos abaixo são mostrados **sem** o prefixo `/api`.
 | ＋ | `DELETE /usuarios/:id/papeis/:papel` | `ADMIN` | Revoga — **recusa** se a pessoa for aprovadora de item aberto e o papel for `APROVADOR`, listando os itens (RN-43) |
 | ＋ | `POST /usuarios/:id/inativar` | `ADMIN` | Mesma trava; preenche `desativadoEm` e `sessaoValidaDesde` |
 | ＋ | `POST /usuarios/:id/reativar` | `ADMIN` | Limpa `desativadoEm` (E2) |
-| ＋ | `POST /usuarios/:id/convite` | `ADMIN` | Gera novo link (o anterior expirou ou se perdeu) |
+| ＋ | `POST /usuarios/:id/convite` | `ADMIN` | Gera novo link (o anterior expirou, se perdeu, ou a pessoa esqueceu a senha) e **invalida os convites anteriores não usados** |
 | ＋ | `GET /pessoas` | Papéis de negócio | Busca leve (id, nome, setor — E3) de usuários **ativos**, com filtro `?papel=APROVADOR` — alimenta o painel de atribuições e o `@` do feed |
 | ＋ | `GET /setores` | Logado | Setores ativos (o `ADMIN` pode pedir os inativos também) |
 | ＋ | `POST /setores` · `PATCH /setores/:id` | `ADMIN` | Criar, renomear |
@@ -305,11 +343,13 @@ de todo mundo não precisam ir para qualquer tela.
 | | Método e caminho | O que muda |
 |---|---|---|
 | Δ | `POST /nc` | Aceita `colaboradores: id[]` opcional (PRD Q10), na mesma transação |
-| Δ | `GET /nc` | Filtros novos: `etapa`, `setorId`, `prazoVencido`, `semAprovador`, `busca` (código ou título). Cada item volta com **etapa** e **indicadores** |
+| Δ | `GET /nc` | Filtros novos: `etapa`, `setorId`, `prazoVencido`, `semAprovador`, `busca` (código ou título). Cada item volta com **etapa** e **indicadores**. Como a etapa é calculada no código (não no SQL), o filtro por etapa é aplicado **em memória** antes da paginação — viável porque o volume é pequeno (TRD §10); se crescer muito, revisita-se |
 | Δ | `GET /nc/:id` | + etapa, indicadores, último motivo de reprovação |
-| ＋ | `GET /nc/:id/checklist-fechamento` | A lista do que falta (§4.3) |
+| ＋ | `GET /nc/:id/checklist-fechamento` | A lista do que falta, nos dois grupos (§4.3) |
 | Δ | `POST /nc/:id/submeter` | Guarda nova (RN-21) |
-| = | `PATCH`, `DELETE`, `/publicar`, `/decidir`, `/reabrir`, `/cancelar` | — |
+| Δ | `PATCH /nc/:id` · `POST /nc` | `detectadoEm` comparado com o **dia de hoje em São Paulo**, calculado a cada requisição (B9, B11) |
+| Δ | `POST /nc/:id/cancelar` | Recusa `RASCUNHO` (B12) |
+| = | `DELETE`, `/publicar`, `/decidir`, `/reabrir` | — |
 
 ### 6.4 Filhos
 
@@ -319,14 +359,17 @@ Mesma forma para os cinco tipos: `POST /nc/:ncId/<tipo>` para criar;
 
 | | Rota | O que muda |
 |---|---|---|
+| Δ | Todos os `POST /nc/:ncId/<tipo>` | O filho nasce com o **aprovador da NC**, se houver (RN-46, B13) |
+| Δ | Todos os `/<tipo>/:id/cancelar` | Recusam `RASCUNHO` (B12) |
 | Δ | Todos os `GET /<tipo>/:id` | + último motivo de reprovação |
+| Δ | `POST /nc/:ncId/acoes-corretivas` · `PATCH /acoes-corretivas/:id` | `investigacaoId` precisa ser de uma investigação **desta NC**, não cancelada; **obrigatório** para enviar o plano (B10) |
 | ＋ | `POST /investigacoes/:id/hipoteses` | Cria hipótese (lacuna L1) — só colaborador, investigação editável |
 | ＋ | `PATCH /hipoteses/:id` · `DELETE /hipoteses/:id` | Edita / apaga — mesmas regras |
 | Δ | `GET /investigacoes/:id` | + lista de hipóteses e de ações corretivas vinculadas |
 | Δ | `GET /acoes-corretivas/:id` | + `planoAprovado` |
 | Δ | `PATCH /acoes-corretivas/:id` | Com plano aprovado, só aceita os campos de **execução** (B2) |
 | Δ | `POST /acoes-corretivas/:id/finalizar-execucao` | Exige plano aprovado (B1) |
-| Δ | `POST /verificacoes/:id/concluir` | Reações corrigidas (B4, B5, B6) |
+| Δ | `POST /verificacoes/:id/concluir` | Reações corrigidas (B3, B4, B6) |
 | ✕ | `DELETE /verificacoes/:id` | Verificação nunca é rascunho — a rota sempre falha (B8) |
 
 ### 6.5 Genéricas de item (valem para qualquer `Registro`)
@@ -376,16 +419,28 @@ começa com um **teste que falha** (TRD §9.4).
 | **B7** | Papéis dentro do JWT: revogar só vale quando o token expira | `auth.controller`, `autenticar` | Sessão nova (TRD §4) |
 | **B8** | Rota `DELETE /verificacoes/:id` que nunca funciona | `verificacao.routes` | Remover |
 
-B1 e B2 são os mais graves: juntos, permitem que a ação corretiva seja
-feita sem o QA concordar com o plano — exatamente o que o RF-06 existe
-para impedir.
+Encontradas na **revisão cruzada** dos documentos com o código
+(2026-09-24):
+
+| # | Problema | Onde | Correção |
+|---|---|---|---|
+| **B9** | **A data de detecção é comparada com o momento em que o servidor foi ligado**, não com o agora: `z.coerce.date().max(new Date())` calcula o `new Date()` uma vez só, quando o arquivo é carregado. Com o servidor ligado há dias, **nenhuma NC detectada depois disso pode ser registrada** ("não pode ser no futuro"). Não aparece no desenvolvimento porque o `tsx watch` reinicia o servidor a toda hora | `nc.schema.ts` | Comparar com o dia de hoje **a cada validação** (ex.: `.refine`), pelo dia em São Paulo (B11) |
+| **B10** | **Vínculo da Ação Corretiva com a investigação não é validado**: (a) `investigacaoId` é opcional até no plano — se ficar vazio, uma verificação `NAO_EFICAZ` dá erro e a conclusão trava; (b) nada impede apontar a investigação **de outra NC**, que seria a reaberta | `acao-corretiva.schema.ts`, `acao-corretiva.service.ts` | Exigir `investigacaoId` no schema do plano; ao criar e editar, conferir que a investigação é da mesma NC e não está cancelada |
+| **B11** | **"Dia" calculado em UTC**: o ano do código usa `new Date().getFullYear()` no servidor — uma NC publicada em 31/12 depois das 21 h ganha código do ano seguinte. O mesmo vale para "hoje" em prazos | `ciclo-vida.service.ts`, `acao-corretiva.service.ts` | Uma função "dia de hoje em `America/Sao_Paulo`", usada em todo cálculo de dia (TRD §6) |
+| **B12** | **Rascunho pode ser cancelado** e vira item cancelado sem código, visível para sempre (PRD Q14) | `ciclo-vida.service.ts` (`cancelar`) | Aceitar só `ABERTO` e `EM_APROVACAO` |
+| **B13** | **Filho nasce sem aprovador** e só `APROVADOR`/`GERENTE` pode definir um; o colaborador fica travado para enviar, sem ninguém ser avisado (PRD Q13) | Services de criação dos filhos | Copiar o aprovador da NC na criação (RN-46); filho publicado sem aprovador entra na triagem (§4.4) |
+
+**Os mais graves são B1, B2 e B9.** B1 e B2, juntos, permitem que a ação
+corretiva seja feita sem o QA concordar com o plano — exatamente o que o
+RF-06 existe para impedir. B9 impediria o uso do sistema em produção
+logo no primeiro dia depois do deploy.
 
 ---
 
 ## 8. Ordem sugerida (para o Plano de Implementação)
 
 1. Testes sobre o comportamento **atual** (rede de proteção)
-2. B1–B8, cada um com seu teste
+2. B1–B13, cada um com seu teste
 3. Sessão nova (M1 parcial + rotas de auth)
 4. Schema de resposta em todas as rotas + prefixo `/api` + OpenAPI
 5. Usuários, setores, pessoas (M1, M2)
@@ -416,3 +471,4 @@ Com Matthew, em 2026-09-24.
 | Data | Mudança |
 |---|---|
 | 2026-09-24 | v1 — modelo, mudanças M1–M5, valores calculados, API, correções B1–B8; E1–E3 |
+| 2026-09-24 | v1.1 — revisão cruzada com o código: B9–B13; guarda em dois grupos (filhos/envio) com aprovador; triagem inclui filhos; catálogo de permissões novas; eventos do feed; regras de convite e usuário inativo |

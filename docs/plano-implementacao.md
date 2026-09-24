@@ -46,7 +46,7 @@ flowchart TD
     subgraph A[Bloco A — Fundação do backend]
         A0[A0 Preparação] --> A1[A1 Aprender testes<br/>+ infraestrutura]
         A1 --> A2[A2 Rede de proteção]
-        A2 --> A3[A3 Correções B1–B8]
+        A2 --> A3[A3 Correções B1–B13]
         A3 --> A4[A4 Sessão nova]
         A4 --> A5[A5 Contrato da API]
         A5 --> A6[A6 Usuários e setores]
@@ -102,6 +102,7 @@ momento, mas precisa existir **antes do C5** (anexos).
 | Apagar os modelos comentados no fim do `schema.prisma` (M5) | 🤖 |
 | Apagar `testes/requests-acao-corretiva.http` (descreve o modelo antigo) | 🤖 |
 | Proteger a `main` no GitHub (exigir PR para entrar) | 🧑 na interface do GitHub, com instruções |
+| Decidir como os Pull Requests são abertos: pelo site do GitHub (padrão — o `gh` não está instalado neste ambiente), ou instalar e autenticar o `gh` para Claude poder abri-los | 🧑 decide |
 
 **Aprendizado:** o que é lint e formatação automática; o que é proteção
 de branch.
@@ -110,6 +111,10 @@ de branch.
 
 **Objetivo:** Matthew entende e escreve testes; o projeto passa a ter
 onde colocá-los.
+
+**Pré-requisito:** Docker Desktop **aberto** — os testes criam um
+Postgres pelo Docker. A integração com o WSL foi confirmada em
+2026-09-24.
 
 **Conceitos**, explicados antes de codar, nesta ordem:
 1. O que é um teste automático e o que ele protege.
@@ -128,9 +133,10 @@ onde colocá-los.
 |---|---|
 | Vitest + Testcontainers configurados; banco criado uma vez por execução, tabelas limpas antes de cada teste | 🤖 com explicação linha a linha |
 | Fábricas: os 8 perfis de usuário de `setup-usuarios-teste.sql`; login devolvendo o token | 🧑 a primeira, 🤖 as outras seguindo o padrão |
+| **Um único helper de autenticação** para os testes (`loginComo(perfil)`): na A4 o login passa a devolver cookie em vez de token, e só esse helper muda | 🤖 com explicação |
 | **Primeiros testes**: login com sucesso, senha errada, usuário sem senha (RN-38) | 🧑 |
 | **Um teste unitário**: `temPapel` | 🧑 |
-| **GitHub Actions**: Biome → typecheck → testes, em todo push e PR | 🤖 com explicação |
+| **GitHub Actions**: `npm ci` → `prisma generate` → Biome → typecheck → testes, em todo push e PR (o `prisma generate` é obrigatório porque `src/generated/` não vai para o Git — TRD §9.5) | 🤖 com explicação |
 
 **Pronto quando:** Matthew escreveu sozinho um teste de API novo (ex.:
 criar rascunho de NC) sem consultar exemplo.
@@ -149,24 +155,29 @@ antes de qualquer mudança de regra.
 | Atribuições: um aprovador por item, sem duplicata, RN-12 | 🤖 |
 | Aposentar os `.http` cobertos | 🤖 |
 
-**Os bugs B1–B8 não entram aqui.** Esta fase fotografa o que está
+**Os bugs B1–B13 não entram aqui.** Esta fase fotografa o que está
 **certo**; os bugs ganham seus testes na A3.
 
-### A3 — Correções de regra · M
+### A3 — Correções de regra · G
 
 **Objetivo:** corrigir os comportamentos errados (`esquema-backend.md`
 §7), cada um com um teste que falha antes e passa depois.
 
 | Ordem | Correção | Quem |
 |---|---|---|
-| 1 | **Plano aprovado** derivado de `Aprovacao` (§4.2 do esquema) — base das próximas | 🧑 |
-| 2 | **B1** — finalizar execução exige plano aprovado | 🧑 |
-| 3 | **B2** — plano travado depois de aprovado | 🧑 |
-| 4 | **Guarda que devolve "o que falta"** (TRD §5) + **B5** (RN-21 nova) + rota `GET /nc/:id/checklist-fechamento` | 🧑 a função; 🤖 a rota |
-| 5 | **B4** — `NAO_EFICAZ` reabre só o que estiver fechado | 🧑 |
-| 6 | **B6** — `PARCIALMENTE_EFICAZ` copia todos os colaboradores | 🤖 |
-| 7 | **B3** — autor certo na auditoria da ação automática | 🤖 |
-| 8 | **B8** — remover `DELETE /verificacoes/:id` | 🤖 |
+| 1 | **B9** — data de detecção comparada com o dia de hoje **a cada validação** (hoje, com o servidor ligado há dias, ninguém registra NC nova). Primeiro porque é grave e pequeno — bom primeiro TDD | 🧑 |
+| 2 | **B11** — função "dia de hoje em `America/Sao_Paulo`", usada no ano do código, nos prazos e no B9 | 🧑 |
+| 3 | **Plano aprovado** derivado de `Aprovacao` (§4.2 do esquema) — base das próximas | 🧑 |
+| 4 | **B1** — finalizar execução exige plano aprovado | 🧑 |
+| 5 | **B2** — plano travado depois de aprovado | 🧑 |
+| 6 | **B10** — investigação obrigatória no plano, da mesma NC, não cancelada | 🧑 |
+| 7 | **Guarda que devolve "o que falta"**, em dois grupos, filhos e envio (TRD §5, esquema §4.3) + **B5** (RN-21 nova) + rota `GET /nc/:id/checklist-fechamento` | 🧑 a função; 🤖 a rota |
+| 8 | **B4** — `NAO_EFICAZ` reabre só o que estiver fechado | 🧑 |
+| 9 | **B6** — `PARCIALMENTE_EFICAZ` copia todos os colaboradores | 🤖 |
+| 10 | **B3** — autor certo na auditoria da ação automática | 🤖 |
+| 11 | **B13** — filho nasce com o aprovador da NC (RN-46) | 🤖 |
+| 12 | **B12** — cancelar recusa rascunho (RN-06) | 🤖 |
+| 13 | **B8** — remover `DELETE /verificacoes/:id` | 🤖 |
 
 **Aprendizado:** TDD (escrever o teste antes do conserto); por que uma
 regra deve morar num lugar só.
@@ -182,7 +193,7 @@ regra deve morar num lugar só.
 | Login com cookie `HttpOnly`/`Secure`/`SameSite=Strict`; "manter conectado" (30 dias) ou cookie de sessão (teto 12 h) | 🧑 |
 | Middleware `autenticar`: busca usuário ativo, papéis atuais e `sessaoValidaDesde` a cada requisição | 🧑 |
 | `POST /auth/logout`, `POST /auth/sair-de-todos`, `GET /auth/eu`, `PATCH /auth/eu` | 🤖 |
-| Limite de tentativas no login; sucesso na auditoria, falha no log (E1) | 🤖 |
+| Limite de tentativas no login; sucesso na auditoria, falha no log (E1); usuário inativo recusado com a mesma mensagem (RN-38) | 🤖 |
 | Testes: papel revogado vale na hora; usuário inativo recebe 401; "sair de todos" derruba sessão antiga; cookie de sessão sem validade | 🧑 |
 
 **Aprendizado:** cookie × token no cabeçalho; o que `HttpOnly`,
@@ -215,14 +226,15 @@ RF-20).
 |---|---|
 | Migration **M2** (`Setor.desativadoEm`) | 🤖 |
 | **Trava da RN-43**: não inativar/revogar `APROVADOR` de quem é aprovador de item aberto, devolvendo a lista | 🧑 |
-| Rotas de usuários, setores e `GET /pessoas` (`esquema-backend.md` §6.2), incluindo reativar (E2) | 🤖 seguindo o padrão; 🧑 revisa |
+| Rotas de usuários, setores e `GET /pessoas` (`esquema-backend.md` §6.2), incluindo reativar (E2); convite novo invalida os anteriores; definir senha recusa usuário inativo | 🤖 seguindo o padrão; 🧑 revisa |
+| **Script do primeiro acesso** (`npm run criar-admin`): cria o primeiro setor e o primeiro `ADMIN` e mostra o link de convite. Sem ele, produção não tem como começar — criar usuário exige já ser `ADMIN`, e todo usuário exige um setor | 🧑 |
 | Testes das travas e das permissões de `ADMIN` | 🧑 |
 
 ### ✅ Portão: fundação pronta
 
 Antes do Bloco C começar:
 - A0–A6 concluídas, CI verde na `main`.
-- Nenhum bug B1–B8 aberto.
+- Nenhum bug B1–B13 aberto.
 - OpenAPI completo, gerando sem erro.
 
 ---
@@ -296,7 +308,8 @@ Onde cada item dos documentos anteriores é feito:
 
 | Item | Fase |
 |---|---|
-| B1, B2, B3, B4, B5, B6, B8 | A3 |
+| B1–B6, B8–B13 · RN-06, RN-46 | A3 |
+| Primeiro `ADMIN` e primeiro setor em produção | A6 (script), D1 (uso) |
 | B7 (papéis no JWT) · RNF-09, RNF-10 | A4 |
 | Pendência 1 (ações de auditoria) · pendência 5 (`ignoreTrailingSlash`) | A5 · A0 |
 | Pendência 4 (login auditado) | A4 |
@@ -336,3 +349,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | Data | Mudança |
 |---|---|
 | 2026-09-24 | v1 — blocos A–D, decisões de trabalho e P1 |
+| 2026-09-24 | v1.1 — revisão cruzada: B9–B13 na A3 (B9 primeiro), pré-requisito do Docker no WSL, `prisma generate` no CI, helper único de autenticação nos testes, script do primeiro ADMIN |

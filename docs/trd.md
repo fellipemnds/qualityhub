@@ -112,7 +112,7 @@ Prisma 7 (`@prisma/adapter-pg`) · PostgreSQL 17 · Zod 4 · bcrypt ·
 | `@fastify/multipart` | Receber upload de anexos | ADR-34 |
 | Cliente S3 (`minio` ou equivalente) | **Só se** os anexos forem para armazenamento de objetos; em disco, usa o `fs` do próprio Node | ADR-34, §8.1 |
 | `@fastify/swagger` + `@fastify/swagger-ui` | Gerar e exibir o OpenAPI (a interface visual só em desenvolvimento) | ADR-37 |
-| **Dev:** `vitest`, `@testcontainers/postgresql` | Testes automáticos com banco real e descartável (mais `@testcontainers/minio`, se os anexos forem para armazenamento de objetos) | ADR-36 |
+| **Dev:** `vitest`, `@testcontainers/postgresql` | Testes automáticos com banco real e descartável (mais um contêiner do MinIO pelo Testcontainers, se os anexos forem para armazenamento de objetos) | ADR-36 |
 | **Dev:** `@biomejs/biome` | Lint e formatação num só binário | §9.5 |
 
 ### 3.3 Frontend
@@ -201,7 +201,15 @@ token anti-CSRF adicional.
   com e-mail tentado e IP), porque não há usuário identificado para ser
   o autor da linha de auditoria (`docs/esquema-backend.md`, E1). Nunca a
   senha. Mensagem de erro continua idêntica para qualquer falha (RN-38).
-- Convite e definição de senha: sem mudança (RN-39, RN-40).
+- **Usuário inativo** não entra: o login recusa com a **mesma** mensagem
+  de qualquer outra falha (RN-38), e a definição de senha por convite
+  também recusa.
+- **Convite novo invalida os anteriores** ainda não usados daquela
+  pessoa — só o link mais recente funciona.
+- Convite e definição de senha, no resto: sem mudança (RN-39, RN-40).
+  Como "esqueci minha senha" está fora do MVP, **um novo convite gerado
+  pelo `ADMIN` é o caminho para redefinir a senha** — a definição de
+  senha já aceita usuário que tinha senha.
 
 ---
 
@@ -237,8 +245,19 @@ backend.
   `as const` em `compartilhado/entidades/`, como os demais.
 - **Retenção:** o que é evidência nunca é apagado; rascunho, comentário
   e atribuição substituída podem ser (ADR-19, `arquitetura.md` §7.4).
-- **Datas:** gravadas em UTC; convertidas para `America/Sao_Paulo` só no
-  frontend.
+- **Datas e fuso:** data e hora de eventos (`criadoEm`, `decididoEm`...)
+  gravadas em UTC e convertidas para `America/Sao_Paulo` só no frontend.
+  **Mas todo cálculo de "dia" no backend usa `America/Sao_Paulo`**, não
+  UTC — senão, entre 21 h e meia-noite, o servidor já está "no dia
+  seguinte":
+  - o **ano do código** (`NC-2026-…`): uma NC publicada em 31/12 às
+    22 h é de 2026, não de 2027;
+  - o **"hoje"** de `prazo = hoje + N dias` e de "vencido/vencendo";
+  - a checagem de "data de detecção não pode ser no futuro".
+
+  Campos que são **datas de calendário** (`prazo`, `detectadoEm`,
+  `executadaEm`, `executadoEm`, `verificadoEm`) são comparados pelo
+  **dia**, não pelo instante. Correção: B11 do Esquema Backend.
 - **Migrations:** sempre versionadas; em produção, só `prisma migrate
   deploy`.
 
@@ -386,8 +405,13 @@ que falha** (reproduz o bug), depois o conserto faz o teste passar.
 
 ### 9.5 Integração contínua
 
-GitHub Actions a cada push: **Biome** (lint/formatação) → **typecheck**
-(`tsc --noEmit`) → **testes**. Nada vai para produção com CI vermelho.
+GitHub Actions a cada push: **`npm ci`** → **`prisma generate`** →
+**Biome** (lint/formatação) → **typecheck** (`tsc --noEmit`) →
+**testes**. Nada vai para produção com CI vermelho.
+
+O `prisma generate` é obrigatório no CI porque o cliente gerado
+(`src/generated/`) **não vai para o Git** (está no `.gitignore`): sem
+ele, o typecheck falha em qualquer máquina limpa.
 
 ---
 
@@ -546,7 +570,7 @@ Entram no Plano de Implementação:
 | Mudar regras (RN-21, RN-23) quebra o que funciona hoje | Testes antes das mudanças (ADR-36) |
 | **Operador único, sem TI**: se Matthew não estiver, ninguém opera | Manual de operação no `SETUP.md`; backup e restauração automatizados e testados; monitor externo avisando se cair |
 | Cada serviço a mais é mais coisa para manter sozinho | Armazenamento de anexos decidido junto com a hospedagem (§8.1), preferindo o que não acrescenta serviço |
-| Testcontainers precisa do Docker acessível de dentro do WSL | Já é o caso no desenvolvimento; validar na primeira fase |
+| Testcontainers precisa do Docker acessível **de dentro do WSL** | Confirmado em 2026-09-24 (Docker 29.8 acessível no WSL). **O Docker Desktop precisa estar aberto** para os testes rodarem — fechado, o comando `docker` some do WSL (`SETUP.md` §5) |
 | HTTPS difícil se o sistema ficar dentro da empresa | Pesa na escolha da hospedagem (§10.6); sem HTTPS não há cookie seguro |
 | Sessões de 30 dias num aparelho perdido | "Sair de todos os aparelhos"; aviso para não marcar em computador compartilhado |
 | `partialIndexes` do Prisma é *preview* | Mantido; coberto por teste (um aprovador por item) |
@@ -596,3 +620,4 @@ backend — só a fase de deploy.
 | Data | Mudança |
 |---|---|
 | 2026-09-24 | v1 — consolidação + ADR-33 a ADR-38; T1–T4 |
+| 2026-09-24 | v1.1 — revisão cruzada: regra de fuso para cálculos de dia, usuário inativo no login, convite novo invalida anteriores, `prisma generate` no CI, Docker no WSL como pré-requisito |

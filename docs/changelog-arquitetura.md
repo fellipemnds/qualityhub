@@ -33,6 +33,16 @@ documento de arquitetura.
   **ADR-30 (on-premise) em revisão**: sem TI envolvida e com volume
   pequeno (54 NCs no total), as opções de hospedagem estão comparadas no
   TRD §10.6.
+- **Revisão cruzada dos seis documentos com o código** (mesmo dia):
+  encontrou os bugs B9–B13 (`docs/esquema-backend.md` §7) — o mais grave,
+  B9, é a validação de `detectadoEm` com `new Date()` avaliado uma vez
+  na carga do módulo. Duas decisões de produto novas: **filho herda o
+  aprovador da NC** (RN-46; antes, nascia sem aprovador e travava o
+  colaborador) e **rascunho não se cancela, só se exclui** (RN-06). A
+  guarda de fechamento passa a ter dois grupos (filhos × envio), para a
+  etapa "Pronta para fechamento" e a pendência correspondente não
+  dependerem de campos que ninguém é avisado para preencher. Regra nova
+  de fuso: todo cálculo de "dia" no backend usa `America/Sao_Paulo`.
 
 ### Filtros de listagem de NC, tipo `Ator`, reorganização em subpastas, e três bugs de schema de fechamento
 

@@ -83,7 +83,9 @@ flowchart TD
 Um `ADMIN` só com esse papel não vê NCs (PRD §8).
 
 As rotas dos filhos seguem as rotas da API. O filho mostra no topo um
-caminho de volta para a NC (`NC-2026-0042 › Investigação INV-2026-0007`).
+caminho de volta para a NC (`NC-2026-0042 › Investigação IV-2026-0007`).
+Prefixos reais dos códigos: `NC`, `CL` (Classificação), `CT` (Contenção),
+`IV` (Investigação), `AC` (Ação Corretiva), `VE` (Verificação).
 
 ### 2.1 Menu principal
 
@@ -136,15 +138,22 @@ A etapa é o "em que pé está" mostrado na lista e no detalhe. É
 | 3 | NC `EM_APROVACAO` | Aguardando aprovação do fechamento |
 | 4 | NC `ABERTA`, sem Classificação `FECHADA` | Aguardando classificação |
 | 5 | NC `ABERTA`, sem Investigação `FECHADA` | Em investigação |
-| 6 | NC `ABERTA`, sem Ação Corretiva, ou com algum plano não aprovado | Em plano de ação |
+| 6 | NC `ABERTA`, sem Ação Corretiva, ou com algum plano (de ação não cancelada) não aprovado | Em plano de ação |
 | 7 | NC `ABERTA`, com Contenção pendente | Aguardando contenção |
-| 8 | NC `ABERTA`, tudo atendido | Pronta para fechamento |
-| 9 | NC `FECHADA`, com Ação Corretiva ainda não executada | Fechada · ação em execução |
+| 8 | NC `ABERTA`, **filhos** atendidos (regras 4–7 não se aplicam) | Pronta para fechamento |
+| 9 | NC `FECHADA`, com Ação Corretiva não cancelada ainda não executada | Fechada · ação em execução |
 | 10 | NC `FECHADA`, com Verificação em aberto | Fechada · em verificação |
 | 11 | NC `FECHADA`, nada pendente | Concluída |
 
 As regras 4 a 8 seguem a ordem da guarda de fechamento (RN-21), então a
-etapa sempre aponta **o próximo requisito que falta**.
+etapa sempre aponta **o próximo requisito que falta** nos filhos.
+
+A etapa olha **só os filhos**. Os requisitos do **próprio envio** —
+riscos revisados, mudanças no SGQ e aprovador da NC definido — são
+preenchidos pelo colaborador **depois** que a NC chega a *Pronta para
+fechamento* (J6). Se entrassem na etapa, a NC nunca chegaria a "Pronta"
+sem alguém antes preencher esses campos, e ninguém seria avisado para
+preenchê-los.
 
 As regras 9 a 11 resolvem a preocupação da Q1 do PRD: uma NC fechada com
 ação ainda em curso **não aparece como "Concluída"**. O auditor vê a
@@ -182,12 +191,18 @@ requisitos do MVP (gate G0 do `arquitetura.md` §11).
    como **"Triagem: NC sem aprovador"** (F5).
 2. QA abre a NC → painel de atribuições → **Definir aprovador** (a si
    mesmo ou a outro QA). A pendência de triagem some para os outros.
+   **Todo filho criado a partir daqui nasce com esse aprovador** (RN-46),
+   que pode ser trocado item a item.
 3. Seção Classificação → **Nova classificação** (só `APROVADOR`/`GERENTE`,
-   RN-20) → escolhe Maior/Menor e escreve a justificativa.
-4. **Publicar** → **Submeter**. Se ele mesmo for o aprovador, a
-   pendência "Aprovar" aparece para ele na hora; aprova, e o feed marca
-   *"Aprovado pelo próprio autor"* (RN-27/28).
+   RN-20) → escolhe Maior/Menor e escreve a justificativa. A
+   classificação já nasce com o aprovador da NC.
+4. **Publicar** → **Submeter**. Se quem classificou for também o
+   aprovador, a pendência "Aprovar" aparece para ele na hora; aprova, e o
+   feed marca *"Aprovado pelo próprio autor"* (RN-27/28).
 5. Etapa da NC → *Em investigação*.
+
+Se um filho for criado **antes** de a NC ter aprovador, ele nasce sem
+aprovador e aparece na triagem até alguém definir (RN-46).
 
 ### J3 — Contenção (colaborador) · RF-04
 
@@ -215,14 +230,17 @@ requisitos do MVP (gate G0 do `arquitetura.md` §11).
 4. **Hipóteses**: lista dentro da investigação. Cada uma tem descrição,
    número no Ishikawa e classificação (causa direta / fator contribuinte /
    sem relação). Pode ficar incompleta até a submissão.
-5. **Submeter**: exige causa direta, causa raiz, conteúdo do A3 e todas
-   as hipóteses completas (RN-24). Aprovador aprova → etapa da NC → *Em
-   plano de ação*.
+5. **Submeter**: exige método, conteúdo do A3, causa direta, causa raiz
+   e todas as hipóteses completas (RN-24). Aprovador aprova → etapa da
+   NC → *Em plano de ação*.
 
 ### J5 — Ação Corretiva: plano, execução, verificação (colaborador + QA) · RF-06, RF-07
 
-1. Na página da **Investigação** (ou na NC) → **Nova ação corretiva**,
-   já vinculada à investigação.
+1. Na página da **Investigação** → **Nova ação corretiva**, já vinculada
+   a ela. Pela página da NC também dá, mas a pessoa **escolhe a
+   investigação** (só as desta NC, não canceladas). O vínculo é
+   obrigatório: é ele que permite reabrir a investigação certa se a
+   verificação der "não eficaz" (B10 do Esquema Backend).
 2. Preenche o **plano**: descrição, prazo e instruções de verificação
    (como o QA vai checar a eficácia depois).
 3. Publica → **Submeter plano** → aprovador aprova → a ação volta para
@@ -238,16 +256,20 @@ requisitos do MVP (gate G0 do `arquitetura.md` §11).
 
 ### J6 — Fechar a NC · RF-08, RF-14
 
-1. Com a etapa em *Pronta para fechamento*, o botão **Submeter para
-   fechamento** fica habilitado. Antes disso, aparece desabilitado com a
+1. Quando a etapa chega a *Pronta para fechamento* (filhos atendidos),
+   os colaboradores da NC recebem a pendência **"Submeter para
+   fechamento"**.
+2. O colaborador preenche **riscos revisados** e **mudanças no SGQ**
+   (ISO 10.2.1 e/f).
+3. O botão **Submeter para fechamento** só habilita com **tudo**
+   atendido — filhos e envio. Antes disso, aparece desabilitado com a
    **lista do que falta**, por exemplo:
    - ✅ Classificação aprovada
    - ✅ Investigação aprovada
    - ❌ Plano da AC-2026-0003 ainda não aprovado
    - ❌ Riscos revisados não preenchido
-2. O colaborador preenche **riscos revisados** e **mudanças no SGQ**
-   (ISO 10.2.1 e/f).
-3. Submete → o aprovador da NC aprova → NC `FECHADA` · etapa *Fechada ·
+   - ✅ Aprovador da NC definido
+4. Submete → o aprovador da NC aprova → NC `FECHADA` · etapa *Fechada ·
    ação em execução* (ou *em verificação*, ou *Concluída*, conforme os
    filhos).
 
@@ -318,7 +340,7 @@ e um link direto para o item.
 | **Aprovar** | O aprovador de itens `EM_APROVACAO` | Aprovar ou reprovar |
 | **Corrigir (reprovado)** | Colaboradores de item reprovado | O item é submetido de novo |
 | **Continuar rascunho** | Colaboradores de itens em `RASCUNHO` | Publicar ou excluir |
-| **Triagem: NC sem aprovador** | Todo `APROVADOR`/`GERENTE` (F5) | Alguém define o aprovador |
+| **Triagem: sem aprovador** | Todo `APROVADOR`/`GERENTE` (F5) — NCs publicadas sem aprovador e filhos publicados sem aprovador (RN-46) | Alguém define o aprovador |
 | **Executar ação** | Colaboradores de AC com plano aprovado | Finalizar a execução |
 | **Verificar** | Colaboradores de Verificação `ABERTA` | Concluir |
 | **Submeter para fechamento** | Colaboradores de NC *Pronta para fechamento* | Submeter |
@@ -354,8 +376,9 @@ De cima para baixo:
 2. **Barra de ações** (§7).
 3. **Dados da NC**: editáveis inline enquanto `RASCUNHO`/`ABERTA` para
    colaboradores; só leitura para o resto.
-4. **Checklist de fechamento**: os requisitos da RN-21, cada um com
-   ✅/❌ e link para o item que resolve. Visível enquanto a NC estiver
+4. **Checklist de fechamento**: os requisitos da RN-21 (filhos) e do
+   envio (riscos revisados, mudanças no SGQ, aprovador da NC), cada um
+   com ✅/❌ e link para o que resolve. Visível enquanto a NC estiver
    `ABERTA`.
 5. **Filhos**, uma seção por tipo, na ordem do processo: Classificação ·
    Contenção · Investigação · Ação Corretiva · Verificação. Cada seção
@@ -417,6 +440,13 @@ papel e pela atribuição da pessoa (princípio 3).
 | | Cancelar | Aprovador do item ou `GERENTE` | Todos, exceto Classificação |
 | `FECHADO` | Reabrir | Qualquer `APROVADOR` | **Só NC** (RN-42) |
 | `CANCELADO` | — | — | — |
+
+**Rascunho não se cancela** (RN-06): para desistir de um rascunho,
+exclui-se. Por isso Cancelar só aparece em `ABERTO` e `EM_APROVACAO`.
+
+**Submeter** de qualquer tipo exige o **aprovador definido** (RN-13),
+além dos campos obrigatórios; quando falta, ele entra na lista do botão
+bloqueado.
 
 Comentar vale em qualquer estado. Anexar vale enquanto o item estiver
 editável (`RASCUNHO`/`ABERTO`); anexos de item fechado não são removidos
@@ -486,3 +516,4 @@ Com Matthew, em 2026-09-24.
 | Data | Mudança |
 |---|---|
 | 2026-09-24 | v1 — decisões de navegação e F1–F5 |
+| 2026-09-24 | v1.1 — revisão cruzada: etapa "Pronta para fechamento" olha só os filhos; aprovador no checklist; herança do aprovador (RN-46); rascunho não se cancela; vínculo obrigatório da AC com investigação; prefixos reais dos códigos |

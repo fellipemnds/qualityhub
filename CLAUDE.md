@@ -15,7 +15,7 @@ entregar rápido.
 | `docs/fluxo-app.md` | Telas, navegação, etapa calculada da NC, jornadas, ações por estado, "Minhas pendências" |
 | `docs/ui-ux.md` | Fundações visuais, componentes (shadcn/ui), wireframes em texto, textos da tela |
 | `docs/trd.md` | Stack, sessão, API, anexos, testes, infraestrutura, hospedagem, ADR-33 a ADR-38 |
-| `docs/esquema-backend.md` | Modelo de dados, mudanças M1–M5, valores calculados, contrato da API, correções B1–B8 |
+| `docs/esquema-backend.md` | Modelo de dados, mudanças M1–M5, valores calculados, contrato da API, correções B1–B13 |
 | `docs/plano-implementacao.md` | **Ordem de execução**: fases A0–A6 (fundação do backend), B (design), C0–C8 (frontend em fatias), D (produção) |
 | `docs/changelog-arquitetura.md` | Registro de toda decisão de arquitetura e divergência do documento original. **Leia antes de propor mudança estrutural** |
 | `docs/arquitetura.md` | Documento de design **original** (histórico). Onde diverge dos documentos acima, eles valem |
@@ -23,6 +23,18 @@ entregar rápido.
 **Próximo passo:** fase **A0** do plano (preparação), depois **A1**
 (aprender testes). Ainda pendente fora do código: hospedagem (TRD
 §10.6), identidade visual.
+
+**Bugs conhecidos, ainda não corrigidos:** `docs/esquema-backend.md` §7
+(B1–B13). Os mais graves: B1/B2 (Ação Corretiva executável sem plano
+aprovado, e plano editável depois de aprovado) e **B9** (a validação de
+`detectadoEm` usa um `new Date()` calculado na carga do módulo — com o
+servidor ligado há dias, nenhuma NC nova pode ser registrada).
+
+**Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
+aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
+o Docker Desktop fechado o comando `docker` some do WSL. O `gh` não está
+instalado; Pull Requests são abertos por Matthew no site do GitHub,
+salvo decisão diferente na A0.
 
 ## Como trabalhamos (workflow com Claude)
 
