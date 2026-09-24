@@ -1,7 +1,7 @@
 import { atribuicaoRepository } from "../atribuicao/atribuicao.repository.js";
-import { Acao } from "../entidades/acoes.js";
-import { Ator } from "../entidades/ator.js";
-import { ClientePrisma } from "../prisma/tipos.js";
+import type { Acao } from "../entidades/acoes.js";
+import type { Ator } from "../entidades/ator.js";
+import type { ClientePrisma } from "../prisma/tipos.js";
 import { catalogo } from "./catalogo.js";
 
 export function temPapel(ator: Ator, acao: Acao): boolean {

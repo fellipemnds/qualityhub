@@ -10,14 +10,8 @@ export const paginacaoCursorSchema = z.object({
 export type PaginacaoCursorInput = z.infer<typeof paginacaoCursorSchema>;
 
 export function paginar<T extends { id: string }>(itens: T[], limit: number) {
-    let itensDaPagina, proximoCursor;
-    if (itens.length > limit) {
-        itensDaPagina = itens.slice(0, limit);
-        proximoCursor = itensDaPagina.at(-1)?.id ?? null;
-    } else {
-        itensDaPagina = itens;
-        proximoCursor = null;
-    }
+    const itensDaPagina = itens.slice(0, limit);
+    const proximoCursor = itens.length > limit ? (itensDaPagina.at(-1)?.id ?? null) : null;
 
     return { itensDaPagina, proximoCursor };
 }

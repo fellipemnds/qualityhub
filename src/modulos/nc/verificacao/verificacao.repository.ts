@@ -1,6 +1,6 @@
-import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
-import { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
-import { VerificacaoRascunhoInput } from "./verificacao.schema.js";
+import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import type { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
+import type { VerificacaoRascunhoInput } from "./verificacao.schema.js";
 
 export const verificacaoRepository = {
     async criar(tx: ClientePrisma, dados: VerificacaoRascunhoInput & { id: string; acaoCorretivaId: string }) {

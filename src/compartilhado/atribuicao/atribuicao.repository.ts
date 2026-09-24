@@ -1,5 +1,5 @@
-import { FuncaoAtribuicao } from "../entidades/funcoes-atribuicao.js";
-import { ClientePrisma } from "../prisma/tipos.js";
+import type { FuncaoAtribuicao } from "../entidades/funcoes-atribuicao.js";
+import type { ClientePrisma } from "../prisma/tipos.js";
 
 export const atribuicaoRepository = {
     async ehColaborador(cliente: ClientePrisma, registroId: string, usuarioId: string) {

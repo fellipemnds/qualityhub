@@ -1,6 +1,6 @@
-import { EstadoRegistro } from "../entidades/estados.js";
-import { TipoRegistro } from "../entidades/tipos-registro.js";
-import { ClientePrisma } from "../prisma/tipos.js";
+import type { EstadoRegistro } from "../entidades/estados.js";
+import type { TipoRegistro } from "../entidades/tipos-registro.js";
+import type { ClientePrisma } from "../prisma/tipos.js";
 
 export const registroRepository = {
     async criar(

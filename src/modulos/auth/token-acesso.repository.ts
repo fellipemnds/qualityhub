@@ -1,5 +1,5 @@
-import { TipoTokenAcesso } from "../../compartilhado/entidades/tipo-token-acesso.js";
-import { ClientePrisma } from "../../compartilhado/prisma/tipos.js";
+import type { TipoTokenAcesso } from "../../compartilhado/entidades/tipo-token-acesso.js";
+import type { ClientePrisma } from "../../compartilhado/prisma/tipos.js";
 
 export const tokenAcessoRepository = {
     async criar(

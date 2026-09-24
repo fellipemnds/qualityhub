@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { ZodTypeProvider } from "fastify-type-provider-zod";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { motivoSchema } from "../../../compartilhado/registro/motivo.schema.js";

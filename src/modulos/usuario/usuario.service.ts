@@ -1,13 +1,13 @@
 import crypto from "node:crypto";
 import { auditoriaRepository } from "../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../compartilhado/auditoria/entidades-auditadas.js";
-import { Ator } from "../../compartilhado/entidades/ator.js";
+import type { Ator } from "../../compartilhado/entidades/ator.js";
 import { SemPermissaoError, ValidacaoError } from "../../compartilhado/errors/errors.js";
 import { temPapel } from "../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../compartilhado/prisma/cliente.js";
 import { tokenAcessoRepository } from "../auth/token-acesso.repository.js";
 import { usuarioRepository } from "./usuario.repository.js";
-import { CriarUsuarioInput } from "./usuario.schema.js";
+import type { CriarUsuarioInput } from "./usuario.schema.js";
 import { usuarioPapelRepository } from "./usuario-papel.repository.js";
 
 export const usuarioService = {

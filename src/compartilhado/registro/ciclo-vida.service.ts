@@ -3,13 +3,13 @@ import { atribuicaoRepository } from "../atribuicao/atribuicao.repository.js";
 import { auditoriaRepository } from "../auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../auditoria/entidades-auditadas.js";
 import { cancelamentoRepository } from "../cancelamento/cancelamento.repository.js";
-import { Acao } from "../entidades/acoes.js";
-import { Ator } from "../entidades/ator.js";
-import { Decisao } from "../entidades/decisao.js";
-import { TipoRegistro } from "../entidades/tipos-registro.js";
+import type { Acao } from "../entidades/acoes.js";
+import type { Ator } from "../entidades/ator.js";
+import type { Decisao } from "../entidades/decisao.js";
+import type { TipoRegistro } from "../entidades/tipos-registro.js";
 import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError, ValidacaoError } from "../errors/errors.js";
 import { podeExecutar, temPapel } from "../permissoes/pode-executar.js";
-import { ClientePrisma } from "../prisma/tipos.js";
+import type { ClientePrisma } from "../prisma/tipos.js";
 import { reaberturaRepository } from "../reabertura/reabertura.repository.js";
 import { sequenciaService } from "../sequencia/sequencia.service.js";
 import { portoesPorTipo } from "./portoes.js";
@@ -203,7 +203,7 @@ export const cicloVidaService = {
             autoAprovacao,
         });
 
-        let registroAtualizado;
+        let registroAtualizado: Awaited<ReturnType<typeof registroRepository.atualizar>>;
 
         if (aprovacao.decisao === "REPROVADO") {
             registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "ABERTO" });
@@ -263,7 +263,7 @@ export const cicloVidaService = {
             );
         }
 
-        const dadoValidado = validador(dados);
+        validador(dados);
 
         const dadoAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "FECHADO" });
 

@@ -1,4 +1,4 @@
-import { ClientePrisma } from "../prisma/tipos.js";
+import type { ClientePrisma } from "../prisma/tipos.js";
 
 export const reaberturaRepository = {
     async criar(

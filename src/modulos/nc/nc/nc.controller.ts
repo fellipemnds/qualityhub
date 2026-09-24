@@ -1,7 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
-import { MotivoInput } from "../../../compartilhado/registro/motivo.schema.js";
-import { NCFiltrosListagemInput, NCRascunhoInput } from "./nc.schema.js";
+import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
+import type { MotivoInput } from "../../../compartilhado/registro/motivo.schema.js";
+import type { NCFiltrosListagemInput, NCRascunhoInput } from "./nc.schema.js";
 import { ncService } from "./nc.service.js";
 
 export const ncController = {

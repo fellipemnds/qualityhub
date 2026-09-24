@@ -1,6 +1,6 @@
-import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
-import { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
-import { ClassificacaoRascunhoInput } from "./classificacao.schema.js";
+import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import type { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
+import type { ClassificacaoRascunhoInput } from "./classificacao.schema.js";
 
 export const classificacaoRepository = {
     async criar(tx: ClientePrisma, dados: ClassificacaoRascunhoInput & { id: string; naoConformidadeId: string }) {

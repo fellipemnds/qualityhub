@@ -1,12 +1,12 @@
 import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
-import { Ator } from "../../../compartilhado/entidades/ator.js";
+import type { Ator } from "../../../compartilhado/entidades/ator.js";
 import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js";
 import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
 import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
-import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
+import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
 import { LIMITE_PADRAO_PAGINACAO, paginar } from "../../../compartilhado/registro/paginacao-cursor.js";
 import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
@@ -14,7 +14,12 @@ import { classificacaoRepository } from "../classificacao/classificacao.reposito
 import { contencaoRepository } from "../contencao/contencao.repository.js";
 import { investigacaoRepository } from "../investigacao/investigacao.repository.js";
 import { ncRepository } from "./nc.repository.js";
-import { NCFiltrosListagemInput, NCRascunhoInput, ncFechamentoSchema, ncPublicacaoSchema } from "./nc.schema.js";
+import {
+    type NCFiltrosListagemInput,
+    type NCRascunhoInput,
+    ncFechamentoSchema,
+    ncPublicacaoSchema,
+} from "./nc.schema.js";
 
 export const ncService = {
     async criarRascunhoNC(ator: Ator, dados: NCRascunhoInput) {

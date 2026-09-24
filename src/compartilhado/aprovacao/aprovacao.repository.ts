@@ -1,5 +1,5 @@
-import { Decisao, PortaoAprovacao } from "../../generated/prisma/enums.js";
-import { ClientePrisma } from "../prisma/tipos.js";
+import type { Decisao, PortaoAprovacao } from "../../generated/prisma/enums.js";
+import type { ClientePrisma } from "../prisma/tipos.js";
 
 export const aprovacaoRepository = {
     async criar(

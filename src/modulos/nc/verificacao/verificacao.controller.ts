@@ -1,6 +1,6 @@
-import { FastifyReply, FastifyRequest } from "fastify";
-import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
-import { VerificacaoRascunhoInput } from "./verificacao.schema.js";
+import type { FastifyReply, FastifyRequest } from "fastify";
+import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import type { VerificacaoRascunhoInput } from "./verificacao.schema.js";
 import { verificacaoService } from "./verificacao.service.js";
 
 export const verificacaoController = {

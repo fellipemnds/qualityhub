@@ -61,7 +61,7 @@ app.setErrorHandler((erro, request, reply) => {
         return reply.status(erro.statusCode).send({ mensagem: erro.message });
     }
 
-    app.log.error(erro);
+    request.log.error(erro);
     return reply.status(500).send({ mensagem: "Erro interno do servidor." });
 });
 

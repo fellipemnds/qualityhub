@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { CriarUsuarioInput } from "./usuario.schema.js";
+import type { CriarUsuarioInput } from "./usuario.schema.js";
 import { usuarioService } from "./usuario.service.js";
 
 export const usuarioController = {

@@ -1,7 +1,7 @@
-import { FastifyReply, FastifyRequest } from "fastify";
-import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
-import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
-import { InvestigacaoRascunhoInput } from "./investigacao.schema.js";
+import type { FastifyReply, FastifyRequest } from "fastify";
+import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
+import type { InvestigacaoRascunhoInput } from "./investigacao.schema.js";
 import { investigacaoService } from "./investigacao.service.js";
 
 export const investigacaoController = {

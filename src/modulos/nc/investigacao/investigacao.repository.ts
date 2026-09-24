@@ -1,7 +1,7 @@
-import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
-import { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
+import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import type { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
 import { Prisma } from "../../../generated/prisma/client.js";
-import { InvestigacaoRascunhoInput } from "./investigacao.schema.js";
+import type { InvestigacaoRascunhoInput } from "./investigacao.schema.js";
 
 export const investigacaoRepository = {
     async criar(tx: ClientePrisma, dados: InvestigacaoRascunhoInput & { id: string; naoConformidadeId: string }) {

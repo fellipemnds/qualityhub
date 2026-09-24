@@ -1,8 +1,8 @@
 import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
-import { Ator } from "../../../compartilhado/entidades/ator.js";
-import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import type { Ator } from "../../../compartilhado/entidades/ator.js";
+import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js";
 import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
@@ -11,7 +11,7 @@ import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-edita
 import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
 import { acaoCorretivaRepository } from "../acao-corretiva/acao-corretiva.repository.js";
 import { verificacaoRepository } from "./verificacao.repository.js";
-import { VerificacaoRascunhoInput, verificacaoConclusaoSchema } from "./verificacao.schema.js";
+import { type VerificacaoRascunhoInput, verificacaoConclusaoSchema } from "./verificacao.schema.js";
 
 export const verificacaoService = {
     async atualizarVerificacao(registroId: string, ator: Ator, dados: VerificacaoRascunhoInput) {

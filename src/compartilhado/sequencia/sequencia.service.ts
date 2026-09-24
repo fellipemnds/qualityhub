@@ -1,4 +1,4 @@
-import { ClientePrisma } from "../prisma/tipos.js";
+import type { ClientePrisma } from "../prisma/tipos.js";
 import { sequenciaRepository } from "./sequencia.repository.js";
 
 export const sequenciaService = {

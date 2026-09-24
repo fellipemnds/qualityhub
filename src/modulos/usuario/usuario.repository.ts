@@ -1,5 +1,4 @@
-import { prisma } from "../../compartilhado/prisma/cliente.js";
-import { ClientePrisma } from "../../compartilhado/prisma/tipos.js";
+import type { ClientePrisma } from "../../compartilhado/prisma/tipos.js";
 
 export const usuarioRepository = {
     async buscarPorEmail(tx: ClientePrisma, email: string) {

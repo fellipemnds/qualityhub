@@ -1,7 +1,7 @@
 import { usuarioRepository } from "../../modulos/usuario/usuario.repository.js";
 import { auditoriaRepository } from "../auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../auditoria/entidades-auditadas.js";
-import { Ator } from "../entidades/ator.js";
+import type { Ator } from "../entidades/ator.js";
 import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError, ValidacaoError } from "../errors/errors.js";
 import { temPapel } from "../permissoes/pode-executar.js";
 import { prisma } from "../prisma/cliente.js";
@@ -138,15 +138,15 @@ export const atribuicaoService = {
             }
 
             const aprovadorAtual = await atribuicaoRepository.buscarAprovador(tx, registroId);
-            let aprovadorAntigo;
-            if (aprovadorAtual !== null) {
-                aprovadorAntigo = await atribuicaoRepository.removerAtribuicao(
-                    tx,
-                    registroId,
-                    aprovadorAtual.usuarioId,
-                    "APROVADOR",
-                );
-            }
+            const aprovadorAntigo =
+                aprovadorAtual === null
+                    ? undefined
+                    : await atribuicaoRepository.removerAtribuicao(
+                          tx,
+                          registroId,
+                          aprovadorAtual.usuarioId,
+                          "APROVADOR",
+                      );
 
             const novoAprovador = await atribuicaoRepository.inserirAtribuicao(
                 tx,

@@ -1,7 +1,7 @@
-import { FastifyReply, FastifyRequest } from "fastify";
-import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
-import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
-import { ClassificacaoRascunhoInput } from "./classificacao.schema.js";
+import type { FastifyReply, FastifyRequest } from "fastify";
+import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
+import type { ClassificacaoRascunhoInput } from "./classificacao.schema.js";
 import { classificacaoService } from "./classificacao.service.js";
 
 export const classificacaoController = {

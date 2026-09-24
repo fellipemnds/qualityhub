@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { DefinirSenhaInput, LoginInput } from "./auth.schema.js";
+import type { DefinirSenhaInput, LoginInput } from "./auth.schema.js";
 import { authService } from "./auth.service.js";
 
 export const authController = {

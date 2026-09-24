@@ -1,5 +1,5 @@
 import type { Prisma } from "../../generated/prisma/client.js";
-import { ClientePrisma } from "../prisma/tipos.js";
+import type { ClientePrisma } from "../prisma/tipos.js";
 
 export const auditoriaRepository = {
     async registrar(

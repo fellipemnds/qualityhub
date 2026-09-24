@@ -1,6 +1,6 @@
-import { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
+import type { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
 import { LIMITE_PADRAO_PAGINACAO } from "../../../compartilhado/registro/paginacao-cursor.js";
-import { NCFiltrosListagemInput, NCRascunhoInput } from "./nc.schema.js";
+import type { NCFiltrosListagemInput, NCRascunhoInput } from "./nc.schema.js";
 
 export const ncRepository = {
     async criar(tx: ClientePrisma, dados: NCRascunhoInput & { id: string }) {

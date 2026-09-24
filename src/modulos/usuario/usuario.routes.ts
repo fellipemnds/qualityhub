@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { ZodTypeProvider } from "fastify-type-provider-zod";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { autenticar } from "../../middlewares/autenticar.js";
 import { usuarioController } from "./usuario.controller.js";
 import { criarUsuarioSchema } from "./usuario.schema.js";

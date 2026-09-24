@@ -1,7 +1,7 @@
-import { FastifyReply, FastifyRequest } from "fastify";
-import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
-import { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
-import { AcaoCorretivaRascunhoInput, FinalizarExecucaoInput } from "./acao-corretiva.schema.js";
+import type { FastifyReply, FastifyRequest } from "fastify";
+import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
+import type { AcaoCorretivaRascunhoInput, FinalizarExecucaoInput } from "./acao-corretiva.schema.js";
 import { acaoCorretivaService } from "./acao-corretiva.service.js";
 
 export const acaoCorretivaController = {
