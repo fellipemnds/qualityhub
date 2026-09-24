@@ -95,14 +95,14 @@ momento, mas precisa existir **antes do C5** (anexos).
 
 | Entrega | Quem |
 |---|---|
-| Scripts no `package.json`: `build`, `typecheck`, `lint`, `test` | 🤖 |
+| Scripts no `package.json`: `typecheck`, `lint`, `lint:fix`. **Feito** — `test` entra na A1 (com o Vitest) e `build` na D1 (onde é usado) | 🤖 |
 | Biome configurado; primeira formatação do código (commit separado, só formatação) | 🤖 |
 | Remover o barramento de eventos (ADR-38) | 🤖 |
 | `ignoreTrailingSlash` → `routerOptions` (pendência 5) | 🤖 |
 | Apagar os modelos comentados no fim do `schema.prisma` (M5) | 🤖 |
 | Apagar `testes/requests-acao-corretiva.http` (descreve o modelo antigo) | 🤖 |
 | Proteger a `main` no GitHub (exigir PR para entrar) | 🧑 na interface do GitHub, com instruções |
-| Decidir como os Pull Requests são abertos: pelo site do GitHub (padrão — o `gh` não está instalado neste ambiente), ou instalar e autenticar o `gh` para Claude poder abri-los | 🧑 decide |
+| Decidir como os Pull Requests são abertos. **Decidido:** o PR da A0 pelo site do GitHub (para ver cada etapa); o `gh` é instalado no começo da A1, quando ler o CI passa a importar | 🧑 decide |
 
 **Aprendizado:** o que é lint e formatação automática; o que é proteção
 de branch.
@@ -136,7 +136,8 @@ Postgres pelo Docker. A integração com o WSL foi confirmada em
 | **Um único helper de autenticação** para os testes (`loginComo(perfil)`): na A4 o login passa a devolver cookie em vez de token, e só esse helper muda | 🤖 com explicação |
 | **Primeiros testes**: login com sucesso, senha errada, usuário sem senha (RN-38) | 🧑 |
 | **Um teste unitário**: `temPapel` | 🧑 |
-| **GitHub Actions**: `npm ci` → `prisma generate` → Biome → typecheck → testes, em todo push e PR (o `prisma generate` é obrigatório porque `src/generated/` não vai para o Git — TRD §9.5) | 🤖 com explicação |
+| **Instalar e autenticar o `gh`** (`sudo apt install gh` + `gh auth login`), para Claude abrir PRs e ler o resultado do CI | 🧑 com instruções |
+| **GitHub Actions**: `npm ci` → `prisma generate` → Biome → typecheck → testes, em todo push e PR (o `prisma generate` é obrigatório porque `src/generated/` não vai para o Git — TRD §9.5). Depois disso, exigir o CI verde na proteção da `main` | 🤖 com explicação |
 
 **Pronto quando:** Matthew escreveu sozinho um teste de API novo (ex.:
 criar rascunho de NC) sem consultar exemplo.
@@ -350,3 +351,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 |---|---|
 | 2026-09-24 | v1 — blocos A–D, decisões de trabalho e P1 |
 | 2026-09-24 | v1.1 — revisão cruzada: B9–B13 na A3 (B9 primeiro), pré-requisito do Docker no WSL, `prisma generate` no CI, helper único de autenticação nos testes, script do primeiro ADMIN |
+| 2026-09-24 | **A0 concluída** (branch `fase/a0-preparacao`): código sem uso removido, aviso do Fastify corrigido, Biome configurado, código formatado e lint limpo. `test` e `build` adiados para A1 e D1; `gh` na A1 |

@@ -20,9 +20,10 @@ entregar rápido.
 | `docs/changelog-arquitetura.md` | Registro de toda decisão de arquitetura e divergência do documento original. **Leia antes de propor mudança estrutural** |
 | `docs/arquitetura.md` | Documento de design **original** (histórico). Onde diverge dos documentos acima, eles valem |
 
-**Próximo passo:** fase **A0** do plano (preparação), depois **A1**
-(aprender testes). Ainda pendente fora do código: hospedagem (TRD
-§10.6), identidade visual.
+**Próximo passo:** fase **A0** concluída na branch
+`fase/a0-preparacao` (aguardando PR). Depois, **A1** (aprender testes).
+Ainda pendente fora do código: hospedagem (TRD §10.6), identidade
+visual.
 
 **Bugs conhecidos, ainda não corrigidos:** `docs/esquema-backend.md` §7
 (B1–B13). Os mais graves: B1/B2 (Ação Corretiva executável sem plano
@@ -33,8 +34,8 @@ servidor ligado há dias, nenhuma NC nova pode ser registrada).
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
 o Docker Desktop fechado o comando `docker` some do WSL. O `gh` não está
-instalado; Pull Requests são abertos por Matthew no site do GitHub,
-salvo decisão diferente na A0.
+instalado: o PR da A0 é aberto por Matthew no site do GitHub, e o `gh`
+entra no começo da A1.
 
 ## Como trabalhamos (workflow com Claude)
 
@@ -48,8 +49,11 @@ A partir do plano de implementação:
 - **Uma branch e um Pull Request por fase**; CI verde para entrar na `main`.
 - **Bug começa por um teste que falha.**
 - Cada fase termina com o checklist "pronto quando" (plano §1.1).
-- Commits: Matthew pede; push, ele faz (não há credencial do GitHub
-  neste ambiente).
+- **Pedir antes de cada commit**, inclusive dentro da branch da fase,
+  mostrando o que entra (Matthew pode pedir o diff antes). Push, ele
+  faz (não há credencial do GitHub neste ambiente).
+- Commit de formatação automática sempre **separado** das mudanças de
+  código, para o diff de lógica ficar legível.
 
 ## Stack
 
@@ -57,6 +61,13 @@ Node.js 24, TypeScript 7, Fastify 5 (com `fastify-type-provider-zod`),
 Prisma 7, PostgreSQL 17, Zod 4. Ambiente: WSL2/Ubuntu, Docker Compose para
 o banco. Frontend (planejado, não iniciado): React + Vite + **shadcn/ui**
 (não Mantine — ver changelog) + Tailwind.
+
+**Comandos:** `npm run dev` (servidor com recarga) · `npm run typecheck`
+(`tsc --noEmit`) · `npm run lint` (Biome: formatação + lint + ordem dos
+imports) · `npm run lint:fix` (corrige o que é automático). O Biome
+(2.5.14, versão exata) usa 4 espaços e 120 colunas; JSON com 2 espaços.
+Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
+`npm run lint` precisa passar antes de todo commit de código.
 
 ## Arquitetura em uma página
 
