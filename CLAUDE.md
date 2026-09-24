@@ -13,8 +13,11 @@ resolvidas.
 **Requisitos de produto** (escopo do MVP, regras de negócio RN-xx,
 permissões, decisões com a analista): `docs/prd.md`. Princípio do
 produto: funcional e sem risco de falha vale mais que entregar rápido.
+**Telas e navegação** (mapa de telas, etapa calculada da NC, jornadas,
+ações por estado, "Minhas pendências", lacunas de backend L1–L9):
+`docs/fluxo-app.md`.
 Em andamento (2026-09): reorganizar o planejamento em seis documentos —
-PRD (feito), Fluxo do App, UI/UX, TRD, Esquema Backend, Plano de
+PRD (feito), Fluxo do App (feito), UI/UX, TRD, Esquema Backend, Plano de
 Implementação.
 
 ## Como este projeto foi construído (workflow com Claude)
