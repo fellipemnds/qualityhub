@@ -21,7 +21,9 @@ PRD (feito), Fluxo do App (feito), UI/UX (feito — `docs/ui-ux.md`;
 wireframes no Figma pendentes; identidade visual a definir), TRD (feito
 — `docs/trd.md`: sessão em cookie com checagem a cada requisição,
 testes antes das correções, OpenAPI + Orval, ADR-33 a ADR-38; hospedagem
-ainda a decidir), Esquema Backend, Plano de Implementação.
+ainda a decidir), Esquema Backend (feito — `docs/esquema-backend.md`:
+mudanças de schema M1–M5, valores calculados, contrato da API com rotas
+novas, correções B1–B8), Plano de Implementação.
 
 ## Como este projeto foi construído (workflow com Claude)
 
@@ -98,7 +100,12 @@ o banco. Frontend (planejado, não iniciado): React + Vite + **shadcn/ui**
   para aprovação — `finalizarExecucaoAcaoCorretiva` fecha direto, sem
   aprovação, e **gera automaticamente uma `Verificacao`** já em
   `ABERTO` (pula rascunho), com prazo calculado a partir de dias
-  informados pelo colaborador.
+  informados pelo colaborador. **Bugs conhecidos, ainda não
+  corrigidos** (`docs/esquema-backend.md` §7): `portaoAtual` continua 0
+  depois da aprovação, então `finalizarExecucao` não consegue distinguir
+  "plano aprovado" de "nunca submetido" (B1), e o plano segue editável
+  em `ABERTO` depois de aprovado (B2). "Plano aprovado" deve ser
+  derivado de `Aprovacao` (portão `PLANO`, `APROVADO`).
 - **`Verificacao`**: nunca criada diretamente pelo usuário — só nasce
   via `finalizarExecucaoAcaoCorretiva`. Sem portão, conclui direto
   (`concluir()`). O `resultado` da conclusão dispara lógica automática:

@@ -196,9 +196,11 @@ token anti-CSRF adicional.
 
 - **Limite de tentativas:** 5 por minuto por combinação IP + e-mail;
   depois, 429 com "Muitas tentativas, aguarde um minuto".
-- **Auditoria de login** (pendência 4 do changelog): registrar sucesso e
-  falha, com e-mail tentado e IP, **sem** a senha. Mensagem de erro
-  continua idêntica para qualquer falha (RN-38).
+- **Registro de login** (pendência 4 do changelog): **sucesso** vai para
+  a auditoria; **falha** vai para o log da aplicação (nível de aviso,
+  com e-mail tentado e IP), porque não há usuário identificado para ser
+  o autor da linha de auditoria (`docs/esquema-backend.md`, E1). Nunca a
+  senha. Mensagem de erro continua idêntica para qualquer falha (RN-38).
 - Convite e definição de senha: sem mudança (RN-39, RN-40).
 
 ---
@@ -510,7 +512,7 @@ RNF-01 a RNF-08 vêm do `arquitetura.md` §2.3; os demais são novos.
 | RNF-07 | Módulo novo herda estados, códigos, comentários, atribuições e aprovações sem alterar tabela existente |
 | RNF-08 | Escrita em mais de uma tabela ocorre numa transação única |
 | RNF-09 | **Revogação imediata:** inativar usuário, revogar papel ou "sair de todos os aparelhos" vale na próxima requisição |
-| RNF-10 | **Login protegido:** limite de tentativas; tentativas auditadas |
+| RNF-10 | **Login protegido:** limite de tentativas; sucessos na auditoria, falhas no log |
 | RNF-11 | **Anexos validados** pelo conteúdo (tipo real) e tamanho; só acessíveis via backend, com permissão conferida |
 | RNF-12 | **Testes automáticos** cobrem as regras críticas da §9.3; CI verde é obrigatório para ir para produção |
 | RNF-13 | **HTTPS** obrigatório em produção |
