@@ -88,7 +88,8 @@ Prisma 7, PostgreSQL 17, Zod 4. Ambiente: WSL2/Ubuntu, Docker Compose para
 o banco. Frontend (planejado, não iniciado): React + Vite + **shadcn/ui**
 (não Mantine — ver changelog) + Tailwind.
 
-**Comandos:** `npm run dev` (servidor com recarga) · `npm run typecheck`
+**Comandos:** `npm run dev` (servidor com recarga) · `npm test`
+(Vitest; Docker Desktop aberto) · `npm run typecheck`
 (`tsc --noEmit`) · `npm run lint` (Biome: formatação + lint + ordem dos
 imports) · `npm run lint:fix` (corrige o que é automático) ·
 `npm run preparar` (`npm ci` + `prisma generate` + `prisma migrate
@@ -180,14 +181,26 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
 
 ## Testes
 
-Sem suite automatizada ainda — ela nasce nas fases A1/A2 do plano
-(Vitest + `app.inject()` + Testcontainers, TRD §9). Até lá, testes
-manuais em `testes/old/*.http` (REST Client do VS Code) e
-`testes/setup-usuarios-teste.sql` (8 usuários cobrindo cada combinação
-de papel). `testes/old/requests-fluxo-completo.http` encadeia as seis
-entidades ponta a ponta. `requests-acao-corretiva.http` está
-desatualizado (modelo antigo de dois portões) e sai na fase A0. Cada
-`.http` é apagado quando um teste automático cobre o mesmo fluxo.
+`npm test` (Vitest 5 + `app.inject()` + Testcontainers, TRD §9) —
+**precisa do Docker Desktop aberto**. Cada `npm test` sobe um Postgres
+17 descartável, aplica as migrations e o derruba no fim; o primeiro
+leva ~15 s.
+
+- Teste fica **ao lado do arquivo testado** (`x.ts` → `x.test.ts`).
+  Teste de API: um `describe` por rota (`describe("POST /auth/login")`).
+- Infraestrutura em `src/testes/`: `global-setup.ts` (container +
+  migrations + `provide("urlBanco")`), `setup-ambiente.ts`
+  (`DATABASE_URL` e `JWT_SECRET` de teste) e `limpar-banco.ts`
+  (**trava**: aborta se `current_database()` não for `test`; depois
+  `TRUNCATE` de todas as tabelas antes de **cada** teste). A ordem dos
+  `setupFiles` importa: o `prisma` só pode ser importado depois de a
+  URL ser trocada.
+- `fileParallelism: false`: todos os arquivos usam o mesmo banco.
+
+Testes manuais antigos em `testes/old/*.http` (REST Client do VS Code)
+e `testes/setup-usuarios-teste.sql` (8 usuários cobrindo cada
+combinação de papel — base das fábricas). Cada `.http` é apagado
+quando um teste automático cobre o mesmo fluxo.
 
 ## O que falta
 
