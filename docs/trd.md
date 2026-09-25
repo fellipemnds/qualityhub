@@ -387,7 +387,7 @@ ficam para funções sem banco (etapa calculada, formatação de código,
 Ordem de prioridade (herdada do `arquitetura.md` §10.5 + as decisões do
 PRD):
 
-1. **Fluxo completo** — o `testes/requests-fluxo-completo.http`
+1. **Fluxo completo** — o `testes/old/requests-fluxo-completo.http`
    transformado em teste automático: as seis entidades, do registro à
    verificação.
 2. **Máquina de estados e portões** — toda transição válida e inválida.

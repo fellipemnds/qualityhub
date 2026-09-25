@@ -182,9 +182,9 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
 
 Sem suite automatizada ainda — ela nasce nas fases A1/A2 do plano
 (Vitest + `app.inject()` + Testcontainers, TRD §9). Até lá, testes
-manuais em `testes/*.http` (REST Client do VS Code) e
+manuais em `testes/old/*.http` (REST Client do VS Code) e
 `testes/setup-usuarios-teste.sql` (8 usuários cobrindo cada combinação
-de papel). `testes/requests-fluxo-completo.http` encadeia as seis
+de papel). `testes/old/requests-fluxo-completo.http` encadeia as seis
 entidades ponta a ponta. `requests-acao-corretiva.http` está
 desatualizado (modelo antigo de dois portões) e sai na fase A0. Cada
 `.http` é apagado quando um teste automático cobre o mesmo fluxo.
