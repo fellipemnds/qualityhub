@@ -5,47 +5,53 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-09-25, computador do trabalho, à tarde
-(Matthew continua em casa no mesmo dia).
+**Última atualização:** 2026-09-28, computador do trabalho.
 
 ## 1. Objetivo
 
-Fase **A1 — aprender testes + infraestrutura de testes**. O que ela
-entrega e quando está pronta: `docs/plano-implementacao.md`, seção A1.
-Por que os testes vêm antes das correções: `docs/trd.md` §9 (ADR-36).
+Fechar a fase **A1** (testes + infraestrutura) e começar a **A2 — rede
+de proteção** (`docs/plano-implementacao.md`, seção A2): cobrir por
+teste tudo o que **já funciona**, antes de qualquer correção de regra.
 
 ## 2. Estado atual
 
-- Branch **`fase/a1-testes`**, tudo commitado **e no `origin`**.
-- **Infraestrutura de testes pronta e funcionando** (`npm test` → 5
-  verdes). Como funciona: `CLAUDE.md`, seção "Testes".
-- Matthew escreveu tudo: os 4 testes da `paginar`, o `GET /` com
-  `app.inject()`, o `vitest.config.ts` e os três arquivos de
-  `src/testes/`. Já viu a trava de segurança disparar (comentando a
-  `DATABASE_URL`) e cada teste da `paginar` falhar de propósito.
-- O que ele já domina: `describe`/`it`/`expect`, `toBe` × `toEqual`,
-  ler o diff de falha, `beforeEach`, `globalSetup` × `setupFiles`,
-  `provide`/`inject` + `declare module`, hoisting de `import`,
-  `$queryRaw` (marcadores `$1`) × `$executeRawUnsafe`.
-- Pontos em que ele tropeçou (para reforçar, sem repetir a explicação
-  longa): `import` × `include`; valor × tipo (`const x = { id: string }`);
-  `process.env["X"] = valor` (chave × conteúdo); chamar × declarar
-  função (`beforeEach(async () => {})`); desestruturar `[x]` quando
-  queria a lista inteira.
+- Branch **`fase/a1-testes`**, com o PR **#2 aberto em rascunho**
+  (https://github.com/fellipemnds/qualityhub/pull/2). CI verde.
+- **A1 com todas as entregas feitas**: 22 testes verdes, fábricas
+  (`criarUsuario`, `loginComo` com 7 perfis), CI com o check
+  `verificar` obrigatório no ruleset da `main`. O teste "pronto quando"
+  (`nc.routes.test.ts`, criar rascunho de NC) foi escrito por Matthew.
+  Decisões da fase: `docs/changelog-arquitetura.md`, seção "Fase A1".
+- **Divisão de trabalho revista** (`CLAUDE.md`, "Como trabalhamos"):
+  Matthew escreve só o que ensina conceito novo — ainda faltam o teste
+  de **concorrência** (A2) e o **B9** (A3, primeiro TDD). Claude faz o
+  resto, **anunciando cada item e esperando confirmação**.
+- O que Matthew aprendeu hoje: fábrica com padrões e `null` ×
+  `undefined`; `app.inject` com `payload`/`body` e `headers`;
+  `expect.any` e `toMatchObject`; HTTP sem memória (token em **cada**
+  requisição, `Bearer`); erro no Prepara × falha no Confere; o teste
+  diz o que **deveria** acontecer (nunca ajustar o esperado ao
+  recebido); YAML do GitHub Actions, gatilhos `push` × `pull_request`,
+  ruleset.
+- Pontos em que ele tropeçou (reforçar sem repetir a explicação):
+  desestruturar o retorno da fábrica; `console.log` depois do `expect`
+  (não roda quando falha); "usuário logado" (não existe: é o token).
 
 ## 3. Arquivos no meio de uma mudança
 
-Nenhum. O `src/testes/fabricas.ts` do próximo passo **ainda não foi
-criado**.
+Nenhum, se os commits propostos no fim da sessão foram feitos (ver §4).
+Se o `git status` mostrar alterações em `prisma7.config.ts`, `app.ts`,
+`cliente.ts`, `acao-corretiva.service.ts` ou nos documentos, são esses
+commits pendentes: conferir com Matthew antes de seguir.
 
 ## 4. O que foi alterado nesta sessão
 
-`git log 111f0b2..fase/a1-testes`. Resumo: Vitest + script `test`;
-testes da `paginar`; `.http` movidos para `testes/old/`;
-Testcontainers + `globalSetup`/`setupFiles` + `GET /`; limpeza do banco
-com trava. No `allowScripts`, `protobufjs`, `ssh2` e `cpu-features`
-foram **negados** de propósito (vêm do Testcontainers, não precisam
-rodar).
+`git log 52f9965..fase/a1-testes`. Resumo: fábricas e `loginComo`;
+testes do login, do `temPapel` e da criação de rascunho de NC; CI;
+documentos (divisão de trabalho, 7 perfis, changelog da A1); as duas
+pendências pequenas (`process.env.X` em vez de `process.env["X"]`, com
+mais dois avisos iguais na ação corretiva; log do Fastify em `warn` nos
+testes).
 
 ## 5. Falhas (e o porquê)
 
@@ -53,42 +59,26 @@ rodar).
 |---|---|---|
 | `npm audit`: 4 vulnerabilidades altas | Herdadas do Prisma 7 | **Aberto**, risco baixo — `docs/trd.md` §13. Nunca `npm audit fix --force` |
 | Aviso "Update available 7.10.0 → 8.0.0-rc" do Prisma | É release candidate e versão major | **Não atualizar** |
-| `$queryRaw` com `TRUNCATE TABLE ${tabelas}` → `syntax error at or near "$1"` | Tagged template vira parâmetro; nome de tabela não pode ser parâmetro | Resolvido com `$executeRawUnsafe` (nomes vêm do próprio Postgres) |
+| `toSorted` recusado pelo typecheck | A `lib` do `tsconfig` é ES2022 (`toSorted` é ES2023) | Resolvido com `[...lista].sort()`; não vale mudar o `tsconfig` por isso |
+| Aviso no CI: `ubuntu-latest` vira Ubuntu 26 em 19/10/2026 | Migração do GitHub | Nada a fazer; se o CI quebrar depois dessa data, começar por aqui |
 
-**Pendências anotadas (commits separados, fora da ordem da A1):**
-- Trocar os 5 `process.env["..."]` antigos por `process.env.X`
-  (avisos `useLiteralKeys` do Biome).
-- Desligar o log do Fastify durante os testes (polui a saída).
+**Pendências anotadas:**
 - Na D1: excluir `**/*.test.ts` e `src/testes/` do build.
 - Os testes unitários pagam a limpeza do banco (~100 ms cada, por causa
   do `beforeEach` global). Aceito; separar em dois grupos só se pesar.
 
 ## 6. Próximo passo
 
-**Em casa, antes de codar:**
-1. Se ainda não fez: `SETUP.md` §12.1 inteiro (casa estava ~2 semanas
-   atrás) e instalar/autenticar o `gh`.
-2. `git switch fase/a1-testes` → `git pull` → **`npm run preparar`**
-   (instala o Vitest e o Testcontainers).
-3. **Abrir o Docker Desktop** e rodar `npm test` → 5 verdes. Na
-   primeira vez baixa a imagem do Ryuk (e a `postgres:17-alpine`, se
-   não existir em casa).
-
-**Depois, passo 6a (Matthew coda):** `src/testes/fabricas.ts` com
-`criarUsuario({ email?, senha? })`:
-- padrões `"usuario@teste.com"` e `"SenhaDeTeste123!"`;
-- `senha: null` → `senhaHash: null` (padrão da desestruturação só vale
-  para `undefined`, não para `null`);
-- hash com `bcrypt.hash(senha, 10)`;
-- setor via `connectOrCreate` pelo nome `"Qualidade"` (nome é único);
-- devolve o usuário e a senha em texto; papéis ficam para o
-  `loginComo`.
-
-**6b:** `src/modulos/auth/auth.routes.test.ts`, `describe("POST
-/auth/login")`: sucesso (200 + `token`), senha errada e usuário sem
-senha (401 + `{ mensagem: "Credenciais inválidas" }`, idênticos —
-RN-38). Regra de ouro: comentar o `$executeRawUnsafe` e ver o segundo
-teste quebrar com e-mail duplicado (prova a limpeza).
-
-Depois: `loginComo(perfil)` com os 8 perfis → teste unitário do
-`temPapel` → CI no GitHub Actions.
+1. **Fechar a A1:** conferir o CI verde no último push → `gh pr ready 2`
+   → Matthew mescla o PR #2 pelo GitHub → `git switch main` →
+   `git pull`.
+2. **Abrir a A2:** `git switch -c fase/a2-rede-protecao`, e abrir o PR
+   em rascunho logo no primeiro push (o CI só roda com PR aberto).
+3. **Primeiro item da A2 (Claude, depois de anunciar e Matthew
+   confirmar):** o fluxo completo, a partir de
+   `testes/old/requests-fluxo-completo.http` — NC → classificação →
+   contenção → investigação → ação → verificação → fechamento. Vai
+   precisar de fábricas novas (NC publicada, itens filhos) e de
+   atribuições (aprovador designado).
+4. O **teste de concorrência** do código sequencial é de Matthew:
+   Claude explica condição de corrida antes.
