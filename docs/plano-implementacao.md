@@ -21,7 +21,7 @@ Decidido com Matthew em 2026-09-24:
 |---|---|
 | **Fundação antes do front** | Testes, correções, sessão, contrato da API e usuários ficam prontos antes da primeira tela (Bloco A) |
 | **Depois, fatias verticais** | Cada funcionalidade nova (Feed, anexos, pendências, relatórios...) é feita **junto com a tela dela**: backend + tela da mesma coisa, na mesma fase (Bloco C) |
-| **Quem escreve** | 🧑 **Matthew** escreve **tudo o que puder ser codado**, inclusive configuração (Vitest, CI, scripts), depois de Claude explicar o conceito. 🤖 **Claude** só gera o que é **repetição** de um padrão que Matthew já escreveu. 👀 Claude revisa tudo. *(Decidido em 2026-09-24: esta regra vale sobre as marcações 🤖 das tabelas abaixo — item que não for repetição passa a ser 🧑.)* |
+| **Quem escreve** | 🧑 **Matthew** escreve **tudo o que puder ser codado**, inclusive configuração (Vitest, CI, scripts), depois de Claude explicar o conceito. 🤖 **Claude** só gera o que é **repetição** de um padrão que Matthew já escreveu. 👀 Claude revisa tudo. *(Decidido em 2026-09-24: esta regra vale sobre as marcações 🤖 das tabelas abaixo — item que não for repetição passa a ser 🧑.)* *(Revisto em 2026-09-28: Matthew escreve só o que ensina conceito novo — o teste "pronto quando" da A1, o de concorrência da A2 e o B9 da A3; Claude faz o resto na ordem do plano, anunciando antes de cada item e esperando a confirmação de Matthew. Esta revisão vale sobre as marcações 🧑 das tabelas.)* |
 | **Git** | **Uma branch e um Pull Request por fase.** O CI roda no PR; só entra na `main` com tudo verde |
 | **Bug** | Começa por um **teste que falha**; o conserto faz passar (TRD §9.4) |
 | **Arquivos `.http`** | Cada um é **apagado** quando um teste automático cobre o mesmo fluxo |
@@ -133,7 +133,7 @@ Postgres pelo Docker. A integração com o WSL foi confirmada em
 | Entrega | Quem |
 |---|---|
 | Vitest + Testcontainers configurados; banco criado uma vez por execução, tabelas limpas antes de cada teste | 🧑 com orientação passo a passo |
-| Fábricas: os 8 perfis de usuário de `setup-usuarios-teste.sql`; login devolvendo o token | 🧑 a primeira, 🤖 as outras seguindo o padrão |
+| Fábricas: os 7 perfis de usuário de `setup-usuarios-teste.sql`; login devolvendo o token | 🧑 a primeira, 🤖 as outras seguindo o padrão |
 | **Um único helper de autenticação** para os testes (`loginComo(perfil)`): na A4 o login passa a devolver cookie em vez de token, e só esse helper muda | 🧑 |
 | **Primeiros testes**: login com sucesso, senha errada, usuário sem senha (RN-38) | 🧑 |
 | **Um teste unitário**: `temPapel` | 🧑 |

@@ -67,7 +67,15 @@ Matthew é iniciante em desenvolvimento full-stack, aprendendo no processo.
 **Claude explica o conceito, Matthew escreve, Claude revisa.** Matthew
 quer codar **tudo o que puder ser codado**, inclusive configuração
 (Vitest, CI, scripts); Claude só gera o que é **repetição** de um padrão
-que Matthew já escreveu e validou. **Ao propor
+que Matthew já escreveu e validou.
+
+**Divisão revista em 2026-09-28 (a partir da A1):** Matthew escreve o
+que ensina conceito novo — o teste "pronto quando" da A1, o teste de
+concorrência da A2 e o B9 (primeiro TDD) da A3; Claude faz o resto,
+**na ordem do plano**. **Antes de cada item**, Claude diz se é algo que
+Matthew já aprendeu (e aponta o que tiver de novo) e **só executa
+depois de ele confirmar**. Matthew revisa tudo e pode pegar qualquer
+item de volta. **Ao propor
 mudanças, prefira explicar o raciocínio e perguntar antes de reescrever
 grandes blocos.**
 
@@ -198,7 +206,7 @@ leva ~15 s.
 - `fileParallelism: false`: todos os arquivos usam o mesmo banco.
 
 Testes manuais antigos em `testes/old/*.http` (REST Client do VS Code)
-e `testes/setup-usuarios-teste.sql` (8 usuários cobrindo cada
+e `testes/setup-usuarios-teste.sql` (7 usuários cobrindo cada
 combinação de papel — base das fábricas). Cada `.http` é apagado
 quando um teste automático cobre o mesmo fluxo.
 
