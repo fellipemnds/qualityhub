@@ -429,6 +429,7 @@ Encontradas na **revisão cruzada** dos documentos com o código
 | **B11** | **"Dia" calculado em UTC**: o ano do código usa `new Date().getFullYear()` no servidor — uma NC publicada em 31/12 depois das 21 h ganha código do ano seguinte. O mesmo vale para "hoje" em prazos | `ciclo-vida.service.ts`, `acao-corretiva.service.ts` | Uma função "dia de hoje em `America/Sao_Paulo`", usada em todo cálculo de dia (TRD §6) |
 | **B12** | **Rascunho pode ser cancelado** e vira item cancelado sem código, visível para sempre (PRD Q14) | `ciclo-vida.service.ts` (`cancelar`) | Aceitar só `ABERTO` e `EM_APROVACAO` |
 | **B13** | **Filho nasce sem aprovador** e só `APROVADOR`/`GERENTE` pode definir um; o colaborador fica travado para enviar, sem ninguém ser avisado (PRD Q13) | Services de criação dos filhos | Copiar o aprovador da NC na criação (RN-46); filho publicado sem aprovador entra na triagem (§4.4) |
+| **B14** | **Data obrigatória vazia passa na validação.** `z.coerce.date()` converte o `null` que vem do banco em `new Date(null)` = 01/01/1970, uma data válida — o item avança sem a data. Afeta `detectadoEm` (publicar NC), `executadaEm` (fechar contenção), `prazo` (submeter plano), `executadoEm` (finalizar execução, RN-25) e `verificadoEm` (concluir verificação). Comprovado com o `prazo`; achado pelos testes da A2 | Schemas de publicação/fechamento dos cinco | Recusar `null`/vazio antes de converter; um teste que falha por campo |
 
 **Os mais graves são B1, B2 e B9.** B1 e B2, juntos, permitem que a ação
 corretiva seja feita sem o QA concordar com o plano — exatamente o que o
@@ -440,7 +441,7 @@ logo no primeiro dia depois do deploy.
 ## 8. Ordem sugerida (para o Plano de Implementação)
 
 1. Testes sobre o comportamento **atual** (rede de proteção)
-2. B1–B13, cada um com seu teste
+2. B1–B14, cada um com seu teste
 3. Sessão nova (M1 parcial + rotas de auth)
 4. Schema de resposta em todas as rotas + prefixo `/api` + OpenAPI
 5. Usuários, setores, pessoas (M1, M2)
@@ -472,3 +473,4 @@ Com Matthew, em 2026-09-24.
 |---|---|
 | 2026-09-24 | v1 — modelo, mudanças M1–M5, valores calculados, API, correções B1–B8; E1–E3 |
 | 2026-09-24 | v1.1 — revisão cruzada com o código: B9–B13; guarda em dois grupos (filhos/envio) com aprovador; triagem inclui filhos; catálogo de permissões novas; eventos do feed; regras de convite e usuário inativo |
+| 2026-09-28 | v1.2 — B14 (data obrigatória vazia passa na validação), achado pelos testes da fase A2 |

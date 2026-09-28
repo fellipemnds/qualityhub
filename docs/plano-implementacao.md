@@ -47,7 +47,7 @@ flowchart TD
     subgraph A[Bloco A — Fundação do backend]
         A0[A0 Preparação] --> A1[A1 Aprender testes<br/>+ infraestrutura]
         A1 --> A2[A2 Rede de proteção]
-        A2 --> A3[A3 Correções B1–B13]
+        A2 --> A3[A3 Correções B1–B14]
         A3 --> A4[A4 Sessão nova]
         A4 --> A5[A5 Contrato da API]
         A5 --> A6[A6 Usuários e setores]
@@ -157,7 +157,7 @@ antes de qualquer mudança de regra.
 | Atribuições: um aprovador por item, sem duplicata, RN-12 | 🤖 |
 | Aposentar os `.http` cobertos | 🤖 |
 
-**Os bugs B1–B13 não entram aqui.** Esta fase fotografa o que está
+**Os bugs B1–B14 não entram aqui.** Esta fase fotografa o que está
 **certo**; os bugs ganham seus testes na A3.
 
 ### A3 — Correções de regra · G
@@ -169,17 +169,18 @@ antes de qualquer mudança de regra.
 |---|---|---|
 | 1 | **B9** — data de detecção comparada com o dia de hoje **a cada validação** (hoje, com o servidor ligado há dias, ninguém registra NC nova). Primeiro porque é grave e pequeno — bom primeiro TDD | 🧑 |
 | 2 | **B11** — função "dia de hoje em `America/Sao_Paulo`", usada no ano do código, nos prazos e no B9 | 🧑 |
-| 3 | **Plano aprovado** derivado de `Aprovacao` (§4.2 do esquema) — base das próximas | 🧑 |
-| 4 | **B1** — finalizar execução exige plano aprovado | 🧑 |
-| 5 | **B2** — plano travado depois de aprovado | 🧑 |
-| 6 | **B10** — investigação obrigatória no plano, da mesma NC, não cancelada | 🧑 |
-| 7 | **Guarda que devolve "o que falta"**, em dois grupos, filhos e envio (TRD §5, esquema §4.3) + **B5** (RN-21 nova) + rota `GET /nc/:id/checklist-fechamento` | 🧑 a função; 🤖 a rota |
-| 8 | **B4** — `NAO_EFICAZ` reabre só o que estiver fechado | 🧑 |
-| 9 | **B6** — `PARCIALMENTE_EFICAZ` copia todos os colaboradores | 🤖 |
-| 10 | **B3** — autor certo na auditoria da ação automática | 🤖 |
-| 11 | **B13** — filho nasce com o aprovador da NC (RN-46) | 🤖 |
-| 12 | **B12** — cancelar recusa rascunho (RN-06) | 🤖 |
-| 13 | **B8** — remover `DELETE /verificacoes/:id` | 🤖 |
+| 3 | **B14** — data obrigatória vazia recusada nos cinco schemas (hoje o `null` vira 01/01/1970). Junto do B11 porque também é sobre datas | 🤖 |
+| 4 | **Plano aprovado** derivado de `Aprovacao` (§4.2 do esquema) — base das próximas | 🧑 |
+| 5 | **B1** — finalizar execução exige plano aprovado | 🧑 |
+| 6 | **B2** — plano travado depois de aprovado | 🧑 |
+| 7 | **B10** — investigação obrigatória no plano, da mesma NC, não cancelada | 🧑 |
+| 8 | **Guarda que devolve "o que falta"**, em dois grupos, filhos e envio (TRD §5, esquema §4.3) + **B5** (RN-21 nova) + rota `GET /nc/:id/checklist-fechamento` | 🧑 a função; 🤖 a rota |
+| 9 | **B4** — `NAO_EFICAZ` reabre só o que estiver fechado | 🧑 |
+| 10 | **B6** — `PARCIALMENTE_EFICAZ` copia todos os colaboradores | 🤖 |
+| 11 | **B3** — autor certo na auditoria da ação automática | 🤖 |
+| 12 | **B13** — filho nasce com o aprovador da NC (RN-46) | 🤖 |
+| 13 | **B12** — cancelar recusa rascunho (RN-06) | 🤖 |
+| 14 | **B8** — remover `DELETE /verificacoes/:id` | 🤖 |
 
 **Aprendizado:** TDD (escrever o teste antes do conserto); por que uma
 regra deve morar num lugar só.
@@ -236,7 +237,7 @@ RF-20).
 
 Antes do Bloco C começar:
 - A0–A6 concluídas, CI verde na `main`.
-- Nenhum bug B1–B13 aberto.
+- Nenhum bug B1–B14 aberto.
 - OpenAPI completo, gerando sem erro.
 
 ---
@@ -310,7 +311,7 @@ Onde cada item dos documentos anteriores é feito:
 
 | Item | Fase |
 |---|---|
-| B1–B6, B8–B13 · RN-06, RN-46 | A3 |
+| B1–B6, B8–B14 · RN-06, RN-46 | A3 |
 | Primeiro `ADMIN` e primeiro setor em produção | A6 (script), D1 (uso) |
 | B7 (papéis no JWT) · RNF-09, RNF-10 | A4 |
 | Pendência 1 (ações de auditoria) · pendência 5 (`ignoreTrailingSlash`) | A5 · A0 |
@@ -354,3 +355,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-09-24 | v1.1 — revisão cruzada: B9–B13 na A3 (B9 primeiro), pré-requisito do Docker no WSL, `prisma generate` no CI, helper único de autenticação nos testes, script do primeiro ADMIN |
 | 2026-09-24 | **A0 concluída** (branch `fase/a0-preparacao`): código sem uso removido, aviso do Fastify corrigido, Biome configurado, código formatado e lint limpo. `test` e `build` adiados para A1 e D1; `gh` na A1 |
 | 2026-09-28 | **A1 concluída** (branch `fase/a1-testes`, PR #2): Vitest + Testcontainers, fábricas e `loginComo` (7 perfis), testes do login, do `temPapel` e da criação de rascunho de NC (o "pronto quando", escrito por Matthew), CI com check obrigatório na `main`. Divisão de trabalho revista (§1) |
+| 2026-09-28 | B14 entra na A3 (ordem 3, depois do B11), achado pelos testes da A2 |
