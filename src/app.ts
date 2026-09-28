@@ -14,14 +14,15 @@ import { verificacaoRoutes } from "./modulos/nc/verificacao/verificacao.routes.j
 import { usuarioRoutes } from "./modulos/usuario/usuario.routes.js";
 
 const app = Fastify({
-    logger: true,
+    // Nos testes, só "warn" para cima: some o log de cada requisição, mas o erro de um 500 continua aparecendo
+    logger: { level: process.env.NODE_ENV === "test" ? "warn" : "info" },
     routerOptions: { ignoreTrailingSlash: true },
 });
 
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
-const jwtSecret = process.env["JWT_SECRET"];
+const jwtSecret = process.env.JWT_SECRET;
 
 if (!jwtSecret) {
     throw new Error("JWT_SECRET não está definida em .env");

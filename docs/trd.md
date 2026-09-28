@@ -374,7 +374,7 @@ seguindo o mesmo formato de sempre: conceito explicado → Matthew escreve
 | Banco | **Testcontainers** (PostgreSQL 17) | Postgres **real** e descartável, criado pelo próprio teste. Mesmo comportamento de produção (transações, `SELECT FOR UPDATE`, índice parcial) |
 | Arquivos | Pasta temporária (disco) ou **Testcontainers** (MinIO) | Conforme o armazenamento escolhido; só nos testes de anexo |
 | Isolamento | `TRUNCATE` das tabelas antes de cada teste | Cada teste começa do zero |
-| Usuários | Fábricas com os 8 perfis de `testes/setup-usuarios-teste.sql` | Cobre cada combinação de papel |
+| Usuários | Fábricas com os 7 perfis de `testes/setup-usuarios-teste.sql` | Cobre cada combinação de papel |
 
 ### 9.3 O que testar primeiro
 
@@ -387,7 +387,7 @@ ficam para funções sem banco (etapa calculada, formatação de código,
 Ordem de prioridade (herdada do `arquitetura.md` §10.5 + as decisões do
 PRD):
 
-1. **Fluxo completo** — o `testes/requests-fluxo-completo.http`
+1. **Fluxo completo** — o `testes/old/requests-fluxo-completo.http`
    transformado em teste automático: as seis entidades, do registro à
    verificação.
 2. **Máquina de estados e portões** — toda transição válida e inválida.

@@ -4,6 +4,8 @@ Sistema de gestão de Não Conformidades (ISO 9001:2015, cláusula 10.2),
 construído do zero por Matthew, aprendendo backend full-stack no processo.
 Este arquivo é o ponto de entrada rápido.
 
+**Idioma: responder sempre em português do Brasil.**
+
 **Princípio do produto:** funcional e sem risco de falha vale mais que
 entregar rápido.
 
@@ -20,8 +22,18 @@ entregar rápido.
 | `docs/changelog-arquitetura.md` | Registro de toda decisão de arquitetura e divergência do documento original. **Leia antes de propor mudança estrutural** |
 | `docs/arquitetura.md` | Documento de design **original** (histórico). Onde diverge dos documentos acima, eles valem |
 
-**Próximo passo:** fase **A0** concluída na branch
-`fase/a0-preparacao` (aguardando PR). Depois, **A1** (aprender testes).
+## ⚠️ Início de toda sessão: ler `handoff.md`
+
+**Antes de qualquer outra coisa, leia o `handoff.md`** (na raiz). Ele
+guarda o estado da sessão anterior: objetivo, onde paramos, arquivos no
+meio de uma mudança, o que falhou e o próximo passo. Depois de ler,
+confira a branch (`git status`) e diga a Matthew, em poucas linhas, de
+onde vamos retomar.
+
+**No fim de toda sessão** (ou quando Matthew disser "vou trocar de
+computador"), atualize o `handoff.md` — as mesmas 6 seções, apontando
+para os outros documentos em vez de repetir o que já está neles.
+
 Ainda pendente fora do código: hospedagem (TRD §10.6), identidade
 visual.
 
@@ -33,15 +45,37 @@ servidor ligado há dias, nenhuma NC nova pode ser registrada).
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
-o Docker Desktop fechado o comando `docker` some do WSL. O `gh` não está
-instalado: o PR da A0 é aberto por Matthew no site do GitHub, e o `gh`
-entra no começo da A1.
+o Docker Desktop fechado o comando `docker` some do WSL. O `gh` está
+instalado e autenticado neste computador (escopos `repo` e `workflow`);
+Claude pode abrir PRs e ler o CI com ele. O `git push` continua sendo
+de Matthew, salvo pedido explícito.
+
+**Dois computadores:** Matthew alterna entre o do trabalho e o de casa
+(mesmo ambiente: Windows + WSL2 + Docker Desktop + nvm). Seguir o
+`SETUP.md` §12. Quando ele disser **"vou trocar de computador"**: rodar
+`npm run typecheck` e `npm run lint`, atualizar o `handoff.md`, propor o
+commit na branch da fase e lembrá-lo do `git push`. Quando disser
+**"continuar de onde parei"**: ler o `handoff.md`, conferir a branch
+(`git status`), lembrar do `npm run preparar` se ele ainda não rodou, e
+retomar pelo "Próximo passo". Memória e conversas do Claude **não**
+passam de uma máquina para a outra — o que precisa sobreviver vai para
+o `handoff.md` (estado) ou para este arquivo (regras).
 
 ## Como trabalhamos (workflow com Claude)
 
 Matthew é iniciante em desenvolvimento full-stack, aprendendo no processo.
-**Claude explica o conceito, Matthew escreve o núcleo, Claude revisa**;
-o que é repetição de padrão já validado, Claude gera direto. **Ao propor
+**Claude explica o conceito, Matthew escreve, Claude revisa.** Matthew
+quer codar **tudo o que puder ser codado**, inclusive configuração
+(Vitest, CI, scripts); Claude só gera o que é **repetição** de um padrão
+que Matthew já escreveu e validou.
+
+**Divisão revista em 2026-09-28 (a partir da A1):** Matthew escreve o
+que ensina conceito novo — o teste "pronto quando" da A1, o teste de
+concorrência da A2 e o B9 (primeiro TDD) da A3; Claude faz o resto,
+**na ordem do plano**. **Antes de cada item**, Claude diz se é algo que
+Matthew já aprendeu (e aponta o que tiver de novo) e **só executa
+depois de ele confirmar**. Matthew revisa tudo e pode pegar qualquer
+item de volta. **Ao propor
 mudanças, prefira explicar o raciocínio e perguntar antes de reescrever
 grandes blocos.**
 
@@ -62,9 +96,12 @@ Prisma 7, PostgreSQL 17, Zod 4. Ambiente: WSL2/Ubuntu, Docker Compose para
 o banco. Frontend (planejado, não iniciado): React + Vite + **shadcn/ui**
 (não Mantine — ver changelog) + Tailwind.
 
-**Comandos:** `npm run dev` (servidor com recarga) · `npm run typecheck`
+**Comandos:** `npm run dev` (servidor com recarga) · `npm test`
+(Vitest; Docker Desktop aberto) · `npm run typecheck`
 (`tsc --noEmit`) · `npm run lint` (Biome: formatação + lint + ordem dos
-imports) · `npm run lint:fix` (corrige o que é automático). O Biome
+imports) · `npm run lint:fix` (corrige o que é automático) ·
+`npm run preparar` (`npm ci` + `prisma generate` + `prisma migrate
+deploy` — deixa a máquina em dia depois de um `git pull`). O Biome
 (2.5.14, versão exata) usa 4 espaços e 120 colunas; JSON com 2 espaços.
 Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
 `npm run lint` precisa passar antes de todo commit de código.
@@ -152,14 +189,26 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
 
 ## Testes
 
-Sem suite automatizada ainda — ela nasce nas fases A1/A2 do plano
-(Vitest + `app.inject()` + Testcontainers, TRD §9). Até lá, testes
-manuais em `testes/*.http` (REST Client do VS Code) e
-`testes/setup-usuarios-teste.sql` (8 usuários cobrindo cada combinação
-de papel). `testes/requests-fluxo-completo.http` encadeia as seis
-entidades ponta a ponta. `requests-acao-corretiva.http` está
-desatualizado (modelo antigo de dois portões) e sai na fase A0. Cada
-`.http` é apagado quando um teste automático cobre o mesmo fluxo.
+`npm test` (Vitest 5 + `app.inject()` + Testcontainers, TRD §9) —
+**precisa do Docker Desktop aberto**. Cada `npm test` sobe um Postgres
+17 descartável, aplica as migrations e o derruba no fim; o primeiro
+leva ~15 s.
+
+- Teste fica **ao lado do arquivo testado** (`x.ts` → `x.test.ts`).
+  Teste de API: um `describe` por rota (`describe("POST /auth/login")`).
+- Infraestrutura em `src/testes/`: `global-setup.ts` (container +
+  migrations + `provide("urlBanco")`), `setup-ambiente.ts`
+  (`DATABASE_URL` e `JWT_SECRET` de teste) e `limpar-banco.ts`
+  (**trava**: aborta se `current_database()` não for `test`; depois
+  `TRUNCATE` de todas as tabelas antes de **cada** teste). A ordem dos
+  `setupFiles` importa: o `prisma` só pode ser importado depois de a
+  URL ser trocada.
+- `fileParallelism: false`: todos os arquivos usam o mesmo banco.
+
+Testes manuais antigos em `testes/old/*.http` (REST Client do VS Code)
+e `testes/setup-usuarios-teste.sql` (7 usuários cobrindo cada
+combinação de papel — base das fábricas). Cada `.http` é apagado
+quando um teste automático cobre o mesmo fluxo.
 
 ## O que falta
 

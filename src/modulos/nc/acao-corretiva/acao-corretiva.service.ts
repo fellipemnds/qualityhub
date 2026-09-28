@@ -172,7 +172,7 @@ export const acaoCorretivaService = {
                 criadoPorId: ator.id,
             });
 
-            const prefixo = prefixoPorTipo["VERIFICACAO"];
+            const prefixo = prefixoPorTipo.VERIFICACAO;
             const anoAtual = new Date().getFullYear();
             const codigoVerificacao = await sequenciaService.proximoCodigo(tx, prefixo, anoAtual);
 
@@ -212,7 +212,7 @@ export const acaoCorretivaService = {
             });
 
             await auditoriaRepository.registrar(tx, {
-                entidade: EntidadeAuditada["VERIFICACAO"],
+                entidade: EntidadeAuditada.VERIFICACAO,
                 entidadeId: registroVerificacao.id,
                 acao: "GERAR_VERIFICACAO",
                 usuarioId: ator.id,

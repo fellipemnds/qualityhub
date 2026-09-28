@@ -9,6 +9,44 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Fase A1 — testes e infraestrutura de testes (branch `fase/a1-testes`)
+
+- **Vitest 5 + Testcontainers** (TRD §9): um Postgres 17 descartável
+  por execução, criado no `globalSetup`, com as migrations aplicadas
+  por `prisma migrate deploy`. A URL chega aos testes por
+  `provide`/`inject`, e os `setupFiles` trocam a `DATABASE_URL` **antes**
+  de o `prisma` ser importado (a ordem dos arquivos importa).
+- **Isolamento por `TRUNCATE`** de todas as tabelas antes de cada teste,
+  com **trava**: aborta se `current_database()` não for `test`, para
+  nunca apagar o banco de desenvolvimento. `fileParallelism: false`,
+  porque todos os arquivos usam o mesmo banco.
+- `allowScripts`: `protobufjs`, `ssh2` e `cpu-features` **negados** de
+  propósito — vêm do Testcontainers e não precisam rodar scripts de
+  instalação.
+- **Fábricas** em `src/testes/fabricas.ts`: `criarUsuario` e
+  `loginComo(perfil)`, com os **7** perfis de
+  `testes/setup-usuarios-teste.sql` (o número 8, citado antes nos
+  documentos, estava errado). O `loginComo` é o **único** helper de
+  autenticação: na A4 (cookie) só ele muda. Com o banco vazio não há
+  quem conceda papel, então o usuário concede a si mesmo
+  (`concedidoPorId` = o próprio id), como o admin do SQL.
+- A **matriz** do `catalogo` não ganhou teste unitário (repetiria o dado
+  no teste); o `temPapel` é testado na lógica, e a matriz é coberta
+  pela API na A2.
+- **CI** no GitHub Actions (`.github/workflows/ci.yml`): `npm ci` →
+  `prisma generate` → lint → typecheck → testes, em `push` na `main` e
+  em `pull_request` (não em `push` de qualquer branch: evita rodar duas
+  vezes, e o `pull_request` testa a branch **já mesclada** com a
+  `main`). Consequência: o PR de cada fase é aberto **cedo, em
+  rascunho**. O check `verificar` é obrigatório no ruleset "Proteger
+  main", sem exceções — vale também para o dono do repositório.
+- Log do Fastify em `warn` durante os testes (`NODE_ENV=test`, definido
+  pelo Vitest): some o log de cada requisição, mas o erro de um 500
+  continua aparecendo.
+- **Divisão de trabalho revista** (`CLAUDE.md`, plano §1): Matthew
+  escreve o que ensina conceito novo; Claude faz o resto, anunciando
+  cada item e esperando confirmação.
+
 ### Fase A0 — preparação (branch `fase/a0-preparacao`)
 
 - **Biome 2.5.14** adotado como formatador e linter (TRD §9.5), com
