@@ -4,7 +4,7 @@ import { PrismaClient } from "../../generated/prisma/client.js";
 
 // Arquivo cliente.ts: Cria e exporta a instância conectada do Prisma.
 
-const connectionString = process.env["DATABASE_URL"];
+const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
     throw new Error("DATABASE_URL não está definida no .env");
