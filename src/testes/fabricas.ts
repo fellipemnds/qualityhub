@@ -12,7 +12,8 @@ export async function criarUsuario({
     email?: string;
     senha?: string | null;
 } = {}) {
-    const senhaHash = senha === null ? null : await bcrypt.hash(senha, 10);
+    // 4 para diminuir o custo dos testes. Produção é 10
+    const senhaHash = senha === null ? null : await bcrypt.hash(senha, 4);
     const usuario = await prisma.usuario.create({
         data: {
             nome,
