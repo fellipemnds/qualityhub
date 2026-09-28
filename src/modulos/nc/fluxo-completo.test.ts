@@ -107,6 +107,60 @@ async function fecharNC() {
     return { editor, gerente, aprovador, qa, nc, investigacao };
 }
 
+type Cenario = Awaited<ReturnType<typeof fecharNC>>;
+type Resultado = "EFICAZ" | "PARCIALMENTE_EFICAZ" | "NAO_EFICAZ";
+
+// Seções 7 e 8 do .http: ação corretiva criada → plano aprovado → execução finalizada. Devolve a ação e a
+// verificação que nasceu dela.
+async function executarAcao({ editor, gerente, aprovador, nc, investigacao }: Cenario) {
+    // Ação corretiva: rascunho → publicação → aprovador designado
+    const acao = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, {
+        investigacaoId: investigacao.id,
+    });
+    await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/publicar`, 200);
+    await chamar(gerente, "PUT", `/registros/${acao.id}/aprovador`, 200, { usuarioId: aprovador.usuario.id });
+
+    // Portão PLANO: aprovar o plano devolve a ação a ABERTO — autoriza a execução, não fecha
+    await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
+        descricao: "Atualizar o procedimento de manutenção para especificar o material correto de vedação.",
+        prazo: daquiA(15),
+        instrucoesVerificacao: "Após 30 dias de uso, inspecionar a vedação e confirmar ausência de vazamento.",
+    });
+    await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/submeter`, 200);
+    expect(
+        await chamar(aprovador, "POST", `/acoes-corretivas/${acao.id}/decidir`, 200, { decisao: "APROVADO" }),
+    ).toMatchObject({ estado: "ABERTO" });
+
+    // Execução: registrada e finalizada sem aprovação → a ação fecha e a verificação nasce já ABERTA
+    await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
+        executadoEm: daquiA(-1),
+        evidencia: "Procedimento PO-07 revisado e publicado na intranet, versão 3.0, com o material correto.",
+    });
+    const acaoFinalizada = await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/finalizar-execucao`, 200, {
+        diasParaVerificar: 30,
+    });
+    expect(acaoFinalizada).toMatchObject({
+        estado: "FECHADO",
+        verificacaoGerada: { tipo: "VERIFICACAO", estado: "ABERTO", prazo: expect.any(String) },
+    });
+
+    return { acao, verificacao: acaoFinalizada.verificacaoGerada };
+}
+
+// Conclui a verificação com o resultado pedido. Concluir exige ser colaborador, e o aprovador nasce atribuído
+// só como APROVADOR.
+async function concluirVerificacao({ gerente, aprovador }: Cenario, verificacaoId: string, resultado: Resultado) {
+    await chamar(gerente, "POST", `/registros/${verificacaoId}/colaboradores`, 200, {
+        colaboradores: [aprovador.usuario.id],
+    });
+    await chamar(aprovador, "PATCH", `/verificacoes/${verificacaoId}`, 200, {
+        resultado,
+        conclusao: "Verificação feita na linha 2 depois do prazo, conforme as instruções do plano.",
+        verificadoEm: daquiA(0),
+    });
+    await chamar(aprovador, "POST", `/verificacoes/${verificacaoId}/concluir`, 200);
+}
+
 describe("Fluxo completo da NC", () => {
     it("fecha a NC depois de contenção, classificação e investigação aprovadas", async () => {
         // Prepara e chama
@@ -118,51 +172,12 @@ describe("Fluxo completo da NC", () => {
 
     it("depois do fechamento, executa a ação corretiva e conclui a verificação como EFICAZ", async () => {
         // Prepara
-        const { editor, gerente, aprovador, nc, investigacao } = await fecharNC();
+        const cenario = await fecharNC();
+        const { editor } = cenario;
 
         // Chama
-        // 6. Ação corretiva: rascunho → publicação → aprovador designado
-        const acao = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, {
-            investigacaoId: investigacao.id,
-        });
-        await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/publicar`, 200);
-        await chamar(gerente, "PUT", `/registros/${acao.id}/aprovador`, 200, { usuarioId: aprovador.usuario.id });
-
-        // 7. Portão PLANO: aprovar o plano devolve a ação a ABERTO — autoriza a execução, não fecha
-        await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
-            descricao: "Atualizar o procedimento de manutenção para especificar o material correto de vedação.",
-            prazo: daquiA(15),
-            instrucoesVerificacao: "Após 30 dias de uso, inspecionar a vedação e confirmar ausência de vazamento.",
-        });
-        await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/submeter`, 200);
-        expect(
-            await chamar(aprovador, "POST", `/acoes-corretivas/${acao.id}/decidir`, 200, { decisao: "APROVADO" }),
-        ).toMatchObject({ estado: "ABERTO" });
-
-        // 8. Execução: registrada e finalizada sem aprovação → a ação fecha e a verificação nasce já ABERTA
-        await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
-            executadoEm: daquiA(-1),
-            evidencia: "Procedimento PO-07 revisado e publicado na intranet, versão 3.0, com o material correto.",
-        });
-        const acaoFinalizada = await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/finalizar-execucao`, 200, {
-            diasParaVerificar: 30,
-        });
-        expect(acaoFinalizada).toMatchObject({
-            estado: "FECHADO",
-            verificacaoGerada: { tipo: "VERIFICACAO", estado: "ABERTO", prazo: expect.any(String) },
-        });
-        const verificacao = acaoFinalizada.verificacaoGerada;
-
-        // 9. Verificação: concluir exige ser colaborador (o aprovador nasce atribuído só como APROVADOR)
-        await chamar(gerente, "POST", `/registros/${verificacao.id}/colaboradores`, 200, {
-            colaboradores: [aprovador.usuario.id],
-        });
-        await chamar(aprovador, "PATCH", `/verificacoes/${verificacao.id}`, 200, {
-            resultado: "EFICAZ",
-            conclusao: "Após 30 dias de uso, nenhum vazamento na linha 2. O material correto resolveu o problema.",
-            verificadoEm: daquiA(0),
-        });
-        await chamar(aprovador, "POST", `/verificacoes/${verificacao.id}/concluir`, 200);
+        const { acao, verificacao } = await executarAcao(cenario);
+        await concluirVerificacao(cenario, verificacao.id, "EFICAZ");
 
         // Confere
         expect(await chamar(editor, "GET", `/verificacoes/${verificacao.id}`, 200)).toMatchObject({
@@ -170,5 +185,47 @@ describe("Fluxo completo da NC", () => {
             resultado: "EFICAZ",
         });
         expect(await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200)).toMatchObject({ estado: "FECHADO" });
+    });
+
+    it("PARCIALMENTE_EFICAZ cria sozinha uma nova ação corretiva em rascunho, na mesma investigação", async () => {
+        // Prepara
+        const cenario = await fecharNC();
+        const { editor, nc, investigacao } = cenario;
+        const { acao, verificacao } = await executarAcao(cenario);
+
+        // Chama
+        await concluirVerificacao(cenario, verificacao.id, "PARCIALMENTE_EFICAZ");
+
+        // Confere (sem autor nem colaboradores da ação nova: bugs B3 e B6, da A3)
+        const rascunhos = await chamar(
+            editor,
+            "GET",
+            `/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`,
+            200,
+        );
+        expect(rascunhos).toEqual([
+            expect.objectContaining({
+                tipo: "ACAO_CORRETIVA",
+                naoConformidadeId: nc.id,
+                investigacaoId: investigacao.id,
+            }),
+        ]);
+        expect(rascunhos[0].id).not.toBe(acao.id);
+    });
+
+    it("NAO_EFICAZ reabre a investigação e a NC, que estavam fechadas", async () => {
+        // Prepara
+        const cenario = await fecharNC();
+        const { editor, nc, investigacao } = cenario;
+        const { verificacao } = await executarAcao(cenario);
+
+        // Chama
+        await concluirVerificacao(cenario, verificacao.id, "NAO_EFICAZ");
+
+        // Confere (só o caso com as duas fechadas: com alguma aberta é o bug B4, da A3)
+        expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
+            estado: "ABERTO",
+        });
+        expect(await chamar(editor, "GET", `/nc/${nc.id}`, 200)).toMatchObject({ estado: "ABERTO" });
     });
 });
