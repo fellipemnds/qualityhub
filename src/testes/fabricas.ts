@@ -64,5 +64,8 @@ export async function loginComo(perfil: Perfil) {
         throw new Error(`loginComo("${perfil}") falhou: ${resposta.statusCode} ${resposta.body}`);
     }
 
-    return { usuario, token: resposta.json<{ token: string }>().token };
+    const { token } = resposta.json<{ token: string }>();
+
+    // O cabeçalho pronto: o formato mora só aqui (na A4 vira cookie)
+    return { usuario, token, autenticacao: { authorization: `Bearer ${token}` } };
 }

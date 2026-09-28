@@ -5,14 +5,14 @@ import { loginComo } from "../../../testes/fabricas.js";
 describe("POST /nc", () => {
     it("cria um rascunho de nc em nome do editor", async () => {
         // Prepara
-        const { token, usuario } = await loginComo("editor");
+        const { autenticacao, usuario } = await loginComo("editor");
         const titulo = "NC de testes";
 
         // Chama
         const resultado = await app.inject({
             method: "POST",
             url: "/nc",
-            headers: { authorization: `Bearer ${token}` },
+            headers: autenticacao,
             body: { titulo },
         });
 
