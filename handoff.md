@@ -5,7 +5,7 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-09-28, fim da tarde.
+**Última atualização:** 2026-09-29.
 
 ## 1. Objetivo
 
@@ -17,44 +17,56 @@ correção de regra. Os bugs (B1–B14) ficam para a A3.
 
 - **A1 concluída e mesclada** (PR #2).
 - Branch **`fase/a2-rede-protecao`**, PR **#3 em rascunho**
-  (https://github.com/fellipemnds/qualityhub/pull/3). CI verde até o
-  `c63febf`.
-- **Item "fluxo completo" da A2 feito** (44 testes verdes):
-  - `src/modulos/nc/fluxo-completo.test.ts`: caminho feliz de ponta a
-    ponta, seções 1 a 10 do `.http` (fechamento da NC, ação corretiva,
-    verificação EFICAZ, PARCIALMENTE_EFICAZ, NAO_EFICAZ).
-  - Testes curtos ao lado de cada rota (`*.routes.test.ts` e
-    `src/middlewares/autenticar.test.ts`): validação (400), guardas de
-    conteúdo, 404 e 401.
-  - `src/testes/cenarios.ts`: `chamar`, `daquiA` e a escada de cenários
-    `ncPublicada` → `ncProntaParaFechar` → `fecharNC` → `aprovarPlano`
-    → `executarAcao` (+ `concluirVerificacao`). Tudo pela API.
-  - Os 19 modos de falha restantes do `.http` (permissão, estado,
-    atribuição) ficaram reservados para os itens próprios da A2. O
-    `requests-fluxo-completo.http` **só sai** depois deles.
-- **Bug novo B14** achado pelos testes e registrado
-  (`docs/esquema-backend.md` §7; A3 ordem 3): `z.coerce.date()` aceita
-  data obrigatória vazia (`null` → 01/01/1970). Os testes conferem só o
-  resto, com comentário apontando o B14.
-- `bcrypt` com custo 4 nas fábricas (só nos testes): suíte de ~63 s
-  para ~44 s.
-- O que Matthew aprendeu hoje (além da A1): teste de cenário × teste
-  curto; a função de cenário fora do `it` (os `expect` vão junto); o
-  custo do bcrypt e "teste nunca rebaixa a segurança de produção";
-  `expect.objectContaining` dentro de lista.
+  (https://github.com/fellipemnds/qualityhub/pull/3).
+- **Três itens da A2 feitos** (88 testes verdes, suíte ~126 s):
+  - **Fluxo completo** (sessão de 28/09): `src/modulos/nc/fluxo-completo.test.ts`,
+    testes curtos ao lado das rotas e a escada de cenários em
+    `src/testes/cenarios.ts`.
+  - **Máquina de estados**: `src/compartilhado/registro/maquina-estados.<tipo>.test.ts`,
+    um por tipo. Matthew escreveu a Contenção; Claude repetiu nos outros
+    5. Cada tipo tem um `levarXAte(estado)` em `src/testes/levar-ate/`
+    (sobe a escada pela API, conferindo o estado em cada degrau), um
+    dicionário de ações, a tabela de proibidas por estado e um
+    `it.each`. Espera **409**.
+  - **Permissões**: `src/compartilhado/permissoes/permissoes.<tipo>.test.ts`,
+    o espelho da máquina de estados — estado certo, pessoa errada,
+    espera **403**. Cobre papel, atribuição, "tem o papel mas não é o
+    aprovador designado", RN-20 e o gerente cancelando sem ser designado.
+    `perfisDeFora()` (em `cenarios.ts`) cria admin, visualizador e sem
+    papel.
+  - **Casos de fora, comentados nas tabelas:** cancelar rascunho (B12),
+    finalizar a ação corretiva sem plano aprovado (B1), `DELETE
+    /verificacoes/:id` (B8), submeter NC em rascunho (a guarda RN-21 roda
+    antes da de estado) e o `qa` publicando classificação (pendência do
+    `podeExecutar`, abaixo).
+  - **Prova de quebra** feita nas duas famílias: com uma ação permitida
+    posta na tabela, todos os arquivos falharam.
+- `testTimeout: 15_000` no `vitest.config.ts` (o padrão de 5 s estourava
+  com a máquina ocupada — ver §5).
+- O que Matthew aprendeu hoje: retorno antecipado (`levarAte` para no
+  andar pedido); estado **pedido** (o `if`) × estado **atual** (o
+  `expect`); `toMatchObject` confere só os campos listados; transição ×
+  edição (o `submeter` age sobre o que o `PATCH` gravou); enum é lista
+  fechada; `it.each` com `Object.values` do enum e com objetos (`$campo`
+  no título); `Awaited<ReturnType<typeof f>>`; dicionário de funções e
+  acesso com colchetes (`acoes[acao](contexto)`); `keyof typeof`;
+  `for...of` com `await` (não `forEach`); `it.each` + `for` =
+  repetição encadeada; os códigos 400/403/404/409; teste que nunca falhou
+  pode não testar nada.
 
 ## 3. Arquivos no meio de uma mudança
 
-Nenhum. O `src/compartilhado/registro/maquina-estados.test.ts` do
-próximo passo **ainda não foi criado**.
+Nenhum.
 
 ## 4. O que foi alterado nesta sessão
 
-`git log 52f9965..fase/a2-rede-protecao` (A1 inteira + A2 até aqui).
-Decisões da A1: `docs/changelog-arquitetura.md`, seção "Fase A1". As
-da A2 entram lá quando a fase fechar.
+`git log a8cb004..fase/a2-rede-protecao`. As decisões da A2 entram no
+`docs/changelog-arquitetura.md` quando a fase fechar — anotar lá: um
+arquivo por tipo; `levarXAte` em `src/testes/levar-ate/`; o limite de
+15 s.
 
-**Push pendente:** `25b6071` (bcrypt) ainda não está no GitHub.
+**Push pendente:** `90bd21f`, `260d363`, `8f7a718` e o commit deste
+handoff.
 
 ## 5. Falhas (e o porquê)
 
@@ -64,37 +76,38 @@ da A2 entram lá quando a fase fechar.
 | Aviso "Update available 7.10.0 → 8.0.0-rc" do Prisma | É release candidate e versão major | **Não atualizar** |
 | Aviso no CI: `ubuntu-latest` vira Ubuntu 26 em 19/10/2026 | Migração do GitHub | Nada a fazer; se o CI quebrar depois dessa data, começar por aqui |
 | Guardas do plano e da execução não recusam `prazo`/`executadoEm` vazios | Bug B14 | Registrado; conserto na A3 |
+| Falha intermitente na verificação FECHADO (6,4 s) | Limite padrão do Vitest (5 s) com a máquina ocupada; o teste leva ~2,7 s livre | **Resolvido** com `testTimeout: 15_000`. Reproduzido com `--testTimeout=2000` |
+| `npx biome` rodou um pacote errado (`biome@0.3.3`) pelo Node do Windows | O shell do Claude não carrega o nvm, e o pacote certo é `@biomejs/biome` | Inofensivo (lido e apagado). Claude: `source ~/.nvm/nvm.sh` antes de npm/npx, e `npx --no-install` |
 
 **Pendências anotadas:**
 - Na D1: excluir `**/*.test.ts` e `src/testes/` do build.
-- Suíte: ~27 s dos ~44 s são custo fixo (container + migrations +
-  import por arquivo). Cortar (container reaproveitado, sem isolamento)
-  só se incomodar — cada corte traz risco.
+- **Suíte em ~126 s** (era ~44 s no início da A2). Quase tudo vem dos
+  cenários longos (`ncProntaParaFechar`, ~20 requisições). Medir antes
+  de otimizar. Opções conversadas: um banco por worker (maior ganho no
+  total, é mudança de infraestrutura) — **não** montar cenário direto no
+  banco (fica fora da realidade da API).
 - Atualizar a lista de progresso na descrição do PR #3 depois do push.
+- **Rever o `podeExecutar`** (`compartilhado/permissoes/pode-executar.ts`).
+  Foi pensado para generalizar, mas só é usado em 3 lugares (publicar,
+  excluir e submeter no `ciclo-vida.service.ts`) — todas as outras ações
+  checam à mão, com `temPapel` e a atribuição de cada uma, então a
+  generalização não se paga. Achado nos testes de permissão da A2: ele
+  aceita **colaborador ou aprovador designado**, e o PRD §8 exige
+  **colaborador** para publicar, submeter e excluir — um aprovador
+  designado com papel EDITOR (ex.: o `qa`) consegue fazer isso sem estar
+  no item. Esse caso ficou fora dos testes (comentário na tabela de
+  `permissoes.classificacao.test.ts`). Decidir com a analista se vira bug
+  (B15) antes de mexer.
 
 ## 6. Próximo passo
 
-1. `git push` (o `25b6071`).
-2. **Item "máquina de estados" da A2**, anunciado e aceito, com a
-   divisão: **Matthew escreve a Contenção** (o primeiro tipo, com o
-   conceito novo); **Claude repete o padrão** nos outros 5 tipos.
-   - **Etapa A (Matthew, onde paramos):** em
-     `src/compartilhado/registro/maquina-estados.test.ts`, a função
-     `levarAte(estado)` para a Contenção — sobe a escada RASCUNHO →
-     ABERTO → EM_APROVACAO → FECHADO (CANCELADO sai do ABERTO), parando
-     no estado pedido e conferindo o estado a cada degrau. Parte do
-     `ncPublicada()`; o que preencher antes de submeter está no
-     `ncProntaParaFechar`; cancelar exige `motivo` (quem pode: ver o
-     `catalogo.ts`). Tipo do parâmetro: o `EstadoRegistro` de
-     `compartilhado/entidades/`.
-   - **Etapa B (depois da revisão da A):** `it.each` com **objetos** —
-     uma linha por estado, com a lista de ações proibidas ali (409).
-     Tabela das ações × estados: a mensagem do anúncio (editar em
-     RASCUNHO/ABERTO; excluir e publicar só em RASCUNHO; submeter em
-     ABERTO; decidir — aprovar e **reprovar**, que exige motivo — em
-     EM_APROVACAO; cancelar em ABERTO/EM_APROVACAO).
-   - **De fora, pelos bugs:** cancelar rascunho (B12), `DELETE
-     /verificacoes/:id` (B8), e o que a ação corretiva permite em
-     ABERTO depois do plano aprovado (B1, B2).
-3. Depois: Permissões → concorrência (**Matthew**, com explicação de
-   condição de corrida antes) → Atribuições → aposentar os `.http`.
+1. `git push` (os commits da §4).
+2. **Item "concorrência" da A2 — Matthew escreve**, com orientação
+   (plano: "o teste mais interessante do projeto"). Várias publicações
+   simultâneas, nenhum código repetido nem pulado. **Antes de começar,
+   Claude explica condição de corrida** (o que é, por que o código
+   sequencial está sujeito a ela, como um teste provoca uma de propósito).
+3. Depois (Claude, anunciando antes): **Atribuições** (um aprovador por
+   item, sem duplicata, RN-12, RN-18) → **aposentar os `.http`** (o
+   `requests-fluxo-completo.http` sai quando os 19 modos de falha
+   estiverem cobertos — conferir quais ainda faltam).
