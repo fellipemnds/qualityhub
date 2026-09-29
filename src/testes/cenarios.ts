@@ -52,6 +52,15 @@ export async function ncPublicada() {
 
 export type Cenario = Awaited<ReturnType<typeof ncPublicada>>;
 
+// Os perfis que não participam de item nenhum: sem papel de negócio (admin), só leitura (visualizador) e sem papel
+export async function perfisDeFora() {
+    const admin = await loginComo("admin");
+    const visualizador = await loginComo("visualizador");
+    const semPapel = await loginComo("semPapel");
+
+    return { admin, visualizador, semPapel };
+}
+
 // A NC com contenção, classificação e investigação FECHADAS (guarda RN-21 satisfeita), mas ainda sem os campos
 // de fechamento
 export async function ncProntaParaFechar() {
