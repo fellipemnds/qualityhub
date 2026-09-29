@@ -1,58 +1,8 @@
-import { describe, expect, it } from "vitest";
-import { chamar, ncPublicada } from "../../testes/cenarios.js";
-import type { EstadoRegistro } from "../entidades/estados.js";
+import { describe, it } from "vitest";
+import { chamar } from "../../testes/cenarios.js";
+import { type EstadoAlcancavel, levarClassificacaoAte } from "../../testes/levar-ate/classificacao.js";
 
-// A Classificação não tem rota de cancelar: CANCELADO não é alcançável
-type EstadoAlcancavel = Exclude<EstadoRegistro, "CANCELADO">;
-
-// RN-20: quem cria, edita, publica e submete é o aprovador (ação CLASSIFICAR). Quem decide é o aprovador
-// designado — o QA, não quem criou.
-async function levarAte(estado: EstadoAlcancavel) {
-    const cenario = await ncPublicada();
-    const { aprovador, gerente, qa, nc } = cenario;
-
-    // Degrau 1: Rascunho
-    const classificacao = await chamar(aprovador, "POST", `/nc/${nc.id}/classificacoes`, 201, {
-        valor: "MAIOR",
-        justificativa: "Vazamento afeta a segurança operacional e a qualidade do produto entregue ao cliente.",
-    });
-
-    await chamar(gerente, "PUT", `/registros/${classificacao.id}/aprovador`, 200, { usuarioId: qa.usuario.id });
-
-    expect(await chamar(aprovador, "GET", `/classificacoes/${classificacao.id}`, 200)).toMatchObject({
-        estado: "RASCUNHO",
-    });
-    if (estado === "RASCUNHO") return { ...cenario, classificacao };
-
-    // Degrau 2: Aberto
-    await chamar(aprovador, "POST", `/classificacoes/${classificacao.id}/publicar`, 200);
-
-    expect(await chamar(aprovador, "GET", `/classificacoes/${classificacao.id}`, 200)).toMatchObject({
-        estado: "ABERTO",
-    });
-
-    if (estado === "ABERTO") return { ...cenario, classificacao };
-
-    // Degrau 3: Em Aprovação
-    await chamar(aprovador, "POST", `/classificacoes/${classificacao.id}/submeter`, 200);
-
-    expect(await chamar(aprovador, "GET", `/classificacoes/${classificacao.id}`, 200)).toMatchObject({
-        estado: "EM_APROVACAO",
-    });
-
-    if (estado === "EM_APROVACAO") return { ...cenario, classificacao };
-
-    // Degrau 4: Fechado
-    await chamar(qa, "POST", `/classificacoes/${classificacao.id}/decidir`, 200, { decisao: "APROVADO" });
-
-    expect(await chamar(aprovador, "GET", `/classificacoes/${classificacao.id}`, 200)).toMatchObject({
-        estado: "FECHADO",
-    });
-
-    return { ...cenario, classificacao };
-}
-
-type Contexto = Awaited<ReturnType<typeof levarAte>>;
+type Contexto = Awaited<ReturnType<typeof levarClassificacaoAte>>;
 
 const acoes = {
     editar: ({ aprovador, classificacao }: Contexto) =>
@@ -87,7 +37,7 @@ const tabela: { estado: EstadoAlcancavel; proibidas: NomeAcao[] }[] = [
 
 describe("Máquina de estados: Classificação", () => {
     it.each(tabela)("$estado recusa as ações proibidas", async ({ estado, proibidas }) => {
-        const contexto = await levarAte(estado);
+        const contexto = await levarClassificacaoAte(estado);
         for (const acao of proibidas) {
             await acoes[acao](contexto);
         }

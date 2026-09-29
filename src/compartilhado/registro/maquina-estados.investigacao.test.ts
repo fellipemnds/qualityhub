@@ -1,71 +1,9 @@
-import { describe, expect, it } from "vitest";
-import { chamar, ncPublicada } from "../../testes/cenarios.js";
+import { describe, it } from "vitest";
+import { chamar } from "../../testes/cenarios.js";
+import { levarInvestigacaoAte } from "../../testes/levar-ate/investigacao.js";
 import type { EstadoRegistro } from "../entidades/estados.js";
 
-async function levarAte(estado: EstadoRegistro) {
-    const cenario = await ncPublicada();
-    const { editor, aprovador, gerente, nc } = cenario;
-
-    // Degrau 1: Rascunho
-    const investigacao = await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
-        realProblema: "Vedação da bomba hidráulica com desgaste prematuro, causando vazamento contínuo de óleo.",
-    });
-
-    await chamar(gerente, "PUT", `/registros/${investigacao.id}/aprovador`, 200, { usuarioId: aprovador.usuario.id });
-
-    expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
-        estado: "RASCUNHO",
-    });
-    if (estado === "RASCUNHO") return { ...cenario, investigacao };
-
-    // Degrau 2: Aberto
-    await chamar(editor, "POST", `/investigacoes/${investigacao.id}/publicar`, 200);
-
-    expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
-        estado: "ABERTO",
-    });
-
-    if (estado === "ABERTO") return { ...cenario, investigacao };
-
-    if (estado === "CANCELADO") {
-        await chamar(aprovador, "POST", `/investigacoes/${investigacao.id}/cancelar`, 200, {
-            motivo: "Teste de cancelamento.",
-        });
-
-        expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
-            estado: "CANCELADO",
-        });
-
-        return { ...cenario, investigacao };
-    }
-
-    // Degrau 3: Em Aprovação — o submeter exige método, conteúdo e as duas causas
-    await chamar(editor, "PATCH", `/investigacoes/${investigacao.id}`, 200, {
-        metodo: "A3_SPS",
-        conteudo: { percepcaoInicial: "Vazamento constante na linha 2" },
-        causaDireta: "Vedação de material incompatível com o fluido hidráulico utilizado na máquina.",
-        causaRaiz: "Procedimento de manutenção não especifica o material correto de vedação para esta bomba.",
-    });
-
-    await chamar(editor, "POST", `/investigacoes/${investigacao.id}/submeter`, 200);
-
-    expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
-        estado: "EM_APROVACAO",
-    });
-
-    if (estado === "EM_APROVACAO") return { ...cenario, investigacao };
-
-    // Degrau 4: Fechado
-    await chamar(aprovador, "POST", `/investigacoes/${investigacao.id}/decidir`, 200, { decisao: "APROVADO" });
-
-    expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
-        estado: "FECHADO",
-    });
-
-    return { ...cenario, investigacao };
-}
-
-type Contexto = Awaited<ReturnType<typeof levarAte>>;
+type Contexto = Awaited<ReturnType<typeof levarInvestigacaoAte>>;
 
 const acoes = {
     editar: ({ editor, investigacao }: Contexto) =>
@@ -107,7 +45,7 @@ const tabela: { estado: EstadoRegistro; proibidas: NomeAcao[] }[] = [
 
 describe("Máquina de estados: Investigação", () => {
     it.each(tabela)("$estado recusa as ações proibidas", async ({ estado, proibidas }) => {
-        const contexto = await levarAte(estado);
+        const contexto = await levarInvestigacaoAte(estado);
         for (const acao of proibidas) {
             await acoes[acao](contexto);
         }
