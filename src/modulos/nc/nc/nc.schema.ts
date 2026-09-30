@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { hojeEmSaoPaulo } from "../../../compartilhado/datas/hoje-em-sao-paulo.js";
 import { ClassificacaoNC } from "../../../compartilhado/entidades/classificacao-nc.js";
 import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { OrigemNC } from "../../../compartilhado/entidades/origem-nc.js";
@@ -10,7 +11,14 @@ export const ncBaseSchema = z.object({
     requisitoViolado: z.string().min(1),
     processoAfetado: z.string().min(1),
     setorId: z.coerce.number().int().positive(),
-    detectadoEm: z.coerce.date().refine((data) => data <= new Date(), "Data de detecção não pode ser no futuro"),
+    // Compara dias, não instantes (TRD §6, B11): o dia guardado é lido em UTC (meia-noite UTC do dia), e o "hoje" é o de
+    // São Paulo. Os dois no formato "AAAA-MM-DD", que ordena como texto
+    detectadoEm: z.coerce
+        .date()
+        .refine(
+            (data) => data.toISOString().slice(0, 10) <= hojeEmSaoPaulo(),
+            "Data de detecção não pode ser no futuro",
+        ),
     origem: z.enum(OrigemNC),
     cliente: z.string().nullish(),
     riscosRevisados: z.string().min(1).nullish(),

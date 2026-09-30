@@ -3,6 +3,7 @@ import { atribuicaoRepository } from "../atribuicao/atribuicao.repository.js";
 import { auditoriaRepository } from "../auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../auditoria/entidades-auditadas.js";
 import { cancelamentoRepository } from "../cancelamento/cancelamento.repository.js";
+import { hojeEmSaoPaulo } from "../datas/hoje-em-sao-paulo.js";
 import type { Acao } from "../entidades/acoes.js";
 import type { Ator } from "../entidades/ator.js";
 import type { Decisao } from "../entidades/decisao.js";
@@ -59,7 +60,7 @@ export const cicloVidaService = {
         validador(dados);
 
         const prefixo = prefixoPorTipo[registro.tipo];
-        const anoAtual = new Date().getFullYear();
+        const anoAtual = Number(hojeEmSaoPaulo().slice(0, 4));
 
         const codigo = await sequenciaService.proximoCodigo(tx, prefixo, anoAtual);
 

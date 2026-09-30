@@ -1,6 +1,7 @@
 import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
+import { hojeEmSaoPaulo } from "../../../compartilhado/datas/hoje-em-sao-paulo.js";
 import type { Ator } from "../../../compartilhado/entidades/ator.js";
 import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js";
@@ -165,7 +166,11 @@ export const acaoCorretivaService = {
 
             const registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "FECHADO" });
 
-            const prazoVerificacao = new Date(Date.now() + diasParaVerificar * 24 * 60 * 60 * 1000);
+            // Um "hoje" só, para o prazo e o ano do código nunca discordarem. O prazo é um dia de calendário:
+            // meia-noite UTC do dia (TRD §6, B11)
+            const hoje = hojeEmSaoPaulo();
+            const prazoVerificacao = new Date(`${hoje}T00:00:00Z`);
+            prazoVerificacao.setUTCDate(prazoVerificacao.getUTCDate() + diasParaVerificar);
 
             const registroVerificacao = await cicloVidaService.criarRascunho(tx, {
                 tipo: "VERIFICACAO",
@@ -173,7 +178,7 @@ export const acaoCorretivaService = {
             });
 
             const prefixo = prefixoPorTipo.VERIFICACAO;
-            const anoAtual = new Date().getFullYear();
+            const anoAtual = Number(hoje.slice(0, 4));
             const codigoVerificacao = await sequenciaService.proximoCodigo(tx, prefixo, anoAtual);
 
             const verificacaoRegistroAtualizado = await registroRepository.atualizar(tx, registroVerificacao.id, {

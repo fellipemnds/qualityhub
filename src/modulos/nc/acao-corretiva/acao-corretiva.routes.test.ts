@@ -1,8 +1,19 @@
-import { describe, expect, it } from "vitest";
-import { aprovarPlano, chamar, daquiA, ncProntaParaFechar, ncPublicada } from "../../../testes/cenarios.js";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+    aprovarPlano,
+    chamar,
+    daquiA,
+    executarAcao,
+    ncProntaParaFechar,
+    ncPublicada,
+} from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
+
+afterEach(() => {
+    vi.useRealTimers();
+});
 
 describe("POST /nc/:naoConformidadeId/acoes-corretivas", () => {
     it("responde 404 quando a NC não existe", async () => {
@@ -40,6 +51,19 @@ describe("POST /acoes-corretivas/:id/submeter", () => {
 });
 
 describe("POST /acoes-corretivas/:id/finalizar-execucao", () => {
+    it("a verificação gerada usa o dia de São Paulo: código do ano e prazo (B11)", async () => {
+        // Prepara: 31/12 às 23h em Brasília, que já é 01/01 em UTC
+        vi.useFakeTimers({ toFake: ["Date"] });
+        vi.setSystemTime("2026-12-31T23:00:00-03:00");
+        const cenario = await ncProntaParaFechar();
+
+        // Chama (o executarAcao finaliza com 30 dias para verificar)
+        const { verificacao } = await executarAcao(cenario);
+
+        // Confere: 31/12/2026 + 30 dias = 30/01/2027, guardado como meia-noite UTC do dia
+        expect(verificacao).toMatchObject({ codigo: "VE-2026-0001", prazo: "2027-01-30T00:00:00.000Z" });
+    });
+
     it("recusa sem a execução registrada (RN-25)", async () => {
         // Prepara
         const cenario = await ncProntaParaFechar();

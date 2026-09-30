@@ -62,6 +62,25 @@ describe("POST /nc", () => {
         });
     });
 
+    it("recusa detecção amanhã em São Paulo, mesmo quando em UTC já é amanhã (B11)", async () => {
+        // Prepara: 30/09 às 22h em Brasília, que já é 01/10 em UTC
+        vi.useFakeTimers({ toFake: ["Date"] });
+        vi.setSystemTime("2026-09-30T22:00:00-03:00");
+        const editor = await loginComo("editor");
+
+        // Chama
+        const resposta = await chamar(editor, "POST", "/nc", 400, {
+            titulo: "NC de testes",
+            detectadoEm: "2026-10-01",
+        });
+
+        // Confere
+        expect(resposta).toMatchObject({
+            mensagem: "Dados inválidos",
+            error: expect.arrayContaining([expect.objectContaining({ instancePath: "/detectadoEm" })]),
+        });
+    });
+
     it("cria uma nc depois do servidor ativado há muito tempo (B9)", async () => {
         // Prepara
         vi.useFakeTimers({ toFake: ["Date"] });
@@ -160,6 +179,19 @@ describe("POST /nc/:id/publicar", () => {
         const editor = await loginComo("editor");
 
         await chamar(editor, "POST", `/nc/${ID_INEXISTENTE}/publicar`, 404);
+    });
+
+    it("o código usa o ano de São Paulo, não o do servidor (B11)", async () => {
+        // Prepara: 31/12 às 23h em Brasília, que já é 01/01 em UTC
+        vi.useFakeTimers({ toFake: ["Date"] });
+        vi.setSystemTime("2026-12-31T23:00:00-03:00");
+        const { editor, nc } = await ncPublicada();
+
+        // Chama
+        const publicada = await chamar(editor, "GET", `/nc/${nc.id}`, 200);
+
+        // Confere
+        expect(publicada.codigo).toBe("NC-2026-0001");
     });
 });
 

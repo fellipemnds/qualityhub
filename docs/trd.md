@@ -258,6 +258,15 @@ backend.
   Campos que são **datas de calendário** (`prazo`, `detectadoEm`,
   `executadaEm`, `executadoEm`, `verificadoEm`) são comparados pelo
   **dia**, não pelo instante. Correção: B11 do Esquema Backend.
+
+  **Convenção** (A3, B11): o dia de calendário é guardado como
+  **meia-noite UTC** daquele dia e lido **em UTC**
+  (`toISOString().slice(0, 10)`); o **"hoje"** vem sempre de
+  `hojeEmSaoPaulo()` (`compartilhado/datas/`), no formato `AAAA-MM-DD`,
+  que ordena como texto. Os testes rodam com `TZ=UTC`, como o servidor.
+  Em aberto para o B14: aceitar só `"AAAA-MM-DD"` nesses campos e usar
+  `@db.Date` no banco. Com o Node 26 (Temporal), o corpo da função vira
+  `Temporal.Now.plainDateISO("America/Sao_Paulo")`.
 - **Migrations:** sempre versionadas; em produção, só `prisma migrate
   deploy`.
 
@@ -622,3 +631,4 @@ backend — só a fase de deploy.
 |---|---|
 | 2026-09-24 | v1 — consolidação + ADR-33 a ADR-38; T1–T4 |
 | 2026-09-24 | v1.1 — revisão cruzada: regra de fuso para cálculos de dia, usuário inativo no login, convite novo invalida anteriores, `prisma generate` no CI, Docker no WSL como pré-requisito |
+| 2026-09-30 | v1.2 — convenção de dia de calendário (meia-noite UTC, lido em UTC; "hoje" pelo `hojeEmSaoPaulo()`), testes em `TZ=UTC` (§6, B11) |
