@@ -37,11 +37,11 @@ para os outros documentos em vez de repetir o que já está neles.
 Ainda pendente fora do código: hospedagem (TRD §10.6), identidade
 visual.
 
-**Bugs conhecidos, ainda não corrigidos:** `docs/esquema-backend.md` §7
-(B1–B18). Os mais graves: B1/B2 (Ação Corretiva executável sem plano
-aprovado, e plano editável depois de aprovado) e **B9** (a validação de
-`detectadoEm` usa um `new Date()` calculado na carga do módulo — com o
-servidor ligado há dias, nenhuma NC nova pode ser registrada).
+**Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B18; os
+corrigidos têm ✅). Os mais graves ainda abertos: B1/B2 (Ação Corretiva
+executável sem plano aprovado, e plano editável depois de aprovado). O
+B9 (`detectadoEm` comparado com a hora em que o servidor ligou) foi
+corrigido na A3.
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com

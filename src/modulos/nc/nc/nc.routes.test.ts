@@ -1,10 +1,14 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { app } from "../../../app.js";
 import { chamar, daquiA, ncProntaParaFechar, ncPublicada, perfisDeFora } from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
 import { levarNCAte } from "../../../testes/levar-ate/nc.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
+
+afterEach(() => {
+    vi.useRealTimers();
+});
 
 describe("POST /nc", () => {
     it("cria um rascunho de nc em nome do editor", async () => {
@@ -56,6 +60,20 @@ describe("POST /nc", () => {
             mensagem: "Dados inválidos",
             error: expect.arrayContaining([expect.objectContaining({ instancePath: "/detectadoEm" })]),
         });
+    });
+
+    it("cria uma nc depois do servidor ativado há muito tempo (B9)", async () => {
+        // Prepara
+        vi.useFakeTimers({ toFake: ["Date"] });
+        vi.setSystemTime(daquiA(3));
+        const editor = await loginComo("editor");
+
+        // Chama
+        const ontem = daquiA(-1);
+        const resposta = await chamar(editor, "POST", "/nc", 201, { titulo: "NC de testes", detectadoEm: ontem });
+
+        // Confere
+        expect(resposta).toMatchObject({ estado: "RASCUNHO", detectadoEm: ontem });
     });
 });
 

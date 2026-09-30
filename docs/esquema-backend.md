@@ -432,7 +432,7 @@ Encontradas na **revisão cruzada** dos documentos com o código
 
 | # | Problema | Onde | Correção |
 |---|---|---|---|
-| **B9** | **A data de detecção é comparada com o momento em que o servidor foi ligado**, não com o agora: `z.coerce.date().max(new Date())` calcula o `new Date()` uma vez só, quando o arquivo é carregado. Com o servidor ligado há dias, **nenhuma NC detectada depois disso pode ser registrada** ("não pode ser no futuro"). Não aparece no desenvolvimento porque o `tsx watch` reinicia o servidor a toda hora | `nc.schema.ts` | Comparar com o dia de hoje **a cada validação** (ex.: `.refine`), pelo dia em São Paulo (B11) |
+| **B9** ✅ | **A data de detecção é comparada com o momento em que o servidor foi ligado**, não com o agora: `z.coerce.date().max(new Date())` calcula o `new Date()` uma vez só, quando o arquivo é carregado. Com o servidor ligado há dias, **nenhuma NC detectada depois disso pode ser registrada** ("não pode ser no futuro"). Não aparece no desenvolvimento porque o `tsx watch` reinicia o servidor a toda hora | `nc.schema.ts` | Comparar com o dia de hoje **a cada validação** (ex.: `.refine`), pelo dia em São Paulo (B11). **Corrigido na A3** (2026-09-30): `.refine` com o `new Date()` dentro da função; teste com relógio falso em `nc.routes.test.ts` ("cria uma nc depois do servidor ativado há muito tempo"). O dia em São Paulo fica para o B11 |
 | **B10** | **Vínculo da Ação Corretiva com a investigação não é validado**: (a) `investigacaoId` é opcional até no plano — se ficar vazio, uma verificação `NAO_EFICAZ` dá erro e a conclusão trava; (b) nada impede apontar a investigação **de outra NC**, que seria a reaberta | `acao-corretiva.schema.ts`, `acao-corretiva.service.ts` | Exigir `investigacaoId` no schema do plano; ao criar e editar, conferir que a investigação é da mesma NC e não está cancelada |
 | **B11** | **"Dia" calculado em UTC**: o ano do código usa `new Date().getFullYear()` no servidor — uma NC publicada em 31/12 depois das 21 h ganha código do ano seguinte. O mesmo vale para "hoje" em prazos | `ciclo-vida.service.ts`, `acao-corretiva.service.ts` | Uma função "dia de hoje em `America/Sao_Paulo`", usada em todo cálculo de dia (TRD §6) |
 | **B12** | **Rascunho pode ser cancelado** e vira item cancelado sem código, visível para sempre (PRD Q14) | `ciclo-vida.service.ts` (`cancelar`) | Aceitar só `ABERTO` e `EM_APROVACAO` |
@@ -446,7 +446,10 @@ Encontradas na **revisão cruzada** dos documentos com o código
 **Os mais graves são B1, B2 e B9.** B1 e B2, juntos, permitem que a ação
 corretiva seja feita sem o QA concordar com o plano — exatamente o que o
 RF-06 existe para impedir. B9 impediria o uso do sistema em produção
-logo no primeiro dia depois do deploy.
+logo no primeiro dia depois do deploy (**corrigido na A3**).
+
+Bug corrigido ganha ✅ ao lado do número e a nota "Corrigido na A3" na
+coluna da correção, com o teste que o prova.
 
 ---
 
@@ -487,5 +490,6 @@ Com Matthew, em 2026-09-24.
 | 2026-09-24 | v1.1 — revisão cruzada com o código: B9–B13; guarda em dois grupos (filhos/envio) com aprovador; triagem inclui filhos; catálogo de permissões novas; eventos do feed; regras de convite e usuário inativo |
 | 2026-09-28 | v1.2 — B14 (data obrigatória vazia passa na validação), achado pelos testes da fase A2 |
 | 2026-09-30 | v1.3 — B15 (primeira publicação do ano sob concorrência dá erro 500), achado pelo teste de concorrência da A2 |
+| 2026-09-30 | v1.6 — B9 corrigido (A3, primeiro TDD) |
 | 2026-09-30 | v1.5 — B18 (motivo em branco volta 409), dos testes que aposentaram os `.http` |
 | 2026-09-30 | v1.4 — B16 (colaborador inexistente dá 500) e B17 (atribuições em qualquer estado), dos testes de atribuição da A2; rota nova `/retirar` (RN-48); ação `TROCAR_APROVADOR_EM_APROVACAO` no catálogo |

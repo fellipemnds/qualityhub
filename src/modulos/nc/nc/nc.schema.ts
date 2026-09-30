@@ -10,7 +10,7 @@ export const ncBaseSchema = z.object({
     requisitoViolado: z.string().min(1),
     processoAfetado: z.string().min(1),
     setorId: z.coerce.number().int().positive(),
-    detectadoEm: z.coerce.date().max(new Date(), "Data de detecção não pode ser no futuro"),
+    detectadoEm: z.coerce.date().refine((data) => data <= new Date(), "Data de detecção não pode ser no futuro"),
     origem: z.enum(OrigemNC),
     cliente: z.string().nullish(),
     riscosRevisados: z.string().min(1).nullish(),
