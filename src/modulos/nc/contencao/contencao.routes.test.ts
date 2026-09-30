@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { chamar, ncPublicada } from "../../../testes/cenarios.js";
+import { prisma } from "../../../compartilhado/prisma/cliente.js";
+import { chamar, daquiA, ncPublicada } from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
+import { levarContencaoAte } from "../../../testes/levar-ate/contencao.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
 
@@ -41,6 +43,31 @@ describe("PATCH /contencoes/:id", () => {
 });
 
 describe("GET /contencoes", () => {
+    it("filtra por NC e por estado", async () => {
+        // Prepara: duas contenções na NC do cenário (uma publicada) e uma em outra NC
+        const { editor, nc } = await ncPublicada();
+        const outraNC = await chamar(editor, "POST", "/nc", 201, { titulo: "Outra NC, com a sua contenção" });
+        const publicada = await chamar(editor, "POST", `/nc/${nc.id}/contencoes`, 201, {
+            descricao: "Contenção que vai ser publicada.",
+        });
+        const rascunho = await chamar(editor, "POST", `/nc/${nc.id}/contencoes`, 201, {
+            descricao: "Contenção que fica em rascunho.",
+        });
+        await chamar(editor, "POST", `/nc/${outraNC.id}/contencoes`, 201, {
+            descricao: "Contenção de outra não conformidade.",
+        });
+        await chamar(editor, "POST", `/contencoes/${publicada.id}/publicar`, 200);
+
+        // Chama
+        const daNC = await chamar(editor, "GET", `/contencoes?naoConformidadeId=${nc.id}`, 200);
+        const abertasDaNC = await chamar(editor, "GET", `/contencoes?naoConformidadeId=${nc.id}&estado=ABERTO`, 200);
+
+        // Confere
+        const ids = (lista: { id: string }[]) => lista.map((item) => item.id).sort();
+        expect(ids(daNC)).toEqual([publicada.id, rascunho.id].sort());
+        expect(ids(abertasDaNC)).toEqual([publicada.id]);
+    });
+
     it("recusa filtro de estado fora da lista", async () => {
         // Prepara
         const editor = await loginComo("editor");
@@ -53,5 +80,96 @@ describe("GET /contencoes", () => {
             mensagem: "Dados inválidos",
             error: expect.arrayContaining([expect.objectContaining({ instancePath: "/estado" })]),
         });
+    });
+});
+
+describe("POST /contencoes/:id/submeter", () => {
+    it("recusa sem aprovador definido (RN-13)", async () => {
+        // Prepara (o filho nasce sem aprovador: B13)
+        const { editor, nc } = await ncPublicada();
+        const contencao = await chamar(editor, "POST", `/nc/${nc.id}/contencoes`, 201, {
+            descricao: "Retrabalho realizado na peça com defeito.",
+            executadaEm: daquiA(-1),
+            disposicao: "CORRIGIDO",
+        });
+        await chamar(editor, "POST", `/contencoes/${contencao.id}/publicar`, 200);
+
+        // Chama
+        const resposta = await chamar(editor, "POST", `/contencoes/${contencao.id}/submeter`, 409);
+
+        // Confere
+        expect(resposta.mensagem).toContain("aprovador");
+    });
+});
+
+describe("POST /contencoes/:id/decidir", () => {
+    it("recusa reprovar sem motivo (RN-04)", async () => {
+        // Prepara
+        const { editor, aprovador, contencao } = await levarContencaoAte("EM_APROVACAO");
+
+        // Chama
+        await chamar(aprovador, "POST", `/contencoes/${contencao.id}/decidir`, 400, { decisao: "REPROVADO" });
+
+        // Confere
+        expect(await chamar(editor, "GET", `/contencoes/${contencao.id}`, 200)).toMatchObject({
+            estado: "EM_APROVACAO",
+        });
+    });
+
+    it("reprovar com motivo devolve a ABERTO, e o item volta a ser editável (RN-04)", async () => {
+        // Prepara
+        const { editor, aprovador, contencao } = await levarContencaoAte("EM_APROVACAO");
+
+        // Chama
+        const resposta = await chamar(aprovador, "POST", `/contencoes/${contencao.id}/decidir`, 200, {
+            decisao: "REPROVADO",
+            motivo: "A disposição não corresponde ao que foi feito na linha.",
+        });
+
+        // Confere
+        expect(resposta).toMatchObject({ estado: "ABERTO" });
+        await chamar(editor, "PATCH", `/contencoes/${contencao.id}`, 200, { disposicao: "ANULADO" });
+        expect(await prisma.aprovacao.findMany({ where: { registroId: contencao.id } })).toMatchObject([
+            { decisao: "REPROVADO", autoAprovacao: false },
+        ]);
+    });
+
+    it("a auto-aprovação passa e fica registrada como tal (RN-27)", async () => {
+        // Prepara (o qa cria a contenção e é o aprovador dela)
+        const { gerente, qa, nc } = await ncPublicada();
+        const contencao = await chamar(qa, "POST", `/nc/${nc.id}/contencoes`, 201, {
+            descricao: "Retrabalho realizado na peça com defeito.",
+            executadaEm: daquiA(-1),
+            disposicao: "CORRIGIDO",
+        });
+        await chamar(qa, "POST", `/contencoes/${contencao.id}/publicar`, 200);
+        await chamar(gerente, "PUT", `/registros/${contencao.id}/aprovador`, 200, { usuarioId: qa.usuario.id });
+        await chamar(qa, "POST", `/contencoes/${contencao.id}/submeter`, 200);
+
+        // Chama
+        const resposta = await chamar(qa, "POST", `/contencoes/${contencao.id}/decidir`, 200, {
+            decisao: "APROVADO",
+        });
+
+        // Confere
+        expect(resposta).toMatchObject({ estado: "FECHADO" });
+        expect(await prisma.aprovacao.findMany({ where: { registroId: contencao.id } })).toMatchObject([
+            { decisao: "APROVADO", autoAprovacao: true, aprovadorId: qa.usuario.id },
+        ]);
+    });
+});
+
+describe("POST /contencoes/:id/cancelar", () => {
+    // B18 (esquema-backend.md §7): o motivo em branco é recusado, mas com 409 e mensagem de estado. No conserto (A3),
+    // trocar para it.
+    it.fails("recusa motivo só com espaços (RN-06)", async () => {
+        // Prepara
+        const { editor, aprovador, contencao } = await levarContencaoAte("ABERTO");
+
+        // Chama
+        await chamar(aprovador, "POST", `/contencoes/${contencao.id}/cancelar`, 400, { motivo: "   " });
+
+        // Confere
+        expect(await chamar(editor, "GET", `/contencoes/${contencao.id}`, 200)).toMatchObject({ estado: "ABERTO" });
     });
 });

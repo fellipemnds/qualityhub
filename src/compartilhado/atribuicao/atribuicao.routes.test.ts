@@ -124,6 +124,20 @@ describe("POST /registros/:id/colaboradores", () => {
         expect(resposta.adicionados).toHaveLength(1);
     });
 
+    it("recusa a lista vazia", async () => {
+        // Prepara
+        const { editor, nc } = await ncPublicada();
+
+        // Chama
+        const resposta = await chamar(editor, "POST", `/registros/${nc.id}/colaboradores`, 400, { colaboradores: [] });
+
+        // Confere
+        expect(resposta).toMatchObject({
+            mensagem: "Dados inválidos",
+            error: expect.arrayContaining([expect.objectContaining({ instancePath: "/colaboradores" })]),
+        });
+    });
+
     it("recusa quem não tem papel EDITOR nem GERENTE (403)", async () => {
         // Prepara
         const { qa, nc } = await ncPublicada();
@@ -158,6 +172,30 @@ describe("DELETE /registros/:id/colaboradores", () => {
         // Chama
         await chamar(editor, "DELETE", `/registros/${nc.id}/colaboradores`, 409, {
             colaboradores: [editor.usuario.id],
+        });
+    });
+
+    it("o gerente também remove, sem estar no item (RN-18)", async () => {
+        // Prepara
+        const { editor, gerente, qa, nc } = await ncPublicada();
+        await chamar(editor, "POST", `/registros/${nc.id}/colaboradores`, 200, { colaboradores: [qa.usuario.id] });
+
+        // Chama
+        const resposta = await chamar(gerente, "DELETE", `/registros/${nc.id}/colaboradores`, 200, {
+            colaboradores: [qa.usuario.id],
+        });
+
+        // Confere
+        expect(resposta).toMatchObject({ removidos: [{ usuarioId: qa.usuario.id }] });
+    });
+
+    it("recusa remover o último colaborador mesmo com o id repetido na lista (RN-12)", async () => {
+        // Prepara
+        const { editor, nc } = await ncPublicada();
+
+        // Chama
+        await chamar(editor, "DELETE", `/registros/${nc.id}/colaboradores`, 409, {
+            colaboradores: [editor.usuario.id, editor.usuario.id],
         });
     });
 

@@ -41,3 +41,38 @@ describe("PATCH /classificacoes/:id", () => {
         });
     });
 });
+
+describe("GET /classificacoes", () => {
+    it("filtra por NC e por estado", async () => {
+        // Prepara: dois itens na NC do cenário (um publicado) e um em outra NC. Classificar é do APROVADOR (RN-20)
+        const { editor, aprovador, nc } = await ncPublicada();
+        const outraNC = await chamar(editor, "POST", "/nc", 201, { titulo: "Outra NC, com o seu item" });
+        const publicado = await chamar(aprovador, "POST", `/nc/${nc.id}/classificacoes`, 201, {
+            valor: "MAIOR",
+            justificativa: "Vazamento afeta a segurança operacional da linha 2.",
+        });
+        const rascunho = await chamar(aprovador, "POST", `/nc/${nc.id}/classificacoes`, 201, {
+            valor: "MAIOR",
+            justificativa: "Vazamento afeta a segurança operacional da linha 2.",
+        });
+        await chamar(aprovador, "POST", `/nc/${outraNC.id}/classificacoes`, 201, {
+            valor: "MAIOR",
+            justificativa: "Vazamento afeta a segurança operacional da linha 2.",
+        });
+        await chamar(aprovador, "POST", `/classificacoes/${publicado.id}/publicar`, 200);
+
+        // Chama
+        const daNC = await chamar(aprovador, "GET", `/classificacoes?naoConformidadeId=${nc.id}`, 200);
+        const abertosDaNC = await chamar(
+            aprovador,
+            "GET",
+            `/classificacoes?naoConformidadeId=${nc.id}&estado=ABERTO`,
+            200,
+        );
+
+        // Confere
+        const ids = (lista: { id: string }[]) => lista.map((item) => item.id).sort();
+        expect(ids(daNC)).toEqual([publicado.id, rascunho.id].sort());
+        expect(ids(abertosDaNC)).toEqual([publicado.id]);
+    });
+});

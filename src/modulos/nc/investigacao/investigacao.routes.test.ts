@@ -44,3 +44,30 @@ describe("POST /investigacoes/:id/submeter", () => {
         });
     });
 });
+
+describe("GET /investigacoes", () => {
+    it("filtra por NC e por estado", async () => {
+        // Prepara: dois itens na NC do cenário (um publicado) e um em outra NC
+        const { editor, nc } = await ncPublicada();
+        const outraNC = await chamar(editor, "POST", "/nc", 201, { titulo: "Outra NC, com o seu item" });
+        const publicado = await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
+            realProblema: "Vedação da bomba hidráulica com desgaste prematuro.",
+        });
+        const rascunho = await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
+            realProblema: "Vedação da bomba hidráulica com desgaste prematuro.",
+        });
+        await chamar(editor, "POST", `/nc/${outraNC.id}/investigacoes`, 201, {
+            realProblema: "Vedação da bomba hidráulica com desgaste prematuro.",
+        });
+        await chamar(editor, "POST", `/investigacoes/${publicado.id}/publicar`, 200);
+
+        // Chama
+        const daNC = await chamar(editor, "GET", `/investigacoes?naoConformidadeId=${nc.id}`, 200);
+        const abertosDaNC = await chamar(editor, "GET", `/investigacoes?naoConformidadeId=${nc.id}&estado=ABERTO`, 200);
+
+        // Confere
+        const ids = (lista: { id: string }[]) => lista.map((item) => item.id).sort();
+        expect(ids(daNC)).toEqual([publicado.id, rascunho.id].sort());
+        expect(ids(abertosDaNC)).toEqual([publicado.id]);
+    });
+});

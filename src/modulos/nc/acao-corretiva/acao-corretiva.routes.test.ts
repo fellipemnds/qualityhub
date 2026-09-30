@@ -78,3 +78,29 @@ describe("POST /acoes-corretivas/:id/finalizar-execucao", () => {
         });
     });
 });
+
+describe("GET /acoes-corretivas", () => {
+    it("filtra por NC e por estado", async () => {
+        // Prepara: dois itens na NC do cenário (um publicado) e um em outra NC
+        const { editor, nc } = await ncPublicada();
+        const outraNC = await chamar(editor, "POST", "/nc", 201, { titulo: "Outra NC, com o seu item" });
+        const publicado = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, {});
+        const rascunho = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, {});
+        await chamar(editor, "POST", `/nc/${outraNC.id}/acoes-corretivas`, 201, {});
+        await chamar(editor, "POST", `/acoes-corretivas/${publicado.id}/publicar`, 200);
+
+        // Chama
+        const daNC = await chamar(editor, "GET", `/acoes-corretivas?naoConformidadeId=${nc.id}`, 200);
+        const abertosDaNC = await chamar(
+            editor,
+            "GET",
+            `/acoes-corretivas?naoConformidadeId=${nc.id}&estado=ABERTO`,
+            200,
+        );
+
+        // Confere
+        const ids = (lista: { id: string }[]) => lista.map((item) => item.id).sort();
+        expect(ids(daNC)).toEqual([publicado.id, rascunho.id].sort());
+        expect(ids(abertosDaNC)).toEqual([publicado.id]);
+    });
+});
