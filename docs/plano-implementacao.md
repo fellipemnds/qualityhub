@@ -364,3 +364,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-09-30 | B15 entra na A3 (ordem 15), achado pelo teste de concorrência da A2 |
 | 2026-09-30 | B16, B17 e RN-48 entram na A3 (ordens 16–18), dos testes de atribuição da A2 |
 | 2026-09-30 | B18 entra na A3 (ordem 19), dos testes que aposentaram os `.http` |
+| 2026-09-30 | **A2 concluída** (branch `fase/a2-rede-protecao`, PR #3): fluxo completo, máquina de estados e permissões nos seis tipos, concorrência do código sequencial (escrito por Matthew), atribuições, e os `.http` aposentados. Achados B15–B18 e regras RN-47/RN-48, todos na A3. Falta o CI verde no PR e o merge |
