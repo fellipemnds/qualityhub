@@ -47,7 +47,7 @@ flowchart TD
     subgraph A[Bloco A — Fundação do backend]
         A0[A0 Preparação] --> A1[A1 Aprender testes<br/>+ infraestrutura]
         A1 --> A2[A2 Rede de proteção]
-        A2 --> A3[A3 Correções B1–B14]
+        A2 --> A3[A3 Correções B1–B15]
         A3 --> A4[A4 Sessão nova]
         A4 --> A5[A5 Contrato da API]
         A5 --> A6[A6 Usuários e setores]
@@ -157,7 +157,7 @@ antes de qualquer mudança de regra.
 | Atribuições: um aprovador por item, sem duplicata, RN-12 | 🤖 |
 | Aposentar os `.http` cobertos | 🤖 |
 
-**Os bugs B1–B14 não entram aqui.** Esta fase fotografa o que está
+**Os bugs B1–B15 não entram aqui.** Esta fase fotografa o que está
 **certo**; os bugs ganham seus testes na A3.
 
 ### A3 — Correções de regra · G
@@ -181,6 +181,7 @@ antes de qualquer mudança de regra.
 | 12 | **B13** — filho nasce com o aprovador da NC (RN-46) | 🤖 |
 | 13 | **B12** — cancelar recusa rascunho (RN-06) | 🤖 |
 | 14 | **B8** — remover `DELETE /verificacoes/:id` | 🤖 |
+| 15 | **B15** — primeira publicação do ano sob concorrência: criar ou incrementar o contador num único comando atômico. O teste já existe (`sequencia.test.ts`, com `it.fails`): o conserto é trocar para `it` | 🤖 |
 
 **Aprendizado:** TDD (escrever o teste antes do conserto); por que uma
 regra deve morar num lugar só.
@@ -237,7 +238,7 @@ RF-20).
 
 Antes do Bloco C começar:
 - A0–A6 concluídas, CI verde na `main`.
-- Nenhum bug B1–B14 aberto.
+- Nenhum bug B1–B15 aberto.
 - OpenAPI completo, gerando sem erro.
 
 ---
@@ -311,7 +312,7 @@ Onde cada item dos documentos anteriores é feito:
 
 | Item | Fase |
 |---|---|
-| B1–B6, B8–B14 · RN-06, RN-46 | A3 |
+| B1–B6, B8–B15 · RN-06, RN-46 | A3 |
 | Primeiro `ADMIN` e primeiro setor em produção | A6 (script), D1 (uso) |
 | B7 (papéis no JWT) · RNF-09, RNF-10 | A4 |
 | Pendência 1 (ações de auditoria) · pendência 5 (`ignoreTrailingSlash`) | A5 · A0 |
@@ -356,3 +357,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-09-24 | **A0 concluída** (branch `fase/a0-preparacao`): código sem uso removido, aviso do Fastify corrigido, Biome configurado, código formatado e lint limpo. `test` e `build` adiados para A1 e D1; `gh` na A1 |
 | 2026-09-28 | **A1 concluída** (branch `fase/a1-testes`, PR #2): Vitest + Testcontainers, fábricas e `loginComo` (7 perfis), testes do login, do `temPapel` e da criação de rascunho de NC (o "pronto quando", escrito por Matthew), CI com check obrigatório na `main`. Divisão de trabalho revista (§1) |
 | 2026-09-28 | B14 entra na A3 (ordem 3, depois do B11), achado pelos testes da A2 |
+| 2026-09-30 | B15 entra na A3 (ordem 15), achado pelo teste de concorrência da A2 |
