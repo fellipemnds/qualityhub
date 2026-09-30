@@ -492,6 +492,7 @@ Com Matthew, em 2026-09-24.
 | 2026-09-24 | v1.1 — revisão cruzada com o código: B9–B13; guarda em dois grupos (filhos/envio) com aprovador; triagem inclui filhos; catálogo de permissões novas; eventos do feed; regras de convite e usuário inativo |
 | 2026-09-28 | v1.2 — B14 (data obrigatória vazia passa na validação), achado pelos testes da fase A2 |
 | 2026-09-30 | v1.3 — B15 (primeira publicação do ano sob concorrência dá erro 500), achado pelo teste de concorrência da A2 |
+| 2026-09-30 | v1.10 — `detectadoEm`, `executadaEm`, `prazo` (ação e verificação), `executadoEm` e `verificadoEm` como `@db.Date` (migration `dias_de_calendario_como_date`) |
 | 2026-09-30 | v1.9 — B14 fechado também na entrada: dias só em `"AAAA-MM-DD"` (A3) |
 | 2026-09-30 | v1.8 — B14 corrigido nas transições (A3) |
 | 2026-09-30 | v1.7 — B11 corrigido (A3) |
