@@ -250,7 +250,8 @@ export const acaoCorretivaService = {
         if (!papel) throw new SemPermissaoError("Você não tem permissões suficientes para visualizar.");
 
         const acaoCorretiva = await acaoCorretivaRepository.buscarPorId(prisma, registroId);
-        return { ...registro, ...acaoCorretiva };
+        const planoAprovado = await acaoCorretivaRepository.planoAprovado(prisma, registroId);
+        return { ...registro, ...acaoCorretiva, planoAprovado };
     },
 
     async listarAcoesCorretivas(ator: Ator, filtros: { naoConformidadeId?: string; estado?: EstadoRegistro }) {

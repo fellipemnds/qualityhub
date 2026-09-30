@@ -242,6 +242,9 @@ sempre. Usado em: finalizar execução (§7, B1), bloqueio de edição do
 plano (B2), etapa da NC, guarda de fechamento (RN-21), pendência
 "Executar ação".
 
+**Implementado na A3:** `acaoCorretivaRepository.planoAprovado(cliente,
+id)`, exposto em `GET /acoes-corretivas/:id` como `planoAprovado`.
+
 ### 4.3 Guarda de fechamento da NC (RN-21)
 
 Função que devolve a **lista do que falta** (TRD §5), com um item por
@@ -492,6 +495,7 @@ Com Matthew, em 2026-09-24.
 | 2026-09-24 | v1.1 — revisão cruzada com o código: B9–B13; guarda em dois grupos (filhos/envio) com aprovador; triagem inclui filhos; catálogo de permissões novas; eventos do feed; regras de convite e usuário inativo |
 | 2026-09-28 | v1.2 — B14 (data obrigatória vazia passa na validação), achado pelos testes da fase A2 |
 | 2026-09-30 | v1.3 — B15 (primeira publicação do ano sob concorrência dá erro 500), achado pelo teste de concorrência da A2 |
+| 2026-09-30 | v1.11 — plano aprovado (§4.2) implementado |
 | 2026-09-30 | v1.10 — `detectadoEm`, `executadaEm`, `prazo` (ação e verificação), `executadoEm` e `verificadoEm` como `@db.Date` (migration `dias_de_calendario_como_date`) |
 | 2026-09-30 | v1.9 — B14 fechado também na entrada: dias só em `"AAAA-MM-DD"` (A3) |
 | 2026-09-30 | v1.8 — B14 corrigido nas transições (A3) |

@@ -8,6 +8,7 @@ import {
     ncPublicada,
 } from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
+import { levarAcaoCorretivaAte } from "../../../testes/levar-ate/acao-corretiva.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
 
@@ -25,6 +26,64 @@ describe("POST /nc/:naoConformidadeId/acoes-corretivas", () => {
 
         // Confere
         expect(resposta.mensagem).toEqual(expect.any(String));
+    });
+});
+
+// "Plano aprovado" é derivado das decisões registradas em Aprovacao, não do portaoAtual (esquema §4.2)
+describe("GET /acoes-corretivas/:id", () => {
+    it("planoAprovado é false com o plano nunca submetido", async () => {
+        // Prepara
+        const { editor, acao } = await levarAcaoCorretivaAte("ABERTO");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200);
+
+        // Confere
+        expect(resposta).toMatchObject({ estado: "ABERTO", planoAprovado: false });
+    });
+
+    it("planoAprovado é true depois da aprovação do plano", async () => {
+        // Prepara
+        const { editor, aprovador, acao } = await levarAcaoCorretivaAte("EM_APROVACAO");
+        await chamar(aprovador, "POST", `/acoes-corretivas/${acao.id}/decidir`, 200, { decisao: "APROVADO" });
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200);
+
+        // Confere (volta a ABERTO: só o planoAprovado distingue do plano nunca submetido)
+        expect(resposta).toMatchObject({ estado: "ABERTO", planoAprovado: true });
+    });
+
+    it("planoAprovado é false com o plano reprovado", async () => {
+        // Prepara
+        const { editor, aprovador, acao } = await levarAcaoCorretivaAte("EM_APROVACAO");
+        await chamar(aprovador, "POST", `/acoes-corretivas/${acao.id}/decidir`, 200, {
+            decisao: "REPROVADO",
+            motivo: "O prazo não é compatível com a próxima parada da linha.",
+        });
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200);
+
+        // Confere
+        expect(resposta).toMatchObject({ estado: "ABERTO", planoAprovado: false });
+    });
+
+    it("planoAprovado é true com o plano reprovado e depois aprovado", async () => {
+        // Prepara
+        const { editor, aprovador, acao } = await levarAcaoCorretivaAte("EM_APROVACAO");
+        await chamar(aprovador, "POST", `/acoes-corretivas/${acao.id}/decidir`, 200, {
+            decisao: "REPROVADO",
+            motivo: "O prazo não é compatível com a próxima parada da linha.",
+        });
+        await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/submeter`, 200);
+        await chamar(aprovador, "POST", `/acoes-corretivas/${acao.id}/decidir`, 200, { decisao: "APROVADO" });
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200);
+
+        // Confere
+        expect(resposta).toMatchObject({ estado: "ABERTO", planoAprovado: true });
     });
 });
 

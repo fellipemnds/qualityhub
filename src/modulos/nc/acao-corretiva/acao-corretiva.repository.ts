@@ -15,6 +15,16 @@ export const acaoCorretivaRepository = {
         return tx.acaoCorretiva.update({ where: { id }, data: dados });
     },
 
+    // Derivado das decisões registradas, não do portaoAtual (esquema §4.2): a ação nunca é reaberta (RN-42), então uma
+    // aprovação do plano vale para sempre. Base do B1, do B2 e da guarda de fechamento da NC
+    async planoAprovado(cliente: ClientePrisma, id: string) {
+        const aprovacao = await cliente.aprovacao.findFirst({
+            where: { registroId: id, portao: "PLANO", decisao: "APROVADO" },
+        });
+
+        return aprovacao !== null;
+    },
+
     async listar(tx: ClientePrisma, filtros: { naoConformidadeId?: string; estado?: EstadoRegistro }) {
         return tx.acaoCorretiva.findMany({
             where: {
