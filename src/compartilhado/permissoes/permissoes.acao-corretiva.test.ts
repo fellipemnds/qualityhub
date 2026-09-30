@@ -4,7 +4,8 @@ import { levarAcaoCorretivaAte } from "../../testes/levar-ate/acao-corretiva.js"
 import type { EstadoRegistro } from "../entidades/estados.js";
 
 // Atribuições do levarAcaoCorretivaAte: o editor criou (colaborador), o aprovador é o designado; qa e gerente não
-// estão na ação. O finalizar-execucao fica de fora: o estado em que ele é permitido (plano aprovado) depende do B1.
+// estão na ação. O finalizar-execucao fica de fora: o estado em que ele é permitido (ABERTO com o plano aprovado) não
+// é um degrau do levarAcaoCorretivaAte, que ainda não o tem por causa do B2.
 async function preparar(estado: EstadoRegistro) {
     return { ...(await levarAcaoCorretivaAte(estado)), ...(await perfisDeFora()) };
 }

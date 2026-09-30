@@ -423,7 +423,7 @@ começa com um **teste que falha** (TRD §9.4).
 
 | # | Problema | Onde | Correção |
 |---|---|---|---|
-| **B1** | **Dá para executar uma Ação Corretiva sem aprovação do plano.** A checagem é `estado === ABERTO && portaoAtual === 0`, mas o `portaoAtual` nunca sai de 0 — uma ação recém-publicada, nunca submetida, passa | `finalizarExecucaoAcaoCorretiva` | Exigir plano aprovado (§4.2) |
+| **B1** ✅ | **Dá para executar uma Ação Corretiva sem aprovação do plano.** A checagem é `estado === ABERTO && portaoAtual === 0`, mas o `portaoAtual` nunca sai de 0 — uma ação recém-publicada, nunca submetida, passa | `finalizarExecucaoAcaoCorretiva` | Exigir plano aprovado (§4.2). **Corrigido na A3** (2026-09-30): a checagem do `portaoAtual` virou `planoAprovado`. Testes: "B1" em `acao-corretiva.routes.test.ts` (plano escrito mas não aprovado, execução registrada → 409, sem verificação) e o `finalizar` proibido no `ABERTO` da máquina de estados |
 | **B2** | **O plano continua editável depois de aprovado** (o estado volta a `ABERTO`, que é editável) | `atualizarAcaoCorretiva` | Com plano aprovado, recusar mudança em `descricao`, `prazo`, `instrucoesVerificacao`, `investigacaoId` |
 | **B3** | **Autor errado na auditoria** da Ação Corretiva criada por `PARCIALMENTE_EFICAZ`: registra quem criou a ação anterior, não o QA que concluiu | `concluirVerificacao` | `criadoPorId` = o ator |
 | **B4** | `NAO_EFICAZ` **falha** se a NC ou a Investigação estiverem abertas (PRD Q2) | `concluirVerificacao` | Reabrir só o que estiver `FECHADO` |
@@ -495,6 +495,7 @@ Com Matthew, em 2026-09-24.
 | 2026-09-24 | v1.1 — revisão cruzada com o código: B9–B13; guarda em dois grupos (filhos/envio) com aprovador; triagem inclui filhos; catálogo de permissões novas; eventos do feed; regras de convite e usuário inativo |
 | 2026-09-28 | v1.2 — B14 (data obrigatória vazia passa na validação), achado pelos testes da fase A2 |
 | 2026-09-30 | v1.3 — B15 (primeira publicação do ano sob concorrência dá erro 500), achado pelo teste de concorrência da A2 |
+| 2026-09-30 | v1.12 — B1 corrigido (A3) |
 | 2026-09-30 | v1.11 — plano aprovado (§4.2) implementado |
 | 2026-09-30 | v1.10 — `detectadoEm`, `executadaEm`, `prazo` (ação e verificação), `executadoEm` e `verificadoEm` como `@db.Date` (migration `dias_de_calendario_como_date`) |
 | 2026-09-30 | v1.9 — B14 fechado também na entrada: dias só em `"AAAA-MM-DD"` (A3) |

@@ -124,6 +124,28 @@ describe("POST /acoes-corretivas/:id/finalizar-execucao", () => {
         expect(verificacao).toMatchObject({ codigo: "VE-2026-0001", prazo: "2027-01-30T00:00:00.000Z" });
     });
 
+    it("recusa com a execução registrada, mas o plano nunca aprovado (B1)", async () => {
+        // Prepara: plano escrito mas nunca submetido, execução preenchida — só falta a aprovação do plano
+        const { editor, acao } = await levarAcaoCorretivaAte("ABERTO");
+        await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
+            descricao: "Atualizar o procedimento de manutenção para especificar o material correto de vedação.",
+            prazo: diaDaquiA(15),
+            instrucoesVerificacao: "Após 30 dias de uso, inspecionar a vedação e confirmar ausência de vazamento.",
+            executadoEm: diaDaquiA(-1),
+            evidencia: "Procedimento PO-07 revisado e publicado na intranet, versão 3.0, com o material correto.",
+        });
+
+        // Chama
+        const resposta = await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/finalizar-execucao`, 409, {
+            diasParaVerificar: 30,
+        });
+
+        // Confere: a ação continua aberta, e nenhuma verificação nasceu
+        expect(resposta.mensagem).toContain("plano precisa estar aprovado");
+        expect(await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200)).toMatchObject({ estado: "ABERTO" });
+        expect(await chamar(editor, "GET", `/verificacoes?acaoCorretivaId=${acao.id}`, 200)).toEqual([]);
+    });
+
     it("recusa sem a execução registrada (RN-25)", async () => {
         // Prepara
         const cenario = await ncProntaParaFechar();

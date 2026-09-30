@@ -36,7 +36,8 @@ type NomeAcao = keyof typeof acoes;
 
 const tabela: { estado: EstadoRegistro; proibidas: NomeAcao[] }[] = [
     { estado: "RASCUNHO", proibidas: ["submeter", "aprovar", "reprovar", "finalizar"] }, // cancelar fica de fora: hoje o código permite (B12)
-    { estado: "ABERTO", proibidas: ["excluir", "publicar", "aprovar", "reprovar"] }, // finalizar fica de fora: hoje passa sem plano aprovado (B1)
+    // O ABERTO do levarAcaoCorretivaAte é o de plano nunca submetido: finalizar exige plano aprovado (B1)
+    { estado: "ABERTO", proibidas: ["excluir", "publicar", "aprovar", "reprovar", "finalizar"] },
     { estado: "EM_APROVACAO", proibidas: ["editar", "excluir", "publicar", "submeter", "finalizar"] },
     {
         estado: "FECHADO",

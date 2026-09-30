@@ -3,7 +3,7 @@ import type { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
 import { chamar, diaDaquiA, ncProntaParaFechar } from "../cenarios.js";
 
 // Só um portão (PLANO): aprovar o plano volta a ação para ABERTO, e o FECHADO vem do finalizar-execucao. O ABERTO
-// depois do plano aprovado fica de fora — o que ele permite hoje está errado (B1, B2).
+// depois do plano aprovado fica de fora — o que ele permite hoje está errado (B2).
 export async function levarAcaoCorretivaAte(estado: EstadoRegistro) {
     // A ação corretiva aponta para uma investigação: o cenário precisa de uma
     const cenario = await ncProntaParaFechar();

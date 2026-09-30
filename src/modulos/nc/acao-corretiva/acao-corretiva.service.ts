@@ -120,7 +120,7 @@ export const acaoCorretivaService = {
         });
     },
 
-    // Leva o item de ABERTO (plano ja aprovado, portaoAtual continua 0)
+    // Leva o item de ABERTO (plano ja aprovado — derivado de Aprovacao, B1)
     // direto para FECHADO, sem aprovacao — feito pelo colaborador que
     // executou, exige executadoEm/evidencia preenchidos (RN-25).
     //
@@ -140,7 +140,10 @@ export const acaoCorretivaService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            if (registro.estado !== "ABERTO" || registro.portaoAtual !== 0) {
+            // O portaoAtual continua 0 antes e depois da aprovação: quem diz se o plano foi aprovado é o histórico (B1)
+            const planoAprovado = await acaoCorretivaRepository.planoAprovado(tx, registroId);
+
+            if (registro.estado !== "ABERTO" || !planoAprovado) {
                 throw new TransicaoInvalidaError("O plano precisa estar aprovado antes de finalizar a execução.");
             }
 
