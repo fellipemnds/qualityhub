@@ -9,6 +9,57 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Fase A2 — rede de proteção (branch `fase/a2-rede-protecao`)
+
+- **Máquina de estados e permissões: um arquivo por tipo**
+  (`compartilhado/registro/maquina-estados.<tipo>.test.ts`,
+  `compartilhado/permissoes/permissoes.<tipo>.test.ts`). Cada um tem um
+  dicionário de ações, uma tabela "estado → o que é recusado" e um
+  `it.each`. Estado errado espera **409**; pessoa errada, **403**. As
+  duas famílias passaram pela prova de quebra (uma ação permitida posta
+  na tabela derruba todos os arquivos).
+- **Cenários montados pela API**, em escada: `src/testes/cenarios.ts`
+  (`ncPublicada` → `ncProntaParaFechar` → `fecharNC` → `aprovarPlano` →
+  `executarAcao`) e um `levarXAte(estado)` por tipo em
+  `src/testes/levar-ate/`, que confere o estado em cada degrau.
+- **Ler o banco para conferir, nunca para montar.** Quando não há rota
+  que mostre o resultado (atribuições, registro de `Aprovacao`), o teste
+  lê a tabela com o `prisma`; o cenário continua passando pela API, com
+  as mesmas guardas de um usuário real.
+- **O ciclo de vida genérico é testado por um tipo só** — a Contenção,
+  que chega a `EM_APROVACAO` com menos requisições. A NC entra só no que
+  é dela (reabrir). As listagens têm um teste por tipo, porque cada
+  repositório tem o seu filtro.
+- **Bug conhecido vira `it.fails`**, com um comentário apontando o Bxx:
+  fica verde enquanto o bug existe e vermelho no dia do conserto (aí
+  vira `it`). Como o `it.fails` passa com **qualquer** falha, o motivo é
+  conferido trocando para `it` uma vez antes do commit. Casos que são bug
+  mas não têm teste pronto ficam **fora** das tabelas, comentados (B1,
+  B8, B12).
+- **`testTimeout: 15_000`**: o padrão de 5 s estourava com a máquina
+  ocupada (um teste de ~2,7 s chegou a 6,4 s).
+- **Concorrência** (`sequencia.test.ts`): com o contador existente, quem
+  protege é o `UPDATE ... increment` atômico, não o `FOR UPDATE` — a
+  prova de quebra só falhou lendo e somando na aplicação (e aí o
+  `@unique` do código recusou os repetidos com 500). Com o contador
+  ainda inexistente, o `FOR UPDATE` não trava nada: B15.
+- **`.http` aposentados**: os 8 arquivos de `testes/old/` foram cruzados
+  com a suíte e apagados depois que tudo o que exercitavam ganhou teste
+  (inclusive o `POST /usuarios` e o definir senha, que não tinham
+  nenhum).
+- **Achados**: B15 (primeira publicação do ano sob concorrência), B16
+  (colaborador inexistente dá 500), B17 (atribuições em qualquer
+  estado), B18 (motivo em branco volta 409), além do B14 — todos na A3.
+  Regras novas, decididas por Matthew: **RN-47** (atribuições só em
+  `RASCUNHO`/`ABERTO`; em `EM_APROVACAO`, só o `GERENTE` troca o
+  aprovador) e **RN-48** (retirar da aprovação), com a ação
+  `TROCAR_APROVADOR_EM_APROVACAO` no catálogo.
+- **Em aberto**: o `podeExecutar` aceita colaborador **ou** aprovador
+  designado, e o PRD §8 pede colaborador para publicar, submeter e
+  excluir — conversar com a analista antes de virar bug. A suíte foi de
+  ~44 s para ~110 s; medir antes de otimizar (um banco por worker é a
+  opção de maior ganho).
+
 ### Fase A1 — testes e infraestrutura de testes (branch `fase/a1-testes`)
 
 - **Vitest 5 + Testcontainers** (TRD §9): um Postgres 17 descartável

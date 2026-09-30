@@ -171,6 +171,9 @@ Todas as seis entidades usam os mesmos cinco estados:
 **Reprovar não é um estado:** o item volta a `ABERTO` com o motivo
 registrado, pra ser corrigido e resubmetido.
 
+**Retirar da aprovação** também não: quem enviou percebe um erro e
+traz o item de volta a `ABERTO` sem esperar o aprovador (RN-48).
+
 **Etapa da NC** — o usuário vai querer ver "em que pé está" a NC
 ("aguardando classificação", "em investigação", "em verificação"...).
 Isso é **calculado** a partir dos filhos, nunca armazenado. A lista exata
@@ -231,6 +234,7 @@ Legenda: ✅ pronto · 🔧 pronto, com ajuste decidido · ⬜ a construir
 | RN-06 | **(alterada)** Cancelar exige motivo; nunca apaga; vale **só para itens publicados** (`ABERTO` ou `EM_APROVACAO`). Rascunho não se cancela: exclui-se (RN-09) — Q14 |
 | RN-07 | Toda escrita gera registro de auditoria, junto e de forma indivisível |
 | RN-07b | **(nova)** Edição permitida em `RASCUNHO` e `ABERTO`; bloqueada a partir de `EM_APROVACAO` — publicar formaliza, não trava |
+| RN-48 | **(nova)** Um colaborador pode **retirar da aprovação** um item `EM_APROVACAO`: ele volta a `ABERTO`, no mesmo portão, sem registro de decisão (não é reprovação). Vale para quem pode submeter o item (na Classificação, RN-20). Auditado — Q16 |
 
 ### Rascunho
 | ID | Regra |
@@ -251,6 +255,7 @@ Legenda: ✅ pronto · 🔧 pronto, com ajuste decidido · ⬜ a construir
 | RN-17 | Reabrir exige só papel `APROVADOR`, sem atribuição |
 | RN-18 | **(alterada)** Dividida em duas: **gerenciar colaboradores** — qualquer `EDITOR`/`GERENTE`, **sem precisar já estar no item** (auto-organização do time; tudo auditado); **definir aprovador** — só `APROVADOR`/`GERENTE`, e o escolhido precisa ter papel `APROVADOR` |
 | RN-46 | **(nova)** Item filho **nasce com o aprovador da NC** (se a NC já tiver um), e pode ser trocado depois por quem pode definir aprovador. Filho publicado sem aprovador entra na **triagem**, junto com as NCs sem aprovador — Q13 |
+| RN-47 | **(nova)** Atribuições (colaboradores e aprovador) só mudam com o item em `RASCUNHO` ou `ABERTO`. Única exceção: em `EM_APROVACAO`, o `GERENTE` troca o aprovador (férias, saída da empresa), auditado. Em `FECHADO` e `CANCELADO`, nada muda — Q15 |
 
 ### Fluxo da NC
 | ID | Regra |
@@ -310,13 +315,14 @@ Como está no código hoje, mais as ações novas (marcadas com *).
 | Ver tudo (inclusive rascunhos) | ✅ | ✅ | ✅ | ✅ | — | Não |
 | Criar/editar/excluir rascunho | — | ✅ | — | ✅ | — | Colaborador |
 | Publicar / submeter | — | ✅ | — | ✅ | — | Colaborador |
+| Retirar da aprovação * | — | ✅ | — | ✅ | — | Colaborador (na Classificação, `APROVADOR`/`GERENTE`, RN-20) |
 | Classificar | — | — | ✅ | ✅ | — | Colaborador (para editar) |
 | Aprovar / reprovar | — | — | ✅ | ✅ | — | **Ser o aprovador** |
 | Concluir verificação | — | — | ✅ | ✅ | — | Colaborador |
 | Reabrir NC | — | — | ✅ | ✅ | — | Não |
 | Cancelar | — | — | ✅ | ✅ | — | Ser o aprovador, ou `GERENTE` |
-| Gerenciar colaboradores | — | ✅ | — | ✅ | — | Não |
-| Definir aprovador | — | — | ✅ | ✅ | — | Não |
+| Gerenciar colaboradores | — | ✅ | — | ✅ | — | Não — só em `RASCUNHO`/`ABERTO` (RN-47) |
+| Definir aprovador | — | — | ✅ | ✅ | — | Não — só em `RASCUNHO`/`ABERTO`; em `EM_APROVACAO`, só `GERENTE` (RN-47) |
 | Comentar | — | ✅ | ✅ | ✅ | — | Não |
 | Anexar arquivo * | — | ✅ | ✅ | ✅ | — | Colaborador |
 | Relatórios | — | — | — | ✅ | — | — |
@@ -354,6 +360,13 @@ em 2026-09-24.
 | Q13 | Item filho nasce sem aprovador, e só `APROVADOR`/`GERENTE` pode definir um — o colaborador fica travado para enviar, sem ninguém ser avisado | **Filho herda o aprovador da NC**; filho sem aprovador vai para a triagem → RN-46 |
 | Q14 | Rascunho pode ser cancelado, e vira item cancelado sem código, visível para sempre | **Rascunho só se exclui**; cancelar vale para itens publicados → RN-06 |
 
+**Testes da fase A2** (2026-09-30, decisões de Matthew):
+
+| # | Pergunta | Decisão |
+|---|---|---|
+| Q15 | Atribuições mudam em qualquer estado (inclusive item fechado ou cancelado)? | **Só em `RASCUNHO` e `ABERTO`.** Em `EM_APROVACAO`, só o `GERENTE` troca o aprovador — sem essa exceção, um aprovador ausente prenderia o item, e a única saída seria cancelar → RN-47 |
+| Q16 | O colaborador pode desistir de um envio para aprovação? | **Sim**, volta a `ABERTO`, auditado. Regra de UX, sem impacto no processo → RN-48 |
+
 Limite de tamanho e armazenamento dos anexos foram resolvidos no TRD (§8).
 
 ---
@@ -364,3 +377,4 @@ Limite de tamanho e armazenamento dos anexos foram resolvidos no TRD (§8).
 |---|---|
 | 2026-09-24 | v1 — consolidação de `arquitetura.md` + changelog + código; decisões Q1–Q12 |
 | 2026-09-24 | v1.1 — revisão cruzada com o código: RN-06 e RN-24 ajustadas, RN-46 nova (Q13, Q14) |
+| 2026-09-30 | v1.2 — RN-47 (atribuições por estado) e RN-48 (retirar da aprovação), dos testes da A2 (Q15, Q16) |

@@ -5,53 +5,51 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-09-28, computador do trabalho.
+**Última atualização:** 2026-09-30.
 
 ## 1. Objetivo
 
-Fechar a fase **A1** (testes + infraestrutura) e começar a **A2 — rede
-de proteção** (`docs/plano-implementacao.md`, seção A2): cobrir por
-teste tudo o que **já funciona**, antes de qualquer correção de regra.
+Fechar a fase **A2 — rede de proteção** (`docs/plano-implementacao.md`,
+seção A2) e começar a **A3 — correções de regra** (B1–B18, RN-47, RN-48).
 
 ## 2. Estado atual
 
-- Branch **`fase/a1-testes`**, com o PR **#2 aberto em rascunho**
-  (https://github.com/fellipemnds/qualityhub/pull/2). CI verde.
-- **A1 com todas as entregas feitas**: 22 testes verdes, fábricas
-  (`criarUsuario`, `loginComo` com 7 perfis), CI com o check
-  `verificar` obrigatório no ruleset da `main`. O teste "pronto quando"
-  (`nc.routes.test.ts`, criar rascunho de NC) foi escrito por Matthew.
-  Decisões da fase: `docs/changelog-arquitetura.md`, seção "Fase A1".
-- **Divisão de trabalho revista** (`CLAUDE.md`, "Como trabalhamos"):
-  Matthew escreve só o que ensina conceito novo — ainda faltam o teste
-  de **concorrência** (A2) e o **B9** (A3, primeiro TDD). Claude faz o
-  resto, **anunciando cada item e esperando confirmação**.
-- O que Matthew aprendeu hoje: fábrica com padrões e `null` ×
-  `undefined`; `app.inject` com `payload`/`body` e `headers`;
-  `expect.any` e `toMatchObject`; HTTP sem memória (token em **cada**
-  requisição, `Bearer`); erro no Prepara × falha no Confere; o teste
-  diz o que **deveria** acontecer (nunca ajustar o esperado ao
-  recebido); YAML do GitHub Actions, gatilhos `push` × `pull_request`,
-  ruleset.
-- Pontos em que ele tropeçou (reforçar sem repetir a explicação):
-  desestruturar o retorno da fábrica; `console.log` depois do `expect`
-  (não roda quando falha); "usuário logado" (não existe: é o token).
+- **Todos os itens da A2 feitos.** Branch **`fase/a2-rede-protecao`**,
+  PR **#3 ainda em rascunho**
+  (https://github.com/fellipemnds/qualityhub/pull/3). Falta o CI verde
+  e o merge.
+- Suíte: **129 passando + 3 falhas esperadas** (`it.fails`: B15 e os
+  dois do B18), 28 arquivos, **~108 s**. Lint e typecheck limpos.
+- Feito nesta sessão:
+  - **Concorrência** (Matthew escreveu): `src/compartilhado/sequencia/sequencia.test.ts`.
+    Achou o **B15**.
+  - **Atribuições**: `src/compartilhado/atribuicao/atribuicao.routes.test.ts`.
+    Achou o **B16** e o **B17**; Matthew decidiu a **RN-47** e a **RN-48**
+    (PRD Q15, Q16).
+  - **`.http` aposentados**: os casos que só eles cobriam viraram teste
+    (ciclo de vida pela Contenção, reabrir pela NC, listagens nos seis
+    tipos, `POST /usuarios`, definir senha). Achou o **B18**. A pasta
+    `testes/old/` não existe mais.
+  - Changelog com a seção da A2; plano com a A2 no histórico.
+- O que Matthew aprendeu hoje: condição de corrida; `FOR UPDATE` ×
+  `UPDATE` atômico (o `increment` do Prisma); `Promise.all` para
+  disparar requisições ao mesmo tempo (o `await` fica fora do `map`);
+  `sort()` em array de objetos não ordena; `it.fails` (e que ele passa
+  com qualquer falha); `@unique` protege o dado, mas o usuário vê 500;
+  laço contado (`for (let i…)`) × `for...of`; spread (`...`) e atalho
+  de propriedade (`{ ultimoNumero }`).
 
 ## 3. Arquivos no meio de uma mudança
 
-Nenhum, se os commits propostos no fim da sessão foram feitos (ver §4).
-Se o `git status` mostrar alterações em `prisma7.config.ts`, `app.ts`,
-`cliente.ts`, `acao-corretiva.service.ts` ou nos documentos, são esses
-commits pendentes: conferir com Matthew antes de seguir.
+Nenhum.
 
 ## 4. O que foi alterado nesta sessão
 
-`git log 52f9965..fase/a1-testes`. Resumo: fábricas e `loginComo`;
-testes do login, do `temPapel` e da criação de rascunho de NC; CI;
-documentos (divisão de trabalho, 7 perfis, changelog da A1); as duas
-pendências pequenas (`process.env.X` em vez de `process.env["X"]`, com
-mais dois avisos iguais na ação corretiva; log do Fastify em `warn` nos
-testes).
+`git log e3f778b..fase/a2-rede-protecao`. Decisões registradas no
+`docs/changelog-arquitetura.md` (seção "Fase A2"); bugs em
+`docs/esquema-backend.md` §7; regras no `docs/prd.md` §7 e §9.
+
+**Push pendente:** tudo depois de `e3f778b`.
 
 ## 5. Falhas (e o porquê)
 
@@ -59,26 +57,26 @@ testes).
 |---|---|---|
 | `npm audit`: 4 vulnerabilidades altas | Herdadas do Prisma 7 | **Aberto**, risco baixo — `docs/trd.md` §13. Nunca `npm audit fix --force` |
 | Aviso "Update available 7.10.0 → 8.0.0-rc" do Prisma | É release candidate e versão major | **Não atualizar** |
-| `toSorted` recusado pelo typecheck | A `lib` do `tsconfig` é ES2022 (`toSorted` é ES2023) | Resolvido com `[...lista].sort()`; não vale mudar o `tsconfig` por isso |
 | Aviso no CI: `ubuntu-latest` vira Ubuntu 26 em 19/10/2026 | Migração do GitHub | Nada a fazer; se o CI quebrar depois dessa data, começar por aqui |
+| `npx biome` rodou um pacote errado pelo Node do Windows | O shell do Claude não carrega o nvm | Claude: `source ~/.nvm/nvm.sh` antes de npm/npx, e `npx --no-install` |
+| Prova de quebra do B15 passou verde da primeira vez | Tirar só o `FOR UPDATE` não quebra nada: o `UPDATE ... increment` é atômico | Entendido — changelog, seção A2 |
 
 **Pendências anotadas:**
 - Na D1: excluir `**/*.test.ts` e `src/testes/` do build.
-- Os testes unitários pagam a limpeza do banco (~100 ms cada, por causa
-  do `beforeEach` global). Aceito; separar em dois grupos só se pesar.
+- **Suíte em ~108 s.** Medir antes de otimizar; um banco por worker é a
+  opção de maior ganho. **Não** montar cenário direto no banco.
+- **Rever o `podeExecutar`**: aceita colaborador **ou** aprovador
+  designado; o PRD §8 pede colaborador para publicar, submeter e
+  excluir. Decidir com a analista se vira bug antes de mexer (detalhe no
+  changelog, seção A2).
+- Quando o `/retirar` (RN-48) existir, as tabelas de máquina de estados
+  e de permissões ganham a ação nova.
 
 ## 6. Próximo passo
 
-1. **Fechar a A1:** conferir o CI verde no último push → `gh pr ready 2`
-   → Matthew mescla o PR #2 pelo GitHub → `git switch main` →
-   `git pull`.
-2. **Abrir a A2:** `git switch -c fase/a2-rede-protecao`, e abrir o PR
-   em rascunho logo no primeiro push (o CI só roda com PR aberto).
-3. **Primeiro item da A2 (Claude, depois de anunciar e Matthew
-   confirmar):** o fluxo completo, a partir de
-   `testes/old/requests-fluxo-completo.http` — NC → classificação →
-   contenção → investigação → ação → verificação → fechamento. Vai
-   precisar de fábricas novas (NC publicada, itens filhos) e de
-   atribuições (aprovador designado).
-4. O **teste de concorrência** do código sequencial é de Matthew:
-   Claude explica condição de corrida antes.
+1. `git push`, conferir o **CI verde** no PR #3 (`gh pr checks 3`),
+   tirar do rascunho (`gh pr ready 3`) e fazer o merge.
+2. Criar a branch da A3 a partir da `main` atualizada.
+3. **A3, ordem 1: B9 — Matthew escreve** (primeiro TDD: o teste que
+   falha antes do conserto). Antes, Claude explica TDD e por que o
+   `new Date()` no schema é calculado uma vez só.

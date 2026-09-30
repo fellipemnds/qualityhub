@@ -12,7 +12,8 @@ export async function criarUsuario({
     email?: string;
     senha?: string | null;
 } = {}) {
-    const senhaHash = senha === null ? null : await bcrypt.hash(senha, 10);
+    // 4 para diminuir o custo dos testes. Produção é 10
+    const senhaHash = senha === null ? null : await bcrypt.hash(senha, 4);
     const usuario = await prisma.usuario.create({
         data: {
             nome,
@@ -64,5 +65,8 @@ export async function loginComo(perfil: Perfil) {
         throw new Error(`loginComo("${perfil}") falhou: ${resposta.statusCode} ${resposta.body}`);
     }
 
-    return { usuario, token: resposta.json<{ token: string }>().token };
+    const { token } = resposta.json<{ token: string }>();
+
+    // O cabeçalho pronto: o formato mora só aqui (na A4 vira cookie)
+    return { usuario, token, autenticacao: { authorization: `Bearer ${token}` } };
 }
