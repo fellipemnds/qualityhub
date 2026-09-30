@@ -205,10 +205,10 @@ leva ~15 s.
   URL ser trocada.
 - `fileParallelism: false`: todos os arquivos usam o mesmo banco.
 
-Testes manuais antigos em `testes/old/*.http` (REST Client do VS Code)
-e `testes/setup-usuarios-teste.sql` (7 usuários cobrindo cada
-combinação de papel — base das fábricas). Cada `.http` é apagado
-quando um teste automático cobre o mesmo fluxo.
+Os testes manuais antigos (`testes/old/*.http`, REST Client) foram
+aposentados na A2 (2026-09-30): tudo o que exercitavam tem teste
+automático. Fica o `testes/setup-usuarios-teste.sql` (7 usuários
+cobrindo cada combinação de papel — base das fábricas).
 
 ## O que falta
 
