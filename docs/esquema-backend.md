@@ -206,10 +206,16 @@ Ações novas em `compartilhado/permissoes/catalogo.ts`:
 |---|---|---|
 | `ANEXAR` | `EDITOR`, `APROVADOR`, `GERENTE` | Enviar e remover anexo (com atribuição de colaborador). `APROVADOR` entra porque o QA anexa evidência na Verificação |
 | `GERENCIAR_SETORES` | `ADMIN` | Criar, renomear, desativar e reativar setores |
+| `TROCAR_APROVADOR_EM_APROVACAO` | `GERENTE` | Trocar o aprovador de item `EM_APROVACAO` (RN-47, B17). O limite de estado fica no service; o catálogo diz só quem |
 
 Comentar (`COMENTAR`), relatórios (`GERAR_RELATORIOS`) e usuários
 (`GERENCIAR_USUARIOS`) já existem. A busca de pessoas e o feed usam
 `VISUALIZAR`.
+
+Retirar da aprovação (RN-48) **não** ganha ação própria: reaproveita a
+de submeter (`SUBMETER`; `CLASSIFICAR` na Classificação), passada como
+parâmetro, como já fazem `publicar` e `submeter` — "quem pode submeter
+pode retirar" fica escrito no código, sem duas listas iguais.
 
 ---
 
@@ -480,4 +486,4 @@ Com Matthew, em 2026-09-24.
 | 2026-09-24 | v1.1 — revisão cruzada com o código: B9–B13; guarda em dois grupos (filhos/envio) com aprovador; triagem inclui filhos; catálogo de permissões novas; eventos do feed; regras de convite e usuário inativo |
 | 2026-09-28 | v1.2 — B14 (data obrigatória vazia passa na validação), achado pelos testes da fase A2 |
 | 2026-09-30 | v1.3 — B15 (primeira publicação do ano sob concorrência dá erro 500), achado pelo teste de concorrência da A2 |
-| 2026-09-30 | v1.4 — B16 (colaborador inexistente dá 500) e B17 (atribuições em qualquer estado), dos testes de atribuição da A2; rota nova `/retirar` (RN-48) |
+| 2026-09-30 | v1.4 — B16 (colaborador inexistente dá 500) e B17 (atribuições em qualquer estado), dos testes de atribuição da A2; rota nova `/retirar` (RN-48); ação `TROCAR_APROVADOR_EM_APROVACAO` no catálogo |
