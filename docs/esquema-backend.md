@@ -349,6 +349,7 @@ de todo mundo não precisam ir para qualquer tela.
 | Δ | `POST /nc/:id/submeter` | Guarda nova (RN-21) |
 | Δ | `PATCH /nc/:id` · `POST /nc` | `detectadoEm` comparado com o **dia de hoje em São Paulo**, calculado a cada requisição (B9, B11) |
 | Δ | `POST /nc/:id/cancelar` | Recusa `RASCUNHO` (B12) |
+| ＋ | `POST /nc/:id/retirar` | Retira da aprovação: `EM_APROVACAO` → `ABERTO`, mesmo portão, sem `Aprovacao` (RN-48) |
 | = | `DELETE`, `/publicar`, `/decidir`, `/reabrir` | — |
 
 ### 6.4 Filhos
@@ -361,6 +362,7 @@ Mesma forma para os cinco tipos: `POST /nc/:ncId/<tipo>` para criar;
 |---|---|---|
 | Δ | Todos os `POST /nc/:ncId/<tipo>` | O filho nasce com o **aprovador da NC**, se houver (RN-46, B13) |
 | Δ | Todos os `/<tipo>/:id/cancelar` | Recusam `RASCUNHO` (B12) |
+| ＋ | Todos os `POST /<tipo>/:id/retirar` | Retira da aprovação, como na NC (RN-48). Não vale para Verificação (não tem portão) |
 | Δ | Todos os `GET /<tipo>/:id` | + último motivo de reprovação |
 | Δ | `POST /nc/:ncId/acoes-corretivas` · `PATCH /acoes-corretivas/:id` | `investigacaoId` precisa ser de uma investigação **desta NC**, não cancelada; **obrigatório** para enviar o plano (B10) |
 | ＋ | `POST /investigacoes/:id/hipoteses` | Cria hipótese (lacuna L1) — só colaborador, investigação editável |
@@ -377,7 +379,7 @@ Mesma forma para os cinco tipos: `POST /nc/:ncId/<tipo>` para criar;
 | | Método e caminho | O que faz |
 |---|---|---|
 | ＋ | `GET /registros/:id/atribuicoes` | Colaboradores e aprovador (painel de atribuições) |
-| = | `PUT /registros/:id/aprovador` · `POST`/`DELETE /registros/:id/colaboradores` | — |
+| Δ | `PUT /registros/:id/aprovador` · `POST`/`DELETE /registros/:id/colaboradores` | Só em `RASCUNHO`/`ABERTO`; em `EM_APROVACAO`, só o `GERENTE` troca o aprovador (RN-47, B17). Colaborador inexistente → 404 (B16) |
 | ＋ | `GET /registros/:id/feed?cursor=` | Eventos + comentários, em ordem cronológica, paginado |
 | ＋ | `POST /registros/:id/comentarios` | Comenta (ou responde, com `respostaAId`) |
 | ＋ | `PATCH /comentarios/:id` · `DELETE /comentarios/:id` | RN-31 a RN-33 |
@@ -431,6 +433,8 @@ Encontradas na **revisão cruzada** dos documentos com o código
 | **B13** | **Filho nasce sem aprovador** e só `APROVADOR`/`GERENTE` pode definir um; o colaborador fica travado para enviar, sem ninguém ser avisado (PRD Q13) | Services de criação dos filhos | Copiar o aprovador da NC na criação (RN-46); filho publicado sem aprovador entra na triagem (§4.4) |
 | **B14** | **Data obrigatória vazia passa na validação.** `z.coerce.date()` converte o `null` que vem do banco em `new Date(null)` = 01/01/1970, uma data válida — o item avança sem a data. Afeta `detectadoEm` (publicar NC), `executadaEm` (fechar contenção), `prazo` (submeter plano), `executadoEm` (finalizar execução, RN-25) e `verificadoEm` (concluir verificação). Comprovado com o `prazo`; achado pelos testes da A2 | Schemas de publicação/fechamento dos cinco | Recusar `null`/vazio antes de converter; um teste que falha por campo |
 | **B15** | **Primeira publicação do ano sob concorrência dá erro 500.** Quando o contador de `(prefixo, ano)` ainda não existe, o `SELECT ... FOR UPDATE` não encontra linha e não trava nada: as publicações simultâneas vão todas para o `criar`, e a chave primária recusa as repetidas (`ContadorSequencia_pkey`). Nenhum código sai repetido (o banco protege), mas o usuário recebe "Erro interno". Com o contador já existente, o `UPDATE ... increment` é atômico e funciona. Achado pelos testes da A2 (8 de 10 publicações simultâneas falharam) | `sequencia.repository.ts`, `sequencia.service.ts` | Criar ou incrementar num único comando atômico (`INSERT ... ON CONFLICT (prefixo, ano) DO UPDATE ... RETURNING`), sem o `buscarELocar`. Teste pronto: `sequencia.test.ts`, hoje marcado com `it.fails` |
+| **B16** | **Adicionar como colaborador um usuário que não existe dá 500.** O service não confere se o usuário existe, e o erro de chave estrangeira do Prisma (P2003) cai no tratador genérico. Achado pelos testes da A2 | `atribuicao.service.ts` (`adicionarColaboradores`) | Conferir cada id antes de inserir e responder 404, como o `definirAprovador` já faz |
+| **B17** | **Atribuições mudam em qualquer estado**, inclusive em item `FECHADO` ou `CANCELADO`: nenhuma das três rotas confere o estado (PRD Q15). Achado pelos testes da A2 | `atribuicao.service.ts` | Recusar (409) fora de `RASCUNHO`/`ABERTO`; em `EM_APROVACAO`, aceitar só a troca de aprovador por `GERENTE` (RN-47) |
 
 **Os mais graves são B1, B2 e B9.** B1 e B2, juntos, permitem que a ação
 corretiva seja feita sem o QA concordar com o plano — exatamente o que o
@@ -442,7 +446,7 @@ logo no primeiro dia depois do deploy.
 ## 8. Ordem sugerida (para o Plano de Implementação)
 
 1. Testes sobre o comportamento **atual** (rede de proteção)
-2. B1–B15, cada um com seu teste
+2. B1–B17, cada um com seu teste
 3. Sessão nova (M1 parcial + rotas de auth)
 4. Schema de resposta em todas as rotas + prefixo `/api` + OpenAPI
 5. Usuários, setores, pessoas (M1, M2)
@@ -476,3 +480,4 @@ Com Matthew, em 2026-09-24.
 | 2026-09-24 | v1.1 — revisão cruzada com o código: B9–B13; guarda em dois grupos (filhos/envio) com aprovador; triagem inclui filhos; catálogo de permissões novas; eventos do feed; regras de convite e usuário inativo |
 | 2026-09-28 | v1.2 — B14 (data obrigatória vazia passa na validação), achado pelos testes da fase A2 |
 | 2026-09-30 | v1.3 — B15 (primeira publicação do ano sob concorrência dá erro 500), achado pelo teste de concorrência da A2 |
+| 2026-09-30 | v1.4 — B16 (colaborador inexistente dá 500) e B17 (atribuições em qualquer estado), dos testes de atribuição da A2; rota nova `/retirar` (RN-48) |

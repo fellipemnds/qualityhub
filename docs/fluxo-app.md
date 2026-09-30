@@ -386,7 +386,9 @@ De cima para baixo:
    **Novo…** quando o papel permite. As Verificações aparecem, mas **não
    têm "Nova"**, porque nascem sozinhas.
 6. **Painel de atribuições**: colaboradores e aprovador, com
-   adicionar/remover/definir conforme RN-18.
+   adicionar/remover/definir conforme RN-18. Só em `RASCUNHO` e
+   `ABERTO`; em `EM_APROVACAO`, só o `GERENTE` troca o aprovador (RN-47).
+   Nos outros estados, o painel é só leitura.
 7. **Anexos**.
 8. **Feed** (J10).
 
@@ -437,6 +439,7 @@ papel e pela atribuição da pessoa (princípio 3).
 | | Concluir | Colaborador com papel `APROVADOR` | Verificação |
 | | Cancelar | Aprovador do item ou `GERENTE` | Todos, **exceto Classificação** |
 | `EM_APROVACAO` | Aprovar · Reprovar | **O** aprovador | Todos com portão |
+| | Retirar da aprovação | Colaborador (RN-48) | Todos com portão |
 | | Cancelar | Aprovador do item ou `GERENTE` | Todos, exceto Classificação |
 | `FECHADO` | Reabrir | Qualquer `APROVADOR` | **Só NC** (RN-42) |
 | `CANCELADO` | — | — | — |
@@ -517,3 +520,4 @@ Com Matthew, em 2026-09-24.
 |---|---|
 | 2026-09-24 | v1 — decisões de navegação e F1–F5 |
 | 2026-09-24 | v1.1 — revisão cruzada: etapa "Pronta para fechamento" olha só os filhos; aprovador no checklist; herança do aprovador (RN-46); rascunho não se cancela; vínculo obrigatório da AC com investigação; prefixos reais dos códigos |
+| 2026-09-30 | v1.2 — atribuições só em `RASCUNHO`/`ABERTO` (RN-47); ação "Retirar da aprovação" (RN-48) |
