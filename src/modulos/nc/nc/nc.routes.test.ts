@@ -175,6 +175,28 @@ describe("DELETE /nc/:id", () => {
 });
 
 describe("POST /nc/:id/publicar", () => {
+    it("recusa publicar sem data de detecção (B14)", async () => {
+        // Prepara: todos os campos da publicação, menos a data
+        const editor = await loginComo("editor");
+        const nc = await chamar(editor, "POST", "/nc", 201, {
+            titulo: "Vazamento de óleo na linha 2",
+            descricao: "Identificado vazamento de óleo hidráulico durante inspeção de rotina na linha 2.",
+            requisitoViolado: "Procedimento PO-07, item 4.3 - inspeção de recebimento",
+            processoAfetado: "Linha de Produção 2",
+            setorId: editor.usuario.setorId,
+            origem: "OPERACAO",
+        });
+
+        // Chama
+        const resposta = await chamar(editor, "POST", `/nc/${nc.id}/publicar`, 400);
+
+        // Confere
+        expect(resposta).toMatchObject({
+            mensagem: "Dados inválidos",
+            error: [expect.objectContaining({ path: ["detectadoEm"] })],
+        });
+    });
+
     it("responde 404 quando a NC não existe", async () => {
         const editor = await loginComo("editor");
 

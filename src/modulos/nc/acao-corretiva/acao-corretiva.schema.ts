@@ -14,12 +14,13 @@ export const acaoCorretivaPublicacaoSchema = acaoCorretivaBaseSchema;
 
 export const acaoCorretivaPlanoSchema = acaoCorretivaBaseSchema.extend({
     descricao: z.string().min(20),
-    prazo: z.coerce.date(),
+    // Validado no banco, onde a data já é Date: z.date() sem coerce, para o null ser recusado (B14)
+    prazo: z.date(),
     instrucoesVerificacao: z.string().min(1),
 });
 
 export const acaoCorretivaExecucaoSchema = acaoCorretivaPlanoSchema.extend({
-    executadoEm: z.coerce.date(),
+    executadoEm: z.date(),
     evidencia: z.string().min(1),
 });
 

@@ -5,20 +5,18 @@ import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { OrigemNC } from "../../../compartilhado/entidades/origem-nc.js";
 import { paginacaoCursorSchema } from "../../../compartilhado/registro/paginacao-cursor.js";
 
+// Compara dias, não instantes (TRD §6, B11): o dia guardado é lido em UTC (meia-noite UTC do dia), e o "hoje" é o de São
+// Paulo. Os dois no formato "AAAA-MM-DD", que ordena como texto
+const naoNoFuturo = (data: Date) => data.toISOString().slice(0, 10) <= hojeEmSaoPaulo();
+const MENSAGEM_FUTURO = "Data de detecção não pode ser no futuro";
+
 export const ncBaseSchema = z.object({
     titulo: z.string().min(5).max(200),
     descricao: z.string().min(20),
     requisitoViolado: z.string().min(1),
     processoAfetado: z.string().min(1),
     setorId: z.coerce.number().int().positive(),
-    // Compara dias, não instantes (TRD §6, B11): o dia guardado é lido em UTC (meia-noite UTC do dia), e o "hoje" é o de
-    // São Paulo. Os dois no formato "AAAA-MM-DD", que ordena como texto
-    detectadoEm: z.coerce
-        .date()
-        .refine(
-            (data) => data.toISOString().slice(0, 10) <= hojeEmSaoPaulo(),
-            "Data de detecção não pode ser no futuro",
-        ),
+    detectadoEm: z.coerce.date().refine(naoNoFuturo, MENSAGEM_FUTURO),
     origem: z.enum(OrigemNC),
     cliente: z.string().nullish(),
     riscosRevisados: z.string().min(1).nullish(),
@@ -26,8 +24,12 @@ export const ncBaseSchema = z.object({
 });
 
 export const ncRascunhoSchema = ncBaseSchema.partial();
-export const ncPublicacaoSchema = ncBaseSchema;
-export const ncFechamentoSchema = ncBaseSchema.extend({
+// Publicação e fechamento validam o que está no banco, onde a data já é Date: z.date() sem coerce, para o null ser
+// recusado (o z.coerce.date() o transformava em 01/01/1970 — B14)
+export const ncPublicacaoSchema = ncBaseSchema.extend({
+    detectadoEm: z.date().refine(naoNoFuturo, MENSAGEM_FUTURO),
+});
+export const ncFechamentoSchema = ncPublicacaoSchema.extend({
     riscosRevisados: z.string().min(1),
     mudancasSGQ: z.string().min(1),
 });

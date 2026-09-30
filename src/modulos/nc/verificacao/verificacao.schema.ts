@@ -14,7 +14,8 @@ export const verificacaoRascunhoSchema = verificacaoBaseSchema.partial();
 export const verificacaoConclusaoSchema = verificacaoBaseSchema.extend({
     resultado: z.enum(ResultadoVerificacao),
     conclusao: z.string().min(1),
-    verificadoEm: z.coerce.date(),
+    // Validado no banco, onde a data já é Date: z.date() sem coerce, para o null ser recusado (B14)
+    verificadoEm: z.date(),
 });
 
 export type VerificacaoBaseInput = z.infer<typeof verificacaoBaseSchema>;

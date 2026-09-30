@@ -35,3 +35,28 @@ describe("GET /verificacoes", () => {
         expect(fechadas).toEqual([]);
     });
 });
+
+describe("POST /verificacoes/:id/concluir", () => {
+    it("recusa sem a data da verificação (B14)", async () => {
+        // Prepara: resultado e conclusão preenchidos, a data não. Concluir exige ser colaborador
+        const cenario = await ncProntaParaFechar();
+        const { gerente, aprovador } = cenario;
+        const { verificacao } = await executarAcao(cenario);
+        await chamar(gerente, "POST", `/registros/${verificacao.id}/colaboradores`, 200, {
+            colaboradores: [aprovador.usuario.id],
+        });
+        await chamar(aprovador, "PATCH", `/verificacoes/${verificacao.id}`, 200, {
+            resultado: "EFICAZ",
+            conclusao: "Verificação feita na linha 2 depois do prazo, conforme as instruções do plano.",
+        });
+
+        // Chama
+        const resposta = await chamar(aprovador, "POST", `/verificacoes/${verificacao.id}/concluir`, 400);
+
+        // Confere
+        expect(resposta).toMatchObject({
+            mensagem: "Dados inválidos",
+            error: [expect.objectContaining({ path: ["verificadoEm"] })],
+        });
+    });
+});

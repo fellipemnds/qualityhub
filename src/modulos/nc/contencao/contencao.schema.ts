@@ -9,7 +9,8 @@ export const contencaoBaseSchema = z.object({
 export const contencaoRascunhoSchema = contencaoBaseSchema.partial();
 export const contencaoPublicacaoSchema = contencaoBaseSchema;
 export const contencaoFechamentoSchema = contencaoBaseSchema.extend({
-    executadaEm: z.coerce.date(),
+    // Validado no banco, onde a data já é Date: z.date() sem coerce, para o null ser recusado (B14)
+    executadaEm: z.date(),
     disposicao: z.enum(Disposicao),
 });
 

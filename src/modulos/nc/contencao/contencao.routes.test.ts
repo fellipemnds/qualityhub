@@ -84,6 +84,21 @@ describe("GET /contencoes", () => {
 });
 
 describe("POST /contencoes/:id/submeter", () => {
+    it("recusa sem a data de execução (B14)", async () => {
+        // Prepara: a disposição preenchida, a data não
+        const { editor, contencao } = await levarContencaoAte("ABERTO");
+        await chamar(editor, "PATCH", `/contencoes/${contencao.id}`, 200, { disposicao: "CORRIGIDO" });
+
+        // Chama
+        const resposta = await chamar(editor, "POST", `/contencoes/${contencao.id}/submeter`, 400);
+
+        // Confere
+        expect(resposta).toMatchObject({
+            mensagem: "Dados inválidos",
+            error: [expect.objectContaining({ path: ["executadaEm"] })],
+        });
+    });
+
     it("recusa sem aprovador definido (RN-13)", async () => {
         // Prepara (o filho nasce sem aprovador: B13)
         const { editor, nc } = await ncPublicada();

@@ -39,11 +39,12 @@ describe("POST /acoes-corretivas/:id/submeter", () => {
         // Chama
         const resposta = await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/submeter`, 400);
 
-        // Confere (o prazo vazio NÃO é recusado hoje: bug B14, da A3)
+        // Confere (o prazo vazio também: B14)
         expect(resposta).toMatchObject({
             mensagem: "Dados inválidos",
             error: expect.arrayContaining([
                 expect.objectContaining({ path: ["descricao"] }),
+                expect.objectContaining({ path: ["prazo"] }),
                 expect.objectContaining({ path: ["instrucoesVerificacao"] }),
             ]),
         });
@@ -74,10 +75,13 @@ describe("POST /acoes-corretivas/:id/finalizar-execucao", () => {
             diasParaVerificar: 30,
         });
 
-        // Confere (a data de execução vazia NÃO é recusada hoje: bug B14, da A3)
+        // Confere (a data de execução vazia também: B14)
         expect(resposta).toMatchObject({
             mensagem: "Dados inválidos",
-            error: expect.arrayContaining([expect.objectContaining({ path: ["evidencia"] })]),
+            error: expect.arrayContaining([
+                expect.objectContaining({ path: ["executadoEm"] }),
+                expect.objectContaining({ path: ["evidencia"] }),
+            ]),
         });
     });
 
