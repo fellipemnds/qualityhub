@@ -418,7 +418,7 @@ O Git leva o código de um computador para o outro, mas **nem tudo que o projeto
 | Estrutura do banco de desenvolvimento | Não (o banco mora no Docker de cada máquina) | `npm run preparar` aplica as migrations que faltam |
 | Usuários de teste no banco | Não | `testes/setup-usuarios-teste.sql` (passo 12.1.7) |
 | `.env` (segredos) | **Nunca** | Cada máquina tem o seu; as **chaves** precisam ser as mesmas do `.env.example` |
-| Extensão do Biome no VS Code | Só a recomendação | Aceitar a sugestão que o VS Code mostra ao abrir o projeto |
+| Extensões do VS Code | Só a recomendação do Biome | Instalar a lista do **12.4** (uma vez por máquina) |
 | Chave SSH, login do `gh` | Não | Uma vez por máquina |
 | Memória e conversa do Claude Code | Não | O Claude de cada máquina lê o `CLAUDE.md` e o **`handoff.md`** (estado da sessão) — por isso o `handoff.md` precisa estar sempre atualizado |
 
@@ -546,3 +546,67 @@ npm run preparar
 - **Nunca commitar o `.env`.** Ele tem segredos; o `.gitignore` já o protege.
 - **A `main` é protegida:** mudanças entram só por Pull Request. O trabalho acontece sempre numa branch de fase.
 - **Nunca rodar `npm audit fix --force`:** a "correção" rebaixa o Prisma para a versão 6 e quebra o projeto (veja `docs/trd.md` §13).
+
+### 12.4 Extensões do VS Code
+
+Levantadas no computador do trabalho em 2026-09-30. O VS Code instala extensões em **dois lugares**: no **Windows** (a interface) e no **WSL** (onde o projeto roda). A maioria precisa estar no WSL.
+
+**Só no Windows** — instale pela aba Extensões do VS Code, **fora** do WSL:
+
+| Extensão | Para quê |
+|---|---|
+| `ms-vscode-remote.remote-wsl` (WSL) | Abrir o projeto dentro do Ubuntu. **Obrigatória** |
+| `ms-ceintl.vscode-language-pack-pt-br` | VS Code em português |
+
+**No WSL** — com o projeto aberto no VS Code (canto inferior esquerdo mostrando "WSL: Ubuntu"), rode no terminal do VS Code:
+
+```bash
+for ext in biomejs.biome prisma.prisma usernamehw.errorlens ms-azuretools.vscode-containers github.vscode-github-actions github.vscode-pull-request-github eamodio.gitlens anthropic.claude-code miguelsolorio.symbols; do code --install-extension "$ext"; done
+```
+
+| Extensão | Para quê |
+|---|---|
+| `biomejs.biome` | Formatação e lint ao salvar (o `.vscode/settings.json` já aponta para ele). **Obrigatória** |
+| `prisma.prisma` | Destaque e formatação do `schema.prisma` |
+| `usernamehw.errorlens` | Mostra o erro do TypeScript/Biome na própria linha |
+| `ms-azuretools.vscode-containers` | Ver e controlar o contêiner do banco (substitui a antiga extensão Docker) |
+| `github.vscode-github-actions` | Ver o CI sem sair do editor |
+| `github.vscode-pull-request-github` | Ver e revisar Pull Requests |
+| `eamodio.gitlens` | Histórico do Git linha a linha |
+| `anthropic.claude-code` | Claude Code dentro do VS Code |
+| `miguelsolorio.symbols` | Ícones dos arquivos (gosto pessoal) |
+
+**Não precisa instalar em casa:**
+
+| Extensão | Por quê |
+|---|---|
+| `esbenp.prettier-vscode` (Prettier) | O projeto usa o Biome; o Prettier está marcado como indesejado (`.vscode/extensions.json`). No trabalho ele ainda está no lado Windows — pode desinstalar |
+| `humao.rest-client` (REST Client) | Servia aos `.http`, aposentados na A2 |
+| `ritwickdey.liveserver` (Live Server) | Não é usada no projeto (o frontend terá o servidor do Vite) |
+| `ms-azuretools.vscode-docker` | Substituída pela `vscode-containers` |
+| `ms-vscode-remote.remote-containers` (Dev Containers) | O projeto não usa dev containers |
+
+**Conferir:** no terminal do WSL, `code --list-extensions` deve mostrar as 9 da lista do WSL.
+
+**Versões das ferramentas no trabalho** (2026-09-30), para comparar: Ubuntu 26.04.1 LTS · nvm 0.40.7 · Node 24.20.0 · npm 12.0.2 · Git 2.53.0 · Docker 29.8.0 · Docker Compose 5.5.1 · gh 2.101.0 · Claude Code 2.1.280. O que precisa bater é o **Node 24** (o `npm run preparar` cuida das dependências do projeto); as outras podem estar em versões próximas.
+
+### 12.5 Foto do ambiente: comparando os dois PCs
+
+Um script tira uma "foto" do ambiente desta máquina e a guarda no Git, em `docs/ambiente/`: versões do Ubuntu, nvm, Node (e o padrão do nvm), npm, Git, Docker, gh e Claude Code; nome e e-mail do Git; conta e escopos do `gh`; se o `.env` tem todas as chaves do `.env.example` (só os **nomes**, nunca os valores); se o banco está no ar e com as migrations em dia; e as extensões do VS Code nos dois lados (WSL e Windows).
+
+```bash
+npm run ambiente -- trabalho
+```
+```bash
+npm run ambiente -- casa
+```
+```bash
+npm run ambiente -- comparar
+```
+
+- Rode o da **máquina em que você está** (`trabalho` ou `casa`). Leva uns 10 segundos.
+- O **`comparar`** mostra as linhas diferentes: `-` é do trabalho, `+` é de casa. O `hostname` sempre difere (é o nome de cada PC); o resto, idealmente, não.
+- **O que mudou nesta máquina** desde a última foto aparece no `git diff docs/ambiente/<máquina>.txt`.
+- A foto **não tem data nem hora** de propósito (senão toda comparação acusaria diferença); a data fica no commit.
+
+O Claude Code roda isso sozinho ao trocar de computador (regra no `CLAUDE.md`) e registra as diferenças no `handoff.md`.
