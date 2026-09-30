@@ -47,7 +47,7 @@ flowchart TD
     subgraph A[Bloco A — Fundação do backend]
         A0[A0 Preparação] --> A1[A1 Aprender testes<br/>+ infraestrutura]
         A1 --> A2[A2 Rede de proteção]
-        A2 --> A3[A3 Correções B1–B17]
+        A2 --> A3[A3 Correções B1–B18]
         A3 --> A4[A4 Sessão nova]
         A4 --> A5[A5 Contrato da API]
         A5 --> A6[A6 Usuários e setores]
@@ -157,7 +157,7 @@ antes de qualquer mudança de regra.
 | Atribuições: um aprovador por item, sem duplicata, RN-12 | 🤖 |
 | Aposentar os `.http` cobertos | 🤖 |
 
-**Os bugs B1–B17 não entram aqui.** Esta fase fotografa o que está
+**Os bugs B1–B18 não entram aqui.** Esta fase fotografa o que está
 **certo**; os bugs ganham seus testes na A3.
 
 ### A3 — Correções de regra · G
@@ -185,6 +185,7 @@ antes de qualquer mudança de regra.
 | 16 | **B16** — colaborador inexistente responde 404, não 500 | 🤖 |
 | 17 | **B17** — atribuições só em `RASCUNHO`/`ABERTO`; em `EM_APROVACAO`, só o `GERENTE` troca o aprovador (RN-47) | 🤖 |
 | 18 | **RN-48** — retirar da aprovação (`POST /<tipo>/:id/retirar`): transição nova no `ciclo-vida.service.ts`, auditada. Não é bug: regra nova (PRD Q16) | 🤖 |
+| 19 | **B18** — motivo em branco (reabrir, cancelar) recusado com 400 no schema; mensagens corrigidas. Testes prontos com `it.fails` | 🤖 |
 
 **Aprendizado:** TDD (escrever o teste antes do conserto); por que uma
 regra deve morar num lugar só.
@@ -241,7 +242,7 @@ RF-20).
 
 Antes do Bloco C começar:
 - A0–A6 concluídas, CI verde na `main`.
-- Nenhum bug B1–B17 aberto.
+- Nenhum bug B1–B18 aberto.
 - OpenAPI completo, gerando sem erro.
 
 ---
@@ -315,7 +316,7 @@ Onde cada item dos documentos anteriores é feito:
 
 | Item | Fase |
 |---|---|
-| B1–B6, B8–B17 · RN-06, RN-46, RN-47, RN-48 | A3 |
+| B1–B6, B8–B18 · RN-06, RN-46, RN-47, RN-48 | A3 |
 | Primeiro `ADMIN` e primeiro setor em produção | A6 (script), D1 (uso) |
 | B7 (papéis no JWT) · RNF-09, RNF-10 | A4 |
 | Pendência 1 (ações de auditoria) · pendência 5 (`ignoreTrailingSlash`) | A5 · A0 |
@@ -362,3 +363,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-09-28 | B14 entra na A3 (ordem 3, depois do B11), achado pelos testes da A2 |
 | 2026-09-30 | B15 entra na A3 (ordem 15), achado pelo teste de concorrência da A2 |
 | 2026-09-30 | B16, B17 e RN-48 entram na A3 (ordens 16–18), dos testes de atribuição da A2 |
+| 2026-09-30 | B18 entra na A3 (ordem 19), dos testes que aposentaram os `.http` |
