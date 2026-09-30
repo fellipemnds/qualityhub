@@ -1,5 +1,6 @@
 import { expect } from "vitest";
 import { app } from "../app.js";
+import { hojeEmSaoPaulo } from "../compartilhado/datas/hoje-em-sao-paulo.js";
 import { loginComo } from "./fabricas.js";
 
 // Cenários de teste montados pela API — passando pelas mesmas permissões e guardas que um usuário real. Cada
@@ -17,9 +18,16 @@ export async function chamar(quem: Quem, metodo: Metodo, url: string, statusEspe
     return resposta.body ? resposta.json() : undefined;
 }
 
-// Uma data a N dias de hoje, para o teste não depender do dia em que roda
+// Um instante a N dias de agora (para o relógio falso), para o teste não depender do dia em que roda
 export function daquiA(dias: number) {
     return new Date(Date.now() + dias * 24 * 60 * 60 * 1000).toISOString();
+}
+
+// Um dia de calendário a N dias de hoje em São Paulo, como "AAAA-MM-DD" — o formato dos campos de dia (TRD §6)
+export function diaDaquiA(dias: number) {
+    const dia = new Date(`${hojeEmSaoPaulo()}T00:00:00Z`);
+    dia.setUTCDate(dia.getUTCDate() + dias);
+    return dia.toISOString().slice(0, 10);
 }
 
 // Os quatro perfis do fluxo e uma NC publicada, com o aprovador designado
@@ -35,7 +43,7 @@ export async function ncPublicada() {
         requisitoViolado: "Procedimento PO-07, item 4.3 - inspeção de recebimento",
         processoAfetado: "Linha de Produção 2",
         setorId: editor.usuario.setorId,
-        detectadoEm: "2026-09-10T10:00:00.000Z",
+        detectadoEm: "2026-09-10",
         origem: "OPERACAO",
     });
     await chamar(editor, "PATCH", `/nc/${nc.id}`, 200, {
@@ -72,7 +80,7 @@ export async function ncProntaParaFechar() {
         descricao: "Retrabalho realizado na peça com defeito, substituindo a vedação danificada.",
     });
     await chamar(editor, "PATCH", `/contencoes/${contencao.id}`, 200, {
-        executadaEm: "2026-09-15T14:30:00.000Z",
+        executadaEm: "2026-09-15",
         disposicao: "CORRIGIDO",
     });
     await chamar(editor, "POST", `/contencoes/${contencao.id}/publicar`, 200);
@@ -147,7 +155,7 @@ export async function aprovarPlano({ editor, gerente, aprovador, nc, investigaca
     await chamar(gerente, "PUT", `/registros/${acao.id}/aprovador`, 200, { usuarioId: aprovador.usuario.id });
     await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
         descricao: "Atualizar o procedimento de manutenção para especificar o material correto de vedação.",
-        prazo: daquiA(15),
+        prazo: diaDaquiA(15),
         instrucoesVerificacao: "Após 30 dias de uso, inspecionar a vedação e confirmar ausência de vazamento.",
     });
     await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/submeter`, 200);
@@ -164,7 +172,7 @@ export async function executarAcao(cenario: CenarioComInvestigacao) {
     const acao = await aprovarPlano(cenario);
 
     await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
-        executadoEm: daquiA(-1),
+        executadoEm: diaDaquiA(-1),
         evidencia: "Procedimento PO-07 revisado e publicado na intranet, versão 3.0, com o material correto.",
     });
     const acaoFinalizada = await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/finalizar-execucao`, 200, {
@@ -191,7 +199,7 @@ export async function concluirVerificacao(
     await chamar(aprovador, "PATCH", `/verificacoes/${verificacaoId}`, 200, {
         resultado,
         conclusao: "Verificação feita na linha 2 depois do prazo, conforme as instruções do plano.",
-        verificadoEm: daquiA(0),
+        verificadoEm: diaDaquiA(0),
     });
     await chamar(aprovador, "POST", `/verificacoes/${verificacaoId}/concluir`, 200);
 }

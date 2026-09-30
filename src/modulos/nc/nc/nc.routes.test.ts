@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { app } from "../../../app.js";
-import { chamar, daquiA, ncProntaParaFechar, ncPublicada, perfisDeFora } from "../../../testes/cenarios.js";
+import { chamar, daquiA, diaDaquiA, ncProntaParaFechar, ncPublicada, perfisDeFora } from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
 import { levarNCAte } from "../../../testes/levar-ate/nc.js";
 
@@ -48,12 +48,32 @@ describe("POST /nc", () => {
         });
     });
 
+    it("recusa data de detecção com hora: dia de calendário é AAAA-MM-DD (TRD §6)", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+
+        // Chama
+        const resposta = await chamar(editor, "POST", "/nc", 400, {
+            titulo: "NC de testes",
+            detectadoEm: "2026-09-10T10:00:00.000Z",
+        });
+
+        // Confere
+        expect(resposta).toMatchObject({
+            mensagem: "Dados inválidos",
+            error: expect.arrayContaining([expect.objectContaining({ instancePath: "/detectadoEm" })]),
+        });
+    });
+
     it("recusa data de detecção no futuro", async () => {
         // Prepara
         const editor = await loginComo("editor");
 
         // Chama
-        const resposta = await chamar(editor, "POST", "/nc", 400, { titulo: "NC de testes", detectadoEm: daquiA(1) });
+        const resposta = await chamar(editor, "POST", "/nc", 400, {
+            titulo: "NC de testes",
+            detectadoEm: diaDaquiA(1),
+        });
 
         // Confere
         expect(resposta).toMatchObject({
@@ -88,11 +108,11 @@ describe("POST /nc", () => {
         const editor = await loginComo("editor");
 
         // Chama
-        const ontem = daquiA(-1);
+        const ontem = diaDaquiA(-1);
         const resposta = await chamar(editor, "POST", "/nc", 201, { titulo: "NC de testes", detectadoEm: ontem });
 
         // Confere
-        expect(resposta).toMatchObject({ estado: "RASCUNHO", detectadoEm: ontem });
+        expect(resposta).toMatchObject({ estado: "RASCUNHO", detectadoEm: `${ontem}T00:00:00.000Z` });
     });
 });
 
@@ -123,6 +143,20 @@ describe("POST /nc/:id/submeter", () => {
                 expect.objectContaining({ path: ["mudancasSGQ"] }),
             ]),
         });
+    });
+});
+
+describe("PATCH /nc/:id", () => {
+    it("null apaga a data de detecção, e não grava 01/01/1970 (B14)", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+        const nc = await chamar(editor, "POST", "/nc", 201, { titulo: "NC de testes", detectadoEm: "2026-09-10" });
+
+        // Chama
+        const resposta = await chamar(editor, "PATCH", `/nc/${nc.id}`, 200, { detectadoEm: null });
+
+        // Confere
+        expect(resposta).toMatchObject({ detectadoEm: null });
     });
 });
 

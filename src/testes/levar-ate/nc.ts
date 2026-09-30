@@ -14,7 +14,7 @@ export async function levarNCAte(estado: EstadoRegistro) {
             requisitoViolado: "Desenho 1234, cota A",
             processoAfetado: "Linha de Produção 3",
             setorId: editor.usuario.setorId,
-            detectadoEm: "2026-09-10T10:00:00.000Z",
+            detectadoEm: "2026-09-10",
             origem: "OPERACAO",
         });
 

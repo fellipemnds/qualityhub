@@ -1,6 +1,6 @@
 import { expect } from "vitest";
 import type { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
-import { chamar, daquiA, executarAcao, ncProntaParaFechar } from "../cenarios.js";
+import { chamar, diaDaquiA, executarAcao, ncProntaParaFechar } from "../cenarios.js";
 
 // A Verificação nasce já ABERTA (gerada pelo finalizar-execucao) e fecha pelo concluir, sem portão: não passa por
 // RASCUNHO nem por EM_APROVACAO
@@ -37,7 +37,7 @@ export async function levarVerificacaoAte(estado: EstadoAlcancavel) {
     await chamar(aprovador, "PATCH", `/verificacoes/${verificacao.id}`, 200, {
         resultado: "EFICAZ",
         conclusao: "Verificação feita na linha 2 depois do prazo, conforme as instruções do plano.",
-        verificadoEm: daquiA(0),
+        verificadoEm: diaDaquiA(0),
     });
 
     await chamar(aprovador, "POST", `/verificacoes/${verificacao.id}/concluir`, 200);

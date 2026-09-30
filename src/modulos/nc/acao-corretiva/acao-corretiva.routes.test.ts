@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
     aprovarPlano,
     chamar,
-    daquiA,
+    diaDaquiA,
     executarAcao,
     ncProntaParaFechar,
     ncPublicada,
@@ -90,7 +90,7 @@ describe("POST /acoes-corretivas/:id/finalizar-execucao", () => {
         const cenario = await ncProntaParaFechar();
         const acao = await aprovarPlano(cenario);
         await chamar(cenario.editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
-            executadoEm: daquiA(-1),
+            executadoEm: diaDaquiA(-1),
             evidencia: "Procedimento PO-07 revisado e publicado na intranet.",
         });
 

@@ -1,15 +1,20 @@
 import z from "zod";
+import { diaDeCalendario } from "../../../compartilhado/datas/dia-de-calendario.js";
 
+// A base é a forma guardada no banco (datas já como Date); o rascunho é a entrada da API, com os dias em "AAAA-MM-DD"
 export const acaoCorretivaBaseSchema = z.object({
     investigacaoId: z.uuid().nullish(),
     descricao: z.string().min(20).nullish(),
-    prazo: z.coerce.date().nullish(),
-    executadoEm: z.coerce.date().nullish(),
+    prazo: z.date().nullish(),
+    executadoEm: z.date().nullish(),
     evidencia: z.string().min(1).nullish(),
     instrucoesVerificacao: z.string().min(1).nullish(),
 });
 
-export const acaoCorretivaRascunhoSchema = acaoCorretivaBaseSchema.partial();
+export const acaoCorretivaRascunhoSchema = acaoCorretivaBaseSchema.partial().extend({
+    prazo: diaDeCalendario().nullish(),
+    executadoEm: diaDeCalendario().nullish(),
+});
 export const acaoCorretivaPublicacaoSchema = acaoCorretivaBaseSchema;
 
 export const acaoCorretivaPlanoSchema = acaoCorretivaBaseSchema.extend({

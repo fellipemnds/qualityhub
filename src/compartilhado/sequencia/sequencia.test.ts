@@ -12,7 +12,7 @@ describe("Sequência de códigos", () => {
             requisitoViolado: "Procedimento PO-07, item 4.3 - inspeção de recebimento",
             processoAfetado: "Linha de Produção 2",
             setorId: editor.usuario.setorId,
-            detectadoEm: "2026-09-10T10:00:00.000Z",
+            detectadoEm: "2026-09-10",
             origem: "OPERACAO",
         };
 
@@ -54,7 +54,7 @@ describe("Sequência de códigos", () => {
             requisitoViolado: "Procedimento PO-07, item 4.3 - inspeção de recebimento",
             processoAfetado: "Linha de Produção 2",
             setorId: editor.usuario.setorId,
-            detectadoEm: "2026-09-10T10:00:00.000Z",
+            detectadoEm: "2026-09-10",
             origem: "OPERACAO",
         };
 

@@ -1,6 +1,6 @@
 import { expect } from "vitest";
 import type { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
-import { chamar, daquiA, ncProntaParaFechar } from "../cenarios.js";
+import { chamar, diaDaquiA, ncProntaParaFechar } from "../cenarios.js";
 
 // Só um portão (PLANO): aprovar o plano volta a ação para ABERTO, e o FECHADO vem do finalizar-execucao. O ABERTO
 // depois do plano aprovado fica de fora — o que ele permite hoje está errado (B1, B2).
@@ -41,7 +41,7 @@ export async function levarAcaoCorretivaAte(estado: EstadoRegistro) {
     // Degrau 3: Em Aprovação — o submeter exige o plano preenchido
     await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
         descricao: "Atualizar o procedimento de manutenção para especificar o material correto de vedação.",
-        prazo: daquiA(15),
+        prazo: diaDaquiA(15),
         instrucoesVerificacao: "Após 30 dias de uso, inspecionar a vedação e confirmar ausência de vazamento.",
     });
 
@@ -59,7 +59,7 @@ export async function levarAcaoCorretivaAte(estado: EstadoRegistro) {
     expect(await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200)).toMatchObject({ estado: "ABERTO" });
 
     await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
-        executadoEm: daquiA(-1),
+        executadoEm: diaDaquiA(-1),
         evidencia: "Procedimento PO-07 revisado e publicado na intranet, versão 3.0, com o material correto.",
     });
 

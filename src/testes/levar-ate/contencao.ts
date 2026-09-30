@@ -1,6 +1,6 @@
 import { expect } from "vitest";
 import type { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
-import { chamar, daquiA, ncPublicada } from "../cenarios.js";
+import { chamar, diaDaquiA, ncPublicada } from "../cenarios.js";
 
 export async function levarContencaoAte(estado: EstadoRegistro) {
     const cenario = await ncPublicada();
@@ -39,7 +39,7 @@ export async function levarContencaoAte(estado: EstadoRegistro) {
 
     // Degrau 3: Em Aprovação
     await chamar(editor, "PATCH", `/contencoes/${contencao.id}`, 200, {
-        executadaEm: daquiA(-1),
+        executadaEm: diaDaquiA(-1),
         disposicao: "CORRIGIDO",
     });
 

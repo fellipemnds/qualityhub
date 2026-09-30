@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
-import { chamar, daquiA, ncPublicada } from "../../../testes/cenarios.js";
+import { chamar, diaDaquiA, ncPublicada } from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
 import { levarContencaoAte } from "../../../testes/levar-ate/contencao.js";
 
@@ -38,6 +38,25 @@ describe("PATCH /contencoes/:id", () => {
         expect(resposta).toMatchObject({
             mensagem: "Dados inválidos",
             error: expect.arrayContaining([expect.objectContaining({ instancePath: "/disposicao" })]),
+        });
+    });
+});
+
+describe("PATCH /contencoes/:id", () => {
+    it("recusa número como data: 0 viraria 01/01/1970 (B14)", async () => {
+        // Prepara
+        const { editor, nc } = await ncPublicada();
+        const contencao = await chamar(editor, "POST", `/nc/${nc.id}/contencoes`, 201, {
+            descricao: "Retrabalho realizado na peça com defeito.",
+        });
+
+        // Chama
+        const resposta = await chamar(editor, "PATCH", `/contencoes/${contencao.id}`, 400, { executadaEm: 0 });
+
+        // Confere
+        expect(resposta).toMatchObject({
+            mensagem: "Dados inválidos",
+            error: expect.arrayContaining([expect.objectContaining({ instancePath: "/executadaEm" })]),
         });
     });
 });
@@ -104,7 +123,7 @@ describe("POST /contencoes/:id/submeter", () => {
         const { editor, nc } = await ncPublicada();
         const contencao = await chamar(editor, "POST", `/nc/${nc.id}/contencoes`, 201, {
             descricao: "Retrabalho realizado na peça com defeito.",
-            executadaEm: daquiA(-1),
+            executadaEm: diaDaquiA(-1),
             disposicao: "CORRIGIDO",
         });
         await chamar(editor, "POST", `/contencoes/${contencao.id}/publicar`, 200);
@@ -154,7 +173,7 @@ describe("POST /contencoes/:id/decidir", () => {
         const { gerente, qa, nc } = await ncPublicada();
         const contencao = await chamar(qa, "POST", `/nc/${nc.id}/contencoes`, 201, {
             descricao: "Retrabalho realizado na peça com defeito.",
-            executadaEm: daquiA(-1),
+            executadaEm: diaDaquiA(-1),
             disposicao: "CORRIGIDO",
         });
         await chamar(qa, "POST", `/contencoes/${contencao.id}/publicar`, 200);

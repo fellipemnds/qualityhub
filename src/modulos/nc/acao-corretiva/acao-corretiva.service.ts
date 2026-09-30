@@ -1,6 +1,7 @@
 import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
+import { meiaNoiteUtc } from "../../../compartilhado/datas/dia-de-calendario.js";
 import { hojeEmSaoPaulo } from "../../../compartilhado/datas/hoje-em-sao-paulo.js";
 import type { Ator } from "../../../compartilhado/entidades/ator.js";
 import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
@@ -169,7 +170,7 @@ export const acaoCorretivaService = {
             // Um "hoje" só, para o prazo e o ano do código nunca discordarem. O prazo é um dia de calendário:
             // meia-noite UTC do dia (TRD §6, B11)
             const hoje = hojeEmSaoPaulo();
-            const prazoVerificacao = new Date(`${hoje}T00:00:00Z`);
+            const prazoVerificacao = meiaNoiteUtc(hoje);
             prazoVerificacao.setUTCDate(prazoVerificacao.getUTCDate() + diasParaVerificar);
 
             const registroVerificacao = await cicloVidaService.criarRascunho(tx, {
