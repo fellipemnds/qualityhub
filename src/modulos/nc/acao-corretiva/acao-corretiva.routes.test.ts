@@ -87,6 +87,44 @@ describe("GET /acoes-corretivas/:id", () => {
     });
 });
 
+describe("PATCH /acoes-corretivas/:id", () => {
+    // Com o plano aprovado, o PATCH só aceita a execução: o que o QA aprovou não muda (B2). Recusa se o campo vier,
+    // mesmo com o mesmo valor (o investigacaoId vai igual)
+    it.each([
+        { campo: "descricao", valor: () => "Trocar a bomba hidráulica inteira, em vez de só a vedação." },
+        { campo: "prazo", valor: () => diaDaquiA(60) },
+        { campo: "instrucoesVerificacao", valor: () => "Verificar só visualmente, sem medir o vazamento." },
+        { campo: "investigacaoId", valor: (investigacaoId: string) => investigacaoId },
+    ])("recusa mudar o $campo do plano depois de aprovado (B2)", async ({ campo, valor }) => {
+        // Prepara
+        const { editor, acao, investigacao } = await levarAcaoCorretivaAte("PLANO_APROVADO");
+        const antes = await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200);
+
+        // Chama
+        const resposta = await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 409, {
+            [campo]: valor(investigacao.id),
+        });
+
+        // Confere
+        expect(resposta.mensagem).toContain(campo);
+        expect(await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200)).toEqual(antes);
+    });
+
+    it("com o plano aprovado, registra a execução (B2)", async () => {
+        // Prepara
+        const { editor, acao } = await levarAcaoCorretivaAte("PLANO_APROVADO");
+
+        // Chama
+        const resposta = await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
+            executadoEm: diaDaquiA(-1),
+            evidencia: "Procedimento PO-07 revisado e publicado na intranet, versão 3.0, com o material correto.",
+        });
+
+        // Confere
+        expect(resposta).toMatchObject({ executadoEm: `${diaDaquiA(-1)}T00:00:00.000Z` });
+    });
+});
+
 describe("POST /acoes-corretivas/:id/submeter", () => {
     it("recusa o plano sem descrição e instruções de verificação", async () => {
         // Prepara

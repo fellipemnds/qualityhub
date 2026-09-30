@@ -1,12 +1,10 @@
 import { describe, it } from "vitest";
 import { chamar, perfisDeFora } from "../../testes/cenarios.js";
-import { levarAcaoCorretivaAte } from "../../testes/levar-ate/acao-corretiva.js";
-import type { EstadoRegistro } from "../entidades/estados.js";
+import { type DegrauAcaoCorretiva, levarAcaoCorretivaAte } from "../../testes/levar-ate/acao-corretiva.js";
 
 // Atribuições do levarAcaoCorretivaAte: o editor criou (colaborador), o aprovador é o designado; qa e gerente não
-// estão na ação. O finalizar-execucao fica de fora: o estado em que ele é permitido (ABERTO com o plano aprovado) não
-// é um degrau do levarAcaoCorretivaAte, que ainda não o tem por causa do B2.
-async function preparar(estado: EstadoRegistro) {
+// estão na ação.
+async function preparar(estado: DegrauAcaoCorretiva) {
     return { ...(await levarAcaoCorretivaAte(estado)), ...(await perfisDeFora()) };
 }
 
@@ -38,11 +36,15 @@ const acoes = {
         chamar(contexto[quem], "POST", `/acoes-corretivas/${contexto.acao.id}/cancelar`, 403, {
             motivo: "Tentativa de cancelar sem permissão",
         }),
+    finalizar: (contexto: Contexto, quem: Quem) =>
+        chamar(contexto[quem], "POST", `/acoes-corretivas/${contexto.acao.id}/finalizar-execucao`, 403, {
+            diasParaVerificar: 30,
+        }),
 };
 
 type NomeAcao = keyof typeof acoes;
 
-const tabela: { estado: EstadoRegistro; recusas: [NomeAcao, Quem[]][] }[] = [
+const tabela: { estado: DegrauAcaoCorretiva; recusas: [NomeAcao, Quem[]][] }[] = [
     {
         estado: "RASCUNHO",
         recusas: [
@@ -67,6 +69,11 @@ const tabela: { estado: EstadoRegistro; recusas: [NomeAcao, Quem[]][] }[] = [
             ["decidir", ["editor", "admin", "qa", "gerente"]],
             ["cancelar", ["editor", "qa"]],
         ],
+    },
+    {
+        estado: "PLANO_APROVADO",
+        // Finalizar é do colaborador com papel EDITOR/GERENTE: o qa e o gerente têm o papel, mas não estão na ação
+        recusas: [["finalizar", ["aprovador", "qa", "gerente", "admin", "visualizador"]]],
     },
 ];
 

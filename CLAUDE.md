@@ -38,8 +38,9 @@ Ainda pendente fora do código: hospedagem (TRD §10.6), identidade
 visual.
 
 **Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B18; os
-corrigidos têm ✅). O mais grave ainda aberto: B2 (plano da Ação
-Corretiva editável depois de aprovado). B1 e B9 foram corrigidos na A3.
+corrigidos têm ✅). Corrigidos na A3: B9, B11, B14, B1, B2. Os próximos,
+na ordem do plano: B10 (vínculo da ação com a investigação) e a guarda
+de fechamento da NC com o B5 (fechar sem plano de ação aprovado).
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
@@ -166,9 +167,10 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   informados pelo colaborador. O `portaoAtual` continua 0 depois da
   aprovação: **"plano aprovado" é derivado de `Aprovacao`** (portão
   `PLANO`, `APROVADO`) por `acaoCorretivaRepository.planoAprovado` —
-  é o que o `finalizarExecucao` exige (B1, corrigido). **Bug conhecido,
-  ainda não corrigido:** o plano segue editável em `ABERTO` depois de
-  aprovado (B2).
+  é o que o `finalizarExecucao` exige (B1). Depois da aprovação, o plano
+  trava: o `PATCH` só aceita a execução (`CAMPOS_DO_PLANO` recusados com
+  409) e não há mais nada a submeter (B2). Nos testes, o degrau
+  `"PLANO_APROVADO"` do `levarAcaoCorretivaAte` é esse `ABERTO`.
 - **`Verificacao`**: nunca criada diretamente pelo usuário — só nasce
   via `finalizarExecucaoAcaoCorretiva`. Sem portão, conclui direto
   (`concluir()`). O `resultado` da conclusão dispara lógica automática:

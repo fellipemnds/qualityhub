@@ -17,6 +17,9 @@ export const acaoCorretivaRascunhoSchema = acaoCorretivaBaseSchema.partial().ext
 });
 export const acaoCorretivaPublicacaoSchema = acaoCorretivaBaseSchema;
 
+// O que o QA aprova no portão PLANO: depois da aprovação, esses campos não mudam mais (B2)
+export const CAMPOS_DO_PLANO = ["investigacaoId", "descricao", "prazo", "instrucoesVerificacao"] as const;
+
 export const acaoCorretivaPlanoSchema = acaoCorretivaBaseSchema.extend({
     descricao: z.string().min(20),
     // Validado no banco, onde a data já é Date: z.date() sem coerce, para o null ser recusado (B14)

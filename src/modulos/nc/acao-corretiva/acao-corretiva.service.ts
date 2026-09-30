@@ -22,6 +22,7 @@ import {
     acaoCorretivaExecucaoSchema,
     acaoCorretivaPlanoSchema,
     acaoCorretivaPublicacaoSchema,
+    CAMPOS_DO_PLANO,
 } from "./acao-corretiva.schema.js";
 
 export const acaoCorretivaService = {
@@ -58,6 +59,15 @@ export const acaoCorretivaService = {
             const atribuicao = await atribuicaoRepository.ehColaborador(tx, registroId, ator.id);
             if (!papel || !atribuicao)
                 throw new SemPermissaoError("Você não tem permissões suficientes para atualizar este item.");
+
+            // Com o plano aprovado, só a execução muda: o que o QA aprovou fica como foi aprovado (B2). Recusa se o campo
+            // vier, mesmo com o mesmo valor
+            const camposDoPlano = CAMPOS_DO_PLANO.filter((campo) => dados[campo] !== undefined);
+            if (camposDoPlano.length > 0 && (await acaoCorretivaRepository.planoAprovado(tx, registroId))) {
+                throw new TransicaoInvalidaError(
+                    `O plano já foi aprovado e não pode mais ser alterado: ${camposDoPlano.join(", ")}.`,
+                );
+            }
 
             const antes = await acaoCorretivaRepository.buscarPorId(tx, registroId);
             const atualizada = await acaoCorretivaRepository.atualizar(tx, registroId, dados);
@@ -101,6 +111,11 @@ export const acaoCorretivaService = {
         return prisma.$transaction(async (tx) => {
             const acaoCorretiva = await acaoCorretivaRepository.buscarPorId(tx, registroId);
             if (acaoCorretiva === null) throw new NaoEncontradoError("Item não encontrado.");
+
+            // O único portão da ação é o plano: aprovado, não há mais nada a submeter (B2)
+            if (await acaoCorretivaRepository.planoAprovado(tx, registroId)) {
+                throw new TransicaoInvalidaError("O plano já foi aprovado: não há mais nada a submeter.");
+            }
 
             const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, acaoCorretiva, (d) =>
                 acaoCorretivaPlanoSchema.parse(d),

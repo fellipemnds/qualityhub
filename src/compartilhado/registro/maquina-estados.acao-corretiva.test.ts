@@ -1,7 +1,6 @@
 import { describe, it } from "vitest";
 import { chamar } from "../../testes/cenarios.js";
-import { levarAcaoCorretivaAte } from "../../testes/levar-ate/acao-corretiva.js";
-import type { EstadoRegistro } from "../entidades/estados.js";
+import { type DegrauAcaoCorretiva, levarAcaoCorretivaAte } from "../../testes/levar-ate/acao-corretiva.js";
 
 type Contexto = Awaited<ReturnType<typeof levarAcaoCorretivaAte>>;
 
@@ -34,11 +33,13 @@ const acoes = {
 
 type NomeAcao = keyof typeof acoes;
 
-const tabela: { estado: EstadoRegistro; proibidas: NomeAcao[] }[] = [
+const tabela: { estado: DegrauAcaoCorretiva; proibidas: NomeAcao[] }[] = [
     { estado: "RASCUNHO", proibidas: ["submeter", "aprovar", "reprovar", "finalizar"] }, // cancelar fica de fora: hoje o código permite (B12)
     // O ABERTO do levarAcaoCorretivaAte é o de plano nunca submetido: finalizar exige plano aprovado (B1)
     { estado: "ABERTO", proibidas: ["excluir", "publicar", "aprovar", "reprovar", "finalizar"] },
     { estado: "EM_APROVACAO", proibidas: ["editar", "excluir", "publicar", "submeter", "finalizar"] },
+    // ABERTO com o plano aprovado: o plano travado (o "editar" muda a descrição) e nada mais a submeter (B2)
+    { estado: "PLANO_APROVADO", proibidas: ["editar", "excluir", "publicar", "submeter", "aprovar", "reprovar"] },
     {
         estado: "FECHADO",
         proibidas: ["editar", "excluir", "publicar", "submeter", "aprovar", "reprovar", "cancelar", "finalizar"],

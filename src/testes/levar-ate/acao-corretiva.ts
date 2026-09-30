@@ -3,8 +3,10 @@ import type { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
 import { chamar, diaDaquiA, ncProntaParaFechar } from "../cenarios.js";
 
 // Só um portão (PLANO): aprovar o plano volta a ação para ABERTO, e o FECHADO vem do finalizar-execucao. O ABERTO
-// depois do plano aprovado fica de fora — o que ele permite hoje está errado (B2).
-export async function levarAcaoCorretivaAte(estado: EstadoRegistro) {
+// depois da aprovação é um degrau à parte, "PLANO_APROVADO": o plano travado (B2) e a execução liberada (B1)
+export type DegrauAcaoCorretiva = EstadoRegistro | "PLANO_APROVADO";
+
+export async function levarAcaoCorretivaAte(estado: DegrauAcaoCorretiva) {
     // A ação corretiva aponta para uma investigação: o cenário precisa de uma
     const cenario = await ncProntaParaFechar();
     const { editor, aprovador, gerente, nc, investigacao } = cenario;
@@ -53,10 +55,17 @@ export async function levarAcaoCorretivaAte(estado: EstadoRegistro) {
 
     if (estado === "EM_APROVACAO") return { ...cenario, acao };
 
-    // Degrau 4: Fechado — plano aprovado (volta a ABERTO), execução registrada e finalizada
+    // Degrau 4: Plano aprovado — volta a ABERTO
     await chamar(aprovador, "POST", `/acoes-corretivas/${acao.id}/decidir`, 200, { decisao: "APROVADO" });
 
-    expect(await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200)).toMatchObject({ estado: "ABERTO" });
+    expect(await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200)).toMatchObject({
+        estado: "ABERTO",
+        planoAprovado: true,
+    });
+
+    if (estado === "PLANO_APROVADO") return { ...cenario, acao };
+
+    // Degrau 5: Fechado — execução registrada e finalizada
 
     await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
         executadoEm: diaDaquiA(-1),
