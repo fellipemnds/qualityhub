@@ -176,7 +176,6 @@ confundem):
 | Aguardando aprovação do fechamento | `hourglass` |
 | Aguardando classificação | `tag` |
 | Em investigação | `search` |
-| Em plano de ação | `clipboard-list` |
 | Aguardando contenção | `shield` |
 | Pronta para fechamento | `flag` |
 | Fechada · ação em execução | `wrench` |
@@ -338,7 +337,7 @@ NC-2026-0042 · Vazamento na linha 3              ● Aberta  🔍 Em investiga�
 │ DADOS                                   [✎]  │ CHECKLIST DE FECHAMENTO │
 │ Descrição, requisito, processo, setor...     │ ✅ Classificação         │
 │                                              │ ❌ Investigação → IV-7   │
-│ CLASSIFICAÇÃO                  [+ Nova]      │ ❌ Plano de ação         │
+│ CLASSIFICAÇÃO                  [+ Nova]      │ ❌ Contenção → CT-19     │
 │  CL-2026-0011  Maior   ✓ Fechada             │ ❌ Riscos revisados      │
 │ CONTENÇÃO                      [+ Nova]      │ ❌ Mudanças no SGQ       │
 │  CT-2026-0019  Corrigido  ● Aberta           │ ✅ Aprovador definido    │
@@ -563,3 +562,4 @@ nomes dos tokens.
 |---|---|
 | 2026-09-24 | v1 — decisões iniciais e U1–U5 |
 | 2026-09-24 | v1.1 — revisão cruzada: wireframes com os termos do glossário (U1), prefixos reais dos códigos, aprovador no checklist, triagem inclui filhos |
+| 2026-10-01 | v1.2 — etapa "Em plano de ação" removida; checklist da NC sem os planos, que passam para a investigação (PRD Q17) |

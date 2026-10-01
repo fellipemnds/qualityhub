@@ -109,8 +109,15 @@ estiver parado há tempo):
    `hostname` e as extensões que **não** vão para casa (Prettier, REST
    Client, Live Server, Docker antiga, Dev Containers). Registrar aqui o
    que mais aparecer, e commitar o `docs/ambiente/casa.txt`.
-6. `npm test` para confirmar: 166 + 3 falhas esperadas.
+6. `npm test` para confirmar: 172 + 3 falhas esperadas.
 
-**Depois, na A3:** ordem 7, **B10** — o plano da ação corretiva exige a
-investigação, que tem de ser da mesma NC e não cancelada. Em seguida, a
-ordem 8 (guarda de fechamento que devolve "o que falta" + B5).
+**Depois, na A3:** ordem 8, com a regra revista na **PRD Q17** (planos
+de ação conferidos pela Investigação, não pela NC; RN-21, RN-24, RN-49).
+Combinado com Matthew: a lista traz **um item por requisito** com
+`atendido` (o submeter filtra os pendentes); a guarda da NC é uma
+**função pura** (`avaliarFechamentoNC`, dados já carregados, testes sem
+banco) que **Matthew escreve** em TDD; Claude prepara o esqueleto (arquivo
++ tipo `ItemChecklist`) e depois faz a carga do banco, o 409 com a lista
+(o `AppError` passa a levar detalhes no campo `error`), a rota
+`GET /nc/:id/checklist-fechamento`, a RN-24 no submeter da Investigação
+(o B5) e a RN-49 (vínculo na criação, só com investigação editável).

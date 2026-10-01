@@ -174,7 +174,7 @@ antes de qualquer mudança de regra.
 | 5 | **B1** — finalizar execução exige plano aprovado | 🧑 |
 | 6 | **B2** — plano travado depois de aprovado | 🧑 |
 | 7 | **B10** — investigação obrigatória no plano, da mesma NC, não cancelada | 🧑 |
-| 8 | **Guarda que devolve "o que falta"**, em dois grupos, filhos e envio (TRD §5, esquema §4.3) + **B5** (RN-21 nova) + rota `GET /nc/:id/checklist-fechamento` | 🧑 a função; 🤖 a rota |
+| 8 | **Guardas que devolvem "o que falta"** (TRD §5, esquema §4.3), com a regra revista na PRD Q17: fechamento da NC em dois grupos, filhos e envio (RN-21: toda investigação fechada) + rota `GET /nc/:id/checklist-fechamento`; submissão da Investigação exige os planos das ações aprovados (RN-24 — o **B5**); vínculo da ação ampliado (RN-49: obrigatório na criação, só com investigação editável) | 🧑 a função da NC; 🤖 a rota, a RN-24 e a RN-49 |
 | 9 | **B4** — `NAO_EFICAZ` reabre só o que estiver fechado | 🧑 |
 | 10 | **B6** — `PARCIALMENTE_EFICAZ` copia todos os colaboradores | 🤖 |
 | 11 | **B3** — autor certo na auditoria da ação automática | 🤖 |

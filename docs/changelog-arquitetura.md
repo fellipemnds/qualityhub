@@ -9,6 +9,26 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Fase A3 — correções de regra (branch `fase/a3-correcoes`)
+
+- **Planos de ação conferidos pela Investigação, não pela NC** (PRD Q17,
+  2026-10-01, Matthew, confirmado com a analista). Diverge da RN-21
+  confirmada na Q1, que punha os planos na guarda da NC. O A3 da
+  investigação inclui as contramedidas, então o QA não aprovaria a
+  investigação sem aprovar os planos que ela propõe. Fica assim:
+  - a Investigação só é submetida com toda ação não cancelada ligada a
+    ela com o plano aprovado, e pode fechar sem nenhuma ação (RN-24);
+  - a NC exige **toda** investigação não cancelada fechada, e não olha
+    mais as ações (RN-21);
+  - a ação nasce ligada a uma investigação em `RASCUNHO`/`ABERTO`, e o
+    vínculo não se apaga (RN-49). Sem isso, uma ação criada depois do
+    envio escaparia das duas guardas. A exceção é a ação do
+    `PARCIALMENTE_EFICAZ`, que segue depois do fechamento.
+
+  Efeitos: a etapa "Em plano de ação" deixa de existir (10 etapas,
+  `fluxo-app.md` §4); o B5 muda de lugar (esquema §7); o B10 é ampliado.
+  Implementação na ordem 8 da A3.
+
 ### Fase A2 — rede de proteção (branch `fase/a2-rede-protecao`)
 
 - **Máquina de estados e permissões: um arquivo por tipo**

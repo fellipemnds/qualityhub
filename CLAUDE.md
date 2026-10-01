@@ -39,8 +39,8 @@ visual.
 
 **Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B18; os
 corrigidos têm ✅). Corrigidos na A3: B9, B11, B14, B1, B2, B10. O
-próximo, na ordem do plano: a guarda de fechamento da NC com o B5
-(fechar sem plano de ação aprovado).
+próximo, na ordem do plano: a ordem 8 — guardas que devolvem "o que
+falta", com a regra revista na PRD Q17 (B5 e B10 ampliado).
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
@@ -183,15 +183,20 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   `PARCIALMENTE_EFICAZ` cria nova `AcaoCorretiva` (mesma investigação);
   `NAO_EFICAZ` reabre a `Investigacao` e a `NaoConformidade`
   automaticamente.
-- **Guarda de fechamento da NC** (`submeterNC`, reconciliado com RN-21):
-  exige ≥1 `Classificacao` FECHADA, ≥1 `Investigacao` FECHADA, nenhuma
-  `Contencao` pendente. **Não** espera `AcaoCorretiva`/`Verificacao` —
-  essas continuam depois do fechamento, e podem reabrir a NC via o
-  mecanismo acima. **Regra revista no PRD, ainda não implementada**:
-  passa a exigir todos os planos de `AcaoCorretiva` aprovados (RN-21);
-  `NAO_EFICAZ` deve reabrir só o que estiver fechado (hoje dá erro se a
-  NC estiver aberta); `PARCIALMENTE_EFICAZ` deve copiar todos os
-  colaboradores da ação anterior.
+- **Guarda de fechamento da NC** (`submeterNC`): hoje exige ≥1
+  `Classificacao` FECHADA, ≥1 `Investigacao` FECHADA, nenhuma
+  `Contencao` pendente. `AcaoCorretiva`/`Verificacao` continuam depois
+  do fechamento, e podem reabrir a NC via o mecanismo acima. **Regra
+  revista (PRD Q17, 2026-10-01), a implementar na ordem 8 da A3:** quem
+  confere os planos de ação é a **Investigação**, não a NC — ela só é
+  submetida com toda `AcaoCorretiva` não cancelada ligada a ela com
+  plano aprovado, e pode fechar sem nenhuma ação (RN-24); a NC passa a
+  exigir **toda** `Investigacao` não cancelada FECHADA (RN-21); a ação
+  nasce ligada a uma investigação em `RASCUNHO`/`ABERTO` da mesma NC, e
+  o vínculo não se apaga (RN-49; exceção: a do `PARCIALMENTE_EFICAZ`).
+  Também da regra revista: `NAO_EFICAZ` deve reabrir só o que estiver
+  fechado (hoje dá erro se a NC estiver aberta); `PARCIALMENTE_EFICAZ`
+  deve copiar todos os colaboradores da ação anterior.
 
 ## Testes
 
