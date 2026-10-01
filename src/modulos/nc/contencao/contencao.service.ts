@@ -1,4 +1,5 @@
 import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
+import { herdarAprovadorDaNC } from "../../../compartilhado/atribuicao/herdar-aprovador.js";
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
 import type { Ator } from "../../../compartilhado/entidades/ator.js";
@@ -38,6 +39,7 @@ export const contencaoService = {
             const contencao = await contencaoRepository.criar(tx, { id: registro.id, naoConformidadeId, ...dados });
 
             await atribuicaoRepository.inserirAtribuicao(tx, registro.id, ator.id, ator.id, "COLABORADOR");
+            await herdarAprovadorDaNC(tx, naoConformidadeId, registro.id, ator.id);
 
             return { ...registro, ...contencao };
         });

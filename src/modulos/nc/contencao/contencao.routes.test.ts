@@ -119,8 +119,9 @@ describe("POST /contencoes/:id/submeter", () => {
     });
 
     it("recusa sem aprovador definido (RN-13)", async () => {
-        // Prepara (o filho nasce sem aprovador: B13)
-        const { editor, nc } = await ncPublicada();
+        // Prepara: a NC ainda sem aprovador, então o filho também nasce sem (RN-46)
+        const { editor } = await ncPublicada();
+        const nc = await chamar(editor, "POST", "/nc", 201, { titulo: "NC ainda sem aprovador" });
         const contencao = await chamar(editor, "POST", `/nc/${nc.id}/contencoes`, 201, {
             descricao: "Retrabalho realizado na peça com defeito.",
             executadaEm: diaDaquiA(-1),

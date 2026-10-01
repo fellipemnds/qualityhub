@@ -1,4 +1,5 @@
 import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
+import { herdarAprovadorDaNC } from "../../../compartilhado/atribuicao/herdar-aprovador.js";
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
 import type { Ator } from "../../../compartilhado/entidades/ator.js";
@@ -85,6 +86,8 @@ export const verificacaoService = {
                     naoConformidadeId: acaoCorretiva.naoConformidadeId,
                     investigacaoId: acaoCorretiva.investigacaoId,
                 });
+                await herdarAprovadorDaNC(tx, acaoCorretiva.naoConformidadeId, novoRegistro.id, ator.id);
+
                 // Todos os colaboradores da ação anterior continuam na nova (B6, PRD Q3)
                 for (const colaborador of await atribuicaoRepository.listarColaboradores(tx, acaoCorretiva.id)) {
                     await atribuicaoRepository.inserirAtribuicao(

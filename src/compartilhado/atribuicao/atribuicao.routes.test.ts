@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { chamar, ncPublicada, perfisDeFora } from "../../testes/cenarios.js";
+import { type Cenario, chamar, ncPublicada, perfisDeFora } from "../../testes/cenarios.js";
 import { prisma } from "../prisma/cliente.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
@@ -78,6 +78,76 @@ describe("PUT /registros/:id/aprovador", () => {
         const { gerente, nc } = await ncPublicada();
 
         await chamar(gerente, "PUT", `/registros/${nc.id}/aprovador`, 404, { usuarioId: ID_INEXISTENTE });
+    });
+});
+
+// Cada filho criado pelo usuário: devolve o id. A ação corretiva precisa de uma investigação aberta (RN-49)
+const FILHOS: { tipo: string; criar: (cenario: Cenario) => Promise<string> }[] = [
+    {
+        tipo: "Contenção",
+        criar: async ({ editor, nc }) =>
+            (
+                await chamar(editor, "POST", `/nc/${nc.id}/contencoes`, 201, {
+                    descricao: "Retrabalho realizado na peça com defeito, substituindo a vedação danificada.",
+                })
+            ).id,
+    },
+    {
+        tipo: "Classificação",
+        criar: async ({ aprovador, nc }) =>
+            (
+                await chamar(aprovador, "POST", `/nc/${nc.id}/classificacoes`, 201, {
+                    valor: "MAIOR",
+                    justificativa: "Vazamento afeta a segurança operacional e a qualidade do produto entregue.",
+                })
+            ).id,
+    },
+    {
+        tipo: "Investigação",
+        criar: async ({ editor, nc }) =>
+            (
+                await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
+                    realProblema: "Vedação da bomba hidráulica com desgaste prematuro.",
+                })
+            ).id,
+    },
+    {
+        tipo: "Ação corretiva",
+        criar: async ({ editor, nc }) => {
+            const investigacao = await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
+                realProblema: "Vedação da bomba hidráulica com desgaste prematuro.",
+            });
+            await chamar(editor, "POST", `/investigacoes/${investigacao.id}/publicar`, 200);
+            return (
+                await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, { investigacaoId: investigacao.id })
+            ).id;
+        },
+    },
+];
+
+// O filho nasce com o aprovador da NC, para o colaborador não ficar travado na hora de enviar (B13, RN-46)
+describe("Criação de um filho da NC", () => {
+    it.each(FILHOS)("$tipo nasce com o aprovador da NC (B13, RN-46)", async ({ criar }) => {
+        // Prepara
+        const cenario = await ncPublicada();
+
+        // Chama
+        const filhoId = await criar(cenario);
+
+        // Confere
+        expect(await aprovadoresDe(filhoId)).toEqual([cenario.aprovador.usuario.id]);
+    });
+
+    it.each(FILHOS)("$tipo nasce sem aprovador quando a NC não tem um (RN-46)", async ({ criar }) => {
+        // Prepara: uma NC em rascunho, ainda sem aprovador
+        const cenario = await ncPublicada();
+        const nc = await chamar(cenario.editor, "POST", "/nc", 201, { titulo: "NC ainda sem aprovador" });
+
+        // Chama
+        const filhoId = await criar({ ...cenario, nc });
+
+        // Confere
+        expect(await aprovadoresDe(filhoId)).toEqual([]);
     });
 });
 

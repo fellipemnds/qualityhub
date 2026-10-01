@@ -171,6 +171,21 @@ describe("POST /verificacoes/:id/concluir com PARCIALMENTE_EFICAZ", () => {
         expect(await colaboradoresDe(nova.id)).toEqual([editor.usuario.id, gerente.usuario.id].sort());
     });
 
+    it("a ação nova nasce com o aprovador da NC (B13, RN-46)", async () => {
+        // Prepara
+        const cenario = await ncProntaParaFechar();
+        const { editor, aprovador, nc } = cenario;
+        const { verificacao } = await executarAcao(cenario);
+
+        // Chama
+        await concluirVerificacao(cenario, verificacao.id, "PARCIALMENTE_EFICAZ");
+
+        // Confere
+        const [nova] = await chamar(editor, "GET", `/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`, 200);
+        const aprovadores = await prisma.atribuicao.findMany({ where: { registroId: nova.id, funcao: "APROVADOR" } });
+        expect(aprovadores.map((atribuicao) => atribuicao.usuarioId)).toEqual([aprovador.usuario.id]);
+    });
+
     // Quem dispara a ação automática é o QA que concluiu a verificação, não quem criou a ação anterior (B3)
     it("o autor da ação nova é quem concluiu a verificação (B3)", async () => {
         // Prepara
