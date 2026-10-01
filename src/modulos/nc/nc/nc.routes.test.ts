@@ -1,10 +1,25 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { app } from "../../../app.js";
-import { chamar, daquiA, diaDaquiA, ncProntaParaFechar, ncPublicada, perfisDeFora } from "../../../testes/cenarios.js";
+import {
+    chamar,
+    classificarNC,
+    daquiA,
+    diaDaquiA,
+    ncProntaParaFechar,
+    ncPublicada,
+    perfisDeFora,
+} from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
+import { levarInvestigacaoAte } from "../../../testes/levar-ate/investigacao.js";
 import { levarNCAte } from "../../../testes/levar-ate/nc.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
+
+// Os campos do envio, que o colaborador preenche quando os filhos estão atendidos
+const CAMPOS_DO_ENVIO = {
+    riscosRevisados: "Risco de contaminação reavaliado, mitigado pela troca do material de vedação.",
+    mudancasSGQ: "Procedimento PO-07 será atualizado para especificar o material de vedação compatível.",
+};
 
 afterEach(() => {
     vi.useRealTimers();
@@ -116,33 +131,114 @@ describe("POST /nc", () => {
     });
 });
 
+// A guarda de fechamento (RN-21, esquema §4.3) responde com a lista do que falta: só os itens não atendidos
 describe("POST /nc/:id/submeter", () => {
-    it("recusa enquanto não há classificação fechada (RN-21)", async () => {
+    it("recusa enquanto não há classificação fechada, com a lista do que falta (RN-21)", async () => {
         // Prepara
         const { editor, nc } = await ncPublicada();
 
         // Chama
         const resposta = await chamar(editor, "POST", `/nc/${nc.id}/submeter`, 409);
 
-        // Confere
-        expect(resposta.mensagem).toContain("Classificação FECHADA");
+        // Confere: o que está atendido (contenções, aprovador) não vem na lista
+        expect(resposta.mensagem).toEqual(expect.any(String));
+        expect(resposta.error.map((item: { requisito: string }) => item.requisito)).toEqual([
+            "CLASSIFICACAO_FECHADA",
+            "INVESTIGACOES_FECHADAS",
+            "RISCOS_REVISADOS",
+            "MUDANCAS_SGQ",
+        ]);
     });
 
-    it("recusa sem os campos de fechamento, mesmo com a RN-21 satisfeita", async () => {
+    it("recusa sem os campos do envio, com os filhos atendidos (RN-21)", async () => {
         // Prepara
         const { editor, nc } = await ncProntaParaFechar();
 
         // Chama
-        const resposta = await chamar(editor, "POST", `/nc/${nc.id}/submeter`, 400);
+        const resposta = await chamar(editor, "POST", `/nc/${nc.id}/submeter`, 409);
 
         // Confere
-        expect(resposta).toMatchObject({
-            mensagem: "Dados inválidos",
-            error: expect.arrayContaining([
-                expect.objectContaining({ path: ["riscosRevisados"] }),
-                expect.objectContaining({ path: ["mudancasSGQ"] }),
-            ]),
+        expect(resposta.error).toMatchObject([
+            { requisito: "RISCOS_REVISADOS", grupo: "ENVIO", atendido: false },
+            { requisito: "MUDANCAS_SGQ", grupo: "ENVIO", atendido: false },
+        ]);
+    });
+
+    it("recusa com uma investigação fechada e outra aberta (RN-21)", async () => {
+        // Prepara: a NC pronta, com o envio preenchido, e uma segunda investigação ainda aberta
+        const { editor, nc } = await ncProntaParaFechar();
+        await chamar(editor, "PATCH", `/nc/${nc.id}`, 200, CAMPOS_DO_ENVIO);
+        const outra = await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
+            realProblema: "Ruído anormal no redutor da esteira, percebido na mesma inspeção da linha 2.",
         });
+        const publicada = await chamar(editor, "POST", `/investigacoes/${outra.id}/publicar`, 200);
+
+        // Chama
+        const resposta = await chamar(editor, "POST", `/nc/${nc.id}/submeter`, 409);
+
+        // Confere: a aberta aparece com o código, para a tela apontar o que resolve
+        expect(resposta.error).toEqual([
+            expect.objectContaining({
+                requisito: "INVESTIGACOES_FECHADAS",
+                atendido: false,
+                pendentes: [{ id: outra.id, codigo: publicada.codigo }],
+            }),
+        ]);
+        expect(await chamar(editor, "GET", `/nc/${nc.id}`, 200)).toMatchObject({ estado: "ABERTO" });
+    });
+
+    // A investigação pode concluir sem ação corretiva, e a NC não confere as ações (PRD Q17)
+    it("fecha a NC sem nenhuma ação corretiva (RN-21)", async () => {
+        // Prepara: investigação fechada sem ações, classificação fechada, nenhuma contenção
+        const cenario = await levarInvestigacaoAte("FECHADO");
+        const { editor, aprovador, nc } = cenario;
+        await classificarNC(cenario);
+        await chamar(editor, "PATCH", `/nc/${nc.id}`, 200, CAMPOS_DO_ENVIO);
+
+        // Chama
+        await chamar(editor, "POST", `/nc/${nc.id}/submeter`, 200);
+        await chamar(aprovador, "POST", `/nc/${nc.id}/decidir`, 200, { decisao: "APROVADO" });
+
+        // Confere
+        expect(await chamar(editor, "GET", `/nc/${nc.id}`, 200)).toMatchObject({ estado: "FECHADO" });
+        expect(await chamar(editor, "GET", `/acoes-corretivas?naoConformidadeId=${nc.id}`, 200)).toEqual([]);
+    });
+});
+
+// A mesma guarda do submeter, só para ler: a tela mostra o checklist sem tentar submeter (TRD §5, lacuna L6)
+describe("GET /nc/:id/checklist-fechamento", () => {
+    it("devolve os seis requisitos, atendidos ou não, na ordem", async () => {
+        // Prepara: só a NC publicada, com aprovador
+        const { nc } = await ncPublicada();
+        const { visualizador } = await perfisDeFora();
+
+        // Chama
+        const resposta = await chamar(visualizador, "GET", `/nc/${nc.id}/checklist-fechamento`, 200);
+
+        // Confere
+        expect(resposta).toMatchObject([
+            { requisito: "CLASSIFICACAO_FECHADA", grupo: "FILHOS", atendido: false },
+            { requisito: "INVESTIGACOES_FECHADAS", grupo: "FILHOS", atendido: false },
+            { requisito: "CONTENCOES_RESOLVIDAS", grupo: "FILHOS", atendido: true },
+            { requisito: "RISCOS_REVISADOS", grupo: "ENVIO", atendido: false },
+            { requisito: "MUDANCAS_SGQ", grupo: "ENVIO", atendido: false },
+            { requisito: "APROVADOR_DEFINIDO", grupo: "ENVIO", atendido: true },
+        ]);
+    });
+
+    it("responde 404 quando a NC não existe", async () => {
+        const editor = await loginComo("editor");
+
+        await chamar(editor, "GET", `/nc/${ID_INEXISTENTE}/checklist-fechamento`, 404);
+    });
+
+    it("recusa quem não tem papel de leitura", async () => {
+        // Prepara
+        const { nc } = await ncPublicada();
+        const { semPapel } = await perfisDeFora();
+
+        // Chama e confere
+        await chamar(semPapel, "GET", `/nc/${nc.id}/checklist-fechamento`, 403);
     });
 });
 

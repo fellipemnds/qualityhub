@@ -281,7 +281,10 @@ atendidos:
 4. `riscosRevisados` e `mudancasSGQ` preenchidos
 5. Aprovador da NC definido (RN-13)
 
-Lista vazia → pode submeter. A etapa e a pendência olham **só o grupo
+Lista vazia → pode submeter. **Implementada na A3 (8c/8d):** `avaliarFechamentoNC` (função pura, um item por
+requisito com `atendido` e `pendentes`); o submeter responde 409 com os itens não atendidos no campo `error`. Ela roda
+como validador do ciclo de vida, depois das checagens de estado, permissão e aprovador: sem aprovador, a resposta
+continua sendo o 409 genérico ("deve possuir um aprovador"), sem a lista — a tela usa o checklist. A etapa e a pendência olham **só o grupo
 "Filhos"**; se olhassem os dois, a NC nunca chegaria a *Pronta para
 fechamento* sem alguém preencher os campos do envio antes — e ninguém
 seria avisado para preenchê-los (`fluxo-app.md` §4 e J6).
@@ -513,6 +516,7 @@ Com Matthew, em 2026-09-24.
 | 2026-09-24 | v1.1 — revisão cruzada com o código: B9–B13; guarda em dois grupos (filhos/envio) com aprovador; triagem inclui filhos; catálogo de permissões novas; eventos do feed; regras de convite e usuário inativo |
 | 2026-09-28 | v1.2 — B14 (data obrigatória vazia passa na validação), achado pelos testes da fase A2 |
 | 2026-09-30 | v1.3 — B15 (primeira publicação do ano sob concorrência dá erro 500), achado pelo teste de concorrência da A2 |
+| 2026-10-01 | v1.17 — guarda de fechamento da NC implementada (A3 8c/8d): lista do que falta, 409 com `error`, `GET /nc/:id/checklist-fechamento` |
 | 2026-10-01 | v1.16 — RN-49 implementada (A3 8b): `investigacaoId` `NOT NULL`, ação só em investigação aberta |
 | 2026-10-01 | v1.15 — planos de ação conferidos pela Investigação (PRD Q17): §4.3 em duas guardas, B5 redefinido, B10 ampliado (RN-49), 10 etapas; cancelar investigação com ações pendentes (RN-50, Q18) |
 | 2026-10-01 | v1.14 — B10 corrigido (A3) |

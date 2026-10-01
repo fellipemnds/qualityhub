@@ -60,6 +60,16 @@ export async function ncRoutes(app: FastifyInstance) {
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
+        method: "GET",
+        url: "/nc/:id/checklist-fechamento",
+        onRequest: [autenticar],
+        schema: {
+            params: z.object({ id: z.uuid() }),
+        },
+        handler: ncController.checklistFechamentoNC,
+    });
+
+    app.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
         url: "/nc/:id/decidir",
         onRequest: [autenticar],

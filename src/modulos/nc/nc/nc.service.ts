@@ -2,9 +2,11 @@ import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuic
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
 import type { Ator } from "../../../compartilhado/entidades/ator.js";
+import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js";
 import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
+import type { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
 import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
 import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
@@ -13,6 +15,7 @@ import { registroRepository } from "../../../compartilhado/registro/registro.rep
 import { classificacaoRepository } from "../classificacao/classificacao.repository.js";
 import { contencaoRepository } from "../contencao/contencao.repository.js";
 import { investigacaoRepository } from "../investigacao/investigacao.repository.js";
+import { avaliarFechamentoNC, type DadosFechamentoNC } from "./avaliar-fechamento.js";
 import { ncRepository } from "./nc.repository.js";
 import {
     type NCFiltrosListagemInput,
@@ -20,6 +23,29 @@ import {
     ncFechamentoSchema,
     ncPublicacaoSchema,
 } from "./nc.schema.js";
+
+// Carrega do banco o que a guarda de fechamento precisa (RN-21): a decisão fica com a função pura
+async function carregarDadosFechamento(
+    cliente: ClientePrisma,
+    naoConformidadeId: string,
+    nc: { riscosRevisados: string | null; mudancasSGQ: string | null },
+): Promise<DadosFechamentoNC> {
+    const filtro = { naoConformidadeId };
+    const comoFilho = (filho: { registro: { id: string; codigo: string | null; estado: EstadoRegistro } }) => ({
+        id: filho.registro.id,
+        codigo: filho.registro.codigo,
+        estado: filho.registro.estado,
+    });
+
+    return {
+        riscosRevisados: nc.riscosRevisados,
+        mudancasSGQ: nc.mudancasSGQ,
+        temAprovador: await atribuicaoRepository.existeAprovador(cliente, naoConformidadeId),
+        classificacoes: (await classificacaoRepository.listarClassificacoes(cliente, filtro)).map(comoFilho),
+        investigacoes: (await investigacaoRepository.listarInvestigacoes(cliente, filtro)).map(comoFilho),
+        contencoes: (await contencaoRepository.listarContencoes(cliente, filtro)).map(comoFilho),
+    };
+}
 
 export const ncService = {
     async criarRascunhoNC(ator: Ator, dados: NCRascunhoInput) {
@@ -110,45 +136,39 @@ export const ncService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            const classificacoes = await classificacaoRepository.listarClassificacoes(tx, {
-                naoConformidadeId: registroId,
-            });
-            const temClassificacaoFechada = classificacoes.some((c) => c.registro.estado === "FECHADO");
-
-            if (!temClassificacaoFechada) {
-                throw new TransicaoInvalidaError(
-                    "É necessário ao menos uma Classificação FECHADA para submeter esta Não Conformidade para fechamento.",
-                );
-            }
-
-            const investigacoes = await investigacaoRepository.listarInvestigacoes(tx, {
-                naoConformidadeId: registroId,
-            });
-            const temInvestigacaoFechada = investigacoes.some((i) => i.registro.estado === "FECHADO");
-
-            if (!temInvestigacaoFechada) {
-                throw new TransicaoInvalidaError(
-                    "É necessário ao menos uma Investigação FECHADA para submeter esta Não Conformidade para fechamento.",
-                );
-            }
-
-            const contencoes = await contencaoRepository.listarContencoes(tx, { naoConformidadeId: registroId });
-            const temContencaoPendente = contencoes.some(
-                (c) => c.registro.estado !== "FECHADO" && c.registro.estado !== "CANCELADO",
+            const faltando = avaliarFechamentoNC(await carregarDadosFechamento(tx, registroId, nc)).filter(
+                (item) => !item.atendido,
             );
 
-            if (temContencaoPendente) {
-                throw new TransicaoInvalidaError(
-                    "Existe uma Contenção pendente — ela precisa estar FECHADA ou CANCELADA para submeter esta Não Conformidade para fechamento.",
-                );
-            }
-
-            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, nc, (dadosParaValidar) =>
-                ncFechamentoSchema.parse(dadosParaValidar),
-            );
+            // A guarda roda como validador, depois das checagens de estado, permissão e aprovador do ciclo de vida:
+            // quem não pode submeter recebe 403, não a lista
+            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, nc, (dadosParaValidar) => {
+                if (faltando.length > 0) {
+                    throw new TransicaoInvalidaError(
+                        "Ainda falta o que está na lista para submeter esta Não Conformidade para fechamento.",
+                        faltando,
+                    );
+                }
+                return ncFechamentoSchema.parse(dadosParaValidar);
+            });
 
             return { ...registroSubmetido, ...nc };
         });
+    },
+
+    // A mesma guarda do submeter, só para ler: a tela mostra o checklist sem tentar submeter (TRD §5)
+    async checklistFechamentoNC(registroId: string, ator: Ator) {
+        const nc = await ncRepository.buscarPorId(prisma, registroId);
+
+        if (nc === null) {
+            throw new NaoEncontradoError("Item não encontrado.");
+        }
+
+        if (!temPapel(ator, "VISUALIZAR")) {
+            throw new SemPermissaoError("Você não tem permissões suficientes para visualizar.");
+        }
+
+        return avaliarFechamentoNC(await carregarDadosFechamento(prisma, registroId, nc));
     },
 
     async decidirNC(registroId: string, ator: Ator, dados: DecisaoInput) {

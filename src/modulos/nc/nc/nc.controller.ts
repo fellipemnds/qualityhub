@@ -81,6 +81,12 @@ export const ncController = {
         return reply.status(200).send(ncCancelada);
     },
 
+    async checklistFechamentoNC(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
+        const checklist = await ncService.checklistFechamentoNC(request.params.id, request.user);
+
+        return reply.status(200).send(checklist);
+    },
+
     async buscarPorIdNC(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
         const id = request.params.id;
         const ator = request.user;

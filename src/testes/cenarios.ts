@@ -107,7 +107,7 @@ export type CenarioComInvestigacao = Awaited<ReturnType<typeof investigacaoAbert
 // de fechamento. A investigação fecha com uma ação de plano aprovado: o plano é aprovado antes do envio (RN-24)
 export async function ncProntaParaFechar() {
     const cenario = await investigacaoAberta();
-    const { editor, gerente, aprovador, qa, nc, investigacao } = cenario;
+    const { editor, gerente, aprovador, nc, investigacao } = cenario;
 
     // Contenção: rascunho → publicação → aprovação
     const contencao = await chamar(editor, "POST", `/nc/${nc.id}/contencoes`, 201, {
@@ -123,18 +123,7 @@ export async function ncProntaParaFechar() {
     await chamar(aprovador, "POST", `/contencoes/${contencao.id}/decidir`, 200, { decisao: "APROVADO" });
     expect(await chamar(editor, "GET", `/contencoes/${contencao.id}`, 200)).toMatchObject({ estado: "FECHADO" });
 
-    // Classificação (RN-20: só APROVADOR/GERENTE), aprovada pelo aprovador designado — o QA, não quem criou
-    const classificacao = await chamar(aprovador, "POST", `/nc/${nc.id}/classificacoes`, 201, {
-        valor: "MAIOR",
-        justificativa: "Vazamento afeta a segurança operacional e a qualidade do produto entregue ao cliente.",
-    });
-    await chamar(aprovador, "POST", `/classificacoes/${classificacao.id}/publicar`, 200);
-    await chamar(gerente, "PUT", `/registros/${classificacao.id}/aprovador`, 200, { usuarioId: qa.usuario.id });
-    await chamar(aprovador, "POST", `/classificacoes/${classificacao.id}/submeter`, 200);
-    await chamar(qa, "POST", `/classificacoes/${classificacao.id}/decidir`, 200, { decisao: "APROVADO" });
-    expect(await chamar(aprovador, "GET", `/classificacoes/${classificacao.id}`, 200)).toMatchObject({
-        estado: "FECHADO",
-    });
+    await classificarNC(cenario);
 
     // Investigação: a ação corretiva tem o plano aprovado com ela ainda aberta, e só depois ela é enviada
     const acao = await aprovarPlano(cenario);
@@ -148,6 +137,23 @@ export async function ncProntaParaFechar() {
 }
 
 export type CenarioProntoParaFechar = Awaited<ReturnType<typeof ncProntaParaFechar>>;
+
+// Classificação (RN-20: só APROVADOR/GERENTE), aprovada pelo aprovador designado — o QA, não quem criou
+export async function classificarNC({ gerente, aprovador, qa, nc }: Cenario) {
+    const classificacao = await chamar(aprovador, "POST", `/nc/${nc.id}/classificacoes`, 201, {
+        valor: "MAIOR",
+        justificativa: "Vazamento afeta a segurança operacional e a qualidade do produto entregue ao cliente.",
+    });
+    await chamar(aprovador, "POST", `/classificacoes/${classificacao.id}/publicar`, 200);
+    await chamar(gerente, "PUT", `/registros/${classificacao.id}/aprovador`, 200, { usuarioId: qa.usuario.id });
+    await chamar(aprovador, "POST", `/classificacoes/${classificacao.id}/submeter`, 200);
+    await chamar(qa, "POST", `/classificacoes/${classificacao.id}/decidir`, 200, { decisao: "APROVADO" });
+    expect(await chamar(aprovador, "GET", `/classificacoes/${classificacao.id}`, 200)).toMatchObject({
+        estado: "FECHADO",
+    });
+
+    return classificacao;
+}
 
 // A NC FECHADA: campos de fechamento → submissão → aprovação. A ação corretiva continua depois daqui.
 export async function fecharNC() {

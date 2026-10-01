@@ -57,6 +57,18 @@ documento de arquitetura.
   quem tiver ações assim no banco local precisa do mesmo
   (`SETUP.md` §12, passos 6 e 7).
 
+- **Guardas que respondem "o que falta"** (ordens 8c/8d): a decisão é uma
+  função pura (`avaliarFechamentoNC`, testada sem banco, escrita por
+  Matthew), e o service só carrega os dados. A lista tem **um item por
+  requisito, sempre os mesmos e na mesma ordem**, com os registros que
+  faltam em `pendentes` — e não um item por registro, para a tela mostrar
+  o ✅ também do que está atendido. O tipo `ItemChecklist` fica em
+  `compartilhado/registro/checklist.ts`, para a guarda da investigação
+  (8e). O `AppError` ganhou `detalhes`, enviados no campo `error` da
+  resposta. A guarda roda como **validador** do `cicloVidaService.submeter`,
+  depois de estado, permissão e aprovador: assim quem não pode submeter
+  continua recebendo 403, e não a lista.
+
 ### Fase A2 — rede de proteção (branch `fase/a2-rede-protecao`)
 
 - **Máquina de estados e permissões: um arquivo por tipo**

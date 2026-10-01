@@ -183,15 +183,20 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   `PARCIALMENTE_EFICAZ` cria nova `AcaoCorretiva` (mesma investigação);
   `NAO_EFICAZ` reabre a `Investigacao` e a `NaoConformidade`
   automaticamente.
-- **Guarda de fechamento da NC** (`submeterNC`): hoje exige ≥1
-  `Classificacao` FECHADA, ≥1 `Investigacao` FECHADA, nenhuma
-  `Contencao` pendente. `AcaoCorretiva`/`Verificacao` continuam depois
-  do fechamento, e podem reabrir a NC via o mecanismo acima. **Regra
-  revista (PRD Q17, 2026-10-01), a implementar na ordem 8 da A3:** quem
-  confere os planos de ação é a **Investigação**, não a NC — ela só é
-  submetida com toda `AcaoCorretiva` não cancelada ligada a ela com
-  plano aprovado, e pode fechar sem nenhuma ação (RN-24); a NC passa a
-  exigir **toda** `Investigacao` não cancelada FECHADA (RN-21); a ação
+- **Guarda de fechamento da NC** (`submeterNC`, RN-21 revista na PRD
+  Q17, **implementada na 8c/8d**): a função pura `avaliarFechamentoNC`
+  (`nc/nc/avaliar-fechamento.ts`, escrita por Matthew) devolve um item
+  por requisito, em dois grupos (filhos e envio); o service carrega os
+  dados e a usa no submeter (409 com os não atendidos em `error`, como
+  validador do ciclo de vida, depois de estado/permissão/aprovador) e em
+  `GET /nc/:id/checklist-fechamento`. Exige ≥1 `Classificacao` FECHADA,
+  **toda** `Investigacao` não cancelada FECHADA (≥1), nenhuma `Contencao`
+  pendente, os campos do envio e o aprovador; **não** olha as ações.
+  `AcaoCorretiva`/`Verificacao` continuam depois do fechamento, e podem
+  reabrir a NC via o mecanismo acima. Quem confere os planos de ação é a
+  **Investigação** — ela só é submetida com toda `AcaoCorretiva` não
+  cancelada ligada a ela com plano aprovado, e pode fechar sem nenhuma
+  ação (RN-24, **a implementar na 8e**); a ação
   nasce ligada a uma investigação `ABERTA` da mesma NC, e
   o vínculo não se apaga (RN-49, **já implementada na 8b**, com
   `investigacaoId` `NOT NULL`; exceção: a do `PARCIALMENTE_EFICAZ`);
