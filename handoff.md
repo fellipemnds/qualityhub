@@ -84,6 +84,13 @@ migration do `@db.Date`. Falta marcar no PR #4 as ordens 3 a 6.
   é a opção de maior ganho. **Não** montar cenário direto no banco.
 - **Rever o `podeExecutar`** (colaborador **ou** aprovador designado × o
   PRD §8, que pede colaborador): decidir com a analista se vira bug.
+- **Aprovador na lista das guardas: na C2** (decidido em 2026-10-01).
+  Hoje o `cicloVidaService.submeter` confere o aprovador **antes** da
+  guarda do tipo, então a NC sem aprovador recebe o 409 genérico, sem a
+  lista do que falta (só mensagem; a regra está protegida, e a tela usa
+  o checklist). Na C2, quando os seis tipos ganharem a lista do envio,
+  o aprovador entra nela para todos de uma vez. Registrado no plano (C2)
+  e no esquema §4.3.
 - Quando o `/retirar` (RN-48) existir, as tabelas de máquina de estados
   e de permissões ganham a ação nova.
 - No trabalho, o Prettier ainda está instalado no lado Windows do VS
@@ -109,18 +116,13 @@ estiver parado há tempo):
    `hostname` e as extensões que **não** vão para casa (Prettier, REST
    Client, Live Server, Docker antiga, Dev Containers). Registrar aqui o
    que mais aparecer, e commitar o `docs/ambiente/casa.txt`.
-6. `npm test` para confirmar: 182 + 3 falhas esperadas.
+6. `npm test` para confirmar: 209 + 3 falhas esperadas.
 
-**Depois, na A3:** ordem 8, dividida em **8a–8f** no plano (começa pela
-8a, a escada de cenários, só refatoração), com a regra revista na **PRD
-Q17** (planos de ação conferidos pela Investigação, não pela NC; RN-21,
-RN-24, RN-49) e a **RN-50** (Q18: cancelar investigação com ações
-pendentes é recusado).
-Combinado com Matthew: a lista traz **um item por requisito** com
-`atendido` (o submeter filtra os pendentes); a guarda da NC é uma
-**função pura** (`avaliarFechamentoNC`, dados já carregados, testes sem
-banco) que **Matthew escreve** em TDD; Claude prepara o esqueleto (arquivo
-+ tipo `ItemChecklist`) e depois faz a carga do banco, o 409 com a lista
-(o `AppError` passa a levar detalhes no campo `error`), a rota
-`GET /nc/:id/checklist-fechamento`, a RN-24 no submeter da Investigação
-(o B5). A RN-49 (8b) já está feita: vínculo na criação, só com investigação aberta.
+**Depois, na A3:** a ordem 8 (dividida em 8a–8f no plano, pela regra
+revista na **PRD Q17**) está feita até a **8e**: escada de cenários na
+ordem real (8a), RN-49 (8b), `avaliarFechamentoNC` escrita por Matthew
+em TDD (8c), submeter da NC com a lista e `GET /nc/:id/checklist-fechamento`
+(8d), RN-24 na investigação — o B5 (8e). Falta a **8f**: RN-50, cancelar
+a investigação recusado (409 com a lista) enquanto houver ação ligada
+que não esteja cancelada ou fechada (`acaoCorretivaRepository.listarPorInvestigacao`
+já existe). Depois, a ordem 9 (B4).

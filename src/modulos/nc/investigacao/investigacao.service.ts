@@ -10,7 +10,9 @@ import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.ser
 import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
 import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
+import { acaoCorretivaRepository } from "../acao-corretiva/acao-corretiva.repository.js";
 import { ncRepository } from "../nc/nc.repository.js";
+import { type AcaoNaGuarda, avaliarSubmissaoInvestigacao } from "./avaliar-submissao.js";
 import { hipoteseRepository } from "./hipotese.repository.js";
 import { hipoteseFechamentoSchema } from "./hipotese.schema.js";
 import { investigacaoRepository } from "./investigacao.repository.js";
@@ -124,12 +126,34 @@ export const investigacaoService = {
                 hipoteseFechamentoSchema.parse(hipotese);
             }
 
+            // Os planos das ações ligadas são aprovados antes do envio (RN-24, B5). Como na NC, a guarda roda como
+            // validador, depois de estado, permissão e aprovador
+            // Uma consulta por vez: dentro da transação, todas usam a mesma conexão
+            const acoes: AcaoNaGuarda[] = [];
+            for (const acao of await acaoCorretivaRepository.listarPorInvestigacao(tx, registroId)) {
+                acoes.push({
+                    id: acao.id,
+                    codigo: acao.registro.codigo,
+                    estado: acao.registro.estado,
+                    planoAprovado: await acaoCorretivaRepository.planoAprovado(tx, acao.id),
+                });
+            }
+            const faltando = avaliarSubmissaoInvestigacao({ acoes }).filter((item) => !item.atendido);
+
             const registroSubmetido = await cicloVidaService.submeter(
                 tx,
                 registroId,
                 ator,
                 investigacao,
-                (dadosParaValidar) => investigacaoFechamentoSchema.parse(dadosParaValidar),
+                (dadosParaValidar) => {
+                    if (faltando.length > 0) {
+                        throw new TransicaoInvalidaError(
+                            "Ainda falta o que está na lista para submeter esta investigação.",
+                            faltando,
+                        );
+                    }
+                    return investigacaoFechamentoSchema.parse(dadosParaValidar);
+                },
             );
 
             return { ...registroSubmetido, ...investigacao };

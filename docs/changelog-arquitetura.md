@@ -67,7 +67,10 @@ documento de arquitetura.
   (8e). O `AppError` ganhou `detalhes`, enviados no campo `error` da
   resposta. A guarda roda como **validador** do `cicloVidaService.submeter`,
   depois de estado, permissão e aprovador: assim quem não pode submeter
-  continua recebendo 403, e não a lista.
+  continua recebendo 403, e não a lista. A guarda da investigação (8e,
+  RN-24) segue o mesmo desenho (`avaliarSubmissaoInvestigacao`). Fica
+  para a C2: o aprovador entrar na lista dos seis tipos, em vez de ser
+  barrado antes pela checagem genérica.
 
 ### Fase A2 — rede de proteção (branch `fase/a2-rede-protecao`)
 

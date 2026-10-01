@@ -25,6 +25,11 @@ export const acaoCorretivaRepository = {
         return aprovacao !== null;
     },
 
+    // As ações que nasceram da investigação (RN-49), com o registro: base das guardas da investigação
+    async listarPorInvestigacao(cliente: ClientePrisma, investigacaoId: string) {
+        return cliente.acaoCorretiva.findMany({ where: { investigacaoId }, include: { registro: true } });
+    },
+
     async listar(tx: ClientePrisma, filtros: { naoConformidadeId?: string; estado?: EstadoRegistro }) {
         return tx.acaoCorretiva.findMany({
             where: {

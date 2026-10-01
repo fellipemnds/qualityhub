@@ -38,9 +38,9 @@ Ainda pendente fora do código: hospedagem (TRD §10.6), identidade
 visual.
 
 **Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B18; os
-corrigidos têm ✅). Corrigidos na A3: B9, B11, B14, B1, B2, B10. O
-próximo, na ordem do plano: a ordem 8 — guardas que devolvem "o que
-falta", com a regra revista na PRD Q17 (B5 e B10 ampliado).
+corrigidos têm ✅). Corrigidos na A3: B9, B11, B14, B1, B2, B10, B5. O
+próximo, na ordem do plano: a 8f (RN-50, cancelar investigação com
+ações pendentes) e depois o B4.
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
@@ -196,7 +196,8 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   reabrir a NC via o mecanismo acima. Quem confere os planos de ação é a
   **Investigação** — ela só é submetida com toda `AcaoCorretiva` não
   cancelada ligada a ela com plano aprovado, e pode fechar sem nenhuma
-  ação (RN-24, **a implementar na 8e**); a ação
+  ação (RN-24, **implementada na 8e**, com a função pura
+  `avaliarSubmissaoInvestigacao` no validador do submeter); a ação
   nasce ligada a uma investigação `ABERTA` da mesma NC, e
   o vínculo não se apaga (RN-49, **já implementada na 8b**, com
   `investigacaoId` `NOT NULL`; exceção: a do `PARCIALMENTE_EFICAZ`);
