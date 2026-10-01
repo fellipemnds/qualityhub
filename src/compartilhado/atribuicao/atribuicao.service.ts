@@ -24,6 +24,14 @@ export const atribuicaoService = {
             }
 
             const colaboradoresIdUnicos = [...new Set(colaboradoresId)];
+
+            // Confere todos antes de inserir qualquer um: sem isso, a chave estrangeira do banco dava 500 (B16)
+            for (const colaboradorId of colaboradoresIdUnicos) {
+                if ((await usuarioRepository.buscarPorId(tx, colaboradorId)) === null) {
+                    throw new NaoEncontradoError("Um dos usuários a ser atribuído não foi encontrado.");
+                }
+            }
+
             const colaboradoresExistentes = [];
             const colaboradoresNovos = [];
 

@@ -33,7 +33,7 @@ A3): cada bug com um teste que falha antes e passa depois (TDD).
   - **B2**: plano travado depois de aprovado (`CAMPOS_DO_PLANO`; o
     submeter também recusa). Degrau `"PLANO_APROVADO"` no
     `levarAcaoCorretivaAte`.
-- Suíte: **236 passando + 2 falhas esperadas** (`it.fails`: os dois do
+- Suíte: **237 passando + 2 falhas esperadas** (`it.fails`: os dois do
   B18), 33 arquivos, ~140–160 s. Lint e typecheck limpos.
 - O que Matthew aprendeu hoje: TDD (vermelho pelo motivo certo →
   verde); valor × função (o `new Date()` calculado na carga); relógio
@@ -116,7 +116,7 @@ estiver parado há tempo):
    `hostname` e as extensões que **não** vão para casa (Prettier, REST
    Client, Live Server, Docker antiga, Dev Containers). Registrar aqui o
    que mais aparecer, e commitar o `docs/ambiente/casa.txt`.
-6. `npm test` para confirmar: 236 + 2 falhas esperadas.
+6. `npm test` para confirmar: 237 + 2 falhas esperadas.
 
 **Depois, na A3:** a ordem 8 inteira (8a–8f, regra revista na **PRD
 Q17** e **Q18**) está feita: escada de cenários na ordem real, RN-49,
@@ -130,5 +130,6 @@ Q17** e **Q18**) está feita: escada de cenários na ordem real, RN-49,
 **ordem 13 (B12)**: cancelar recusa rascunho (RN-06). E a **ordem 14
 (B8)**: a rota `DELETE /verificacoes/:id` saiu. E a **ordem 15
 (B15)**: contador criado ou incrementado num comando só (`INSERT ...
-ON CONFLICT`). O próximo é a **ordem 16, o B16**: colaborador
-inexistente responde 404, não 500.
+ON CONFLICT`). E a **ordem 16 (B16)**: colaborador inexistente
+responde 404. O próximo é a **ordem 17, o B17**: atribuições só em
+`RASCUNHO`/`ABERTO` (RN-47).

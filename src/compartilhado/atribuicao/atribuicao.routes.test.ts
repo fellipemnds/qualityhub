@@ -168,6 +168,21 @@ describe("POST /registros/:id/colaboradores", () => {
         });
     });
 
+    it("responde 404 quando um dos usuários não existe, e não adiciona nenhum (B16)", async () => {
+        // Prepara: um usuário que existe e um que não
+        const { editor, gerente, nc } = await ncPublicada();
+
+        // Chama
+        const resposta = await chamar(editor, "POST", `/registros/${nc.id}/colaboradores`, 404, {
+            colaboradores: [gerente.usuario.id, ID_INEXISTENTE],
+        });
+
+        // Confere: nem o que existe entrou (tudo ou nada)
+        expect(resposta.mensagem).toEqual(expect.any(String));
+        const colaboradores = await prisma.atribuicao.findMany({ where: { registroId: nc.id, funcao: "COLABORADOR" } });
+        expect(colaboradores.map((atribuicao) => atribuicao.usuarioId)).toEqual([editor.usuario.id]);
+    });
+
     it("quem já é colaborador não entra de novo", async () => {
         // Prepara (quem cria a NC já é colaborador)
         const { editor, nc } = await ncPublicada();
