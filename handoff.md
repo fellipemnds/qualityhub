@@ -116,7 +116,7 @@ estiver parado há tempo):
    `hostname` e as extensões que **não** vão para casa (Prettier, REST
    Client, Live Server, Docker antiga, Dev Containers). Registrar aqui o
    que mais aparecer, e commitar o `docs/ambiente/casa.txt`.
-6. `npm test` para confirmar: 234 + 3 falhas esperadas.
+6. `npm test` para confirmar: 235 + 3 falhas esperadas.
 
 **Depois, na A3:** a ordem 8 inteira (8a–8f, regra revista na **PRD
 Q17** e **Q18**) está feita: escada de cenários na ordem real, RN-49,
@@ -127,5 +127,6 @@ Q17** e **Q18**) está feita: escada de cenários na ordem real, RN-49,
 `PARCIALMENTE_EFICAZ` copia todos os colaboradores. E a **ordem 11
 (B3)**: o autor da ação automática é quem concluiu a verificação. E a
 **ordem 12 (B13)**: filho nasce com o aprovador da NC (RN-46). E a
-**ordem 13 (B12)**: cancelar recusa rascunho (RN-06). O próximo é a
-**ordem 14, o B8**: remover `DELETE /verificacoes/:id`.
+**ordem 13 (B12)**: cancelar recusa rascunho (RN-06). E a **ordem 14
+(B8)**: a rota `DELETE /verificacoes/:id` saiu. O próximo é a **ordem
+15, o B15**: o teste já existe com `it.fails`.

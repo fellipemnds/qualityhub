@@ -31,6 +31,24 @@ describe("GET /verificacoes/:id", () => {
     });
 });
 
+// Verificação nunca é rascunho (nasce ABERTA), então não há rascunho a excluir: a rota não existe (B8)
+describe("DELETE /verificacoes/:id", () => {
+    it("a rota não existe (B8)", async () => {
+        // Prepara
+        const cenario = await ncProntaParaFechar();
+        const { verificacao } = await executarAcao(cenario);
+
+        // Chama
+        const resposta = await chamar(cenario.editor, "DELETE", `/verificacoes/${verificacao.id}`, 404);
+
+        // Confere: o 404 é do roteador (rota inexistente), não do service (item inexistente)
+        expect(resposta.message).toContain("not found");
+        expect(await chamar(cenario.editor, "GET", `/verificacoes/${verificacao.id}`, 200)).toMatchObject({
+            estado: "ABERTO",
+        });
+    });
+});
+
 describe("GET /verificacoes", () => {
     it("filtra pela ação corretiva e por estado", async () => {
         // Prepara (a verificação nasce ABERTA ao finalizar a execução)

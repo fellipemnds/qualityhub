@@ -116,12 +116,6 @@ export const verificacaoService = {
         });
     },
 
-    async excluirRascunhoVerificacao(registroId: string, ator: Ator) {
-        return prisma.$transaction(async (tx) => {
-            return cicloVidaService.excluirRascunho(tx, registroId, ator);
-        });
-    },
-
     async cancelarVerificacao(registroId: string, ator: Ator, motivo: string) {
         return prisma.$transaction(async (tx) => {
             const registroCancelado = await cicloVidaService.cancelar(tx, registroId, ator, motivo);
