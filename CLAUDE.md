@@ -38,8 +38,8 @@ Ainda pendente fora do código: hospedagem (TRD §10.6), identidade
 visual.
 
 **Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B18; os
-corrigidos têm ✅). Corrigidos na A3: B9, B11, B14, B1, B2, B10, B5. O
-próximo, na ordem do plano: o B4 (ordem 9).
+corrigidos têm ✅). Corrigidos na A3: B9, B11, B14, B1, B2, B10, B5,
+B4. O próximo, na ordem do plano: o B6 (ordem 10).
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
@@ -204,9 +204,9 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   (RN-50, **implementada na 8f**: o `cicloVidaService.cancelar` aceita um
   validador opcional, chamado depois de estado e permissão, como o do
   `submeter`).
-  Também da regra revista: `NAO_EFICAZ` deve reabrir só o que estiver
-  fechado (hoje dá erro se a NC estiver aberta); `PARCIALMENTE_EFICAZ`
-  deve copiar todos os colaboradores da ação anterior.
+  `NAO_EFICAZ` reabre só o que estiver fechado (B4, corrigido); ainda
+  falta: `PARCIALMENTE_EFICAZ` deve copiar todos os colaboradores da
+  ação anterior (B6).
 
 ## Testes
 

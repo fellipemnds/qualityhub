@@ -55,8 +55,8 @@ export const verificacaoService = {
     //   apontando para a MESMA investigacaoId da acao original (nunca
     //   edita a antiga, so cria uma continuacao).
     // - NAO_EFICAZ: a causa raiz identificada estava errada — reabre a
-    //   Investigacao (que ja estava FECHADA) e a NC correspondente,
-    //   ambas com o mesmo motivo automatico citando o codigo da
+    //   Investigacao e a NC correspondente, so as que estiverem FECHADAS
+    //   (B4), com o mesmo motivo automatico citando o codigo da
     //   Verificacao. Uma nova Investigacao teria que ser criada depois,
     //   manualmente, pelo colaborador — isso nao acontece aqui.
     async concluirVerificacao(registroId: string, ator: Ator) {
@@ -100,8 +100,13 @@ export const verificacaoService = {
             if (verificacao.resultado === "NAO_EFICAZ") {
                 const motivoAutomatico = `Verificação ${registroConcluido.codigo} foi concluída com resultado Não Eficaz.`;
 
-                await cicloVidaService.reabrir(tx, acaoCorretiva.investigacaoId, ator, motivoAutomatico);
-                await cicloVidaService.reabrir(tx, acaoCorretiva.naoConformidadeId, ator, motivoAutomatico);
+                // Reabre só o que estiver fechado; aberto, em aprovação ou cancelado fica como está (B4, PRD Q2)
+                for (const id of [acaoCorretiva.investigacaoId, acaoCorretiva.naoConformidadeId]) {
+                    const registro = await registroRepository.buscarPorId(tx, id);
+                    if (registro?.estado === "FECHADO") {
+                        await cicloVidaService.reabrir(tx, id, ator, motivoAutomatico);
+                    }
+                }
             }
 
             return { ...registroConcluido, ...verificacao };
