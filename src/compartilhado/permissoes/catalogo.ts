@@ -12,6 +12,8 @@ export const catalogo: Record<Acao, Papel[]> = {
     REABRIR: ["APROVADOR", "GERENTE"],
     GERENCIAR_COLABORADORES: ["EDITOR", "GERENTE"],
     DEFINIR_APROVADOR: ["APROVADOR", "GERENTE"],
+    // Com o item em aprovação (RN-47): o catálogo diz quem; o limite de estado fica no service
+    TROCAR_APROVADOR_EM_APROVACAO: ["GERENTE"],
     GERENCIAR_USUARIOS: ["ADMIN"],
     COMENTAR: ["EDITOR", "APROVADOR", "GERENTE"],
     GERAR_RELATORIOS: ["GERENTE"],

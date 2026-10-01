@@ -39,7 +39,7 @@ visual.
 
 **Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B18; os
 corrigidos têm ✅). Corrigidos na A3: B9, B11, B14, B1, B2, B10, B5,
-B4, B6, B3, B13, B12, B8, B15, B16. O próximo, na ordem do plano: o B17 (ordem 17).
+B4, B6, B3, B13, B12, B8, B15, B16, B17. O próximo, na ordem do plano: a RN-48 (ordem 18).
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com

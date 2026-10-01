@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { type Cenario, chamar, ncPublicada, perfisDeFora } from "../../testes/cenarios.js";
+import { levarContencaoAte } from "../../testes/levar-ate/contencao.js";
 import { prisma } from "../prisma/cliente.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
@@ -324,5 +325,49 @@ describe("DELETE /registros/:id/colaboradores", () => {
         await chamar(visualizador, "DELETE", `/registros/${nc.id}/colaboradores`, 403, {
             colaboradores: [qa.usuario.id],
         });
+    });
+});
+
+// Atribuições só mudam com o item em rascunho ou aberto. Em aprovação, só o GERENTE troca o aprovador (férias, saída
+// da empresa); fechado ou cancelado, nada muda (B17, RN-47). Estado errado → 409; pessoa errada → 403
+describe("Atribuições conforme o estado do item (RN-47)", () => {
+    const congelados = ["EM_APROVACAO", "FECHADO", "CANCELADO"] as const;
+    const definitivos = ["FECHADO", "CANCELADO"] as const;
+
+    it.each(congelados)("%s recusa adicionar e remover colaboradores (B17)", async (estado) => {
+        // Prepara
+        const { editor, gerente, contencao } = await levarContencaoAte(estado);
+        const corpo = { colaboradores: [gerente.usuario.id] };
+
+        // Chama
+        const adicionar = await chamar(editor, "POST", `/registros/${contencao.id}/colaboradores`, 409, corpo);
+        const remover = await chamar(editor, "DELETE", `/registros/${contencao.id}/colaboradores`, 409, corpo);
+
+        // Confere
+        expect(adicionar.mensagem).toContain("rascunho ou aberto");
+        expect(remover.mensagem).toContain("rascunho ou aberto");
+    });
+
+    it.each(definitivos)("%s recusa trocar o aprovador, mesmo para o gerente (B17)", async (estado) => {
+        // Prepara
+        const { gerente, qa, contencao } = await levarContencaoAte(estado);
+
+        // Chama
+        await chamar(gerente, "PUT", `/registros/${contencao.id}/aprovador`, 409, { usuarioId: qa.usuario.id });
+
+        // Confere
+        expect(await aprovadoresDe(contencao.id)).not.toContain(qa.usuario.id);
+    });
+
+    it("EM_APROVACAO: só o gerente troca o aprovador (B17, RN-47)", async () => {
+        // Prepara
+        const { aprovador, gerente, qa, contencao } = await levarContencaoAte("EM_APROVACAO");
+
+        // Chama: um APROVADOR que não é gerente é recusado; o gerente consegue
+        await chamar(aprovador, "PUT", `/registros/${contencao.id}/aprovador`, 403, { usuarioId: qa.usuario.id });
+        await chamar(gerente, "PUT", `/registros/${contencao.id}/aprovador`, 200, { usuarioId: qa.usuario.id });
+
+        // Confere
+        expect(await aprovadoresDe(contencao.id)).toEqual([qa.usuario.id]);
     });
 });

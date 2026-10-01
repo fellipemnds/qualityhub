@@ -2,11 +2,22 @@ import { usuarioRepository } from "../../modulos/usuario/usuario.repository.js";
 import { auditoriaRepository } from "../auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../auditoria/entidades-auditadas.js";
 import type { Ator } from "../entidades/ator.js";
+import type { EstadoRegistro } from "../entidades/estados.js";
 import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError, ValidacaoError } from "../errors/errors.js";
 import { temPapel } from "../permissoes/pode-executar.js";
 import { prisma } from "../prisma/cliente.js";
 import { registroRepository } from "../registro/registro.repository.js";
 import { atribuicaoRepository } from "./atribuicao.repository.js";
+
+// Atribuições só mudam com o item em rascunho ou aberto (B17, RN-47): o que já foi enviado, fechado ou cancelado
+// fica com quem estava nele. A única exceção, a troca de aprovador em aprovação, é conferida no definirAprovador
+const ESTADOS_DE_ATRIBUICAO: EstadoRegistro[] = ["RASCUNHO", "ABERTO"];
+
+function conferirEstadoDasAtribuicoes(estado: EstadoRegistro) {
+    if (!ESTADOS_DE_ATRIBUICAO.includes(estado)) {
+        throw new TransicaoInvalidaError("As atribuições só mudam com o item em rascunho ou aberto.");
+    }
+}
 
 export const atribuicaoService = {
     async adicionarColaboradores(registroId: string, colaboradoresId: string[], ator: Ator) {
@@ -16,6 +27,8 @@ export const atribuicaoService = {
             if (registro === null) {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
+
+            conferirEstadoDasAtribuicoes(registro.estado);
 
             const papel = temPapel(ator, "GERENCIAR_COLABORADORES");
 
@@ -71,6 +84,8 @@ export const atribuicaoService = {
             if (registro === null) {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
+
+            conferirEstadoDasAtribuicoes(registro.estado);
 
             const papel = temPapel(ator, "GERENCIAR_COLABORADORES");
 
@@ -143,6 +158,15 @@ export const atribuicaoService = {
 
             if (!papelAtor) {
                 throw new SemPermissaoError("Você não tem permissões suficientes para gerenciar aprovadores.");
+            }
+
+            // Em aprovação, só o GERENTE troca (férias, saída da empresa): a troca fica na auditoria como as outras
+            if (registro.estado === "EM_APROVACAO") {
+                if (!temPapel(ator, "TROCAR_APROVADOR_EM_APROVACAO")) {
+                    throw new SemPermissaoError("Com o item em aprovação, só o gerente troca o aprovador.");
+                }
+            } else {
+                conferirEstadoDasAtribuicoes(registro.estado);
             }
 
             const aprovadorAtual = await atribuicaoRepository.buscarAprovador(tx, registroId);
