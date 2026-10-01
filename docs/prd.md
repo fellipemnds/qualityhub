@@ -90,7 +90,7 @@ ele não é o aprovador designado.
 | Item | Regra |
 |---|---|
 | Planos de ação aprovados antes de submeter a investigação; a NC exige toda investigação fechada | RN-21, RN-24 |
-| Ação Corretiva nasce ligada a uma investigação editável da mesma NC | RN-49 |
+| Ação Corretiva nasce ligada a uma investigação aberta da mesma NC | RN-49 |
 | `NAO_EFICAZ` reabre só o que estiver fechado (hoje dá erro) | RN-23 |
 | `PARCIALMENTE_EFICAZ` copia todos os colaboradores da ação anterior | RN-23 |
 | Criar NC já com colaboradores, num passo só | RF-01 |
@@ -156,7 +156,7 @@ automaticamente (§5.4).
 | **Classificação** | Maior / Menor, com justificativa | Só `APROVADOR`/`GERENTE` (RN-20) | Portão único | Reclassificar = criar nova; a antiga fica no histórico |
 | **Contenção** | Ação imediata + destino (disposição) | `EDITOR` | Portão único | Disposição: `ACEITO`, `CORRIGIDO`, `ANULADO`, `EM_ANALISE` — termos genéricos, servem qualquer área, não só fábrica. Falhou? Cria outra, não reabre |
 | **Investigação** | Causa raiz, pelo método A3 SPS | `EDITOR` | Portão único | 1 "real problema" = 1 investigação. Hipóteses classificadas em causa direta / fator contribuinte / sem relação. Só é submetida com os planos das suas ações aprovados (RN-24). Não reabre manualmente |
-| **Ação Corretiva** | Plano para eliminar a causa + execução | `EDITOR` | **Só o plano** é aprovado | Nasce ligada a uma investigação ainda editável (RN-49). Aprovado o plano, o colaborador executa e finaliza **sem nova aprovação** — isso gera a Verificação automaticamente |
+| **Ação Corretiva** | Plano para eliminar a causa + execução | `EDITOR` | **Só o plano** é aprovado | Nasce ligada a uma investigação aberta (RN-49). Aprovado o plano, o colaborador executa e finaliza **sem nova aprovação** — isso gera a Verificação automaticamente |
 | **Verificação** | A ação funcionou? | Só `APROVADOR` colaborador | Nenhuma — conclui direto | Nunca criada à mão. Nasce já aberta, com prazo (hoje + N dias informados ao finalizar a ação) e com o aprovador da Ação Corretiva atribuído |
 
 ### 5.3 Estados
@@ -273,7 +273,7 @@ Legenda: ✅ pronto · 🔧 pronto, com ajuste decidido · ⬜ a construir
 | RN-26 | **(alterada)** Reclassificar = nova Classificação; a anterior fica no histórico. *(O campo "classificação atual" na NC foi removido — ninguém definiu qual é "a atual" quando há várias.)* |
 | RN-41 | **(nova)** Verificação só é concluída por colaborador com papel `APROVADOR` |
 | RN-42 | **(nova)** Contenção, Classificação e Investigação não são reabertas manualmente — cria-se uma nova. Só a NC é reaberta manualmente (a Investigação, só pela reação a `NAO_EFICAZ`) |
-| RN-49 | **(nova)** Ação Corretiva **nasce ligada** a uma Investigação da mesma NC, em `RASCUNHO` ou `ABERTO`; o vínculo não pode ser apagado. Assim nenhuma ação aparece depois que a investigação foi enviada. Única exceção: a ação criada pelo `PARCIALMENTE_EFICAZ` (§5.4), na mesma investigação, mesmo fechada — Q17 |
+| RN-49 | **(nova)** Ação Corretiva **nasce ligada** a uma Investigação da mesma NC, **em `ABERTO`**: nem em rascunho, que ainda não existe formalmente, nem depois do envio. O vínculo não pode ser apagado. Assim nenhuma ação aparece depois que a investigação foi enviada, e nenhuma fica solta: investigação com ação está sempre publicada, e item publicado não se exclui, só se cancela (RN-50). Única exceção: a ação criada pelo `PARCIALMENTE_EFICAZ` (§5.4), na mesma investigação, mesmo fechada — Q17 |
 | RN-50 | **(nova)** Cancelar uma Investigação exige que todas as Ações Corretivas ligadas a ela estejam `CANCELADAS` ou `FECHADAS`; senão, recusa com a lista das que faltam. Sem isso, a NC (que ignora investigação cancelada) fecharia com ações soltas — Q18 |
 
 ### Aprovação
@@ -377,7 +377,7 @@ em 2026-09-24.
 | # | Pergunta | Decisão |
 |---|---|---|
 | Q18 | O que acontece com as ações quando a investigação é cancelada? | **O cancelamento é recusado** enquanto houver ação ligada que não esteja cancelada ou fechada; a pessoa resolve uma a uma. Cancelar as ações junto, sozinho, faria algo que ninguém pediu → RN-50 |
-| Q17 | Quem confere os planos de ação: a NC ou a Investigação? | **A Investigação.** O QA não aprovaria a investigação, cujo A3 inclui as contramedidas, sem aprovar os planos que ela propõe. Ela só é submetida com os planos das suas ações aprovados, e pode fechar **sem nenhuma ação** ("pelo menos você investigou" — analista). A NC passa a exigir toda investigação não cancelada fechada. Para nenhuma ação escapar, ela nasce ligada a uma investigação ainda editável; a do `PARCIALMENTE_EFICAZ` é a exceção, e segue depois do fechamento como a execução e a verificação → RN-21, RN-24, RN-49. Substitui a Q1 |
+| Q17 | Quem confere os planos de ação: a NC ou a Investigação? | **A Investigação.** O QA não aprovaria a investigação, cujo A3 inclui as contramedidas, sem aprovar os planos que ela propõe. Ela só é submetida com os planos das suas ações aprovados, e pode fechar **sem nenhuma ação** ("pelo menos você investigou" — analista). A NC passa a exigir toda investigação não cancelada fechada. Para nenhuma ação escapar, ela nasce ligada a uma investigação aberta; a do `PARCIALMENTE_EFICAZ` é a exceção, e segue depois do fechamento como a execução e a verificação → RN-21, RN-24, RN-49. Substitui a Q1 |
 
 Limite de tamanho e armazenamento dos anexos foram resolvidos no TRD (§8).
 

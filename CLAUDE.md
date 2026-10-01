@@ -192,8 +192,9 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   submetida com toda `AcaoCorretiva` não cancelada ligada a ela com
   plano aprovado, e pode fechar sem nenhuma ação (RN-24); a NC passa a
   exigir **toda** `Investigacao` não cancelada FECHADA (RN-21); a ação
-  nasce ligada a uma investigação em `RASCUNHO`/`ABERTO` da mesma NC, e
-  o vínculo não se apaga (RN-49; exceção: a do `PARCIALMENTE_EFICAZ`);
+  nasce ligada a uma investigação `ABERTA` da mesma NC, e
+  o vínculo não se apaga (RN-49, **já implementada na 8b**, com
+  `investigacaoId` `NOT NULL`; exceção: a do `PARCIALMENTE_EFICAZ`);
   cancelar a investigação exige as ações dela canceladas ou fechadas
   (RN-50). Ordem 8 dividida em 8a–8f no plano.
   Também da regra revista: `NAO_EFICAZ` deve reabrir só o que estiver

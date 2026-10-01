@@ -206,6 +206,24 @@ describe("DELETE /nc/:id", () => {
 
         await chamar(editor, "DELETE", `/nc/${ID_INEXISTENTE}`, 404);
     });
+
+    // O banco apaga os filhos junto, e a ação aponta para a investigação, que também é apagada (RN-49)
+    it("exclui o rascunho com uma investigação e uma ação ligadas", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+        const nc = await chamar(editor, "POST", "/nc", 201, { titulo: "NC que vai ser excluída" });
+        const investigacao = await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
+            realProblema: "Vedação da bomba hidráulica com desgaste prematuro.",
+        });
+        await chamar(editor, "POST", `/investigacoes/${investigacao.id}/publicar`, 200);
+        await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, { investigacaoId: investigacao.id });
+
+        // Chama
+        await chamar(editor, "DELETE", `/nc/${nc.id}`, 204);
+
+        // Confere
+        await chamar(editor, "GET", `/nc/${nc.id}`, 404);
+    });
 });
 
 describe("POST /nc/:id/publicar", () => {

@@ -20,7 +20,7 @@ documento de arquitetura.
     ela com o plano aprovado, e pode fechar sem nenhuma ação (RN-24);
   - a NC exige **toda** investigação não cancelada fechada, e não olha
     mais as ações (RN-21);
-  - a ação nasce ligada a uma investigação em `RASCUNHO`/`ABERTO`, e o
+  - a ação nasce ligada a uma investigação em `ABERTO`, e o
     vínculo não se apaga (RN-49). Sem isso, uma ação criada depois do
     envio escaparia das duas guardas. A exceção é a ação do
     `PARCIALMENTE_EFICAZ`, que segue depois do fechamento.
@@ -41,6 +41,21 @@ documento de arquitetura.
   `levarAcaoCorretivaAte` parte da `investigacaoAberta`. Refatoração
   pura: mesmos testes, e um pouco mais rápida (39 testes da ação e da
   verificação: 54 s → 50 s).
+- **`AcaoCorretiva.investigacaoId` obrigatório no banco** (ordem 8b,
+  migration `investigacao_obrigatoria_na_acao`): a RN-49 também garantida
+  pelo `NOT NULL`, não só pelo schema. A chave estrangeira passou de
+  `SET NULL` (que soltava a ação sem aviso quando a investigação era
+  apagada) para `RESTRICT`. **Ação só em investigação aberta, não em
+  rascunho** (sugestão de Matthew, no lugar de recusar a exclusão do
+  rascunho com ação): rascunho ainda não existe formalmente, e assim
+  investigação com ação está sempre publicada — item publicado não se
+  exclui, então o caso da exclusão nem aparece. Barrar só na tela foi
+  descartado: a API deixaria passar. A NC em rascunho continua sendo
+  excluída com os filhos (testado). A checagem "ação sem
+  investigação" do `NAO_EFICAZ` saiu: o caso não existe mais. O banco de
+  desenvolvimento precisou de reset (tinha 10 ações sem investigação):
+  quem tiver ações assim no banco local precisa do mesmo
+  (`SETUP.md` §12, passos 6 e 7).
 
 ### Fase A2 — rede de proteção (branch `fase/a2-rede-protecao`)
 

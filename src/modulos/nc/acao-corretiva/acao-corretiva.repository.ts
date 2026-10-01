@@ -1,9 +1,9 @@
 import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import type { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
-import type { AcaoCorretivaRascunhoInput } from "./acao-corretiva.schema.js";
+import type { AcaoCorretivaCriacaoInput, AcaoCorretivaRascunhoInput } from "./acao-corretiva.schema.js";
 
 export const acaoCorretivaRepository = {
-    async criar(tx: ClientePrisma, dados: AcaoCorretivaRascunhoInput & { id: string; naoConformidadeId: string }) {
+    async criar(tx: ClientePrisma, dados: AcaoCorretivaCriacaoInput & { id: string; naoConformidadeId: string }) {
         return tx.acaoCorretiva.create({ data: dados });
     },
 

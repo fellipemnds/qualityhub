@@ -97,8 +97,11 @@ estiver parado há tempo):
 1. Docker Desktop aberto ("Engine running"), Ubuntu, pasta do projeto.
 2. `git fetch` e `git switch fase/a3-correcoes` (a branch é nova para o
    PC de casa), depois `git pull`.
-3. **`npm run preparar`** — obrigatório: aplica a migration do
-   `@db.Date` no banco de lá.
+3. **`npm run preparar`** — obrigatório: aplica as migrations do
+   `@db.Date` e do `investigacaoId` obrigatório (`NOT NULL`, RN-49) no
+   banco de lá. Se esta última falhar (o banco de casa tem ações sem
+   investigação), recriar o banco: `SETUP.md` §12, passos 6 e 7 (reset +
+   usuários de teste). O do trabalho já precisou, em 2026-10-01.
 4. Extensões do VS Code: a lista do **`SETUP.md` §12.4** (um comando no
    terminal do WSL + duas no Windows). Conferir `node -v` (24).
 5. **Primeira foto de casa:** `npm run ambiente -- casa` e depois
@@ -106,7 +109,7 @@ estiver parado há tempo):
    `hostname` e as extensões que **não** vão para casa (Prettier, REST
    Client, Live Server, Docker antiga, Dev Containers). Registrar aqui o
    que mais aparecer, e commitar o `docs/ambiente/casa.txt`.
-6. `npm test` para confirmar: 172 + 3 falhas esperadas.
+6. `npm test` para confirmar: 182 + 3 falhas esperadas.
 
 **Depois, na A3:** ordem 8, dividida em **8a–8f** no plano (começa pela
 8a, a escada de cenários, só refatoração), com a regra revista na **PRD
@@ -120,4 +123,4 @@ banco) que **Matthew escreve** em TDD; Claude prepara o esqueleto (arquivo
 + tipo `ItemChecklist`) e depois faz a carga do banco, o 409 com a lista
 (o `AppError` passa a levar detalhes no campo `error`), a rota
 `GET /nc/:id/checklist-fechamento`, a RN-24 no submeter da Investigação
-(o B5) e a RN-49 (vínculo na criação, só com investigação editável).
+(o B5). A RN-49 (8b) já está feita: vínculo na criação, só com investigação aberta.

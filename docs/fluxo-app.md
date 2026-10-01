@@ -246,10 +246,10 @@ aprovador e aparece na triagem até alguém definir (RN-46).
 
 ### J5 — Ação Corretiva: plano, execução, verificação (colaborador + QA) · RF-06, RF-07
 
-1. Na página da **Investigação**, ainda em rascunho ou aberta → **Nova
+1. Na página da **Investigação**, já publicada e ainda aberta → **Nova
    ação corretiva**, já vinculada a ela. Pela página da NC também dá,
-   mas a pessoa **escolhe a investigação** (só as desta NC em rascunho ou
-   abertas). O vínculo é obrigatório desde a criação e não se apaga
+   mas a pessoa **escolhe a investigação** (só as desta NC abertas). O
+   vínculo é obrigatório desde a criação e não se apaga
    (RN-49): é ele que garante que a investigação confira o plano, e que
    permite reabrir a investigação certa se a verificação der "não
    eficaz" (B10 do Esquema Backend).

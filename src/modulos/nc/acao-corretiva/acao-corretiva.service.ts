@@ -25,6 +25,7 @@ import { ncRepository } from "../nc/nc.repository.js";
 import { verificacaoRepository } from "../verificacao/verificacao.repository.js";
 import { acaoCorretivaRepository } from "./acao-corretiva.repository.js";
 import {
+    type AcaoCorretivaCriacaoInput,
     type AcaoCorretivaRascunhoInput,
     acaoCorretivaExecucaoSchema,
     acaoCorretivaPlanoSchema,
@@ -32,28 +33,23 @@ import {
     CAMPOS_DO_PLANO,
 } from "./acao-corretiva.schema.js";
 
-// A investigação apontada pela ação é a que a Verificação NAO_EFICAZ reabre: tem de existir, ser da mesma NC e não
-// estar cancelada (B10). Vazia é aceita aqui; o plano é que a exige, ao submeter
-async function conferirInvestigacao(
-    tx: ClientePrisma,
-    naoConformidadeId: string,
-    investigacaoId: string | null | undefined,
-) {
-    if (investigacaoId === null || investigacaoId === undefined) return;
-
+// A investigação apontada pela ação é a que a Verificação NAO_EFICAZ reabre: tem de existir e ser da mesma NC
+// (B10). E é ela que confere o plano antes do envio (RN-24): só recebe ação enquanto está aberta — nem em rascunho,
+// que ainda não existe formalmente, nem depois do envio (RN-49)
+async function conferirInvestigacao(tx: ClientePrisma, naoConformidadeId: string, investigacaoId: string) {
     const investigacao = await investigacaoRepository.buscarPorId(tx, investigacaoId);
     if (investigacao === null || investigacao.naoConformidadeId !== naoConformidadeId) {
         throw new ValidacaoError("A investigação não existe ou não é desta Não Conformidade.");
     }
 
     const registro = await registroRepository.buscarPorId(tx, investigacaoId);
-    if (registro?.estado === "CANCELADO") {
-        throw new ValidacaoError("A investigação está cancelada e não pode ser vinculada a esta ação corretiva.");
+    if (registro?.estado !== "ABERTO") {
+        throw new ValidacaoError("A investigação precisa estar aberta para receber ações corretivas.");
     }
 }
 
 export const acaoCorretivaService = {
-    async criarRascunhoAcaoCorretiva(ator: Ator, naoConformidadeId: string, dados: AcaoCorretivaRascunhoInput) {
+    async criarRascunhoAcaoCorretiva(ator: Ator, naoConformidadeId: string, dados: AcaoCorretivaCriacaoInput) {
         return prisma.$transaction(async (tx) => {
             const papel = temPapel(ator, "GERENCIAR_RASCUNHO");
             if (!papel) throw new SemPermissaoError("Você não tem permissões suficientes para criar um novo rascunho.");
@@ -101,7 +97,11 @@ export const acaoCorretivaService = {
             const antes = await acaoCorretivaRepository.buscarPorId(tx, registroId);
             if (antes === null) throw new NaoEncontradoError("Item não encontrado.");
 
-            await conferirInvestigacao(tx, antes.naoConformidadeId, dados.investigacaoId);
+            // Só confere quando o vínculo muda: a ação do PARCIALMENTE_EFICAZ aponta para uma investigação já fechada, e
+            // mandar o mesmo vínculo ao editar o plano não é ligar de novo (RN-49)
+            if (dados.investigacaoId !== undefined && dados.investigacaoId !== antes.investigacaoId) {
+                await conferirInvestigacao(tx, antes.naoConformidadeId, dados.investigacaoId);
+            }
 
             const atualizada = await acaoCorretivaRepository.atualizar(tx, registroId, dados);
 

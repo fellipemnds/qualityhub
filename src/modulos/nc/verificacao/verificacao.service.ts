@@ -86,7 +86,7 @@ export const verificacaoService = {
                 await acaoCorretivaRepository.criar(tx, {
                     id: novoRegistro.id,
                     naoConformidadeId: acaoCorretiva.naoConformidadeId,
-                    investigacaoId: acaoCorretiva.investigacaoId ?? undefined,
+                    investigacaoId: acaoCorretiva.investigacaoId,
                 });
                 await atribuicaoRepository.inserirAtribuicao(
                     tx,
@@ -99,12 +99,6 @@ export const verificacaoService = {
 
             if (verificacao.resultado === "NAO_EFICAZ") {
                 const motivoAutomatico = `Verificação ${registroConcluido.codigo} foi concluída com resultado Não Eficaz.`;
-
-                if (acaoCorretiva.investigacaoId === null) {
-                    throw new TransicaoInvalidaError(
-                        "Esta Ação Corretiva não está vinculada a uma Investigação — não é possível reabrir automaticamente.",
-                    );
-                }
 
                 await cicloVidaService.reabrir(tx, acaoCorretiva.investigacaoId, ator, motivoAutomatico);
                 await cicloVidaService.reabrir(tx, acaoCorretiva.naoConformidadeId, ator, motivoAutomatico);

@@ -1,13 +1,32 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { chamar, diaDaquiA, executarAcao, ncProntaParaFechar, ncPublicada } from "../../../testes/cenarios.js";
+import {
+    chamar,
+    concluirVerificacao,
+    diaDaquiA,
+    executarAcao,
+    investigacaoAberta,
+    ncProntaParaFechar,
+    ncPublicada,
+} from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
 import { levarAcaoCorretivaAte } from "../../../testes/levar-ate/acao-corretiva.js";
 import { levarInvestigacaoAte } from "../../../testes/levar-ate/investigacao.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
 
+type Quem = Awaited<ReturnType<typeof loginComo>>;
+
+// Uma investigação publicada na NC: a menor que aceita uma ação ligada (RN-49)
+async function investigacaoPublicada(editor: Quem, naoConformidadeId: string) {
+    const investigacao = await chamar(editor, "POST", `/nc/${naoConformidadeId}/investigacoes`, 201, {
+        realProblema: "Vedação da bomba hidráulica com desgaste prematuro, causando vazamento contínuo de óleo.",
+    });
+    await chamar(editor, "POST", `/investigacoes/${investigacao.id}/publicar`, 200);
+    return investigacao;
+}
+
 // As formas de apontar a ação para uma investigação que não serve: a que a Verificação NAO_EFICAZ reabriria tem de
-// existir, ser desta NC e não estar cancelada (B10)
+// existir e ser desta NC (B10), e só recebe ação enquanto está aberta (RN-49)
 const INVESTIGACOES_INVALIDAS = [
     {
         caso: "que não existe",
@@ -27,9 +46,30 @@ const INVESTIGACOES_INVALIDAS = [
         },
     },
     {
+        caso: "em rascunho",
+        montar: async () => {
+            const { investigacao, ...cenario } = await levarInvestigacaoAte("RASCUNHO");
+            return { ...cenario, investigacaoId: investigacao.id };
+        },
+    },
+    {
         caso: "cancelada",
         montar: async () => {
             const { investigacao, ...cenario } = await levarInvestigacaoAte("CANCELADO");
+            return { ...cenario, investigacaoId: investigacao.id };
+        },
+    },
+    {
+        caso: "em aprovação",
+        montar: async () => {
+            const { investigacao, ...cenario } = await levarInvestigacaoAte("EM_APROVACAO");
+            return { ...cenario, investigacaoId: investigacao.id };
+        },
+    },
+    {
+        caso: "fechada",
+        montar: async () => {
+            const { investigacao, ...cenario } = await levarInvestigacaoAte("FECHADO");
             return { ...cenario, investigacaoId: investigacao.id };
         },
     },
@@ -44,14 +84,28 @@ describe("POST /nc/:naoConformidadeId/acoes-corretivas", () => {
         // Prepara
         const editor = await loginComo("editor");
 
-        // Chama
-        const resposta = await chamar(editor, "POST", `/nc/${ID_INEXISTENTE}/acoes-corretivas`, 404, {});
+        // Chama (com uma investigação qualquer: sem ela, o corpo já seria recusado com 400)
+        const resposta = await chamar(editor, "POST", `/nc/${ID_INEXISTENTE}/acoes-corretivas`, 404, {
+            investigacaoId: ID_INEXISTENTE,
+        });
 
         // Confere
         expect(resposta.mensagem).toEqual(expect.any(String));
     });
 
-    it.each(INVESTIGACOES_INVALIDAS)("recusa a investigação $caso (B10)", async ({ montar }) => {
+    it("recusa sem investigação (RN-49)", async () => {
+        // Prepara
+        const { editor, nc } = await ncPublicada();
+
+        // Chama
+        const resposta = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 400, {});
+
+        // Confere: nenhuma ação nasceu
+        expect(resposta.error).toEqual([expect.objectContaining({ instancePath: "/investigacaoId" })]);
+        expect(await chamar(editor, "GET", `/acoes-corretivas?naoConformidadeId=${nc.id}`, 200)).toEqual([]);
+    });
+
+    it.each(INVESTIGACOES_INVALIDAS)("recusa a investigação $caso (B10, RN-49)", async ({ montar }) => {
         // Prepara
         const { editor, nc, investigacaoId } = await montar();
 
@@ -159,10 +213,11 @@ describe("PATCH /acoes-corretivas/:id", () => {
         expect(resposta).toMatchObject({ executadoEm: `${diaDaquiA(-1)}T00:00:00.000Z` });
     });
 
-    it.each(INVESTIGACOES_INVALIDAS)("recusa apontar para a investigação $caso (B10)", async ({ montar }) => {
-        // Prepara: ação ainda sem investigação, na NC do cenário
+    it.each(INVESTIGACOES_INVALIDAS)("recusa apontar para a investigação $caso (B10, RN-49)", async ({ montar }) => {
+        // Prepara: ação ligada a uma investigação que serve, na NC do cenário
         const { editor, nc, investigacaoId } = await montar();
-        const acao = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, {});
+        const valida = await investigacaoPublicada(editor, nc.id);
+        const acao = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, { investigacaoId: valida.id });
         const antes = await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200);
 
         // Chama
@@ -172,24 +227,61 @@ describe("PATCH /acoes-corretivas/:id", () => {
         expect(resposta.mensagem).toContain("investigação");
         expect(await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200)).toEqual(antes);
     });
+
+    it("recusa apagar a investigação (RN-49)", async () => {
+        // Prepara
+        const { editor, acao } = await levarAcaoCorretivaAte("ABERTO");
+        const antes = await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200);
+
+        // Chama
+        const resposta = await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 400, { investigacaoId: null });
+
+        // Confere
+        expect(resposta.error).toEqual([expect.objectContaining({ instancePath: "/investigacaoId" })]);
+        expect(await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200)).toEqual(antes);
+    });
+
+    // A ação do PARCIALMENTE_EFICAZ é a única ligada a uma investigação já fechada (RN-49): editar o plano mandando
+    // o mesmo vínculo não é ligar de novo
+    it("aceita o mesmo investigacaoId na ação gerada pelo PARCIALMENTE_EFICAZ (RN-49)", async () => {
+        // Prepara: a ação nova nasce sem colaboradores (B6), então o gerente põe o editor
+        const cenario = await ncProntaParaFechar();
+        const { editor, gerente, nc, investigacao } = cenario;
+        const { verificacao } = await executarAcao(cenario);
+        await concluirVerificacao(cenario, verificacao.id, "PARCIALMENTE_EFICAZ");
+        const [nova] = await chamar(editor, "GET", `/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`, 200);
+        await chamar(gerente, "POST", `/registros/${nova.id}/colaboradores`, 200, {
+            colaboradores: [editor.usuario.id],
+        });
+
+        // Chama
+        const resposta = await chamar(editor, "PATCH", `/acoes-corretivas/${nova.id}`, 200, {
+            investigacaoId: investigacao.id,
+            descricao: "Trocar também a vedação da bomba reserva, que usa o mesmo material incompatível.",
+        });
+
+        // Confere
+        expect(resposta).toMatchObject({ investigacaoId: investigacao.id });
+    });
 });
 
 describe("POST /acoes-corretivas/:id/submeter", () => {
-    it("recusa o plano sem investigação, descrição e instruções de verificação", async () => {
+    it("recusa o plano sem descrição e instruções de verificação", async () => {
         // Prepara
-        const { editor, gerente, aprovador, nc } = await ncPublicada();
-        const acao = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, {});
+        const { editor, gerente, aprovador, nc, investigacao } = await investigacaoAberta();
+        const acao = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, {
+            investigacaoId: investigacao.id,
+        });
         await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/publicar`, 200);
         await chamar(gerente, "PUT", `/registros/${acao.id}/aprovador`, 200, { usuarioId: aprovador.usuario.id });
 
         // Chama
         const resposta = await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/submeter`, 400);
 
-        // Confere (o prazo vazio também: B14; a investigação vazia também: B10)
+        // Confere (o prazo vazio também: B14)
         expect(resposta).toMatchObject({
             mensagem: "Dados inválidos",
             error: expect.arrayContaining([
-                expect.objectContaining({ path: ["investigacaoId"] }),
                 expect.objectContaining({ path: ["descricao"] }),
                 expect.objectContaining({ path: ["prazo"] }),
                 expect.objectContaining({ path: ["instrucoesVerificacao"] }),
@@ -279,9 +371,11 @@ describe("GET /acoes-corretivas", () => {
         // Prepara: dois itens na NC do cenário (um publicado) e um em outra NC
         const { editor, nc } = await ncPublicada();
         const outraNC = await chamar(editor, "POST", "/nc", 201, { titulo: "Outra NC, com o seu item" });
-        const publicado = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, {});
-        const rascunho = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, {});
-        await chamar(editor, "POST", `/nc/${outraNC.id}/acoes-corretivas`, 201, {});
+        const daNCDoCenario = { investigacaoId: (await investigacaoPublicada(editor, nc.id)).id };
+        const daOutraNC = { investigacaoId: (await investigacaoPublicada(editor, outraNC.id)).id };
+        const publicado = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, daNCDoCenario);
+        const rascunho = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, daNCDoCenario);
+        await chamar(editor, "POST", `/nc/${outraNC.id}/acoes-corretivas`, 201, daOutraNC);
         await chamar(editor, "POST", `/acoes-corretivas/${publicado.id}/publicar`, 200);
 
         // Chama

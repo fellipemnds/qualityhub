@@ -339,8 +339,8 @@ model AcaoCorretiva {
   registro          Registro        @relation(fields: [id], references: [id], onDelete: Cascade)
   naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id], onDelete: Cascade)
   naoConformidadeId String
-  investigacaoId    String?
-  investigacao      Investigacao?   @relation(fields: [investigacaoId], references: [id])
+  investigacaoId    String
+  investigacao      Investigacao    @relation(fields: [investigacaoId], references: [id])
 
   descricao             String?
   prazo                 DateTime? @db.Date

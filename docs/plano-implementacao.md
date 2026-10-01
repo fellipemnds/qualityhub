@@ -175,7 +175,7 @@ antes de qualquer mudança de regra.
 | 6 | **B2** — plano travado depois de aprovado | 🧑 |
 | 7 | **B10** — investigação obrigatória no plano, da mesma NC, não cancelada | 🧑 |
 | 8a | **Escada de cenários na ordem real** (PRD Q17): investigação aberta → ação com plano aprovado → investigação fechada; o `levarAcaoCorretivaAte` parte de uma investigação aberta. Só refatoração: nenhuma regra muda, a suíte continua verde com os mesmos testes. Commit separado | 🤖 |
-| 8b | **RN-49** — `investigacaoId` obrigatório na criação, não se apaga, só com investigação em `RASCUNHO`/`ABERTO` (amplia o B10). Migration: coluna `NOT NULL`, para o banco também garantir | 🤖 |
+| 8b | **RN-49** — `investigacaoId` obrigatório na criação, não se apaga, só com investigação em `ABERTO` (amplia o B10). Migration: coluna `NOT NULL`, para o banco também garantir | 🤖 |
 | 8c | **`avaliarFechamentoNC`** — função pura que devolve a lista do que falta, um item por requisito, em dois grupos, filhos e envio (RN-21: toda investigação não cancelada fechada; TRD §5, esquema §4.3). Testada sem banco | 🧑 |
 | 8d | **Submeter da NC** usando a função: 409 com a lista (o `AppError` passa a levar detalhes no campo `error`) + rota `GET /nc/:id/checklist-fechamento` | 🤖 |
 | 8e | **RN-24 — o B5**: a Investigação só é submetida com os planos das suas ações aprovados; mesmo formato de lista e 409 do 8d. Vem depois da RN-49, que garante que nenhuma ação se liga depois do envio | 🤖 |
