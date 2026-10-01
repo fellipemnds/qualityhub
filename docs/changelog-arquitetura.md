@@ -27,7 +27,12 @@ documento de arquitetura.
 
   Efeitos: a etapa "Em plano de ação" deixa de existir (10 etapas,
   `fluxo-app.md` §4); o B5 muda de lugar (esquema §7); o B10 é ampliado.
-  Implementação na ordem 8 da A3.
+  Implementação na ordem 8 da A3, dividida em 8a–8f.
+- **Cancelar investigação com ações pendentes é recusado** (PRD Q18,
+  RN-50, Matthew). Com a NC ignorando investigação cancelada e sem olhar
+  as ações, cancelar a investigação deixaria ações soltas. Recusar (409
+  com a lista) foi preferido a cancelar as ações junto, que faria algo
+  que ninguém pediu.
 
 ### Fase A2 — rede de proteção (branch `fase/a2-rede-protecao`)
 

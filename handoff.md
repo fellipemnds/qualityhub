@@ -84,9 +84,6 @@ migration do `@db.Date`. Falta marcar no PR #4 as ordens 3 a 6.
   é a opção de maior ganho. **Não** montar cenário direto no banco.
 - **Rever o `podeExecutar`** (colaborador **ou** aprovador designado × o
   PRD §8, que pede colaborador): decidir com a analista se vira bug.
-- **Investigação cancelada depois de vinculada à ação** (fora do B10, que
-  só confere ao criar e editar): decidir se cancelar a investigação é
-  barrado ou se a ação também precisa ser revista.
 - Quando o `/retirar` (RN-48) existir, as tabelas de máquina de estados
   e de permissões ganham a ação nova.
 - No trabalho, o Prettier ainda está instalado no lado Windows do VS
@@ -111,8 +108,11 @@ estiver parado há tempo):
    que mais aparecer, e commitar o `docs/ambiente/casa.txt`.
 6. `npm test` para confirmar: 172 + 3 falhas esperadas.
 
-**Depois, na A3:** ordem 8, com a regra revista na **PRD Q17** (planos
-de ação conferidos pela Investigação, não pela NC; RN-21, RN-24, RN-49).
+**Depois, na A3:** ordem 8, dividida em **8a–8f** no plano (começa pela
+8a, a escada de cenários, só refatoração), com a regra revista na **PRD
+Q17** (planos de ação conferidos pela Investigação, não pela NC; RN-21,
+RN-24, RN-49) e a **RN-50** (Q18: cancelar investigação com ações
+pendentes é recusado).
 Combinado com Matthew: a lista traz **um item por requisito** com
 `atendido` (o submeter filtra os pendentes); a guarda da NC é uma
 **função pura** (`avaliarFechamentoNC`, dados já carregados, testes sem

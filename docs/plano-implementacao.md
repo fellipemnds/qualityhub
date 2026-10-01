@@ -174,7 +174,12 @@ antes de qualquer mudança de regra.
 | 5 | **B1** — finalizar execução exige plano aprovado | 🧑 |
 | 6 | **B2** — plano travado depois de aprovado | 🧑 |
 | 7 | **B10** — investigação obrigatória no plano, da mesma NC, não cancelada | 🧑 |
-| 8 | **Guardas que devolvem "o que falta"** (TRD §5, esquema §4.3), com a regra revista na PRD Q17: fechamento da NC em dois grupos, filhos e envio (RN-21: toda investigação fechada) + rota `GET /nc/:id/checklist-fechamento`; submissão da Investigação exige os planos das ações aprovados (RN-24 — o **B5**); vínculo da ação ampliado (RN-49: obrigatório na criação, só com investigação editável) | 🧑 a função da NC; 🤖 a rota, a RN-24 e a RN-49 |
+| 8a | **Escada de cenários na ordem real** (PRD Q17): investigação aberta → ação com plano aprovado → investigação fechada; o `levarAcaoCorretivaAte` parte de uma investigação aberta. Só refatoração: nenhuma regra muda, a suíte continua verde com os mesmos testes. Commit separado | 🤖 |
+| 8b | **RN-49** — `investigacaoId` obrigatório na criação, não se apaga, só com investigação em `RASCUNHO`/`ABERTO` (amplia o B10). Migration: coluna `NOT NULL`, para o banco também garantir | 🤖 |
+| 8c | **`avaliarFechamentoNC`** — função pura que devolve a lista do que falta, um item por requisito, em dois grupos, filhos e envio (RN-21: toda investigação não cancelada fechada; TRD §5, esquema §4.3). Testada sem banco | 🧑 |
+| 8d | **Submeter da NC** usando a função: 409 com a lista (o `AppError` passa a levar detalhes no campo `error`) + rota `GET /nc/:id/checklist-fechamento` | 🤖 |
+| 8e | **RN-24 — o B5**: a Investigação só é submetida com os planos das suas ações aprovados; mesmo formato de lista e 409 do 8d. Vem depois da RN-49, que garante que nenhuma ação se liga depois do envio | 🤖 |
+| 8f | **RN-50** — cancelar a Investigação exige as ações dela canceladas ou fechadas (409 com a lista das que faltam) | 🤖 |
 | 9 | **B4** — `NAO_EFICAZ` reabre só o que estiver fechado | 🧑 |
 | 10 | **B6** — `PARCIALMENTE_EFICAZ` copia todos os colaboradores | 🤖 |
 | 11 | **B3** — autor certo na auditoria da ação automática | 🤖 |
@@ -273,7 +278,7 @@ repetem o padrão, geradas.
 |---|---|---|---|
 | **C0 · Base do front** | Projeto Vite + Tailwind + shadcn/ui + Router + TanStack Query; cliente gerado pelo **Orval**; layout (menu lateral e barra inferior); login e definir senha (T-01, T-02); tela inicial por papel; estados de tela padrão (`fluxo-app.md` §8); mapa tipado de estados | — (já pronto no A4/A5) | G |
 | **C1 · NCs** | Lista (T-04), Nova NC (T-05), Detalhe da NC (T-06) com checklist | Etapa calculada (função pura, testada sem banco); filtros novos; NC criada com colaboradores; `GET /registros/:id/atribuicoes` | G |
-| **C2 · Itens filhos** | T-07 para os cinco tipos, barra de ações, `BotaoBloqueado`, `DialogoMotivo`, `DialogoEfeito`, Investigação A3 com índice | **Hipóteses** (L1); investigação com ações vinculadas | G |
+| **C2 · Itens filhos** | T-07 para os cinco tipos, barra de ações, `BotaoBloqueado`, `DialogoMotivo`, `DialogoEfeito`, Investigação A3 com índice e as **contramedidas** (ações vinculadas, com o selo do plano) | **Hipóteses** (L1); investigação com ações vinculadas; **rota de leitura da lista do envio** (a tela precisa dela antes do clique; hoje só a NC tem checklist): decidir entre uma rota por tipo ou uma genérica, `GET /<tipo>/:id/checklist-submissao` (TRD §5) | G |
 | **C3 · Pendências** | Minhas pendências (T-03), contador no menu, preferência de tela inicial | `GET /pendencias` (esquema §4.4) | M |
 | **C4 · Feed** | Feed em todo item, editor com `@`/`#` (Tiptap), pendência "mencionado" | Migration **M4**; comentários, menções, `GET /registros/:id/feed`, `GET /registros/busca` | G |
 | **C5 · Anexos** | Anexos em todo item, câmera no celular | Migration **M3**; armazenamento (disco ou objetos, **conforme D0**); validação pelo conteúdo; limpeza de órfãos | M |
@@ -316,7 +321,7 @@ Onde cada item dos documentos anteriores é feito:
 
 | Item | Fase |
 |---|---|
-| B1–B6, B8–B18 · RN-06, RN-46, RN-47, RN-48 | A3 |
+| B1–B6, B8–B18 · RN-06, RN-46, RN-47, RN-48 · RN-21 e RN-24 revistas, RN-49, RN-50 (PRD Q17, Q18) | A3 |
 | Primeiro `ADMIN` e primeiro setor em produção | A6 (script), D1 (uso) |
 | B7 (papéis no JWT) · RNF-09, RNF-10 | A4 |
 | Pendência 1 (ações de auditoria) · pendência 5 (`ignoreTrailingSlash`) | A5 · A0 |
@@ -358,6 +363,7 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 |---|---|
 | 2026-09-24 | v1 — blocos A–D, decisões de trabalho e P1 |
 | 2026-09-24 | v1.1 — revisão cruzada: B9–B13 na A3 (B9 primeiro), pré-requisito do Docker no WSL, `prisma generate` no CI, helper único de autenticação nos testes, script do primeiro ADMIN |
+| 2026-10-01 | v1.2 — ordem 8 da A3 dividida em 8a–8f pela regra revista (PRD Q17, Q18); C2 com as contramedidas e a rota de leitura da lista do envio |
 | 2026-09-24 | **A0 concluída** (branch `fase/a0-preparacao`): código sem uso removido, aviso do Fastify corrigido, Biome configurado, código formatado e lint limpo. `test` e `build` adiados para A1 e D1; `gh` na A1 |
 | 2026-09-28 | **A1 concluída** (branch `fase/a1-testes`, PR #2): Vitest + Testcontainers, fábricas e `loginComo` (7 perfis), testes do login, do `temPapel` e da criação de rascunho de NC (o "pronto quando", escrito por Matthew), CI com check obrigatório na `main`. Divisão de trabalho revista (§1) |
 | 2026-09-28 | B14 entra na A3 (ordem 3, depois do B11), achado pelos testes da A2 |

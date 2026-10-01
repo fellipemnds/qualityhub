@@ -274,6 +274,7 @@ Legenda: ✅ pronto · 🔧 pronto, com ajuste decidido · ⬜ a construir
 | RN-41 | **(nova)** Verificação só é concluída por colaborador com papel `APROVADOR` |
 | RN-42 | **(nova)** Contenção, Classificação e Investigação não são reabertas manualmente — cria-se uma nova. Só a NC é reaberta manualmente (a Investigação, só pela reação a `NAO_EFICAZ`) |
 | RN-49 | **(nova)** Ação Corretiva **nasce ligada** a uma Investigação da mesma NC, em `RASCUNHO` ou `ABERTO`; o vínculo não pode ser apagado. Assim nenhuma ação aparece depois que a investigação foi enviada. Única exceção: a ação criada pelo `PARCIALMENTE_EFICAZ` (§5.4), na mesma investigação, mesmo fechada — Q17 |
+| RN-50 | **(nova)** Cancelar uma Investigação exige que todas as Ações Corretivas ligadas a ela estejam `CANCELADAS` ou `FECHADAS`; senão, recusa com a lista das que faltam. Sem isso, a NC (que ignora investigação cancelada) fecharia com ações soltas — Q18 |
 
 ### Aprovação
 | ID | Regra |
@@ -375,6 +376,7 @@ em 2026-09-24.
 
 | # | Pergunta | Decisão |
 |---|---|---|
+| Q18 | O que acontece com as ações quando a investigação é cancelada? | **O cancelamento é recusado** enquanto houver ação ligada que não esteja cancelada ou fechada; a pessoa resolve uma a uma. Cancelar as ações junto, sozinho, faria algo que ninguém pediu → RN-50 |
 | Q17 | Quem confere os planos de ação: a NC ou a Investigação? | **A Investigação.** O QA não aprovaria a investigação, cujo A3 inclui as contramedidas, sem aprovar os planos que ela propõe. Ela só é submetida com os planos das suas ações aprovados, e pode fechar **sem nenhuma ação** ("pelo menos você investigou" — analista). A NC passa a exigir toda investigação não cancelada fechada. Para nenhuma ação escapar, ela nasce ligada a uma investigação ainda editável; a do `PARCIALMENTE_EFICAZ` é a exceção, e segue depois do fechamento como a execução e a verificação → RN-21, RN-24, RN-49. Substitui a Q1 |
 
 Limite de tamanho e armazenamento dos anexos foram resolvidos no TRD (§8).
@@ -388,4 +390,4 @@ Limite de tamanho e armazenamento dos anexos foram resolvidos no TRD (§8).
 | 2026-09-24 | v1 — consolidação de `arquitetura.md` + changelog + código; decisões Q1–Q12 |
 | 2026-09-24 | v1.1 — revisão cruzada com o código: RN-06 e RN-24 ajustadas, RN-46 nova (Q13, Q14) |
 | 2026-09-30 | v1.2 — RN-47 (atribuições por estado) e RN-48 (retirar da aprovação), dos testes da A2 (Q15, Q16) |
-| 2026-10-01 | v1.3 — planos de ação conferidos pela Investigação, não pela NC: RN-21 e RN-24 revistas, RN-49 nova (Q17) |
+| 2026-10-01 | v1.3 — planos de ação conferidos pela Investigação, não pela NC: RN-21 e RN-24 revistas, RN-49 nova (Q17); RN-50, cancelar investigação com ações pendentes (Q18) |
