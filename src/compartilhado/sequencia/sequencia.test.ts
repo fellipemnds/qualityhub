@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { chamar } from "../../testes/cenarios.js";
 import { loginComo } from "../../testes/fabricas.js";
+import { hojeEmSaoPaulo } from "../datas/hoje-em-sao-paulo.js";
 
 describe("Sequência de códigos", () => {
     it("cria um código com um contador já existente", async () => {
@@ -28,7 +29,7 @@ describe("Sequência de códigos", () => {
         for (let i = 0; i < 10; i++) {
             const rascunho = await chamar(editor, "POST", "/nc", 201, corpo);
             rascunhos.push(rascunho);
-            esperado.push(`NC-${new Date().getFullYear()}-${String(i + 2).padStart(4, "0")}`);
+            esperado.push(`NC-${hojeEmSaoPaulo().slice(0, 4)}-${String(i + 2).padStart(4, "0")}`);
         }
 
         const publicados = await Promise.all(
@@ -43,9 +44,9 @@ describe("Sequência de códigos", () => {
         }
     });
 
-    // B15 (esquema-backend.md §7): sem o contador, o FOR UPDATE não trava nada e as publicações simultâneas dão 500.
-    // O it.fails fica verde enquanto o bug existir; no conserto (A3), trocar para it.
-    it.fails("cria um código com o banco vazio", async () => {
+    // B15 (esquema-backend.md §7): sem o contador, o FOR UPDATE não travava nada e as publicações simultâneas davam 500.
+    // Corrigido na A3 com o INSERT ... ON CONFLICT, que cria ou incrementa num comando só
+    it("cria um código com o banco vazio", async () => {
         const editor = await loginComo("editor");
 
         const corpo = {
@@ -64,7 +65,7 @@ describe("Sequência de códigos", () => {
         for (let i = 0; i < 10; i++) {
             const rascunho = await chamar(editor, "POST", "/nc", 201, corpo);
             rascunhos.push(rascunho);
-            esperado.push(`NC-${new Date().getFullYear()}-${String(i + 1).padStart(4, "0")}`);
+            esperado.push(`NC-${hojeEmSaoPaulo().slice(0, 4)}-${String(i + 1).padStart(4, "0")}`);
         }
 
         const publicados = await Promise.all(

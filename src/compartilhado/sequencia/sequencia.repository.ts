@@ -1,32 +1,22 @@
 import type { ClientePrisma } from "../prisma/tipos.js";
 
 export const sequenciaRepository = {
-    async buscarELocar(tx: ClientePrisma, prefixo: string, ano: number) {
+    // Cria o contador com 1 ou soma 1 ao existente, num comando só: o banco o executa de uma vez, sem intervalo entre
+    // ler e escrever. O SELECT ... FOR UPDATE de antes só travava uma linha que já existisse — no primeiro código do
+    // ano, as publicações simultâneas tentavam criar o mesmo contador e davam 500 (B15)
+    async proximoNumero(tx: ClientePrisma, prefixo: string, ano: number) {
         const linhas = await tx.$queryRaw<Array<{ ultimoNumero: number }>>`
-            SELECT "ultimoNumero" FROM "ContadorSequencia"
-            WHERE prefixo = ${prefixo} AND ano = ${ano}
-            FOR UPDATE
+            INSERT INTO "ContadorSequencia" (prefixo, ano, "ultimoNumero")
+            VALUES (${prefixo}, ${ano}, 1)
+            ON CONFLICT (prefixo, ano)
+            DO UPDATE SET "ultimoNumero" = "ContadorSequencia"."ultimoNumero" + 1
+            RETURNING "ultimoNumero"
         `;
 
-        return linhas[0]?.ultimoNumero;
-    },
+        // O RETURNING devolve sempre a linha criada ou atualizada; sem ela, algo saiu muito errado no banco
+        const [linha] = linhas;
+        if (linha === undefined) throw new Error(`Contador ${prefixo}-${ano} não foi criado nem incrementado.`);
 
-    async criar(tx: ClientePrisma, prefixo: string, ano: number) {
-        return tx.contadorSequencia.create({
-            data: { prefixo, ano, ultimoNumero: 1 },
-        });
-    },
-
-    async incrementar(tx: ClientePrisma, prefixo: string, ano: number) {
-        return tx.contadorSequencia.update({
-            where: {
-                prefixo_ano: { prefixo, ano },
-            },
-            data: {
-                ultimoNumero: {
-                    increment: 1,
-                },
-            },
-        });
+        return linha.ultimoNumero;
     },
 };

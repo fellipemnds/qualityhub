@@ -33,8 +33,8 @@ A3): cada bug com um teste que falha antes e passa depois (TDD).
   - **B2**: plano travado depois de aprovado (`CAMPOS_DO_PLANO`; o
     submeter também recusa). Degrau `"PLANO_APROVADO"` no
     `levarAcaoCorretivaAte`.
-- Suíte: **166 passando + 3 falhas esperadas** (`it.fails`: B15 e os
-  dois do B18), 30 arquivos, ~120–160 s. Lint e typecheck limpos.
+- Suíte: **236 passando + 2 falhas esperadas** (`it.fails`: os dois do
+  B18), 33 arquivos, ~140–160 s. Lint e typecheck limpos.
 - O que Matthew aprendeu hoje: TDD (vermelho pelo motivo certo →
   verde); valor × função (o `new Date()` calculado na carga); relógio
   falso (`vi.useFakeTimers({ toFake: ["Date"] })`, login **depois** de
@@ -116,7 +116,7 @@ estiver parado há tempo):
    `hostname` e as extensões que **não** vão para casa (Prettier, REST
    Client, Live Server, Docker antiga, Dev Containers). Registrar aqui o
    que mais aparecer, e commitar o `docs/ambiente/casa.txt`.
-6. `npm test` para confirmar: 235 + 3 falhas esperadas.
+6. `npm test` para confirmar: 236 + 2 falhas esperadas.
 
 **Depois, na A3:** a ordem 8 inteira (8a–8f, regra revista na **PRD
 Q17** e **Q18**) está feita: escada de cenários na ordem real, RN-49,
@@ -128,5 +128,7 @@ Q17** e **Q18**) está feita: escada de cenários na ordem real, RN-49,
 (B3)**: o autor da ação automática é quem concluiu a verificação. E a
 **ordem 12 (B13)**: filho nasce com o aprovador da NC (RN-46). E a
 **ordem 13 (B12)**: cancelar recusa rascunho (RN-06). E a **ordem 14
-(B8)**: a rota `DELETE /verificacoes/:id` saiu. O próximo é a **ordem
-15, o B15**: o teste já existe com `it.fails`.
+(B8)**: a rota `DELETE /verificacoes/:id` saiu. E a **ordem 15
+(B15)**: contador criado ou incrementado num comando só (`INSERT ...
+ON CONFLICT`). O próximo é a **ordem 16, o B16**: colaborador
+inexistente responde 404, não 500.
