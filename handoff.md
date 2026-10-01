@@ -5,7 +5,7 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-09-30 (fim do dia, no trabalho; próxima sessão em casa).
+**Última atualização:** 2026-10-01 (início do dia, no trabalho — Matthew não mexeu em casa no dia 30; a primeira foto de casa continua pendente).
 
 ## 1. Objetivo
 
@@ -55,10 +55,11 @@ datas no `docs/trd.md` §6; extensões e versões do ambiente no
 `SETUP.md` §12.4 (novo); foto do ambiente (`npm run ambiente`,
 `docs/ambiente/trabalho.txt`) no §12.5 (novo).
 
-**Push pendente:** tudo depois de `270cfc0` (B14, `@db.Date`, plano
-aprovado, B1, B2, este handoff e o `SETUP.md`). Depois do push: marcar
-no PR #4 as ordens 3 a 6 e conferir o CI (é o primeiro com a migration
-do `@db.Date`).
+**Push feito** (até `3744a21`) e **CI do PR #4 verde**, já com a
+migration do `@db.Date`. Falta marcar no PR #4 as ordens 3 a 6.
+
+**2026-10-01, foto do trabalho:** só mudou a extensão do Claude Code
+(2.1.285 → 2.1.286, atualização automática).
 
 ## 5. Falhas (e o porquê)
 
@@ -69,6 +70,7 @@ do `@db.Date`).
 | Aviso no CI: `ubuntu-latest` vira Ubuntu 26 em 19/10/2026 | Migração do GitHub | Nada a fazer; se o CI quebrar depois dessa data, começar por aqui |
 | `npx biome` rodou um pacote errado pelo Node do Windows | O shell do Claude não carrega o nvm | Claude: `source ~/.nvm/nvm.sh` antes de npm/npx, e `npx --no-install` |
 | `npm run -s lint \| tail -1` mostrou saída vazia com erro | O `-s` esconde o resumo, e o erro fica acima da última linha | Claude: conferir o lint pelo **código de saída** (`&& echo LINT_OK`) |
+| Foto do ambiente tirada pelo Claude acusou `claude code: não instalado` | O shell do Claude não tem `~/.local/bin` no `PATH` (o CLI está lá, 2.1.280) | Linha corrigida à mão. Claude: `export PATH="$HOME/.local/bin:$PATH"` antes do `npm run ambiente` (ou o script procurar lá) |
 | Uma prova de quebra com `git checkout` apagou uma função ainda não commitada | O checkout volta ao último commit, não ao estado antes da quebra | Claude: em arquivo com mudanças não commitadas, **copiar antes** e restaurar pela cópia |
 
 **Pendências anotadas:**
