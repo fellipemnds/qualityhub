@@ -71,6 +71,10 @@ documento de arquitetura.
   RN-24) segue o mesmo desenho (`avaliarSubmissaoInvestigacao`). Fica
   para a C2: o aprovador entrar na lista dos seis tipos, em vez de ser
   barrado antes pela checagem genérica.
+- **RN-50 (8f):** o `cicloVidaService.cancelar` ganhou um validador
+  opcional, chamado depois de estado e permissão — o mesmo gancho do
+  `submeter`. A investigação o usa com `avaliarCancelamentoInvestigacao`;
+  os outros tipos não passam nada e continuam iguais.
 
 ### Fase A2 — rede de proteção (branch `fase/a2-rede-protecao`)
 

@@ -116,13 +116,11 @@ estiver parado há tempo):
    `hostname` e as extensões que **não** vão para casa (Prettier, REST
    Client, Live Server, Docker antiga, Dev Containers). Registrar aqui o
    que mais aparecer, e commitar o `docs/ambiente/casa.txt`.
-6. `npm test` para confirmar: 209 + 3 falhas esperadas.
+6. `npm test` para confirmar: 219 + 3 falhas esperadas.
 
-**Depois, na A3:** a ordem 8 (dividida em 8a–8f no plano, pela regra
-revista na **PRD Q17**) está feita até a **8e**: escada de cenários na
-ordem real (8a), RN-49 (8b), `avaliarFechamentoNC` escrita por Matthew
-em TDD (8c), submeter da NC com a lista e `GET /nc/:id/checklist-fechamento`
-(8d), RN-24 na investigação — o B5 (8e). Falta a **8f**: RN-50, cancelar
-a investigação recusado (409 com a lista) enquanto houver ação ligada
-que não esteja cancelada ou fechada (`acaoCorretivaRepository.listarPorInvestigacao`
-já existe). Depois, a ordem 9 (B4).
+**Depois, na A3:** a ordem 8 inteira (8a–8f, regra revista na **PRD
+Q17** e **Q18**) está feita: escada de cenários na ordem real, RN-49,
+`avaliarFechamentoNC` (Matthew, TDD), submeter da NC com a lista e
+`GET /nc/:id/checklist-fechamento`, RN-24 na investigação (o B5) e RN-50
+(cancelar investigação com ação pendente). O próximo é a **ordem 9, o
+B4**: `NAO_EFICAZ` reabre só o que estiver fechado.

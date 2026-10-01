@@ -12,6 +12,7 @@ import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-edita
 import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
 import { acaoCorretivaRepository } from "../acao-corretiva/acao-corretiva.repository.js";
 import { ncRepository } from "../nc/nc.repository.js";
+import { avaliarCancelamentoInvestigacao } from "./avaliar-cancelamento.js";
 import { type AcaoNaGuarda, avaliarSubmissaoInvestigacao } from "./avaliar-submissao.js";
 import { hipoteseRepository } from "./hipotese.repository.js";
 import { hipoteseFechamentoSchema } from "./hipotese.schema.js";
@@ -171,7 +172,22 @@ export const investigacaoService = {
 
     async cancelarInvestigacao(registroId: string, ator: Ator, motivo: string) {
         return prisma.$transaction(async (tx) => {
-            const registroCancelado = await cicloVidaService.cancelar(tx, registroId, ator, motivo);
+            // As ações ligadas precisam estar canceladas ou fechadas, para nenhuma ficar solta (RN-50)
+            const acoes = (await acaoCorretivaRepository.listarPorInvestigacao(tx, registroId)).map((acao) => ({
+                id: acao.id,
+                codigo: acao.registro.codigo,
+                estado: acao.registro.estado,
+            }));
+            const faltando = avaliarCancelamentoInvestigacao({ acoes }).filter((item) => !item.atendido);
+
+            const registroCancelado = await cicloVidaService.cancelar(tx, registroId, ator, motivo, () => {
+                if (faltando.length > 0) {
+                    throw new TransicaoInvalidaError(
+                        "Ainda falta o que está na lista para cancelar esta investigação.",
+                        faltando,
+                    );
+                }
+            });
             const investigacao = await investigacaoRepository.buscarPorId(tx, registroId);
 
             return { ...registroCancelado, ...investigacao };

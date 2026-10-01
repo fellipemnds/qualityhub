@@ -108,6 +108,54 @@ describe("POST /investigacoes/:id/submeter, com ações ligadas", () => {
     });
 });
 
+// Cancelar a investigação com ação pendente deixaria a ação solta: a NC ignora investigação cancelada (RN-50, Q18)
+describe("POST /investigacoes/:id/cancelar", () => {
+    const motivo = { motivo: "A causa já é tratada por outra investigação desta NC." };
+
+    it.each<DegrauAcaoCorretiva>(["RASCUNHO", "ABERTO", "EM_APROVACAO", "PLANO_APROVADO"])(
+        "recusa com uma ação ligada no degrau %s, com a lista do que falta (RN-50)",
+        async (degrau) => {
+            // Prepara
+            const { editor, aprovador, acao, investigacao } = await levarAcaoCorretivaAte(degrau);
+            const { codigo } = await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200);
+
+            // Chama
+            const resposta = await chamar(aprovador, "POST", `/investigacoes/${investigacao.id}/cancelar`, 409, motivo);
+
+            // Confere: a ação aparece com o código, e a investigação continua como estava
+            expect(resposta.error).toEqual([
+                expect.objectContaining({
+                    requisito: "ACOES_RESOLVIDAS",
+                    atendido: false,
+                    pendentes: [{ id: acao.id, codigo }],
+                }),
+            ]);
+            expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
+                estado: "ABERTO",
+            });
+        },
+    );
+
+    it.each<DegrauAcaoCorretiva>(["CANCELADO", "FECHADO"])("aceita com a ação no degrau %s (RN-50)", async (degrau) => {
+        // Prepara
+        const { aprovador, investigacao } = await levarAcaoCorretivaAte(degrau);
+
+        // Chama
+        const resposta = await chamar(aprovador, "POST", `/investigacoes/${investigacao.id}/cancelar`, 200, motivo);
+
+        // Confere
+        expect(resposta).toMatchObject({ estado: "CANCELADO" });
+    });
+
+    it("quem não pode cancelar recebe 403, e não a lista", async () => {
+        // Prepara: com ação pendente, mas pedido pelo editor, que não é o aprovador nem GERENTE
+        const { editor, investigacao } = await levarAcaoCorretivaAte("ABERTO");
+
+        // Chama e confere
+        await chamar(editor, "POST", `/investigacoes/${investigacao.id}/cancelar`, 403, motivo);
+    });
+});
+
 describe("GET /investigacoes", () => {
     it("filtra por NC e por estado", async () => {
         // Prepara: dois itens na NC do cenário (um publicado) e um em outra NC

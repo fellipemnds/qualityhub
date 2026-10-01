@@ -39,8 +39,7 @@ visual.
 
 **Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B18; os
 corrigidos têm ✅). Corrigidos na A3: B9, B11, B14, B1, B2, B10, B5. O
-próximo, na ordem do plano: a 8f (RN-50, cancelar investigação com
-ações pendentes) e depois o B4.
+próximo, na ordem do plano: o B4 (ordem 9).
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
@@ -202,7 +201,9 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   o vínculo não se apaga (RN-49, **já implementada na 8b**, com
   `investigacaoId` `NOT NULL`; exceção: a do `PARCIALMENTE_EFICAZ`);
   cancelar a investigação exige as ações dela canceladas ou fechadas
-  (RN-50). Ordem 8 dividida em 8a–8f no plano.
+  (RN-50, **implementada na 8f**: o `cicloVidaService.cancelar` aceita um
+  validador opcional, chamado depois de estado e permissão, como o do
+  `submeter`).
   Também da regra revista: `NAO_EFICAZ` deve reabrir só o que estiver
   fechado (hoje dá erro se a NC estiver aberta); `PARCIALMENTE_EFICAZ`
   deve copiar todos os colaboradores da ação anterior.

@@ -320,7 +320,15 @@ export const cicloVidaService = {
         return registroAtualizado;
     },
 
-    async cancelar(tx: ClientePrisma, registroId: string, ator: Ator, motivo: string) {
+    // O validador roda depois das checagens de estado e permissão, como no submeter: a guarda própria do tipo (ex.:
+    // RN-50 na investigação) não responde a quem não pode cancelar
+    async cancelar(
+        tx: ClientePrisma,
+        registroId: string,
+        ator: Ator,
+        motivo: string,
+        validador: () => void = () => {},
+    ) {
         const registro = await registroRepository.buscarPorId(tx, registroId);
 
         if (registro === null) {
@@ -342,6 +350,8 @@ export const cicloVidaService = {
                 "Você não pode realizar esta ação pois você não possui as permissões necessárias.",
             );
         }
+
+        validador();
 
         await cancelamentoRepository.criar(tx, { registroId, canceladoPorId: ator.id, motivo });
 
