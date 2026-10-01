@@ -5,15 +5,22 @@ import { meiaNoiteUtc } from "../../../compartilhado/datas/dia-de-calendario.js"
 import { hojeEmSaoPaulo } from "../../../compartilhado/datas/hoje-em-sao-paulo.js";
 import type { Ator } from "../../../compartilhado/entidades/ator.js";
 import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
-import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js";
+import {
+    NaoEncontradoError,
+    SemPermissaoError,
+    TransicaoInvalidaError,
+    ValidacaoError,
+} from "../../../compartilhado/errors/errors.js";
 import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
+import type { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
 import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
 import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
 import { prefixoPorTipo } from "../../../compartilhado/registro/prefixos.js";
 import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
 import { sequenciaService } from "../../../compartilhado/sequencia/sequencia.service.js";
+import { investigacaoRepository } from "../investigacao/investigacao.repository.js";
 import { ncRepository } from "../nc/nc.repository.js";
 import { verificacaoRepository } from "../verificacao/verificacao.repository.js";
 import { acaoCorretivaRepository } from "./acao-corretiva.repository.js";
@@ -25,6 +32,26 @@ import {
     CAMPOS_DO_PLANO,
 } from "./acao-corretiva.schema.js";
 
+// A investigação apontada pela ação é a que a Verificação NAO_EFICAZ reabre: tem de existir, ser da mesma NC e não
+// estar cancelada (B10). Vazia é aceita aqui; o plano é que a exige, ao submeter
+async function conferirInvestigacao(
+    tx: ClientePrisma,
+    naoConformidadeId: string,
+    investigacaoId: string | null | undefined,
+) {
+    if (investigacaoId === null || investigacaoId === undefined) return;
+
+    const investigacao = await investigacaoRepository.buscarPorId(tx, investigacaoId);
+    if (investigacao === null || investigacao.naoConformidadeId !== naoConformidadeId) {
+        throw new ValidacaoError("A investigação não existe ou não é desta Não Conformidade.");
+    }
+
+    const registro = await registroRepository.buscarPorId(tx, investigacaoId);
+    if (registro?.estado === "CANCELADO") {
+        throw new ValidacaoError("A investigação está cancelada e não pode ser vinculada a esta ação corretiva.");
+    }
+}
+
 export const acaoCorretivaService = {
     async criarRascunhoAcaoCorretiva(ator: Ator, naoConformidadeId: string, dados: AcaoCorretivaRascunhoInput) {
         return prisma.$transaction(async (tx) => {
@@ -33,6 +60,8 @@ export const acaoCorretivaService = {
 
             const nc = await ncRepository.buscarPorId(tx, naoConformidadeId);
             if (nc === null) throw new NaoEncontradoError("A Não Conformidade não existe ou não foi encontrada");
+
+            await conferirInvestigacao(tx, naoConformidadeId, dados.investigacaoId);
 
             const registro = await cicloVidaService.criarRascunho(tx, { tipo: "ACAO_CORRETIVA", criadoPorId: ator.id });
             const acaoCorretiva = await acaoCorretivaRepository.criar(tx, {
@@ -70,6 +99,10 @@ export const acaoCorretivaService = {
             }
 
             const antes = await acaoCorretivaRepository.buscarPorId(tx, registroId);
+            if (antes === null) throw new NaoEncontradoError("Item não encontrado.");
+
+            await conferirInvestigacao(tx, antes.naoConformidadeId, dados.investigacaoId);
+
             const atualizada = await acaoCorretivaRepository.atualizar(tx, registroId, dados);
 
             await auditoriaRepository.registrar(tx, {

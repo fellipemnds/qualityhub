@@ -9,8 +9,38 @@ import {
 } from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
 import { levarAcaoCorretivaAte } from "../../../testes/levar-ate/acao-corretiva.js";
+import { levarInvestigacaoAte } from "../../../testes/levar-ate/investigacao.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
+
+// As formas de apontar a ação para uma investigação que não serve: a que a Verificação NAO_EFICAZ reabriria tem de
+// existir, ser desta NC e não estar cancelada (B10)
+const INVESTIGACOES_INVALIDAS = [
+    {
+        caso: "que não existe",
+        montar: async () => ({ ...(await ncPublicada()), investigacaoId: ID_INEXISTENTE }),
+    },
+    {
+        caso: "de outra NC",
+        montar: async () => {
+            const cenario = await ncPublicada();
+            const outraNC = await chamar(cenario.editor, "POST", "/nc", 201, {
+                titulo: "Outra NC, com a sua investigação",
+            });
+            const investigacao = await chamar(cenario.editor, "POST", `/nc/${outraNC.id}/investigacoes`, 201, {
+                realProblema: "Ruído anormal no redutor da esteira, sem relação com o vazamento da linha 2.",
+            });
+            return { ...cenario, investigacaoId: investigacao.id };
+        },
+    },
+    {
+        caso: "cancelada",
+        montar: async () => {
+            const { investigacao, ...cenario } = await levarInvestigacaoAte("CANCELADO");
+            return { ...cenario, investigacaoId: investigacao.id };
+        },
+    },
+];
 
 afterEach(() => {
     vi.useRealTimers();
@@ -26,6 +56,18 @@ describe("POST /nc/:naoConformidadeId/acoes-corretivas", () => {
 
         // Confere
         expect(resposta.mensagem).toEqual(expect.any(String));
+    });
+
+    it.each(INVESTIGACOES_INVALIDAS)("recusa a investigação $caso (B10)", async ({ montar }) => {
+        // Prepara
+        const { editor, nc, investigacaoId } = await montar();
+
+        // Chama
+        const resposta = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 400, { investigacaoId });
+
+        // Confere: nenhuma ação nasceu
+        expect(resposta.mensagem).toContain("investigação");
+        expect(await chamar(editor, "GET", `/acoes-corretivas?naoConformidadeId=${nc.id}`, 200)).toEqual([]);
     });
 });
 
@@ -123,10 +165,24 @@ describe("PATCH /acoes-corretivas/:id", () => {
         // Confere
         expect(resposta).toMatchObject({ executadoEm: `${diaDaquiA(-1)}T00:00:00.000Z` });
     });
+
+    it.each(INVESTIGACOES_INVALIDAS)("recusa apontar para a investigação $caso (B10)", async ({ montar }) => {
+        // Prepara: ação ainda sem investigação, na NC do cenário
+        const { editor, nc, investigacaoId } = await montar();
+        const acao = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, {});
+        const antes = await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200);
+
+        // Chama
+        const resposta = await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 400, { investigacaoId });
+
+        // Confere
+        expect(resposta.mensagem).toContain("investigação");
+        expect(await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200)).toEqual(antes);
+    });
 });
 
 describe("POST /acoes-corretivas/:id/submeter", () => {
-    it("recusa o plano sem descrição e instruções de verificação", async () => {
+    it("recusa o plano sem investigação, descrição e instruções de verificação", async () => {
         // Prepara
         const { editor, gerente, aprovador, nc } = await ncPublicada();
         const acao = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, {});
@@ -136,10 +192,11 @@ describe("POST /acoes-corretivas/:id/submeter", () => {
         // Chama
         const resposta = await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/submeter`, 400);
 
-        // Confere (o prazo vazio também: B14)
+        // Confere (o prazo vazio também: B14; a investigação vazia também: B10)
         expect(resposta).toMatchObject({
             mensagem: "Dados inválidos",
             error: expect.arrayContaining([
+                expect.objectContaining({ path: ["investigacaoId"] }),
                 expect.objectContaining({ path: ["descricao"] }),
                 expect.objectContaining({ path: ["prazo"] }),
                 expect.objectContaining({ path: ["instrucoesVerificacao"] }),

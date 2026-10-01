@@ -21,6 +21,8 @@ export const acaoCorretivaPublicacaoSchema = acaoCorretivaBaseSchema;
 export const CAMPOS_DO_PLANO = ["investigacaoId", "descricao", "prazo", "instrucoesVerificacao"] as const;
 
 export const acaoCorretivaPlanoSchema = acaoCorretivaBaseSchema.extend({
+    // A investigação que a Verificação NAO_EFICAZ reabre: sem ela, a conclusão trava (B10)
+    investigacaoId: z.uuid(),
     descricao: z.string().min(20),
     // Validado no banco, onde a data já é Date: z.date() sem coerce, para o null ser recusado (B14)
     prazo: z.date(),

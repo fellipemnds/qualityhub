@@ -84,6 +84,9 @@ migration do `@db.Date`. Falta marcar no PR #4 as ordens 3 a 6.
   é a opção de maior ganho. **Não** montar cenário direto no banco.
 - **Rever o `podeExecutar`** (colaborador **ou** aprovador designado × o
   PRD §8, que pede colaborador): decidir com a analista se vira bug.
+- **Investigação cancelada depois de vinculada à ação** (fora do B10, que
+  só confere ao criar e editar): decidir se cancelar a investigação é
+  barrado ou se a ação também precisa ser revista.
 - Quando o `/retirar` (RN-48) existir, as tabelas de máquina de estados
   e de permissões ganham a ação nova.
 - No trabalho, o Prettier ainda está instalado no lado Windows do VS

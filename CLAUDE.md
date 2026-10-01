@@ -38,9 +38,9 @@ Ainda pendente fora do código: hospedagem (TRD §10.6), identidade
 visual.
 
 **Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B18; os
-corrigidos têm ✅). Corrigidos na A3: B9, B11, B14, B1, B2. Os próximos,
-na ordem do plano: B10 (vínculo da ação com a investigação) e a guarda
-de fechamento da NC com o B5 (fechar sem plano de ação aprovado).
+corrigidos têm ✅). Corrigidos na A3: B9, B11, B14, B1, B2, B10. O
+próximo, na ordem do plano: a guarda de fechamento da NC com o B5
+(fechar sem plano de ação aprovado).
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
