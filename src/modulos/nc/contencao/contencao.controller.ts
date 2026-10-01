@@ -58,6 +58,12 @@ export const contencaoController = {
         return reply.status(200).send(contencaoSubmetida);
     },
 
+    async retirarContencao(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
+        const retirado = await contencaoService.retirarContencao(request.params.id, request.user);
+
+        return reply.status(200).send(retirado);
+    },
+
     async decidirContencao(
         request: FastifyRequest<{ Params: { id: string }; Body: DecisaoInput }>,
         reply: FastifyReply,

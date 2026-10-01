@@ -28,19 +28,25 @@ const acoes = {
         chamar(aprovador, "POST", `/investigacoes/${investigacao.id}/cancelar`, 409, {
             motivo: "Tentativa de cancelar fora do estado permitido",
         }),
+    // Retirar da aprovação (RN-48): só sai de EM_APROVACAO
+    retirar: ({ editor, investigacao }: Contexto) =>
+        chamar(editor, "POST", `/investigacoes/${investigacao.id}/retirar`, 409),
 };
 
 type NomeAcao = keyof typeof acoes;
 
 const tabela: { estado: EstadoRegistro; proibidas: NomeAcao[] }[] = [
     // Rascunho só se exclui, não se cancela (B12, RN-06)
-    { estado: "RASCUNHO", proibidas: ["submeter", "aprovar", "reprovar", "cancelar"] },
-    { estado: "ABERTO", proibidas: ["excluir", "publicar", "aprovar", "reprovar"] },
+    { estado: "RASCUNHO", proibidas: ["submeter", "aprovar", "reprovar", "cancelar", "retirar"] },
+    { estado: "ABERTO", proibidas: ["excluir", "publicar", "aprovar", "reprovar", "retirar"] },
     { estado: "EM_APROVACAO", proibidas: ["editar", "excluir", "publicar", "submeter"] },
-    { estado: "FECHADO", proibidas: ["editar", "excluir", "publicar", "submeter", "aprovar", "reprovar", "cancelar"] },
+    {
+        estado: "FECHADO",
+        proibidas: ["editar", "excluir", "publicar", "submeter", "aprovar", "reprovar", "cancelar", "retirar"],
+    },
     {
         estado: "CANCELADO",
-        proibidas: ["editar", "excluir", "publicar", "submeter", "aprovar", "reprovar", "cancelar"],
+        proibidas: ["editar", "excluir", "publicar", "submeter", "aprovar", "reprovar", "cancelar", "retirar"],
     },
 ];
 

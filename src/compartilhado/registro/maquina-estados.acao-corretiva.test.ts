@@ -29,25 +29,50 @@ const acoes = {
         chamar(editor, "POST", `/acoes-corretivas/${acao.id}/finalizar-execucao`, 409, {
             diasParaVerificar: 30,
         }),
+    // Retirar da aprovação (RN-48): só sai de EM_APROVACAO
+    retirar: ({ editor, acao }: Contexto) => chamar(editor, "POST", `/acoes-corretivas/${acao.id}/retirar`, 409),
 };
 
 type NomeAcao = keyof typeof acoes;
 
 const tabela: { estado: DegrauAcaoCorretiva; proibidas: NomeAcao[] }[] = [
     // Rascunho só se exclui, não se cancela (B12, RN-06)
-    { estado: "RASCUNHO", proibidas: ["submeter", "aprovar", "reprovar", "finalizar", "cancelar"] },
+    { estado: "RASCUNHO", proibidas: ["submeter", "aprovar", "reprovar", "finalizar", "cancelar", "retirar"] },
     // O ABERTO do levarAcaoCorretivaAte é o de plano nunca submetido: finalizar exige plano aprovado (B1)
-    { estado: "ABERTO", proibidas: ["excluir", "publicar", "aprovar", "reprovar", "finalizar"] },
+    { estado: "ABERTO", proibidas: ["excluir", "publicar", "aprovar", "reprovar", "finalizar", "retirar"] },
     { estado: "EM_APROVACAO", proibidas: ["editar", "excluir", "publicar", "submeter", "finalizar"] },
     // ABERTO com o plano aprovado: o plano travado (o "editar" muda a descrição) e nada mais a submeter (B2)
-    { estado: "PLANO_APROVADO", proibidas: ["editar", "excluir", "publicar", "submeter", "aprovar", "reprovar"] },
+    {
+        estado: "PLANO_APROVADO",
+        proibidas: ["editar", "excluir", "publicar", "submeter", "aprovar", "reprovar", "retirar"],
+    },
     {
         estado: "FECHADO",
-        proibidas: ["editar", "excluir", "publicar", "submeter", "aprovar", "reprovar", "cancelar", "finalizar"],
+        proibidas: [
+            "editar",
+            "excluir",
+            "publicar",
+            "submeter",
+            "aprovar",
+            "reprovar",
+            "cancelar",
+            "finalizar",
+            "retirar",
+        ],
     },
     {
         estado: "CANCELADO",
-        proibidas: ["editar", "excluir", "publicar", "submeter", "aprovar", "reprovar", "cancelar", "finalizar"],
+        proibidas: [
+            "editar",
+            "excluir",
+            "publicar",
+            "submeter",
+            "aprovar",
+            "reprovar",
+            "cancelar",
+            "finalizar",
+            "retirar",
+        ],
     },
 ];
 

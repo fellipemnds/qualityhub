@@ -37,6 +37,8 @@ const acoes = {
         chamar(contexto[quem], "POST", `/investigacoes/${contexto.investigacao.id}/cancelar`, 403, {
             motivo: "Tentativa de cancelar sem permissão",
         }),
+    retirar: (contexto: Contexto, quem: Quem) =>
+        chamar(contexto[quem], "POST", `/investigacoes/${contexto.investigacao.id}/retirar`, 403),
 };
 
 type NomeAcao = keyof typeof acoes;
@@ -62,6 +64,8 @@ const tabela: { estado: EstadoRegistro; recusas: [NomeAcao, Quem[]][] }[] = [
     {
         estado: "EM_APROVACAO",
         recusas: [
+            // Retirar (RN-48): quem não pode submeter também não pode retirar
+            ["retirar", ["aprovador", "qa", "gerente"]],
             // O qa e o gerente têm o papel APROVADOR, mas não são o aprovador designado
             ["decidir", ["editor", "admin", "qa", "gerente"]],
             ["cancelar", ["editor", "qa"]],

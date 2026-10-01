@@ -128,6 +128,16 @@ export const contencaoService = {
         });
     },
 
+    // O colaborador desiste do envio: volta a ABERTO, sem decisão registrada (RN-48)
+    async retirarContencao(registroId: string, ator: Ator) {
+        return prisma.$transaction(async (tx) => {
+            const registroRetirado = await cicloVidaService.retirar(tx, registroId, ator);
+            const contencao = await contencaoRepository.buscarPorId(tx, registroId);
+
+            return { ...registroRetirado, ...contencao };
+        });
+    },
+
     async decidirContencao(registroId: string, ator: Ator, dados: DecisaoInput) {
         return prisma.$transaction(async (tx) => {
             const registroDecidido = await cicloVidaService.decidir(tx, registroId, ator, dados);

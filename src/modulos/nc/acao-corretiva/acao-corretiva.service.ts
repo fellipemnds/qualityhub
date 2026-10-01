@@ -162,6 +162,16 @@ export const acaoCorretivaService = {
     // fecharAoAprovarUltimoPortao = false: aprovar o PLANO volta o item
     // para ABERTO (autorizando a execucao) em vez de fechar — mesmo sendo
     // o unico portao.
+    // O colaborador desiste do envio: volta a ABERTO, sem decisão registrada (RN-48)
+    async retirarAcaoCorretiva(registroId: string, ator: Ator) {
+        return prisma.$transaction(async (tx) => {
+            const registroRetirado = await cicloVidaService.retirar(tx, registroId, ator);
+            const acaoCorretiva = await acaoCorretivaRepository.buscarPorId(tx, registroId);
+
+            return { ...registroRetirado, ...acaoCorretiva };
+        });
+    },
+
     async decidirAcaoCorretiva(registroId: string, ator: Ator, dados: DecisaoInput) {
         return prisma.$transaction(async (tx) => {
             const registroDecidido = await cicloVidaService.decidir(tx, registroId, ator, dados, false);

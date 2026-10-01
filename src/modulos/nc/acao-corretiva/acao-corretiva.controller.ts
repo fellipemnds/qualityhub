@@ -48,6 +48,12 @@ export const acaoCorretivaController = {
         return reply.status(200).send(acaoCorretiva);
     },
 
+    async retirarAcaoCorretiva(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
+        const retirado = await acaoCorretivaService.retirarAcaoCorretiva(request.params.id, request.user);
+
+        return reply.status(200).send(retirado);
+    },
+
     async decidirAcaoCorretiva(
         request: FastifyRequest<{ Params: { id: string }; Body: DecisaoInput }>,
         reply: FastifyReply,

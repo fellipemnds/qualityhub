@@ -392,3 +392,13 @@ describe("POST /nc/:id/reabrir", () => {
         expect(await chamar(editor, "GET", `/nc/${nc.id}`, 200)).toMatchObject({ estado: "FECHADO" });
     });
 });
+
+describe("POST /nc/:id/retirar", () => {
+    it("o colaborador retira a NC da aprovação do fechamento (RN-48)", async () => {
+        // Prepara
+        const { editor, nc } = await levarNCAte("EM_APROVACAO");
+
+        // Chama e confere
+        expect(await chamar(editor, "POST", `/nc/${nc.id}/retirar`, 200)).toMatchObject({ estado: "ABERTO" });
+    });
+});

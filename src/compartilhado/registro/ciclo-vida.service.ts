@@ -157,6 +157,41 @@ export const cicloVidaService = {
         return dadoAtualizado;
     },
 
+    // Retirar da aprovação (RN-48): o colaborador desiste do envio. Volta a ABERTO no mesmo portão, sem registro em
+    // Aprovacao (não é reprovação), e fica na auditoria. Quem pode submeter pode retirar: a ação é a mesma do submeter
+    async retirar(tx: ClientePrisma, registroId: string, ator: Ator, acao: Acao = "SUBMETER") {
+        const registro = await registroRepository.buscarPorId(tx, registroId);
+
+        if (registro === null) {
+            throw new NaoEncontradoError("Item não foi encontrado.");
+        }
+
+        if (registro.estado !== "EM_APROVACAO") {
+            throw new TransicaoInvalidaError("Só um item em aprovação pode ser retirado da aprovação.");
+        }
+
+        const podeRetirar = await podeExecutar(tx, ator, acao, registroId);
+
+        if (!podeRetirar) {
+            throw new SemPermissaoError(
+                "Você não pode realizar esta ação pois você não está atribuido neste item ou não possui as permissões necessárias.",
+            );
+        }
+
+        const registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "ABERTO" });
+
+        await auditoriaRepository.registrar(tx, {
+            entidade: EntidadeAuditada[registroAtualizado.tipo],
+            entidadeId: registroAtualizado.id,
+            acao: "RETIRAR_DA_APROVACAO",
+            usuarioId: ator.id,
+            antes: registro,
+            depois: registroAtualizado,
+        });
+
+        return registroAtualizado;
+    },
+
     async decidir(
         tx: ClientePrisma,
         registroId: string,

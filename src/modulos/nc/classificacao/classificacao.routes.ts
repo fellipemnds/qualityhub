@@ -62,6 +62,16 @@ export async function classificacaoRoutes(app: FastifyInstance) {
 
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
+        url: "/classificacoes/:id/retirar",
+        onRequest: [autenticar],
+        schema: {
+            params: z.object({ id: z.uuid() }),
+        },
+        handler: classificacaoController.retirarClassificacao,
+    });
+
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: "POST",
         url: "/classificacoes/:id/decidir",
         onRequest: [autenticar],
         schema: {

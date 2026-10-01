@@ -39,7 +39,8 @@ visual.
 
 **Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B18; os
 corrigidos têm ✅). Corrigidos na A3: B9, B11, B14, B1, B2, B10, B5,
-B4, B6, B3, B13, B12, B8, B15, B16, B17. O próximo, na ordem do plano: a RN-48 (ordem 18).
+B4, B6, B3, B13, B12, B8, B15, B16, B17 (e a RN-48, retirar da aprovação, regra nova).
+O próximo, na ordem do plano: o B18 (ordem 19), o último da A3.
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
@@ -118,8 +119,10 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   primária compartilhada (`id` = FK para `Registro.id`, sem `@default`).
   `Registro` carrega `tipo`, `estado`, `codigo`, `portaoAtual`.
 - **Ciclo de vida genérico** (`compartilhado/registro/ciclo-vida.service.ts`):
-  `criarRascunho`, `publicar`, `submeter`, `decidir`, `reabrir`, `cancelar`,
-  `excluirRascunho`, `concluir` — reaproveitado por todas as entidades.
+  `criarRascunho`, `publicar`, `submeter`, `retirar` (RN-48), `decidir`,
+  `reabrir`, `cancelar`, `excluirRascunho`, `concluir` — reaproveitado
+  por todas as entidades. `submeter` e `cancelar` aceitam um validador
+  (a guarda do tipo, depois de estado e permissão).
   `decidir` aceita um parâmetro `fecharAoAprovarUltimoPortao` (default
   `true`) para os casos onde aprovar o último portão não deve fechar o
   item (ver `AcaoCorretiva` abaixo). `publicar`/`submeter`/

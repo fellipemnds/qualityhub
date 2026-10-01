@@ -55,6 +55,16 @@ export async function acaoCorretivaRoutes(app: FastifyInstance) {
 
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
+        url: "/acoes-corretivas/:id/retirar",
+        onRequest: [autenticar],
+        schema: {
+            params: z.object({ id: z.uuid() }),
+        },
+        handler: acaoCorretivaController.retirarAcaoCorretiva,
+    });
+
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: "POST",
         url: "/acoes-corretivas/:id/decidir",
         onRequest: [autenticar],
         schema: { params: z.object({ id: z.uuid() }), body: decisaoSchema },

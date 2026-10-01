@@ -390,3 +390,19 @@ describe("GET /acoes-corretivas", () => {
         expect(ids(abertosDaNC)).toEqual([publicado.id]);
     });
 });
+
+describe("POST /acoes-corretivas/:id/retirar", () => {
+    it("o colaborador retira o plano da aprovação, e o plano continua não aprovado (RN-48)", async () => {
+        // Prepara
+        const { editor, acao } = await levarAcaoCorretivaAte("EM_APROVACAO");
+
+        // Chama
+        await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/retirar`, 200);
+
+        // Confere
+        expect(await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200)).toMatchObject({
+            estado: "ABERTO",
+            planoAprovado: false,
+        });
+    });
+});

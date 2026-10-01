@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { chamar, investigacaoAberta, ncPublicada } from "../../../testes/cenarios.js";
 import { type DegrauAcaoCorretiva, levarAcaoCorretivaAte } from "../../../testes/levar-ate/acao-corretiva.js";
+import { levarInvestigacaoAte } from "../../../testes/levar-ate/investigacao.js";
 
 describe("PATCH /investigacoes/:id", () => {
     it("recusa método fora da lista (só A3_SPS)", async () => {
@@ -180,5 +181,17 @@ describe("GET /investigacoes", () => {
         const ids = (lista: { id: string }[]) => lista.map((item) => item.id).sort();
         expect(ids(daNC)).toEqual([publicado.id, rascunho.id].sort());
         expect(ids(abertosDaNC)).toEqual([publicado.id]);
+    });
+});
+
+describe("POST /investigacoes/:id/retirar", () => {
+    it("o colaborador retira da aprovação (RN-48)", async () => {
+        // Prepara
+        const { editor, investigacao } = await levarInvestigacaoAte("EM_APROVACAO");
+
+        // Chama e confere
+        expect(await chamar(editor, "POST", `/investigacoes/${investigacao.id}/retirar`, 200)).toMatchObject({
+            estado: "ABERTO",
+        });
     });
 });

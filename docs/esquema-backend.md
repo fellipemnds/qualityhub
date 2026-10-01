@@ -392,7 +392,7 @@ Mesma forma para os cinco tipos: `POST /nc/:ncId/<tipo>` para criar;
 |---|---|---|
 | Δ | Todos os `POST /nc/:ncId/<tipo>` | O filho nasce com o **aprovador da NC**, se houver (RN-46, B13) |
 | Δ | Todos os `/<tipo>/:id/cancelar` | Recusam `RASCUNHO` (B12) |
-| ＋ | Todos os `POST /<tipo>/:id/retirar` | Retira da aprovação, como na NC (RN-48). Não vale para Verificação (não tem portão) |
+| ＋ | Todos os `POST /<tipo>/:id/retirar` | Retira da aprovação, como na NC (RN-48). Não vale para Verificação (não tem portão). **Feito na A3** (2026-10-01): `cicloVidaService.retirar`, com a ação do submeter como parâmetro (`CLASSIFICAR` na Classificação); auditoria `RETIRAR_DA_APROVACAO` |
 | Δ | Todos os `GET /<tipo>/:id` | + último motivo de reprovação |
 | Δ | `POST /nc/:ncId/acoes-corretivas` · `PATCH /acoes-corretivas/:id` | `investigacaoId` **obrigatório já na criação**, de uma investigação **desta NC** em `ABERTO`; o `PATCH` não o apaga (B10, RN-49) |
 | Δ | `POST /investigacoes/:id/submeter` | Exige os planos das ações ligadas aprovados (RN-24, B5); responde 409 com a lista do que falta |
@@ -516,6 +516,7 @@ Com Matthew, em 2026-09-24.
 | 2026-09-24 | v1.1 — revisão cruzada com o código: B9–B13; guarda em dois grupos (filhos/envio) com aprovador; triagem inclui filhos; catálogo de permissões novas; eventos do feed; regras de convite e usuário inativo |
 | 2026-09-28 | v1.2 — B14 (data obrigatória vazia passa na validação), achado pelos testes da fase A2 |
 | 2026-09-30 | v1.3 — B15 (primeira publicação do ano sob concorrência dá erro 500), achado pelo teste de concorrência da A2 |
+| 2026-10-01 | v1.29 — RN-48 implementada (A3): `POST /<tipo>/:id/retirar` nos cinco tipos com portão |
 | 2026-10-01 | v1.28 — B17 corrigido (A3): RN-47 e a ação `TROCAR_APROVADOR_EM_APROVACAO` |
 | 2026-10-01 | v1.27 — B16 corrigido (A3) |
 | 2026-10-01 | v1.26 — B15 corrigido (A3) |

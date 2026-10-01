@@ -208,3 +208,22 @@ describe("POST /contencoes/:id/cancelar", () => {
         expect(await chamar(editor, "GET", `/contencoes/${contencao.id}`, 200)).toMatchObject({ estado: "ABERTO" });
     });
 });
+
+// Retirar da aprovação (RN-48): o colaborador desiste do envio. O ciclo de vida genérico é testado aqui, pela contenção
+describe("POST /contencoes/:id/retirar", () => {
+    it("volta a ABERTO sem registrar decisão, fica na auditoria e pode ser enviada de novo (RN-48)", async () => {
+        // Prepara
+        const { editor, contencao } = await levarContencaoAte("EM_APROVACAO");
+
+        // Chama
+        const resposta = await chamar(editor, "POST", `/contencoes/${contencao.id}/retirar`, 200);
+
+        // Confere: no mesmo portão, sem Aprovacao (não é reprovação), auditado, e o envio volta a ser possível
+        expect(resposta).toMatchObject({ estado: "ABERTO", portaoAtual: 0 });
+        expect(await prisma.aprovacao.findMany({ where: { registroId: contencao.id } })).toEqual([]);
+        expect(
+            await prisma.auditoria.findMany({ where: { entidadeId: contencao.id, acao: "RETIRAR_DA_APROVACAO" } }),
+        ).toMatchObject([{ usuarioId: editor.usuario.id }]);
+        await chamar(editor, "POST", `/contencoes/${contencao.id}/submeter`, 200);
+    });
+});

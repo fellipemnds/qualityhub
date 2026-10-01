@@ -171,6 +171,16 @@ export const ncService = {
         return avaliarFechamentoNC(await carregarDadosFechamento(prisma, registroId, nc));
     },
 
+    // O colaborador desiste do envio: volta a ABERTO, sem decisão registrada (RN-48)
+    async retirarNC(registroId: string, ator: Ator) {
+        return prisma.$transaction(async (tx) => {
+            const registroRetirado = await cicloVidaService.retirar(tx, registroId, ator);
+            const nc = await ncRepository.buscarPorId(tx, registroId);
+
+            return { ...registroRetirado, ...nc };
+        });
+    },
+
     async decidirNC(registroId: string, ator: Ator, dados: DecisaoInput) {
         return prisma.$transaction(async (tx) => {
             const registroDecidido = await cicloVidaService.decidir(tx, registroId, ator, dados);

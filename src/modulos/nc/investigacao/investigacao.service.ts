@@ -163,6 +163,16 @@ export const investigacaoService = {
         });
     },
 
+    // O colaborador desiste do envio: volta a ABERTO, sem decisão registrada (RN-48)
+    async retirarInvestigacao(registroId: string, ator: Ator) {
+        return prisma.$transaction(async (tx) => {
+            const registroRetirado = await cicloVidaService.retirar(tx, registroId, ator);
+            const investigacao = await investigacaoRepository.buscarPorId(tx, registroId);
+
+            return { ...registroRetirado, ...investigacao };
+        });
+    },
+
     async decidirInvestigacao(registroId: string, ator: Ator, dados: DecisaoInput) {
         return prisma.$transaction(async (tx) => {
             const registroDecidido = await cicloVidaService.decidir(tx, registroId, ator, dados);

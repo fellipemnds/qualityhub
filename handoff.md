@@ -33,7 +33,7 @@ A3): cada bug com um teste que falha antes e passa depois (TDD).
   - **B2**: plano travado depois de aprovado (`CAMPOS_DO_PLANO`; o
     submeter também recusa). Degrau `"PLANO_APROVADO"` no
     `levarAcaoCorretivaAte`.
-- Suíte: **243 passando + 2 falhas esperadas** (`it.fails`: os dois do
+- Suíte: **248 passando + 2 falhas esperadas** (`it.fails`: os dois do
   B18), 33 arquivos, ~140–160 s. Lint e typecheck limpos.
 - O que Matthew aprendeu hoje: TDD (vermelho pelo motivo certo →
   verde); valor × função (o `new Date()` calculado na carga); relógio
@@ -91,8 +91,6 @@ migration do `@db.Date`. Falta marcar no PR #4 as ordens 3 a 6.
   o checklist). Na C2, quando os seis tipos ganharem a lista do envio,
   o aprovador entra nela para todos de uma vez. Registrado no plano (C2)
   e no esquema §4.3.
-- Quando o `/retirar` (RN-48) existir, as tabelas de máquina de estados
-  e de permissões ganham a ação nova.
 - No trabalho, o Prettier ainda está instalado no lado Windows do VS
   Code (inofensivo; pode desinstalar — `SETUP.md` §12.4).
 
@@ -116,7 +114,7 @@ estiver parado há tempo):
    `hostname` e as extensões que **não** vão para casa (Prettier, REST
    Client, Live Server, Docker antiga, Dev Containers). Registrar aqui o
    que mais aparecer, e commitar o `docs/ambiente/casa.txt`.
-6. `npm test` para confirmar: 243 + 2 falhas esperadas.
+6. `npm test` para confirmar: 248 + 2 falhas esperadas.
 
 **Depois, na A3:** a ordem 8 inteira (8a–8f, regra revista na **PRD
 Q17** e **Q18**) está feita: escada de cenários na ordem real, RN-49,
@@ -133,4 +131,6 @@ Q17** e **Q18**) está feita: escada de cenários na ordem real, RN-49,
 ON CONFLICT`). E a **ordem 16 (B16)**: colaborador inexistente
 responde 404. E a **ordem 17 (B17)**: atribuições só em
 `RASCUNHO`/`ABERTO`, com a ação `TROCAR_APROVADOR_EM_APROVACAO` (RN-47).
-O próximo é a **ordem 18, a RN-48**: retirar da aprovação.
+E a **ordem 18 (RN-48)**: retirar da aprovação, nos cinco tipos com portão.
+O próximo é a **ordem 19, o B18**, o último da A3: os testes já existem
+com `it.fails`.
