@@ -4,7 +4,9 @@ import { hojeEmSaoPaulo } from "../compartilhado/datas/hoje-em-sao-paulo.js";
 import { loginComo } from "./fabricas.js";
 
 // Cenários de teste montados pela API — passando pelas mesmas permissões e guardas que um usuário real. Cada
-// um parte do anterior: ncPublicada → ncProntaParaFechar → fecharNC → aprovarPlano → executarAcao.
+// um parte do anterior, na ordem do fluxo real (PRD Q17): ncPublicada → investigacaoAberta → ncProntaParaFechar
+// (a ação nasce com a investigação aberta e tem o plano aprovado antes do envio, pelo aprovarPlano) → fecharNC →
+// executarAcao.
 
 type Quem = Awaited<ReturnType<typeof loginComo>>;
 type Metodo = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
@@ -69,11 +71,43 @@ export async function perfisDeFora() {
     return { admin, visualizador, semPapel };
 }
 
-// A NC com contenção, classificação e investigação FECHADAS (guarda RN-21 satisfeita), mas ainda sem os campos
-// de fechamento
-export async function ncProntaParaFechar() {
+// A investigação ABERTA, com método, conteúdo e as duas causas preenchidos: pronta para receber as ações
+// corretivas, que só se ligam a uma investigação editável (RN-49)
+export async function investigacaoAberta() {
     const cenario = await ncPublicada();
-    const { editor, gerente, aprovador, qa, nc } = cenario;
+    const { editor, gerente, aprovador, nc } = cenario;
+
+    const investigacao = await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
+        realProblema: "Vedação da bomba hidráulica com desgaste prematuro, causando vazamento contínuo de óleo.",
+    });
+    await chamar(editor, "PATCH", `/investigacoes/${investigacao.id}`, 200, {
+        metodo: "A3_SPS",
+        conteudo: {
+            percepcaoInicial: "Vazamento constante na linha 2",
+            descricao: "Óleo hidráulico vazando na base da bomba",
+            ishikawa: { metodo: "Troca de vedação fora do padrão" },
+        },
+    });
+    await chamar(editor, "POST", `/investigacoes/${investigacao.id}/publicar`, 200);
+    await chamar(gerente, "PUT", `/registros/${investigacao.id}/aprovador`, 200, { usuarioId: aprovador.usuario.id });
+    await chamar(editor, "PATCH", `/investigacoes/${investigacao.id}`, 200, {
+        causaDireta: "Vedação de material incompatível com o fluido hidráulico utilizado na máquina.",
+        causaRaiz: "Procedimento de manutenção não especifica o material correto de vedação para esta bomba.",
+    });
+    expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
+        estado: "ABERTO",
+    });
+
+    return { ...cenario, investigacao };
+}
+
+export type CenarioComInvestigacao = Awaited<ReturnType<typeof investigacaoAberta>>;
+
+// A NC com contenção, classificação e investigação FECHADAS (guarda RN-21 satisfeita), mas ainda sem os campos
+// de fechamento. A investigação fecha com uma ação de plano aprovado: o plano é aprovado antes do envio (RN-24)
+export async function ncProntaParaFechar() {
+    const cenario = await investigacaoAberta();
+    const { editor, gerente, aprovador, qa, nc, investigacao } = cenario;
 
     // Contenção: rascunho → publicação → aprovação
     const contencao = await chamar(editor, "POST", `/nc/${nc.id}/contencoes`, 201, {
@@ -102,34 +136,18 @@ export async function ncProntaParaFechar() {
         estado: "FECHADO",
     });
 
-    // Investigação: causas preenchidas já em ABERTO (editável até ser submetida)
-    const investigacao = await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
-        realProblema: "Vedação da bomba hidráulica com desgaste prematuro, causando vazamento contínuo de óleo.",
-    });
-    await chamar(editor, "PATCH", `/investigacoes/${investigacao.id}`, 200, {
-        metodo: "A3_SPS",
-        conteudo: {
-            percepcaoInicial: "Vazamento constante na linha 2",
-            descricao: "Óleo hidráulico vazando na base da bomba",
-            ishikawa: { metodo: "Troca de vedação fora do padrão" },
-        },
-    });
-    await chamar(editor, "POST", `/investigacoes/${investigacao.id}/publicar`, 200);
-    await chamar(gerente, "PUT", `/registros/${investigacao.id}/aprovador`, 200, { usuarioId: aprovador.usuario.id });
-    await chamar(editor, "PATCH", `/investigacoes/${investigacao.id}`, 200, {
-        causaDireta: "Vedação de material incompatível com o fluido hidráulico utilizado na máquina.",
-        causaRaiz: "Procedimento de manutenção não especifica o material correto de vedação para esta bomba.",
-    });
+    // Investigação: a ação corretiva tem o plano aprovado com ela ainda aberta, e só depois ela é enviada
+    const acao = await aprovarPlano(cenario);
     await chamar(editor, "POST", `/investigacoes/${investigacao.id}/submeter`, 200);
     await chamar(aprovador, "POST", `/investigacoes/${investigacao.id}/decidir`, 200, { decisao: "APROVADO" });
     expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
         estado: "FECHADO",
     });
 
-    return { ...cenario, investigacao };
+    return { ...cenario, acao };
 }
 
-export type CenarioComInvestigacao = Awaited<ReturnType<typeof ncProntaParaFechar>>;
+export type CenarioProntoParaFechar = Awaited<ReturnType<typeof ncProntaParaFechar>>;
 
 // A NC FECHADA: campos de fechamento → submissão → aprovação. A ação corretiva continua depois daqui.
 export async function fecharNC() {
@@ -166,10 +184,9 @@ export async function aprovarPlano({ editor, gerente, aprovador, nc, investigaca
     return acao;
 }
 
-// Execução registrada e finalizada sem aprovação → a ação fecha e a verificação nasce já ABERTA
-export async function executarAcao(cenario: CenarioComInvestigacao) {
-    const { editor } = cenario;
-    const acao = await aprovarPlano(cenario);
+// Execução da ação do cenário registrada e finalizada sem aprovação → a ação fecha e a verificação nasce já ABERTA
+export async function executarAcao(cenario: CenarioProntoParaFechar) {
+    const { editor, acao } = cenario;
 
     await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
         executadoEm: diaDaquiA(-1),

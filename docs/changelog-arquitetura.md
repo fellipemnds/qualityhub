@@ -33,6 +33,14 @@ documento de arquitetura.
   as ações, cancelar a investigação deixaria ações soltas. Recusar (409
   com a lista) foi preferido a cancelar as ações junto, que faria algo
   que ninguém pediu.
+- **Escada de cenários na ordem real** (ordem 8a): `ncPublicada` →
+  `investigacaoAberta` → `ncProntaParaFechar` → `fecharNC` →
+  `executarAcao`. A ação nasce com a investigação aberta e tem o plano
+  aprovado (`aprovarPlano`) antes do envio; o `ncProntaParaFechar`
+  devolve essa ação, e o `executarAcao` a usa em vez de criar outra. O
+  `levarAcaoCorretivaAte` parte da `investigacaoAberta`. Refatoração
+  pura: mesmos testes, e um pouco mais rápida (39 testes da ação e da
+  verificação: 54 s → 50 s).
 
 ### Fase A2 — rede de proteção (branch `fase/a2-rede-protecao`)
 

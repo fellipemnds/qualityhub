@@ -1,12 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import {
-    aprovarPlano,
-    chamar,
-    diaDaquiA,
-    executarAcao,
-    ncProntaParaFechar,
-    ncPublicada,
-} from "../../../testes/cenarios.js";
+import { chamar, diaDaquiA, executarAcao, ncProntaParaFechar, ncPublicada } from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
 import { levarAcaoCorretivaAte } from "../../../testes/levar-ate/acao-corretiva.js";
 import { levarInvestigacaoAte } from "../../../testes/levar-ate/investigacao.js";
@@ -242,12 +235,11 @@ describe("POST /acoes-corretivas/:id/finalizar-execucao", () => {
     });
 
     it("recusa sem a execução registrada (RN-25)", async () => {
-        // Prepara
-        const cenario = await ncProntaParaFechar();
-        const acao = await aprovarPlano(cenario);
+        // Prepara: o cenário traz a ação com o plano aprovado
+        const { editor, acao } = await ncProntaParaFechar();
 
         // Chama
-        const resposta = await chamar(cenario.editor, "POST", `/acoes-corretivas/${acao.id}/finalizar-execucao`, 400, {
+        const resposta = await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/finalizar-execucao`, 400, {
             diasParaVerificar: 30,
         });
 
@@ -263,15 +255,14 @@ describe("POST /acoes-corretivas/:id/finalizar-execucao", () => {
 
     it("recusa prazo de verificação negativo", async () => {
         // Prepara: plano aprovado e execução registrada — o único problema é o número de dias
-        const cenario = await ncProntaParaFechar();
-        const acao = await aprovarPlano(cenario);
-        await chamar(cenario.editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
+        const { editor, acao } = await ncProntaParaFechar();
+        await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
             executadoEm: diaDaquiA(-1),
             evidencia: "Procedimento PO-07 revisado e publicado na intranet.",
         });
 
         // Chama
-        const resposta = await chamar(cenario.editor, "POST", `/acoes-corretivas/${acao.id}/finalizar-execucao`, 400, {
+        const resposta = await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/finalizar-execucao`, 400, {
             diasParaVerificar: -5,
         });
 

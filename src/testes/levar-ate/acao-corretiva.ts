@@ -1,14 +1,14 @@
 import { expect } from "vitest";
 import type { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
-import { chamar, diaDaquiA, ncProntaParaFechar } from "../cenarios.js";
+import { chamar, diaDaquiA, investigacaoAberta } from "../cenarios.js";
 
 // Só um portão (PLANO): aprovar o plano volta a ação para ABERTO, e o FECHADO vem do finalizar-execucao. O ABERTO
 // depois da aprovação é um degrau à parte, "PLANO_APROVADO": o plano travado (B2) e a execução liberada (B1)
 export type DegrauAcaoCorretiva = EstadoRegistro | "PLANO_APROVADO";
 
 export async function levarAcaoCorretivaAte(estado: DegrauAcaoCorretiva) {
-    // A ação corretiva aponta para uma investigação: o cenário precisa de uma
-    const cenario = await ncProntaParaFechar();
+    // A ação corretiva aponta para uma investigação ainda editável (RN-49): o cenário precisa de uma aberta
+    const cenario = await investigacaoAberta();
     const { editor, aprovador, gerente, nc, investigacao } = cenario;
 
     // Degrau 1: Rascunho
