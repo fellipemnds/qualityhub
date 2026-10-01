@@ -34,7 +34,8 @@ const acoes = {
 type NomeAcao = keyof typeof acoes;
 
 const tabela: { estado: DegrauAcaoCorretiva; proibidas: NomeAcao[] }[] = [
-    { estado: "RASCUNHO", proibidas: ["submeter", "aprovar", "reprovar", "finalizar"] }, // cancelar fica de fora: hoje o código permite (B12)
+    // Rascunho só se exclui, não se cancela (B12, RN-06)
+    { estado: "RASCUNHO", proibidas: ["submeter", "aprovar", "reprovar", "finalizar", "cancelar"] },
     // O ABERTO do levarAcaoCorretivaAte é o de plano nunca submetido: finalizar exige plano aprovado (B1)
     { estado: "ABERTO", proibidas: ["excluir", "publicar", "aprovar", "reprovar", "finalizar"] },
     { estado: "EM_APROVACAO", proibidas: ["editar", "excluir", "publicar", "submeter", "finalizar"] },

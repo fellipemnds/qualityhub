@@ -35,9 +35,9 @@ const acoes = {
 type NomeAcao = keyof typeof acoes;
 
 const tabela: { estado: EstadoRegistro; proibidas: NomeAcao[] }[] = [
-    // cancelar fica de fora: hoje o código permite (B12). Submeter também: numa NC em rascunho a guarda RN-21
-    // (sem filhos fechados) barra antes da de estado — o 409 viria pelo motivo errado
-    { estado: "RASCUNHO", proibidas: ["aprovar", "reprovar", "reabrir"] },
+    // Rascunho só se exclui, não se cancela (B12, RN-06). O submeter entra desde a 8d: a guarda RN-21 roda depois da
+    // checagem de estado, e o 409 vem pelo motivo certo
+    { estado: "RASCUNHO", proibidas: ["submeter", "aprovar", "reprovar", "reabrir", "cancelar"] },
     { estado: "ABERTO", proibidas: ["excluir", "publicar", "aprovar", "reprovar", "reabrir"] },
     { estado: "EM_APROVACAO", proibidas: ["editar", "excluir", "publicar", "submeter", "reabrir"] },
     { estado: "FECHADO", proibidas: ["editar", "excluir", "publicar", "submeter", "aprovar", "reprovar", "cancelar"] },

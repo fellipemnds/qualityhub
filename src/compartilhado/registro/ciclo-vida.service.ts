@@ -335,6 +335,11 @@ export const cicloVidaService = {
             throw new NaoEncontradoError("O item não foi encontrado");
         }
 
+        // Rascunho só se exclui, não se cancela: cancelado, ele ficaria para sempre, sem código (B12, RN-06)
+        if (registro.estado === "RASCUNHO") {
+            throw new TransicaoInvalidaError("Rascunho não se cancela: se ele não serve mais, exclua-o.");
+        }
+
         if (registro.estado === "FECHADO" || registro.estado === "CANCELADO" || motivo.trim() === "") {
             throw new TransicaoInvalidaError(
                 'O item não pode ser concluído pois já está no status "FECHADO/CANCELADO" ou porque o motivo está em branco!',

@@ -126,5 +126,6 @@ Q17** e **Q18**) está feita: escada de cenários na ordem real, RN-49,
 `NAO_EFICAZ` reabre só o que estiver fechado. E a **ordem 10 (B6)**:
 `PARCIALMENTE_EFICAZ` copia todos os colaboradores. E a **ordem 11
 (B3)**: o autor da ação automática é quem concluiu a verificação. E a
-**ordem 12 (B13)**: filho nasce com o aprovador da NC (RN-46). O
-próximo é a **ordem 13, o B12**: cancelar recusa rascunho (RN-06).
+**ordem 12 (B13)**: filho nasce com o aprovador da NC (RN-46). E a
+**ordem 13 (B12)**: cancelar recusa rascunho (RN-06). O próximo é a
+**ordem 14, o B8**: remover `DELETE /verificacoes/:id`.

@@ -33,7 +33,8 @@ const acoes = {
 type NomeAcao = keyof typeof acoes;
 
 const tabela: { estado: EstadoRegistro; proibidas: NomeAcao[] }[] = [
-    { estado: "RASCUNHO", proibidas: ["submeter", "aprovar", "reprovar"] }, // cancelar fica de fora: hoje o código permite (B12)
+    // Rascunho só se exclui, não se cancela (B12, RN-06)
+    { estado: "RASCUNHO", proibidas: ["submeter", "aprovar", "reprovar", "cancelar"] },
     { estado: "ABERTO", proibidas: ["excluir", "publicar", "aprovar", "reprovar"] },
     { estado: "EM_APROVACAO", proibidas: ["editar", "excluir", "publicar", "submeter"] },
     { estado: "FECHADO", proibidas: ["editar", "excluir", "publicar", "submeter", "aprovar", "reprovar", "cancelar"] },
