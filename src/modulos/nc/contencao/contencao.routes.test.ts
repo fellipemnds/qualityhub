@@ -195,9 +195,8 @@ describe("POST /contencoes/:id/decidir", () => {
 });
 
 describe("POST /contencoes/:id/cancelar", () => {
-    // B18 (esquema-backend.md §7): o motivo em branco é recusado, mas com 409 e mensagem de estado. No conserto (A3),
-    // trocar para it.
-    it.fails("recusa motivo só com espaços (RN-06)", async () => {
+    // B18 (esquema-backend.md §7): o motivo em branco é um erro de campo (400, no schema), não de estado (409)
+    it("recusa motivo só com espaços (RN-06)", async () => {
         // Prepara
         const { editor, aprovador, contencao } = await levarContencaoAte("ABERTO");
 

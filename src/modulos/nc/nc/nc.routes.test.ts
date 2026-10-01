@@ -379,9 +379,8 @@ describe("POST /nc/:id/reabrir", () => {
         expect(resposta).toMatchObject({ estado: "ABERTO" });
     });
 
-    // B18 (esquema-backend.md §7): o motivo em branco é recusado, mas com 409 e mensagem de estado. No conserto (A3),
-    // trocar para it.
-    it.fails("recusa motivo só com espaços (RN-05)", async () => {
+    // B18 (esquema-backend.md §7): o motivo em branco é um erro de campo (400, no schema), não de estado (409)
+    it("recusa motivo só com espaços (RN-05)", async () => {
         // Prepara
         const { aprovador, editor, nc } = await levarNCAte("FECHADO");
 

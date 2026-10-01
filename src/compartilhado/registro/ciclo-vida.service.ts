@@ -322,10 +322,9 @@ export const cicloVidaService = {
             throw new NaoEncontradoError("O item não foi encontrado");
         }
 
-        if (registro.estado !== "FECHADO" || !motivo || motivo.trim() === "") {
-            throw new TransicaoInvalidaError(
-                'O item não pode ser concluído pois não está no status "FECHADO" ou porque o motivo está em branco!',
-            );
+        // O motivo em branco já é recusado no schema (400, B18): aqui, só o estado
+        if (registro.estado !== "FECHADO") {
+            throw new TransicaoInvalidaError("Só um item fechado pode ser reaberto.");
         }
 
         const papel = temPapel(ator, "REABRIR");
@@ -375,10 +374,9 @@ export const cicloVidaService = {
             throw new TransicaoInvalidaError("Rascunho não se cancela: se ele não serve mais, exclua-o.");
         }
 
-        if (registro.estado === "FECHADO" || registro.estado === "CANCELADO" || motivo.trim() === "") {
-            throw new TransicaoInvalidaError(
-                'O item não pode ser concluído pois já está no status "FECHADO/CANCELADO" ou porque o motivo está em branco!',
-            );
+        // O motivo em branco já é recusado no schema (400, B18): aqui, só o estado
+        if (registro.estado === "FECHADO" || registro.estado === "CANCELADO") {
+            throw new TransicaoInvalidaError("Um item fechado ou cancelado não pode ser cancelado.");
         }
 
         const gerente = ator.papeis.includes("GERENTE");
