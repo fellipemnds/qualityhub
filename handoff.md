@@ -116,7 +116,7 @@ estiver parado há tempo):
    `hostname` e as extensões que **não** vão para casa (Prettier, REST
    Client, Live Server, Docker antiga, Dev Containers). Registrar aqui o
    que mais aparecer, e commitar o `docs/ambiente/casa.txt`.
-6. `npm test` para confirmar: 224 + 3 falhas esperadas.
+6. `npm test` para confirmar: 225 + 3 falhas esperadas.
 
 **Depois, na A3:** a ordem 8 inteira (8a–8f, regra revista na **PRD
 Q17** e **Q18**) está feita: escada de cenários na ordem real, RN-49,
@@ -124,6 +124,7 @@ Q17** e **Q18**) está feita: escada de cenários na ordem real, RN-49,
 `GET /nc/:id/checklist-fechamento`, RN-24 na investigação (o B5) e RN-50
 (cancelar investigação com ação pendente). A **ordem 9 (B4)** também:
 `NAO_EFICAZ` reabre só o que estiver fechado. E a **ordem 10 (B6)**:
-`PARCIALMENTE_EFICAZ` copia todos os colaboradores. O próximo é a
-**ordem 11, o B3**: o autor da ação automática é quem concluiu a
-verificação.
+`PARCIALMENTE_EFICAZ` copia todos os colaboradores. E a **ordem 11
+(B3)**: o autor da ação automática é quem concluiu a verificação. O
+próximo é a **ordem 12, o B13**: filho nasce com o aprovador da NC
+(RN-46).

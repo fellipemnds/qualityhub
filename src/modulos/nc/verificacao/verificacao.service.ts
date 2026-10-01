@@ -74,15 +74,11 @@ export const verificacaoService = {
                 throw new NaoEncontradoError("Ação Corretiva relacionada não foi encontrada.");
             }
 
-            const registroAcaoCorretiva = await registroRepository.buscarPorId(tx, verificacao.acaoCorretivaId);
-            if (registroAcaoCorretiva === null) {
-                throw new NaoEncontradoError("Ação Corretiva relacionada não foi encontrada.");
-            }
-
             if (verificacao.resultado === "PARCIALMENTE_EFICAZ") {
+                // Quem dispara a ação nova é quem concluiu a verificação, também na auditoria (B3)
                 const novoRegistro = await cicloVidaService.criarRascunho(tx, {
                     tipo: "ACAO_CORRETIVA",
-                    criadoPorId: registroAcaoCorretiva.criadoPorId,
+                    criadoPorId: ator.id,
                 });
                 await acaoCorretivaRepository.criar(tx, {
                     id: novoRegistro.id,
