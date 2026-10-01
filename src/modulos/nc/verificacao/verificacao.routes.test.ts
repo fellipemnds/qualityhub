@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { prisma } from "../../../compartilhado/prisma/cliente.js";
 import {
     aprovarPlano,
     chamar,
@@ -10,6 +11,12 @@ import {
 import { loginComo } from "../../../testes/fabricas.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
+
+// Não há rota que liste as atribuições: a conferência lê a tabela (o cenário continua montado pela API)
+async function colaboradoresDe(registroId: string) {
+    const atribuicoes = await prisma.atribuicao.findMany({ where: { registroId, funcao: "COLABORADOR" } });
+    return atribuicoes.map((atribuicao) => atribuicao.usuarioId).sort();
+}
 
 describe("GET /verificacoes/:id", () => {
     it("responde 404, e não 500, quando a verificação não existe", async () => {
@@ -143,5 +150,24 @@ describe("POST /verificacoes/:id/concluir com NAO_EFICAZ", () => {
             estado: "CANCELADO",
         });
         expect(await chamar(editor, "GET", `/nc/${nc.id}`, 200)).toMatchObject({ estado: "ABERTO" });
+    });
+});
+
+describe("POST /verificacoes/:id/concluir com PARCIALMENTE_EFICAZ", () => {
+    it("a ação nova recebe todos os colaboradores da anterior (B6, PRD Q3)", async () => {
+        // Prepara: a ação com dois colaboradores — o editor, que a criou, e o gerente, posto depois
+        const cenario = await ncProntaParaFechar();
+        const { editor, gerente, nc, acao } = cenario;
+        await chamar(gerente, "POST", `/registros/${acao.id}/colaboradores`, 200, {
+            colaboradores: [gerente.usuario.id],
+        });
+        const { verificacao } = await executarAcao(cenario);
+
+        // Chama
+        await concluirVerificacao(cenario, verificacao.id, "PARCIALMENTE_EFICAZ");
+
+        // Confere
+        const [nova] = await chamar(editor, "GET", `/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`, 200);
+        expect(await colaboradoresDe(nova.id)).toEqual([editor.usuario.id, gerente.usuario.id].sort());
     });
 });

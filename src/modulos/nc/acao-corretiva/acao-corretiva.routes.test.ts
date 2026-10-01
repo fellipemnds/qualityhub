@@ -244,15 +244,12 @@ describe("PATCH /acoes-corretivas/:id", () => {
     // A ação do PARCIALMENTE_EFICAZ é a única ligada a uma investigação já fechada (RN-49): editar o plano mandando
     // o mesmo vínculo não é ligar de novo
     it("aceita o mesmo investigacaoId na ação gerada pelo PARCIALMENTE_EFICAZ (RN-49)", async () => {
-        // Prepara: a ação nova nasce sem colaboradores (B6), então o gerente põe o editor
+        // Prepara: o editor, que criou a ação anterior, é colaborador da nova
         const cenario = await ncProntaParaFechar();
-        const { editor, gerente, nc, investigacao } = cenario;
+        const { editor, nc, investigacao } = cenario;
         const { verificacao } = await executarAcao(cenario);
         await concluirVerificacao(cenario, verificacao.id, "PARCIALMENTE_EFICAZ");
         const [nova] = await chamar(editor, "GET", `/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`, 200);
-        await chamar(gerente, "POST", `/registros/${nova.id}/colaboradores`, 200, {
-            colaboradores: [editor.usuario.id],
-        });
 
         // Chama
         const resposta = await chamar(editor, "PATCH", `/acoes-corretivas/${nova.id}`, 200, {

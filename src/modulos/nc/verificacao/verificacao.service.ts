@@ -52,8 +52,9 @@ export const verificacaoService = {
     // - EFICAZ: nada mais acontece.
     // - PARCIALMENTE_EFICAZ: a causa raiz estava certa, mas a acao tomada
     //   nao foi suficiente — nasce uma NOVA AcaoCorretiva (rascunho),
-    //   apontando para a MESMA investigacaoId da acao original (nunca
-    //   edita a antiga, so cria uma continuacao).
+    //   apontando para a MESMA investigacaoId da acao original e com
+    //   todos os colaboradores dela (B6) — nunca edita a antiga, so cria
+    //   uma continuacao.
     // - NAO_EFICAZ: a causa raiz identificada estava errada — reabre a
     //   Investigacao e a NC correspondente, so as que estiverem FECHADAS
     //   (B4), com o mesmo motivo automatico citando o codigo da
@@ -88,13 +89,16 @@ export const verificacaoService = {
                     naoConformidadeId: acaoCorretiva.naoConformidadeId,
                     investigacaoId: acaoCorretiva.investigacaoId,
                 });
-                await atribuicaoRepository.inserirAtribuicao(
-                    tx,
-                    novoRegistro.id,
-                    registroAcaoCorretiva.criadoPorId,
-                    ator.id,
-                    "COLABORADOR",
-                );
+                // Todos os colaboradores da ação anterior continuam na nova (B6, PRD Q3)
+                for (const colaborador of await atribuicaoRepository.listarColaboradores(tx, acaoCorretiva.id)) {
+                    await atribuicaoRepository.inserirAtribuicao(
+                        tx,
+                        novoRegistro.id,
+                        colaborador.usuarioId,
+                        ator.id,
+                        "COLABORADOR",
+                    );
+                }
             }
 
             if (verificacao.resultado === "NAO_EFICAZ") {

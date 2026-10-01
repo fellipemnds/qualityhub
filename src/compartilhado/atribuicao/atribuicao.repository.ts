@@ -54,6 +54,10 @@ export const atribuicaoRepository = {
         return atribuicao;
     },
 
+    async listarColaboradores(cliente: ClientePrisma, registroId: string) {
+        return cliente.atribuicao.findMany({ where: { registroId, funcao: "COLABORADOR" } });
+    },
+
     async contarColaboradores(cliente: ClientePrisma, registroId: string) {
         return cliente.atribuicao.count({
             where: { registroId, funcao: "COLABORADOR" },

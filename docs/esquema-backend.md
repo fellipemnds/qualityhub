@@ -449,7 +449,7 @@ começa com um **teste que falha** (TRD §9.4).
 | **B3** | **Autor errado na auditoria** da Ação Corretiva criada por `PARCIALMENTE_EFICAZ`: registra quem criou a ação anterior, não o QA que concluiu | `concluirVerificacao` | `criadoPorId` = o ator |
 | **B4** ✅ | `NAO_EFICAZ` **falha** se a NC ou a Investigação estiverem abertas (PRD Q2) | `concluirVerificacao` | Reabrir só o que estiver `FECHADO`. **Corrigido na A3** (2026-10-01): cada um é reaberto só se estiver `FECHADO`. Testes "B4" em `verificacao.routes.test.ts`: NC aberta, NC em aprovação, investigação aberta e investigação cancelada (possível depois da RN-50, com a ação já executada) |
 | **B5** ✅ | Nada exige os planos de ação aprovados antes do fechamento (PRD Q1, revista na Q17) | `submeterInvestigacao`, `submeterNC` | Investigação só é submetida com os planos das suas ações aprovados (RN-24); a NC exige toda investigação não cancelada fechada (§4.3). **Corrigido na A3** (2026-10-01): a NC na 8d (`avaliarFechamentoNC`); a investigação na 8e, com a função pura `avaliarSubmissaoInvestigacao` (`nc/investigacao/avaliar-submissao.ts`) no validador do submeter — 409 com as ações pendentes no campo `error`. Testes: `avaliar-submissao.test.ts` (sem banco) e "RN-24" em `investigacao.routes.test.ts` (ação em rascunho, aberta, em aprovação e reprovada → 409; com plano aprovado, cancelada ou sem nenhuma ação → aceita) |
-| **B6** | Nova ação de `PARCIALMENTE_EFICAZ` recebe só um colaborador (PRD Q3) | `concluirVerificacao` | Copiar **todos** os colaboradores |
+| **B6** ✅ | Nova ação de `PARCIALMENTE_EFICAZ` recebe só um colaborador (PRD Q3) | `concluirVerificacao` | Copiar **todos** os colaboradores. **Corrigido na A3** (2026-10-01): a ação nova recebe todos os colaboradores da anterior (`atribuicaoRepository.listarColaboradores`; antes, só o criador). Teste "B6" em `verificacao.routes.test.ts`, conferido na tabela de atribuições |
 | **B7** | Papéis dentro do JWT: revogar só vale quando o token expira | `auth.controller`, `autenticar` | Sessão nova (TRD §4) |
 | **B8** | Rota `DELETE /verificacoes/:id` que nunca funciona | `verificacao.routes` | Remover |
 
@@ -516,6 +516,7 @@ Com Matthew, em 2026-09-24.
 | 2026-09-24 | v1.1 — revisão cruzada com o código: B9–B13; guarda em dois grupos (filhos/envio) com aprovador; triagem inclui filhos; catálogo de permissões novas; eventos do feed; regras de convite e usuário inativo |
 | 2026-09-28 | v1.2 — B14 (data obrigatória vazia passa na validação), achado pelos testes da fase A2 |
 | 2026-09-30 | v1.3 — B15 (primeira publicação do ano sob concorrência dá erro 500), achado pelo teste de concorrência da A2 |
+| 2026-10-01 | v1.21 — B6 corrigido (A3) |
 | 2026-10-01 | v1.20 — B4 corrigido (A3) |
 | 2026-10-01 | v1.19 — RN-50 implementada (A3 8f): cancelar investigação com ação pendente recusado |
 | 2026-10-01 | v1.18 — B5 corrigido (A3 8e): a investigação só é submetida com os planos das ações aprovados |

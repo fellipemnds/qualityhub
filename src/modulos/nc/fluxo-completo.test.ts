@@ -39,7 +39,7 @@ describe("Fluxo completo da NC", () => {
         // Chama
         await concluirVerificacao(cenario, verificacao.id, "PARCIALMENTE_EFICAZ");
 
-        // Confere (sem autor nem colaboradores da ação nova: bugs B3 e B6, da A3)
+        // Confere (o autor da ação nova é o bug B3, da A3; os colaboradores, verificacao.routes.test.ts, B6)
         const rascunhos = await chamar(
             editor,
             "GET",
