@@ -94,6 +94,22 @@ sem investigação) e os usuários de teste recarregados.
   e no esquema §4.3.
 - A **triagem** de filho publicado sem aprovador (parte da RN-46) fica
   para a C3 (pendências).
+- **Levar à analista: segregação de funções** (auditoria de segurança de
+  2026-10-02, seção 3). A RN-18 (qualquer `EDITOR` se inclui como
+  colaborador), o `DEFINIR_APROVADOR` (o `APROVADOR` pode indicar a si
+  mesmo) e a RN-27 (auto-aprovação permitida) juntos deixam uma QA
+  (`EDITOR` + `APROVADOR`) levar sozinha qualquer item da edição à
+  aprovação; o `GERENTE` pode trocar o aprovador para si em
+  `EM_APROVACAO` e decidir na hora. Tudo auditado — não é bug, mas é o
+  que um auditor ISO pergunta ("quem revisa quem?"), e a RN-29 (proibir
+  auto-aprovação) está prevista e não implementada. Perguntar se vale ao
+  menos impedir alguém de se indicar como aprovador. Junto: a revisão do
+  `podeExecutar` (item acima).
+- **Em casa, antes do `npm run dev`:** o `JWT_SECRET` do `.env` de lá
+  precisa ter **32 caracteres ou mais** (auditoria L8; o servidor recusa
+  subir com menos). O do trabalho tem 44. Gerar com
+  `openssl rand -base64 32` se precisar. E recriar o container do banco
+  (`docker compose up -d`) para a porta ficar só em `127.0.0.1` (L7).
 - No trabalho, o Prettier ainda está instalado no lado Windows do VS
   Code (inofensivo; pode desinstalar — `SETUP.md` §12.4). O Copilot
   ficou desligado no projeto (`.vscode/settings.json`) e nas

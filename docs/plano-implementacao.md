@@ -202,11 +202,14 @@ regra deve morar num lugar só.
 
 | Entrega | Quem |
 |---|---|
+| **B19** (primeiro item) — transições sem trava sob concorrência (`esquema-backend.md` §7): um teste de concorrência que falha por transição, depois o `UPDATE` condicionado ao estado esperado. Inclui o convite usado duas vezes no `definir-senha` | 🤖 o padrão do teste já é conhecido (A2) |
 | Migration **M1**: `desativadoEm`, `sessaoValidaDesde`, `telaInicial` | 🧑 |
 | Login com cookie `HttpOnly`/`Secure`/`SameSite=Strict`; "manter conectado" (30 dias) ou cookie de sessão (teto 12 h) | 🧑 |
 | Middleware `autenticar`: busca usuário ativo, papéis atuais e `sessaoValidaDesde` a cada requisição | 🧑 |
 | `POST /auth/logout`, `POST /auth/sair-de-todos`, `GET /auth/eu`, `PATCH /auth/eu` | 🤖 |
 | Limite de tentativas no login; sucesso na auditoria, falha no log (E1); usuário inativo recusado com a mesma mensagem (RN-38) | 🤖 |
+| Login com o **mesmo tempo de resposta** para e-mail inexistente (comparar com um hash falso) — auditoria L1 | 🤖 |
+| `@fastify/helmet` (cabeçalhos de segurança) e `@fastify/cors` com lista explícita de origens, nunca `*` com cookie — auditoria R3. O HTTPS fica na D1 | 🤖 |
 | Testes: papel revogado vale na hora; usuário inativo recebe 401; "sair de todos" derruba sessão antiga; cookie de sessão sem validade | 🧑 |
 
 **Aprendizado:** cookie × token no cabeçalho; o que `HttpOnly`,
@@ -226,6 +229,9 @@ cliente (TRD §7, ADR-37).
 | Catálogo de ações de auditoria tipado (pendência 1) | 🤖 |
 | `GET /saude` no lugar de `GET /` | 🤖 |
 | Último motivo de reprovação no detalhe de todo item (L7) | 🤖 |
+| Erros do próprio Fastify (JSON malformado, corpo grande demais) respondem com o status deles (400, 413), não 500 — auditoria L3; bug, começa por teste | 🤖 |
+| Permissão conferida **antes** de buscar o usuário-alvo no `definirAprovador` (quem não pode agir não aprende nada com a resposta) — auditoria L5 | 🤖 |
+| Tetos de entrada (auditoria L4): `.max()` nos textos, paginação nas listas dos filhos, avaliar `z.strictObject` (recusar campo extra com 400 em vez de descartar) | 🤖 |
 
 **Aprendizado:** o que é OpenAPI e por que o schema de **resposta**
 importa tanto quanto o de entrada.
@@ -242,6 +248,7 @@ RF-20).
 | Rotas de usuários, setores e `GET /pessoas` (`esquema-backend.md` §6.2), incluindo reativar (E2); convite novo invalida os anteriores; definir senha recusa usuário inativo | 🤖 seguindo o padrão; 🧑 revisa |
 | **Script do primeiro acesso** (`npm run criar-admin`): cria o primeiro setor e o primeiro `ADMIN` e mostra o link de convite. Sem ele, produção não tem como começar — criar usuário exige já ser `ADMIN`, e todo usuário exige um setor | 🧑 |
 | Testes das travas e das permissões de `ADMIN` | 🧑 |
+| Setor inexistente no `POST`/`PATCH` da NC responde 404, não 500 (auditoria L6 — confirmar antes com teste, como o B16) | 🤖 |
 
 ### ✅ Portão: fundação pronta
 
@@ -364,6 +371,7 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-09-24 | v1 — blocos A–D, decisões de trabalho e P1 |
 | 2026-09-24 | v1.1 — revisão cruzada: B9–B13 na A3 (B9 primeiro), pré-requisito do Docker no WSL, `prisma generate` no CI, helper único de autenticação nos testes, script do primeiro ADMIN |
 | 2026-10-01 | v1.2 — ordem 8 da A3 dividida em 8a–8f pela regra revista (PRD Q17, Q18); C2 com as contramedidas e a rota de leitura da lista do envio |
+| 2026-10-02 | v1.3 — achados da auditoria de segurança alocados: B19, L1 e R3 na A4 (C1 e R2 já eram dela), L3, L4 e L5 na A5, L6 na A6. L2, L7 e L8 aplicados na branch `chore/analise-repositorio` |
 | 2026-09-24 | **A0 concluída** (branch `fase/a0-preparacao`): código sem uso removido, aviso do Fastify corrigido, Biome configurado, código formatado e lint limpo. `test` e `build` adiados para A1 e D1; `gh` na A1 |
 | 2026-09-28 | **A1 concluída** (branch `fase/a1-testes`, PR #2): Vitest + Testcontainers, fábricas e `loginComo` (7 perfis), testes do login, do `temPapel` e da criação de rascunho de NC (o "pronto quando", escrito por Matthew), CI com check obrigatório na `main`. Divisão de trabalho revista (§1) |
 | 2026-09-28 | B14 entra na A3 (ordem 3, depois do B11), achado pelos testes da A2 |
