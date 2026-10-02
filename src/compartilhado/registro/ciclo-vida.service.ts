@@ -3,6 +3,7 @@ import { atribuicaoRepository } from "../atribuicao/atribuicao.repository.js";
 import { auditoriaRepository } from "../auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../auditoria/entidades-auditadas.js";
 import { cancelamentoRepository } from "../cancelamento/cancelamento.repository.js";
+import { hojeEmSaoPaulo } from "../datas/hoje-em-sao-paulo.js";
 import type { Acao } from "../entidades/acoes.js";
 import type { Ator } from "../entidades/ator.js";
 import type { Decisao } from "../entidades/decisao.js";
@@ -59,7 +60,7 @@ export const cicloVidaService = {
         validador(dados);
 
         const prefixo = prefixoPorTipo[registro.tipo];
-        const anoAtual = new Date().getFullYear();
+        const anoAtual = Number(hojeEmSaoPaulo().slice(0, 4));
 
         const codigo = await sequenciaService.proximoCodigo(tx, prefixo, anoAtual);
 
@@ -154,6 +155,41 @@ export const cicloVidaService = {
         });
 
         return dadoAtualizado;
+    },
+
+    // Retirar da aprovação (RN-48): o colaborador desiste do envio. Volta a ABERTO no mesmo portão, sem registro em
+    // Aprovacao (não é reprovação), e fica na auditoria. Quem pode submeter pode retirar: a ação é a mesma do submeter
+    async retirar(tx: ClientePrisma, registroId: string, ator: Ator, acao: Acao = "SUBMETER") {
+        const registro = await registroRepository.buscarPorId(tx, registroId);
+
+        if (registro === null) {
+            throw new NaoEncontradoError("Item não foi encontrado.");
+        }
+
+        if (registro.estado !== "EM_APROVACAO") {
+            throw new TransicaoInvalidaError("Só um item em aprovação pode ser retirado da aprovação.");
+        }
+
+        const podeRetirar = await podeExecutar(tx, ator, acao, registroId);
+
+        if (!podeRetirar) {
+            throw new SemPermissaoError(
+                "Você não pode realizar esta ação pois você não está atribuido neste item ou não possui as permissões necessárias.",
+            );
+        }
+
+        const registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "ABERTO" });
+
+        await auditoriaRepository.registrar(tx, {
+            entidade: EntidadeAuditada[registroAtualizado.tipo],
+            entidadeId: registroAtualizado.id,
+            acao: "RETIRAR_DA_APROVACAO",
+            usuarioId: ator.id,
+            antes: registro,
+            depois: registroAtualizado,
+        });
+
+        return registroAtualizado;
     },
 
     async decidir(
@@ -286,10 +322,9 @@ export const cicloVidaService = {
             throw new NaoEncontradoError("O item não foi encontrado");
         }
 
-        if (registro.estado !== "FECHADO" || !motivo || motivo.trim() === "") {
-            throw new TransicaoInvalidaError(
-                'O item não pode ser concluído pois não está no status "FECHADO" ou porque o motivo está em branco!',
-            );
+        // O motivo em branco já é recusado no schema (400, B18): aqui, só o estado
+        if (registro.estado !== "FECHADO") {
+            throw new TransicaoInvalidaError("Só um item fechado pode ser reaberto.");
         }
 
         const papel = temPapel(ator, "REABRIR");
@@ -319,17 +354,29 @@ export const cicloVidaService = {
         return registroAtualizado;
     },
 
-    async cancelar(tx: ClientePrisma, registroId: string, ator: Ator, motivo: string) {
+    // O validador roda depois das checagens de estado e permissão, como no submeter: a guarda própria do tipo (ex.:
+    // RN-50 na investigação) não responde a quem não pode cancelar
+    async cancelar(
+        tx: ClientePrisma,
+        registroId: string,
+        ator: Ator,
+        motivo: string,
+        validador: () => void = () => {},
+    ) {
         const registro = await registroRepository.buscarPorId(tx, registroId);
 
         if (registro === null) {
             throw new NaoEncontradoError("O item não foi encontrado");
         }
 
-        if (registro.estado === "FECHADO" || registro.estado === "CANCELADO" || motivo.trim() === "") {
-            throw new TransicaoInvalidaError(
-                'O item não pode ser concluído pois já está no status "FECHADO/CANCELADO" ou porque o motivo está em branco!',
-            );
+        // Rascunho só se exclui, não se cancela: cancelado, ele ficaria para sempre, sem código (B12, RN-06)
+        if (registro.estado === "RASCUNHO") {
+            throw new TransicaoInvalidaError("Rascunho não se cancela: se ele não serve mais, exclua-o.");
+        }
+
+        // O motivo em branco já é recusado no schema (400, B18): aqui, só o estado
+        if (registro.estado === "FECHADO" || registro.estado === "CANCELADO") {
+            throw new TransicaoInvalidaError("Um item fechado ou cancelado não pode ser cancelado.");
         }
 
         const gerente = ator.papeis.includes("GERENTE");
@@ -341,6 +388,8 @@ export const cicloVidaService = {
                 "Você não pode realizar esta ação pois você não possui as permissões necessárias.",
             );
         }
+
+        validador();
 
         await cancelamentoRepository.criar(tx, { registroId, canceladoPorId: ator.id, motivo });
 

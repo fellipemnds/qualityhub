@@ -1,4 +1,5 @@
 import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
+import { herdarAprovadorDaNC } from "../../../compartilhado/atribuicao/herdar-aprovador.js";
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
 import type { Ator } from "../../../compartilhado/entidades/ator.js";
@@ -52,11 +53,12 @@ export const verificacaoService = {
     // - EFICAZ: nada mais acontece.
     // - PARCIALMENTE_EFICAZ: a causa raiz estava certa, mas a acao tomada
     //   nao foi suficiente — nasce uma NOVA AcaoCorretiva (rascunho),
-    //   apontando para a MESMA investigacaoId da acao original (nunca
-    //   edita a antiga, so cria uma continuacao).
+    //   apontando para a MESMA investigacaoId da acao original e com
+    //   todos os colaboradores dela (B6) — nunca edita a antiga, so cria
+    //   uma continuacao.
     // - NAO_EFICAZ: a causa raiz identificada estava errada — reabre a
-    //   Investigacao (que ja estava FECHADA) e a NC correspondente,
-    //   ambas com o mesmo motivo automatico citando o codigo da
+    //   Investigacao e a NC correspondente, so as que estiverem FECHADAS
+    //   (B4), com o mesmo motivo automatico citando o codigo da
     //   Verificacao. Uma nova Investigacao teria que ser criada depois,
     //   manualmente, pelo colaborador — isso nao acontece aqui.
     async concluirVerificacao(registroId: string, ator: Ator) {
@@ -73,50 +75,44 @@ export const verificacaoService = {
                 throw new NaoEncontradoError("Ação Corretiva relacionada não foi encontrada.");
             }
 
-            const registroAcaoCorretiva = await registroRepository.buscarPorId(tx, verificacao.acaoCorretivaId);
-            if (registroAcaoCorretiva === null) {
-                throw new NaoEncontradoError("Ação Corretiva relacionada não foi encontrada.");
-            }
-
             if (verificacao.resultado === "PARCIALMENTE_EFICAZ") {
+                // Quem dispara a ação nova é quem concluiu a verificação, também na auditoria (B3)
                 const novoRegistro = await cicloVidaService.criarRascunho(tx, {
                     tipo: "ACAO_CORRETIVA",
-                    criadoPorId: registroAcaoCorretiva.criadoPorId,
+                    criadoPorId: ator.id,
                 });
                 await acaoCorretivaRepository.criar(tx, {
                     id: novoRegistro.id,
                     naoConformidadeId: acaoCorretiva.naoConformidadeId,
-                    investigacaoId: acaoCorretiva.investigacaoId ?? undefined,
+                    investigacaoId: acaoCorretiva.investigacaoId,
                 });
-                await atribuicaoRepository.inserirAtribuicao(
-                    tx,
-                    novoRegistro.id,
-                    registroAcaoCorretiva.criadoPorId,
-                    ator.id,
-                    "COLABORADOR",
-                );
+                await herdarAprovadorDaNC(tx, acaoCorretiva.naoConformidadeId, novoRegistro.id, ator.id);
+
+                // Todos os colaboradores da ação anterior continuam na nova (B6, PRD Q3)
+                for (const colaborador of await atribuicaoRepository.listarColaboradores(tx, acaoCorretiva.id)) {
+                    await atribuicaoRepository.inserirAtribuicao(
+                        tx,
+                        novoRegistro.id,
+                        colaborador.usuarioId,
+                        ator.id,
+                        "COLABORADOR",
+                    );
+                }
             }
 
             if (verificacao.resultado === "NAO_EFICAZ") {
                 const motivoAutomatico = `Verificação ${registroConcluido.codigo} foi concluída com resultado Não Eficaz.`;
 
-                if (acaoCorretiva.investigacaoId === null) {
-                    throw new TransicaoInvalidaError(
-                        "Esta Ação Corretiva não está vinculada a uma Investigação — não é possível reabrir automaticamente.",
-                    );
+                // Reabre só o que estiver fechado; aberto, em aprovação ou cancelado fica como está (B4, PRD Q2)
+                for (const id of [acaoCorretiva.investigacaoId, acaoCorretiva.naoConformidadeId]) {
+                    const registro = await registroRepository.buscarPorId(tx, id);
+                    if (registro?.estado === "FECHADO") {
+                        await cicloVidaService.reabrir(tx, id, ator, motivoAutomatico);
+                    }
                 }
-
-                await cicloVidaService.reabrir(tx, acaoCorretiva.investigacaoId, ator, motivoAutomatico);
-                await cicloVidaService.reabrir(tx, acaoCorretiva.naoConformidadeId, ator, motivoAutomatico);
             }
 
             return { ...registroConcluido, ...verificacao };
-        });
-    },
-
-    async excluirRascunhoVerificacao(registroId: string, ator: Ator) {
-        return prisma.$transaction(async (tx) => {
-            return cicloVidaService.excluirRascunho(tx, registroId, ator);
         });
     },
 

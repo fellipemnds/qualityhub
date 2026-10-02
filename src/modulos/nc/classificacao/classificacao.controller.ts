@@ -62,6 +62,12 @@ export const classificacaoController = {
         return reply.status(200).send(classificacaoSubmetida);
     },
 
+    async retirarClassificacao(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
+        const retirado = await classificacaoService.retirarClassificacao(request.params.id, request.user);
+
+        return reply.status(200).send(retirado);
+    },
+
     async decidirClassificacao(
         request: FastifyRequest<{ Params: { id: string }; Body: DecisaoInput }>,
         reply: FastifyReply,

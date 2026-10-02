@@ -24,15 +24,18 @@ const acoes = {
             decisao: "REPROVADO",
             motivo: "Tentativa de reprovar fora do estado permitido",
         }),
+    // Retirar da aprovação (RN-48): só sai de EM_APROVACAO
+    retirar: ({ aprovador, classificacao }: Contexto) =>
+        chamar(aprovador, "POST", `/classificacoes/${classificacao.id}/retirar`, 409),
 };
 
 type NomeAcao = keyof typeof acoes;
 
 const tabela: { estado: EstadoAlcancavel; proibidas: NomeAcao[] }[] = [
-    { estado: "RASCUNHO", proibidas: ["submeter", "aprovar", "reprovar"] },
-    { estado: "ABERTO", proibidas: ["excluir", "publicar", "aprovar", "reprovar"] },
+    { estado: "RASCUNHO", proibidas: ["submeter", "aprovar", "reprovar", "retirar"] },
+    { estado: "ABERTO", proibidas: ["excluir", "publicar", "aprovar", "reprovar", "retirar"] },
     { estado: "EM_APROVACAO", proibidas: ["editar", "excluir", "publicar", "submeter"] },
-    { estado: "FECHADO", proibidas: ["editar", "excluir", "publicar", "submeter", "aprovar", "reprovar"] },
+    { estado: "FECHADO", proibidas: ["editar", "excluir", "publicar", "submeter", "aprovar", "reprovar", "retirar"] },
 ];
 
 describe("Máquina de estados: Classificação", () => {

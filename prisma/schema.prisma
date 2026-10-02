@@ -80,7 +80,7 @@ model NaoConformidade {
 
   setorId     Int?
   setor       Setor?    @relation(fields: [setorId], references: [id])
-  detectadoEm DateTime?
+  detectadoEm DateTime? @db.Date
   origem      OrigemNC?
   cliente     String?
 
@@ -294,7 +294,7 @@ model Contencao {
   naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id], onDelete: Cascade)
   naoConformidadeId String
   descricao         String?
-  executadaEm       DateTime?
+  executadaEm       DateTime?       @db.Date
   disposicao        Disposicao?
 }
 
@@ -339,12 +339,12 @@ model AcaoCorretiva {
   registro          Registro        @relation(fields: [id], references: [id], onDelete: Cascade)
   naoConformidade   NaoConformidade @relation(fields: [naoConformidadeId], references: [id], onDelete: Cascade)
   naoConformidadeId String
-  investigacaoId    String?
-  investigacao      Investigacao?   @relation(fields: [investigacaoId], references: [id])
+  investigacaoId    String
+  investigacao      Investigacao    @relation(fields: [investigacaoId], references: [id])
 
   descricao             String?
-  prazo                 DateTime?
-  executadoEm           DateTime?
+  prazo                 DateTime? @db.Date
+  executadoEm           DateTime? @db.Date
   evidencia             String?
   instrucoesVerificacao String?
 
@@ -366,8 +366,8 @@ model Verificacao {
   acaoCorretiva   AcaoCorretiva @relation(fields: [acaoCorretivaId], references: [id])
 
   instrucoesVerificacao String?
-  prazo                 DateTime?
+  prazo                 DateTime?             @db.Date
   resultado             ResultadoVerificacao?
   conclusao             String?
-  verificadoEm          DateTime?
+  verificadoEm          DateTime?             @db.Date
 }

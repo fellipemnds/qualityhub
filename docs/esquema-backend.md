@@ -227,7 +227,7 @@ nunca reescrita em dois lugares.
 
 ### 4.1 Etapa da NC
 
-Regras em `fluxo-app.md` §4 (11 etapas + indicadores). Função pura
+Regras em `fluxo-app.md` §4 (10 etapas + indicadores). Função pura
 `calcularEtapa(nc, filhos)` — **testável sem banco**.
 
 ### 4.2 Plano aprovado (Ação Corretiva)
@@ -239,30 +239,52 @@ planoAprovado = existe Aprovacao com
 
 A ação nunca é reaberta (RN-42), então uma aprovação do plano vale para
 sempre. Usado em: finalizar execução (§7, B1), bloqueio de edição do
-plano (B2), etapa da NC, guarda de fechamento (RN-21), pendência
+plano (B2), etapa da NC, guarda de submissão da Investigação (RN-24, §4.3), pendência
 "Executar ação".
 
-### 4.3 Guarda de fechamento da NC (RN-21)
+**Implementado na A3:** `acaoCorretivaRepository.planoAprovado(cliente,
+id)`, exposto em `GET /acoes-corretivas/:id` como `planoAprovado`.
 
-Função que devolve a **lista do que falta** (TRD §5), com um item por
-requisito, em dois grupos:
+### 4.3 Guardas: submissão da Investigação (RN-24) e fechamento da NC (RN-21)
+
+Funções que devolvem a **lista do que falta** (TRD §5), com um item por
+requisito. Os planos de ação são conferidos pela **Investigação**, não
+pela NC (PRD Q17).
+
+**Submeter a Investigação** — além dos campos da RN-24 e do aprovador
+(RN-13):
+
+- **Toda** Ação Corretiva não cancelada ligada a ela com plano aprovado
+  (§4.2), com um item por ação pendente. Sem nenhuma ação, o requisito
+  está atendido: a investigação pode concluir sem ação corretiva.
+
+A ação só se liga a uma investigação em `ABERTO` (RN-49), então
+nenhuma ação nova aparece depois do envio, e um plano aprovado nunca
+deixa de estar (RN-42). Por isso a checagem no submeter basta; o
+`decidir` não a repete. A exceção é a ação do `PARCIALMENTE_EFICAZ`, que
+nasce numa investigação já fechada e segue depois do fechamento, como a
+execução e a verificação.
+
+**Fechamento da NC**, em dois grupos:
 
 **Filhos** — definem a etapa *Pronta para fechamento* e a pendência
 "Submeter para fechamento":
 
 1. ≥1 Classificação `FECHADA`
-2. ≥1 Investigação `FECHADA`
-3. ≥1 Ação Corretiva **com plano aprovado**, e **toda** Ação Corretiva
-   não cancelada com plano aprovado
-4. Nenhuma Contenção fora de `FECHADA`/`CANCELADA`
+2. ≥1 Investigação `FECHADA`, e **toda** Investigação não cancelada
+   `FECHADA`
+3. Nenhuma Contenção fora de `FECHADA`/`CANCELADA`
 
 **Envio** — preenchidos pelo colaborador depois que os filhos estão
 atendidos:
 
-5. `riscosRevisados` e `mudancasSGQ` preenchidos
-6. Aprovador da NC definido (RN-13)
+4. `riscosRevisados` e `mudancasSGQ` preenchidos
+5. Aprovador da NC definido (RN-13)
 
-Lista vazia → pode submeter. A etapa e a pendência olham **só o grupo
+Lista vazia → pode submeter. **Implementada na A3 (8c/8d):** `avaliarFechamentoNC` (função pura, um item por
+requisito com `atendido` e `pendentes`); o submeter responde 409 com os itens não atendidos no campo `error`. Ela roda
+como validador do ciclo de vida, depois das checagens de estado, permissão e aprovador: sem aprovador, a resposta
+continua sendo o 409 genérico ("deve possuir um aprovador"), sem a lista — a tela usa o checklist. A etapa e a pendência olham **só o grupo
 "Filhos"**; se olhassem os dois, a NC nunca chegaria a *Pronta para
 fechamento* sem alguém preencher os campos do envio antes — e ninguém
 seria avisado para preenchê-los (`fluxo-app.md` §4 e J6).
@@ -298,7 +320,9 @@ junto no detalhe de todo item.
 
 ## 5. API — convenções
 
-Resumo do TRD §7: prefixo **`/api`**, JSON, datas ISO 8601 em UTC, IDs
+Resumo do TRD §7: prefixo **`/api`**, JSON, datas ISO 8601 em UTC (dias de
+calendário — `detectadoEm`, `prazo`, `executadaEm`, `executadoEm`,
+`verificadoEm`, filtros `de`/`ate` — só em `"AAAA-MM-DD"`, TRD §6), IDs
 UUID v7, paginação por cursor, erros `{ mensagem, error? }`, **schema
 declarado na entrada e na resposta** de toda rota (é o que alimenta o
 OpenAPI e o cliente gerado).
@@ -352,7 +376,7 @@ de todo mundo não precisam ir para qualquer tela.
 | Δ | `GET /nc` | Filtros novos: `etapa`, `setorId`, `prazoVencido`, `semAprovador`, `busca` (código ou título). Cada item volta com **etapa** e **indicadores**. Como a etapa é calculada no código (não no SQL), o filtro por etapa é aplicado **em memória** antes da paginação — viável porque o volume é pequeno (TRD §10); se crescer muito, revisita-se |
 | Δ | `GET /nc/:id` | + etapa, indicadores, último motivo de reprovação |
 | ＋ | `GET /nc/:id/checklist-fechamento` | A lista do que falta, nos dois grupos (§4.3) |
-| Δ | `POST /nc/:id/submeter` | Guarda nova (RN-21) |
+| Δ | `POST /nc/:id/submeter` | Guarda nova (RN-21): toda investigação não cancelada fechada; responde 409 com a lista do que falta |
 | Δ | `PATCH /nc/:id` · `POST /nc` | `detectadoEm` comparado com o **dia de hoje em São Paulo**, calculado a cada requisição (B9, B11) |
 | Δ | `POST /nc/:id/cancelar` | Recusa `RASCUNHO` (B12) |
 | ＋ | `POST /nc/:id/retirar` | Retira da aprovação: `EM_APROVACAO` → `ABERTO`, mesmo portão, sem `Aprovacao` (RN-48) |
@@ -368,9 +392,11 @@ Mesma forma para os cinco tipos: `POST /nc/:ncId/<tipo>` para criar;
 |---|---|---|
 | Δ | Todos os `POST /nc/:ncId/<tipo>` | O filho nasce com o **aprovador da NC**, se houver (RN-46, B13) |
 | Δ | Todos os `/<tipo>/:id/cancelar` | Recusam `RASCUNHO` (B12) |
-| ＋ | Todos os `POST /<tipo>/:id/retirar` | Retira da aprovação, como na NC (RN-48). Não vale para Verificação (não tem portão) |
+| ＋ | Todos os `POST /<tipo>/:id/retirar` | Retira da aprovação, como na NC (RN-48). Não vale para Verificação (não tem portão). **Feito na A3** (2026-10-01): `cicloVidaService.retirar`, com a ação do submeter como parâmetro (`CLASSIFICAR` na Classificação); auditoria `RETIRAR_DA_APROVACAO` |
 | Δ | Todos os `GET /<tipo>/:id` | + último motivo de reprovação |
-| Δ | `POST /nc/:ncId/acoes-corretivas` · `PATCH /acoes-corretivas/:id` | `investigacaoId` precisa ser de uma investigação **desta NC**, não cancelada; **obrigatório** para enviar o plano (B10) |
+| Δ | `POST /nc/:ncId/acoes-corretivas` · `PATCH /acoes-corretivas/:id` | `investigacaoId` **obrigatório já na criação**, de uma investigação **desta NC** em `ABERTO`; o `PATCH` não o apaga (B10, RN-49) |
+| Δ | `POST /investigacoes/:id/submeter` | Exige os planos das ações ligadas aprovados (RN-24, B5); responde 409 com a lista do que falta |
+| Δ | `POST /investigacoes/:id/cancelar` | Exige as ações ligadas canceladas ou fechadas (RN-50); responde 409 com a lista das que faltam. **Feito na A3 (8f):** `avaliarCancelamentoInvestigacao`, no validador opcional que o `cicloVidaService.cancelar` ganhou (roda depois de estado e permissão) |
 | ＋ | `POST /investigacoes/:id/hipoteses` | Cria hipótese (lacuna L1) — só colaborador, investigação editável |
 | ＋ | `PATCH /hipoteses/:id` · `DELETE /hipoteses/:id` | Edita / apaga — mesmas regras |
 | Δ | `GET /investigacoes/:id` | + lista de hipóteses e de ações corretivas vinculadas |
@@ -418,35 +444,38 @@ começa com um **teste que falha** (TRD §9.4).
 
 | # | Problema | Onde | Correção |
 |---|---|---|---|
-| **B1** | **Dá para executar uma Ação Corretiva sem aprovação do plano.** A checagem é `estado === ABERTO && portaoAtual === 0`, mas o `portaoAtual` nunca sai de 0 — uma ação recém-publicada, nunca submetida, passa | `finalizarExecucaoAcaoCorretiva` | Exigir plano aprovado (§4.2) |
-| **B2** | **O plano continua editável depois de aprovado** (o estado volta a `ABERTO`, que é editável) | `atualizarAcaoCorretiva` | Com plano aprovado, recusar mudança em `descricao`, `prazo`, `instrucoesVerificacao`, `investigacaoId` |
-| **B3** | **Autor errado na auditoria** da Ação Corretiva criada por `PARCIALMENTE_EFICAZ`: registra quem criou a ação anterior, não o QA que concluiu | `concluirVerificacao` | `criadoPorId` = o ator |
-| **B4** | `NAO_EFICAZ` **falha** se a NC ou a Investigação estiverem abertas (PRD Q2) | `concluirVerificacao` | Reabrir só o que estiver `FECHADO` |
-| **B5** | Guarda de fechamento não exige planos de ação aprovados (PRD Q1) | `submeterNC` | Nova guarda (§4.3) |
-| **B6** | Nova ação de `PARCIALMENTE_EFICAZ` recebe só um colaborador (PRD Q3) | `concluirVerificacao` | Copiar **todos** os colaboradores |
+| **B1** ✅ | **Dá para executar uma Ação Corretiva sem aprovação do plano.** A checagem é `estado === ABERTO && portaoAtual === 0`, mas o `portaoAtual` nunca sai de 0 — uma ação recém-publicada, nunca submetida, passa | `finalizarExecucaoAcaoCorretiva` | Exigir plano aprovado (§4.2). **Corrigido na A3** (2026-09-30): a checagem do `portaoAtual` virou `planoAprovado`. Testes: "B1" em `acao-corretiva.routes.test.ts` (plano escrito mas não aprovado, execução registrada → 409, sem verificação) e o `finalizar` proibido no `ABERTO` da máquina de estados |
+| **B2** ✅ | **O plano continua editável depois de aprovado** (o estado volta a `ABERTO`, que é editável) | `atualizarAcaoCorretiva` | Com plano aprovado, recusar mudança em `descricao`, `prazo`, `instrucoesVerificacao`, `investigacaoId`. **Corrigido na A3** (2026-09-30): com o plano aprovado, o `PATCH` recusa os `CAMPOS_DO_PLANO` (409, mesmo com o mesmo valor) e o submeter recusa (não há mais nada a submeter). Testes "B2" em `acao-corretiva.routes.test.ts` e o degrau `PLANO_APROVADO` nas tabelas de estado e permissão |
+| **B3** ✅ | **Autor errado na auditoria** da Ação Corretiva criada por `PARCIALMENTE_EFICAZ`: registra quem criou a ação anterior, não o QA que concluiu | `concluirVerificacao` | `criadoPorId` = o ator. **Corrigido na A3** (2026-10-01): o registro e a auditoria `CRIAR_RASCUNHO` levam quem concluiu a verificação. Teste "B3" em `verificacao.routes.test.ts` |
+| **B4** ✅ | `NAO_EFICAZ` **falha** se a NC ou a Investigação estiverem abertas (PRD Q2) | `concluirVerificacao` | Reabrir só o que estiver `FECHADO`. **Corrigido na A3** (2026-10-01): cada um é reaberto só se estiver `FECHADO`. Testes "B4" em `verificacao.routes.test.ts`: NC aberta, NC em aprovação, investigação aberta e investigação cancelada (possível depois da RN-50, com a ação já executada) |
+| **B5** ✅ | Nada exige os planos de ação aprovados antes do fechamento (PRD Q1, revista na Q17) | `submeterInvestigacao`, `submeterNC` | Investigação só é submetida com os planos das suas ações aprovados (RN-24); a NC exige toda investigação não cancelada fechada (§4.3). **Corrigido na A3** (2026-10-01): a NC na 8d (`avaliarFechamentoNC`); a investigação na 8e, com a função pura `avaliarSubmissaoInvestigacao` (`nc/investigacao/avaliar-submissao.ts`) no validador do submeter — 409 com as ações pendentes no campo `error`. Testes: `avaliar-submissao.test.ts` (sem banco) e "RN-24" em `investigacao.routes.test.ts` (ação em rascunho, aberta, em aprovação e reprovada → 409; com plano aprovado, cancelada ou sem nenhuma ação → aceita) |
+| **B6** ✅ | Nova ação de `PARCIALMENTE_EFICAZ` recebe só um colaborador (PRD Q3) | `concluirVerificacao` | Copiar **todos** os colaboradores. **Corrigido na A3** (2026-10-01): a ação nova recebe todos os colaboradores da anterior (`atribuicaoRepository.listarColaboradores`; antes, só o criador). Teste "B6" em `verificacao.routes.test.ts`, conferido na tabela de atribuições |
 | **B7** | Papéis dentro do JWT: revogar só vale quando o token expira | `auth.controller`, `autenticar` | Sessão nova (TRD §4) |
-| **B8** | Rota `DELETE /verificacoes/:id` que nunca funciona | `verificacao.routes` | Remover |
+| **B8** ✅ | Rota `DELETE /verificacoes/:id` que nunca funciona | `verificacao.routes` | Remover. **Corrigido na A3** (2026-10-01): rota, controller e service removidos; o teste "B8" em `verificacao.routes.test.ts` confere o 404 do roteador |
 
 Encontradas na **revisão cruzada** dos documentos com o código
 (2026-09-24):
 
 | # | Problema | Onde | Correção |
 |---|---|---|---|
-| **B9** | **A data de detecção é comparada com o momento em que o servidor foi ligado**, não com o agora: `z.coerce.date().max(new Date())` calcula o `new Date()` uma vez só, quando o arquivo é carregado. Com o servidor ligado há dias, **nenhuma NC detectada depois disso pode ser registrada** ("não pode ser no futuro"). Não aparece no desenvolvimento porque o `tsx watch` reinicia o servidor a toda hora | `nc.schema.ts` | Comparar com o dia de hoje **a cada validação** (ex.: `.refine`), pelo dia em São Paulo (B11) |
-| **B10** | **Vínculo da Ação Corretiva com a investigação não é validado**: (a) `investigacaoId` é opcional até no plano — se ficar vazio, uma verificação `NAO_EFICAZ` dá erro e a conclusão trava; (b) nada impede apontar a investigação **de outra NC**, que seria a reaberta | `acao-corretiva.schema.ts`, `acao-corretiva.service.ts` | Exigir `investigacaoId` no schema do plano; ao criar e editar, conferir que a investigação é da mesma NC e não está cancelada |
-| **B11** | **"Dia" calculado em UTC**: o ano do código usa `new Date().getFullYear()` no servidor — uma NC publicada em 31/12 depois das 21 h ganha código do ano seguinte. O mesmo vale para "hoje" em prazos | `ciclo-vida.service.ts`, `acao-corretiva.service.ts` | Uma função "dia de hoje em `America/Sao_Paulo`", usada em todo cálculo de dia (TRD §6) |
-| **B12** | **Rascunho pode ser cancelado** e vira item cancelado sem código, visível para sempre (PRD Q14) | `ciclo-vida.service.ts` (`cancelar`) | Aceitar só `ABERTO` e `EM_APROVACAO` |
-| **B13** | **Filho nasce sem aprovador** e só `APROVADOR`/`GERENTE` pode definir um; o colaborador fica travado para enviar, sem ninguém ser avisado (PRD Q13) | Services de criação dos filhos | Copiar o aprovador da NC na criação (RN-46); filho publicado sem aprovador entra na triagem (§4.4) |
-| **B14** | **Data obrigatória vazia passa na validação.** `z.coerce.date()` converte o `null` que vem do banco em `new Date(null)` = 01/01/1970, uma data válida — o item avança sem a data. Afeta `detectadoEm` (publicar NC), `executadaEm` (fechar contenção), `prazo` (submeter plano), `executadoEm` (finalizar execução, RN-25) e `verificadoEm` (concluir verificação). Comprovado com o `prazo`; achado pelos testes da A2 | Schemas de publicação/fechamento dos cinco | Recusar `null`/vazio antes de converter; um teste que falha por campo |
-| **B15** | **Primeira publicação do ano sob concorrência dá erro 500.** Quando o contador de `(prefixo, ano)` ainda não existe, o `SELECT ... FOR UPDATE` não encontra linha e não trava nada: as publicações simultâneas vão todas para o `criar`, e a chave primária recusa as repetidas (`ContadorSequencia_pkey`). Nenhum código sai repetido (o banco protege), mas o usuário recebe "Erro interno". Com o contador já existente, o `UPDATE ... increment` é atômico e funciona. Achado pelos testes da A2 (8 de 10 publicações simultâneas falharam) | `sequencia.repository.ts`, `sequencia.service.ts` | Criar ou incrementar num único comando atômico (`INSERT ... ON CONFLICT (prefixo, ano) DO UPDATE ... RETURNING`), sem o `buscarELocar`. Teste pronto: `sequencia.test.ts`, hoje marcado com `it.fails` |
-| **B16** | **Adicionar como colaborador um usuário que não existe dá 500.** O service não confere se o usuário existe, e o erro de chave estrangeira do Prisma (P2003) cai no tratador genérico. Achado pelos testes da A2 | `atribuicao.service.ts` (`adicionarColaboradores`) | Conferir cada id antes de inserir e responder 404, como o `definirAprovador` já faz |
-| **B17** | **Atribuições mudam em qualquer estado**, inclusive em item `FECHADO` ou `CANCELADO`: nenhuma das três rotas confere o estado (PRD Q15). Achado pelos testes da A2 | `atribuicao.service.ts` | Recusar (409) fora de `RASCUNHO`/`ABERTO`; em `EM_APROVACAO`, aceitar só a troca de aprovador por `GERENTE` (RN-47) |
-| **B18** | **Motivo em branco em reabrir e cancelar volta 409, não 400.** O `motivoSchema` aceita `"   "` (só `min(1)`); quem recusa é o service, com `TransicaoInvalidaError` e uma mensagem que mistura estado e motivo — e diz "concluído" nas duas rotas. O frontend trataria um erro de campo como erro de estado. Achado pelos testes da A2 | `motivo.schema.ts`, `ciclo-vida.service.ts` (`reabrir`, `cancelar`) | `z.string().trim().min(1)` no `motivoSchema` (400 antes do service); tirar a checagem de motivo do `if` de estado e corrigir as mensagens. Testes prontos com `it.fails` (`nc.routes.test.ts`, `contencao.routes.test.ts`) |
+| **B9** ✅ | **A data de detecção é comparada com o momento em que o servidor foi ligado**, não com o agora: `z.coerce.date().max(new Date())` calcula o `new Date()` uma vez só, quando o arquivo é carregado. Com o servidor ligado há dias, **nenhuma NC detectada depois disso pode ser registrada** ("não pode ser no futuro"). Não aparece no desenvolvimento porque o `tsx watch` reinicia o servidor a toda hora | `nc.schema.ts` | Comparar com o dia de hoje **a cada validação** (ex.: `.refine`), pelo dia em São Paulo (B11). **Corrigido na A3** (2026-09-30): `.refine` com o `new Date()` dentro da função; teste com relógio falso em `nc.routes.test.ts` ("cria uma nc depois do servidor ativado há muito tempo"). O dia em São Paulo fica para o B11 |
+| **B10** ✅ | **Vínculo da Ação Corretiva com a investigação não é validado**: (a) `investigacaoId` é opcional até no plano — se ficar vazio, uma verificação `NAO_EFICAZ` dá erro e a conclusão trava; (b) nada impede apontar a investigação **de outra NC**, que seria a reaberta | `acao-corretiva.schema.ts`, `acao-corretiva.service.ts` | Exigir `investigacaoId` no schema do plano; ao criar e editar, conferir que a investigação é da mesma NC e não está cancelada. **Corrigido na A3** (2026-10-01): `investigacaoId` obrigatório no `acaoCorretivaPlanoSchema`; ao criar e editar, `conferirInvestigacao` (no service, porque depende do banco) recusa com 400 a que não existe (antes, 500 da chave estrangeira), a de outra NC e a cancelada. Vazio continua aceito no rascunho. Testes "B10" em `acao-corretiva.routes.test.ts` (os três casos no `POST` e no `PATCH`, e o submeter sem investigação). **Fora do B10:** a investigação cancelada **depois** de vinculada. **Ampliado pela PRD Q17 (RN-49), na ordem 8b** (2026-10-01): obrigatório já na criação (`acaoCorretivaCriacaoSchema`), o `PATCH` não o apaga, e só com investigação em `ABERTO` (nem em rascunho), conferido só quando o vínculo muda (a ação do `PARCIALMENTE_EFICAZ`, criada pelo service numa investigação fechada, edita o plano mandando o mesmo vínculo). Coluna `NOT NULL` (migration `investigacao_obrigatoria_na_acao`), com a chave estrangeira em `RESTRICT`: como só investigação publicada tem ação, e item publicado não se exclui, o banco nunca precisa recusar; a NC em rascunho continua excluída com os filhos. Testes "RN-49" em `acao-corretiva.routes.test.ts` e `nc.routes.test.ts` |
+| **B11** ✅ | **"Dia" calculado em UTC**: o ano do código usa `new Date().getFullYear()` no servidor — uma NC publicada em 31/12 depois das 21 h ganha código do ano seguinte. O mesmo vale para "hoje" em prazos | `ciclo-vida.service.ts`, `acao-corretiva.service.ts` | Uma função "dia de hoje em `America/Sao_Paulo`", usada em todo cálculo de dia (TRD §6). **Corrigido na A3** (2026-09-30): `compartilhado/datas/hoje-em-sao-paulo.ts` (com `formatToParts`), usada no ano do código (publicar e verificação gerada), no prazo da verificação e no B9; os testes rodam em UTC (`vitest.config.ts`). Testes: `hoje-em-sao-paulo.test.ts` (horários de risco) e os casos "B11" em `nc.routes.test.ts` e `acao-corretiva.routes.test.ts` |
+| **B12** ✅ | **Rascunho pode ser cancelado** e vira item cancelado sem código, visível para sempre (PRD Q14) | `ciclo-vida.service.ts` (`cancelar`) | Aceitar só `ABERTO` e `EM_APROVACAO`. **Corrigido na A3** (2026-10-01): o `cancelar` genérico recusa `RASCUNHO` com 409 ("exclua-o"). Testes: o `cancelar` entrou nas proibidas do `RASCUNHO` nas tabelas de máquina de estados da NC, contenção, investigação e ação corretiva — e, na da NC, também o `submeter`, que desde a 8d recusa pelo estado |
+| **B13** ✅ | **Filho nasce sem aprovador** e só `APROVADOR`/`GERENTE` pode definir um; o colaborador fica travado para enviar, sem ninguém ser avisado (PRD Q13) | Services de criação dos filhos | Copiar o aprovador da NC na criação (RN-46); filho publicado sem aprovador entra na triagem (§4.4). **Corrigido na A3** (2026-10-01): `herdarAprovadorDaNC` (`compartilhado/atribuicao/herdar-aprovador.ts`) na criação dos quatro filhos e da ação gerada pelo `PARCIALMENTE_EFICAZ`; NC sem aprovador → filho sem aprovador. A autoaprovação que isso permite (classificação criada pelo próprio aprovador) é aceita pela RN-27. Testes "B13" em `atribuicao.routes.test.ts` e `verificacao.routes.test.ts`. A triagem fica para a C3 (pendências) |
+| **B14** ✅ | **Data obrigatória vazia passa na validação.** `z.coerce.date()` converte o `null` que vem do banco em `new Date(null)` = 01/01/1970, uma data válida — o item avança sem a data. Afeta `detectadoEm` (publicar NC), `executadaEm` (fechar contenção), `prazo` (submeter plano), `executadoEm` (finalizar execução, RN-25) e `verificadoEm` (concluir verificação). Comprovado com o `prazo`; achado pelos testes da A2 | Schemas de publicação/fechamento dos cinco | Recusar `null`/vazio antes de converter; um teste que falha por campo. **Corrigido na A3** (2026-09-30): as transições validam o que está no banco, onde a data já é `Date` — `z.date()` sem coerce nos cinco; a regra "não no futuro" da NC ficou numa função só (`naoNoFuturo`). Testes "B14" em `nc`, `contencao` e `verificacao.routes.test.ts`, e os dois da ação corretiva. A **entrada** (`PATCH`/`POST`) também: os dias só em `"AAAA-MM-DD"` (`diaDeCalendario()`), e `null` apaga a data em vez de gravar 1970. Os schemas separam a base (forma do banco, `z.date()`) do rascunho (entrada da API). Testes em `dia-de-calendario.test.ts` |
+| **B15** ✅ | **Primeira publicação do ano sob concorrência dá erro 500.** Quando o contador de `(prefixo, ano)` ainda não existe, o `SELECT ... FOR UPDATE` não encontra linha e não trava nada: as publicações simultâneas vão todas para o `criar`, e a chave primária recusa as repetidas (`ContadorSequencia_pkey`). Nenhum código sai repetido (o banco protege), mas o usuário recebe "Erro interno". Com o contador já existente, o `UPDATE ... increment` é atômico e funciona. Achado pelos testes da A2 (8 de 10 publicações simultâneas falharam) | `sequencia.repository.ts`, `sequencia.service.ts` | Criar ou incrementar num único comando atômico (`INSERT ... ON CONFLICT (prefixo, ano) DO UPDATE ... RETURNING`), sem o `buscarELocar`. Teste pronto: `sequencia.test.ts`, hoje marcado com `it.fails`. **Corrigido na A3** (2026-10-01): `sequenciaRepository.proximoNumero` com o `INSERT ... ON CONFLICT ... RETURNING`; o `buscarELocar`, o `criar` e o `incrementar` saíram. O `it.fails` virou `it` |
+| **B16** ✅ | **Adicionar como colaborador um usuário que não existe dá 500.** O service não confere se o usuário existe, e o erro de chave estrangeira do Prisma (P2003) cai no tratador genérico. Achado pelos testes da A2 | `atribuicao.service.ts` (`adicionarColaboradores`) | Conferir cada id antes de inserir e responder 404, como o `definirAprovador` já faz. **Corrigido na A3** (2026-10-01): todos os ids conferidos antes de inserir qualquer um (tudo ou nada). Teste "B16" em `atribuicao.routes.test.ts` |
+| **B17** ✅ | **Atribuições mudam em qualquer estado**, inclusive em item `FECHADO` ou `CANCELADO`: nenhuma das três rotas confere o estado (PRD Q15). Achado pelos testes da A2 | `atribuicao.service.ts` | Recusar (409) fora de `RASCUNHO`/`ABERTO`; em `EM_APROVACAO`, aceitar só a troca de aprovador por `GERENTE` (RN-47). **Corrigido na A3** (2026-10-01): as três operações conferem o estado; em `EM_APROVACAO`, a troca de aprovador exige a ação nova `TROCAR_APROVADOR_EM_APROVACAO` (só `GERENTE`, 403 para os outros). Testes "B17" em `atribuicao.routes.test.ts` |
+| **B18** ✅ | **Motivo em branco em reabrir e cancelar volta 409, não 400.** O `motivoSchema` aceita `"   "` (só `min(1)`); quem recusa é o service, com `TransicaoInvalidaError` e uma mensagem que mistura estado e motivo — e diz "concluído" nas duas rotas. O frontend trataria um erro de campo como erro de estado. Achado pelos testes da A2 | `motivo.schema.ts`, `ciclo-vida.service.ts` (`reabrir`, `cancelar`) | `z.string().trim().min(1)` no `motivoSchema` (400 antes do service); tirar a checagem de motivo do `if` de estado e corrigir as mensagens. Testes prontos com `it.fails` (`nc.routes.test.ts`, `contencao.routes.test.ts`). **Corrigido na A3** (2026-10-01): `z.string().trim().min(1)` no `motivoSchema` (400 antes do service); no `reabrir` e no `cancelar`, o `if` de estado ficou só com o estado, e as mensagens dizem "reaberto"/"cancelado". Os `it.fails` viraram `it` |
 
 **Os mais graves são B1, B2 e B9.** B1 e B2, juntos, permitem que a ação
 corretiva seja feita sem o QA concordar com o plano — exatamente o que o
 RF-06 existe para impedir. B9 impediria o uso do sistema em produção
-logo no primeiro dia depois do deploy.
+logo no primeiro dia depois do deploy (**corrigido na A3**).
+
+Bug corrigido ganha ✅ ao lado do número e a nota "Corrigido na A3" na
+coluna da correção, com o teste que o prova.
 
 ---
 
@@ -487,5 +516,30 @@ Com Matthew, em 2026-09-24.
 | 2026-09-24 | v1.1 — revisão cruzada com o código: B9–B13; guarda em dois grupos (filhos/envio) com aprovador; triagem inclui filhos; catálogo de permissões novas; eventos do feed; regras de convite e usuário inativo |
 | 2026-09-28 | v1.2 — B14 (data obrigatória vazia passa na validação), achado pelos testes da fase A2 |
 | 2026-09-30 | v1.3 — B15 (primeira publicação do ano sob concorrência dá erro 500), achado pelo teste de concorrência da A2 |
+| 2026-10-01 | v1.30 — B18 corrigido (A3): todos os bugs B1–B18 da A3 corrigidos (o B7 é da A4) |
+| 2026-10-01 | v1.29 — RN-48 implementada (A3): `POST /<tipo>/:id/retirar` nos cinco tipos com portão |
+| 2026-10-01 | v1.28 — B17 corrigido (A3): RN-47 e a ação `TROCAR_APROVADOR_EM_APROVACAO` |
+| 2026-10-01 | v1.27 — B16 corrigido (A3) |
+| 2026-10-01 | v1.26 — B15 corrigido (A3) |
+| 2026-10-01 | v1.25 — B8 corrigido (A3) |
+| 2026-10-01 | v1.24 — B12 corrigido (A3) |
+| 2026-10-01 | v1.23 — B13 corrigido (A3) |
+| 2026-10-01 | v1.22 — B3 corrigido (A3) |
+| 2026-10-01 | v1.21 — B6 corrigido (A3) |
+| 2026-10-01 | v1.20 — B4 corrigido (A3) |
+| 2026-10-01 | v1.19 — RN-50 implementada (A3 8f): cancelar investigação com ação pendente recusado |
+| 2026-10-01 | v1.18 — B5 corrigido (A3 8e): a investigação só é submetida com os planos das ações aprovados |
+| 2026-10-01 | v1.17 — guarda de fechamento da NC implementada (A3 8c/8d): lista do que falta, 409 com `error`, `GET /nc/:id/checklist-fechamento` |
+| 2026-10-01 | v1.16 — RN-49 implementada (A3 8b): `investigacaoId` `NOT NULL`, ação só em investigação aberta |
+| 2026-10-01 | v1.15 — planos de ação conferidos pela Investigação (PRD Q17): §4.3 em duas guardas, B5 redefinido, B10 ampliado (RN-49), 10 etapas; cancelar investigação com ações pendentes (RN-50, Q18) |
+| 2026-10-01 | v1.14 — B10 corrigido (A3) |
+| 2026-09-30 | v1.13 — B2 corrigido (A3) |
+| 2026-09-30 | v1.12 — B1 corrigido (A3) |
+| 2026-09-30 | v1.11 — plano aprovado (§4.2) implementado |
+| 2026-09-30 | v1.10 — `detectadoEm`, `executadaEm`, `prazo` (ação e verificação), `executadoEm` e `verificadoEm` como `@db.Date` (migration `dias_de_calendario_como_date`) |
+| 2026-09-30 | v1.9 — B14 fechado também na entrada: dias só em `"AAAA-MM-DD"` (A3) |
+| 2026-09-30 | v1.8 — B14 corrigido nas transições (A3) |
+| 2026-09-30 | v1.7 — B11 corrigido (A3) |
+| 2026-09-30 | v1.6 — B9 corrigido (A3, primeiro TDD) |
 | 2026-09-30 | v1.5 — B18 (motivo em branco volta 409), dos testes que aposentaram os `.http` |
 | 2026-09-30 | v1.4 — B16 (colaborador inexistente dá 500) e B17 (atribuições em qualquer estado), dos testes de atribuição da A2; rota nova `/retirar` (RN-48); ação `TROCAR_APROVADOR_EM_APROVACAO` no catálogo |

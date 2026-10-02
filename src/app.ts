@@ -59,6 +59,9 @@ app.setErrorHandler((erro, request, reply) => {
     }
 
     if (erro instanceof AppError) {
+        if (erro.detalhes !== undefined) {
+            return reply.status(erro.statusCode).send({ mensagem: erro.message, error: erro.detalhes });
+        }
         return reply.status(erro.statusCode).send({ mensagem: erro.message });
     }
 

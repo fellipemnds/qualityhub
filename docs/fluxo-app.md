@@ -137,16 +137,20 @@ A etapa é o "em que pé está" mostrado na lista e no detalhe. É
 | 2 | NC `CANCELADA` | Cancelada |
 | 3 | NC `EM_APROVACAO` | Aguardando aprovação do fechamento |
 | 4 | NC `ABERTA`, sem Classificação `FECHADA` | Aguardando classificação |
-| 5 | NC `ABERTA`, sem Investigação `FECHADA` | Em investigação |
-| 6 | NC `ABERTA`, sem Ação Corretiva, ou com algum plano (de ação não cancelada) não aprovado | Em plano de ação |
-| 7 | NC `ABERTA`, com Contenção pendente | Aguardando contenção |
-| 8 | NC `ABERTA`, **filhos** atendidos (regras 4–7 não se aplicam) | Pronta para fechamento |
-| 9 | NC `FECHADA`, com Ação Corretiva não cancelada ainda não executada | Fechada · ação em execução |
-| 10 | NC `FECHADA`, com Verificação em aberto | Fechada · em verificação |
-| 11 | NC `FECHADA`, nada pendente | Concluída |
+| 5 | NC `ABERTA`, sem Investigação `FECHADA`, ou com alguma Investigação não cancelada ainda não `FECHADA` | Em investigação |
+| 6 | NC `ABERTA`, com Contenção pendente | Aguardando contenção |
+| 7 | NC `ABERTA`, **filhos** atendidos (regras 4–6 não se aplicam) | Pronta para fechamento |
+| 8 | NC `FECHADA`, com Ação Corretiva não cancelada ainda não executada | Fechada · ação em execução |
+| 9 | NC `FECHADA`, com Verificação em aberto | Fechada · em verificação |
+| 10 | NC `FECHADA`, nada pendente | Concluída |
 
-As regras 4 a 8 seguem a ordem da guarda de fechamento (RN-21), então a
+As regras 4 a 7 seguem a ordem da guarda de fechamento (RN-21), então a
 etapa sempre aponta **o próximo requisito que falta** nos filhos.
+
+O plano de ação acontece **dentro** da investigação (RN-24, PRD Q17):
+enquanto algum plano estiver por aprovar, a investigação não é enviada,
+e a etapa continua *Em investigação*. Por isso não há uma etapa própria
+para o plano.
 
 A etapa olha **só os filhos**. Os requisitos do **próprio envio** —
 riscos revisados, mudanças no SGQ e aprovador da NC definido — são
@@ -155,7 +159,7 @@ fechamento* (J6). Se entrassem na etapa, a NC nunca chegaria a "Pronta"
 sem alguém antes preencher esses campos, e ninguém seria avisado para
 preenchê-los.
 
-As regras 9 a 11 resolvem a preocupação da Q1 do PRD: uma NC fechada com
+As regras 8 a 10 resolvem a preocupação da Q1 do PRD: uma NC fechada com
 ação ainda em curso **não aparece como "Concluída"**. O auditor vê a
 diferença.
 
@@ -230,22 +234,31 @@ aprovador e aparece na triagem até alguém definir (RN-46).
 4. **Hipóteses**: lista dentro da investigação. Cada uma tem descrição,
    número no Ishikawa e classificação (causa direta / fator contribuinte /
    sem relação). Pode ficar incompleta até a submissão.
-5. **Submeter**: exige método, conteúdo do A3, causa direta, causa raiz
-   e todas as hipóteses completas (RN-24). Aprovador aprova → etapa da
-   NC → *Em plano de ação*.
+5. **Contramedidas**: as ações corretivas nascem aqui, com a
+   investigação ainda aberta, e têm os planos aprovados antes do envio
+   (J5, passos 1 a 3). A investigação também pode concluir sem nenhuma
+   ação (PRD Q17).
+6. **Submeter**: exige método, conteúdo do A3, causa direta, causa raiz,
+   todas as hipóteses completas e os planos de todas as ações ligadas a
+   ela aprovados (RN-24). Antes disso, o botão mostra a lista do que
+   falta (ex.: "❌ Plano da AC-2026-0003 ainda não aprovado"). Aprovador
+   aprova → a etapa da NC avança (§4).
 
 ### J5 — Ação Corretiva: plano, execução, verificação (colaborador + QA) · RF-06, RF-07
 
-1. Na página da **Investigação** → **Nova ação corretiva**, já vinculada
-   a ela. Pela página da NC também dá, mas a pessoa **escolhe a
-   investigação** (só as desta NC, não canceladas). O vínculo é
-   obrigatório: é ele que permite reabrir a investigação certa se a
-   verificação der "não eficaz" (B10 do Esquema Backend).
+1. Na página da **Investigação**, já publicada e ainda aberta → **Nova
+   ação corretiva**, já vinculada a ela. Pela página da NC também dá,
+   mas a pessoa **escolhe a investigação** (só as desta NC abertas). O
+   vínculo é obrigatório desde a criação e não se apaga
+   (RN-49): é ele que garante que a investigação confira o plano, e que
+   permite reabrir a investigação certa se a verificação der "não
+   eficaz" (B10 do Esquema Backend).
 2. Preenche o **plano**: descrição, prazo e instruções de verificação
    (como o QA vai checar a eficácia depois).
 3. Publica → **Submeter plano** → aprovador aprova → a ação volta para
-   `ABERTA`, agora com o selo **"Plano aprovado"**. A NC pode seguir para
-   o fechamento (J6) sem esperar a execução.
+   `ABERTA`, agora com o selo **"Plano aprovado"**. Com todos os planos
+   aprovados, a investigação pode ser enviada (J4); a NC segue para o
+   fechamento (J6) sem esperar a execução.
 4. O colaborador executa no mundo real e depois registra **data de
    execução** e **evidência** (texto + anexos).
 5. **Finalizar execução**: pede "em quantos dias verificar?" → a ação
@@ -265,8 +278,7 @@ aprovador e aparece na triagem até alguém definir (RN-46).
    atendido — filhos e envio. Antes disso, aparece desabilitado com a
    **lista do que falta**, por exemplo:
    - ✅ Classificação aprovada
-   - ✅ Investigação aprovada
-   - ❌ Plano da AC-2026-0003 ainda não aprovado
+   - ❌ Investigação IV-2026-0007 ainda não aprovada
    - ❌ Riscos revisados não preenchido
    - ✅ Aprovador da NC definido
 4. Submete → o aprovador da NC aprova → NC `FECHADA` · etapa *Fechada ·
@@ -486,7 +498,7 @@ TRD e o Plano de Implementação:
 |---|---|---|
 | L1 | **Hipóteses não têm rota**: o repository existe, mas nada as cria, edita ou exclui pela API | J4, T-07 Investigação |
 | L2 | **Etapa calculada** (§4) não existe | T-04, T-06 |
-| L3 | **"Plano aprovado"** não é distinguível pelo estado: a AC volta para `ABERTO` tanto antes de submeter quanto depois de aprovada. Precisa de um sinal explícito (o `Aprovacao` existe; falta expor) | §7, J5, etapa 6 e 9 |
+| L3 | **"Plano aprovado"** não é distinguível pelo estado: a AC volta para `ABERTO` tanto antes de submeter quanto depois de aprovada. Precisa de um sinal explícito (o `Aprovacao` existe; falta expor) | §7, J5, etapa 8 |
 | L4 | **Pendências** (T-03): nenhuma consulta junta tudo isso hoje | T-03 |
 | L5 | **Filtros novos na lista**: etapa, setor, prazo vencido, "sem aprovador" | T-04, triagem |
 | L6 | **Checklist de fechamento**: a guarda da RN-21 só responde com erro; a tela precisa perguntar *o que falta* sem tentar submeter | T-06, J6 |
@@ -521,3 +533,4 @@ Com Matthew, em 2026-09-24.
 | 2026-09-24 | v1 — decisões de navegação e F1–F5 |
 | 2026-09-24 | v1.1 — revisão cruzada: etapa "Pronta para fechamento" olha só os filhos; aprovador no checklist; herança do aprovador (RN-46); rascunho não se cancela; vínculo obrigatório da AC com investigação; prefixos reais dos códigos |
 | 2026-09-30 | v1.2 — atribuições só em `RASCUNHO`/`ABERTO` (RN-47); ação "Retirar da aprovação" (RN-48) |
+| 2026-10-01 | v1.3 — planos de ação conferidos pela Investigação (PRD Q17): etapa "Em plano de ação" removida (10 etapas), J4 com as contramedidas, J5 com o vínculo desde a criação (RN-49), checklist da J6 sem os planos |

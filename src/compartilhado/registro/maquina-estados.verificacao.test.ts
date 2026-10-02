@@ -4,7 +4,7 @@ import { type EstadoAlcancavel, levarVerificacaoAte } from "../../testes/levar-a
 
 type Contexto = Awaited<ReturnType<typeof levarVerificacaoAte>>;
 
-// Excluir fica de fora: a rota DELETE /verificacoes/:id nunca funciona e vai ser removida (B8)
+// Excluir não entra: verificação nunca é rascunho, e a rota DELETE /verificacoes/:id não existe (B8)
 const acoes = {
     editar: ({ aprovador, verificacao }: Contexto) =>
         chamar(aprovador, "PATCH", `/verificacoes/${verificacao.id}`, 409, {

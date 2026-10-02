@@ -1,12 +1,14 @@
 import { expect } from "vitest";
 import type { EstadoRegistro } from "../../compartilhado/entidades/estados.js";
-import { chamar, daquiA, ncProntaParaFechar } from "../cenarios.js";
+import { chamar, diaDaquiA, investigacaoAberta } from "../cenarios.js";
 
 // Só um portão (PLANO): aprovar o plano volta a ação para ABERTO, e o FECHADO vem do finalizar-execucao. O ABERTO
-// depois do plano aprovado fica de fora — o que ele permite hoje está errado (B1, B2).
-export async function levarAcaoCorretivaAte(estado: EstadoRegistro) {
-    // A ação corretiva aponta para uma investigação: o cenário precisa de uma
-    const cenario = await ncProntaParaFechar();
+// depois da aprovação é um degrau à parte, "PLANO_APROVADO": o plano travado (B2) e a execução liberada (B1)
+export type DegrauAcaoCorretiva = EstadoRegistro | "PLANO_APROVADO";
+
+export async function levarAcaoCorretivaAte(estado: DegrauAcaoCorretiva) {
+    // A ação corretiva aponta para uma investigação ainda editável (RN-49): o cenário precisa de uma aberta
+    const cenario = await investigacaoAberta();
     const { editor, aprovador, gerente, nc, investigacao } = cenario;
 
     // Degrau 1: Rascunho
@@ -41,7 +43,7 @@ export async function levarAcaoCorretivaAte(estado: EstadoRegistro) {
     // Degrau 3: Em Aprovação — o submeter exige o plano preenchido
     await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
         descricao: "Atualizar o procedimento de manutenção para especificar o material correto de vedação.",
-        prazo: daquiA(15),
+        prazo: diaDaquiA(15),
         instrucoesVerificacao: "Após 30 dias de uso, inspecionar a vedação e confirmar ausência de vazamento.",
     });
 
@@ -53,13 +55,20 @@ export async function levarAcaoCorretivaAte(estado: EstadoRegistro) {
 
     if (estado === "EM_APROVACAO") return { ...cenario, acao };
 
-    // Degrau 4: Fechado — plano aprovado (volta a ABERTO), execução registrada e finalizada
+    // Degrau 4: Plano aprovado — volta a ABERTO
     await chamar(aprovador, "POST", `/acoes-corretivas/${acao.id}/decidir`, 200, { decisao: "APROVADO" });
 
-    expect(await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200)).toMatchObject({ estado: "ABERTO" });
+    expect(await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200)).toMatchObject({
+        estado: "ABERTO",
+        planoAprovado: true,
+    });
+
+    if (estado === "PLANO_APROVADO") return { ...cenario, acao };
+
+    // Degrau 5: Fechado — execução registrada e finalizada
 
     await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
-        executadoEm: daquiA(-1),
+        executadoEm: diaDaquiA(-1),
         evidencia: "Procedimento PO-07 revisado e publicado na intranet, versão 3.0, com o material correto.",
     });
 

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { chamar, ncPublicada } from "../../../testes/cenarios.js";
+import { levarClassificacaoAte } from "../../../testes/levar-ate/classificacao.js";
 
 describe("POST /nc/:naoConformidadeId/classificacoes", () => {
     it("recusa justificativa com menos de 20 caracteres", async () => {
@@ -74,5 +75,17 @@ describe("GET /classificacoes", () => {
         const ids = (lista: { id: string }[]) => lista.map((item) => item.id).sort();
         expect(ids(daNC)).toEqual([publicado.id, rascunho.id].sort());
         expect(ids(abertosDaNC)).toEqual([publicado.id]);
+    });
+});
+
+describe("POST /classificacoes/:id/retirar", () => {
+    it("quem classificou retira da aprovação (RN-48, RN-20)", async () => {
+        // Prepara
+        const { aprovador, classificacao } = await levarClassificacaoAte("EM_APROVACAO");
+
+        // Chama e confere
+        expect(await chamar(aprovador, "POST", `/classificacoes/${classificacao.id}/retirar`, 200)).toMatchObject({
+            estado: "ABERTO",
+        });
     });
 });

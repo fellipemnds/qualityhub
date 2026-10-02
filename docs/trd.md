@@ -258,6 +258,19 @@ backend.
   Campos que são **datas de calendário** (`prazo`, `detectadoEm`,
   `executadaEm`, `executadoEm`, `verificadoEm`) são comparados pelo
   **dia**, não pelo instante. Correção: B11 do Esquema Backend.
+
+  **Convenção** (A3, B11): o dia de calendário é guardado como
+  **meia-noite UTC** daquele dia e lido **em UTC**
+  (`toISOString().slice(0, 10)`); o **"hoje"** vem sempre de
+  `hojeEmSaoPaulo()` (`compartilhado/datas/`), no formato `AAAA-MM-DD`,
+  que ordena como texto. Os testes rodam com `TZ=UTC`, como o servidor.
+  Na **entrada da API** esses campos aceitam **só `"AAAA-MM-DD"`**
+  (`diaDeCalendario()`, B14): data com hora, número e dia inexistente
+  são recusados com 400 — um dia ambíguo não entra. A conversão para
+  meia-noite UTC mora em `meiaNoiteUtc()`. No banco, as colunas são
+  **`@db.Date`** (tipo `date` do Postgres: só o dia, sem hora); o Prisma
+  as devolve como `Date` à meia-noite UTC. Com o Node 26 (Temporal), o corpo
+  do `hojeEmSaoPaulo()` vira `Temporal.Now.plainDateISO("America/Sao_Paulo")`.
 - **Migrations:** sempre versionadas; em produção, só `prisma migrate
   deploy`.
 
@@ -274,7 +287,7 @@ necessárias) fica no **Esquema Backend**.
 - REST, JSON, nomes em português e no plural (`/api/contencoes/:id`),
   ações de ciclo de vida como sub-rotas `POST` (`/publicar`,
   `/submeter`, `/decidir`...), como já é hoje.
-- **Datas** em ISO 8601 (UTC). **IDs** UUID v7.
+- **Datas** em ISO 8601 (UTC); **dias de calendário** em `"AAAA-MM-DD"` (§6). **IDs** UUID v7.
 - **Listas** com paginação por cursor (`cursor`, `limit`, teto 100) —
   helper `paginacao-cursor.ts`, já existente, reaproveitado nas listas
   novas.
@@ -622,3 +635,6 @@ backend — só a fase de deploy.
 |---|---|
 | 2026-09-24 | v1 — consolidação + ADR-33 a ADR-38; T1–T4 |
 | 2026-09-24 | v1.1 — revisão cruzada: regra de fuso para cálculos de dia, usuário inativo no login, convite novo invalida anteriores, `prisma generate` no CI, Docker no WSL como pré-requisito |
+| 2026-09-30 | v1.4 — colunas de dia de calendário como `@db.Date` (§6) |
+| 2026-09-30 | v1.3 — dias de calendário só em `"AAAA-MM-DD"` na entrada da API (§6, §7, B14) |
+| 2026-09-30 | v1.2 — convenção de dia de calendário (meia-noite UTC, lido em UTC; "hoje" pelo `hojeEmSaoPaulo()`), testes em `TZ=UTC` (§6, B11) |

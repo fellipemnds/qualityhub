@@ -6,14 +6,18 @@ import { decisaoSchema } from "../../../compartilhado/registro/decidir.schema.js
 import { motivoSchema } from "../../../compartilhado/registro/motivo.schema.js";
 import { autenticar } from "../../../middlewares/autenticar.js";
 import { acaoCorretivaController } from "./acao-corretiva.controller.js";
-import { acaoCorretivaRascunhoSchema, finalizarExecucaoSchema } from "./acao-corretiva.schema.js";
+import {
+    acaoCorretivaCriacaoSchema,
+    acaoCorretivaRascunhoSchema,
+    finalizarExecucaoSchema,
+} from "./acao-corretiva.schema.js";
 
 export async function acaoCorretivaRoutes(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
         url: "/nc/:naoConformidadeId/acoes-corretivas",
         onRequest: [autenticar],
-        schema: { params: z.object({ naoConformidadeId: z.uuid() }), body: acaoCorretivaRascunhoSchema },
+        schema: { params: z.object({ naoConformidadeId: z.uuid() }), body: acaoCorretivaCriacaoSchema },
         handler: acaoCorretivaController.criarRascunhoAcaoCorretiva,
     });
 
@@ -47,6 +51,16 @@ export async function acaoCorretivaRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: { params: z.object({ id: z.uuid() }) },
         handler: acaoCorretivaController.submeterAcaoCorretiva,
+    });
+
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: "POST",
+        url: "/acoes-corretivas/:id/retirar",
+        onRequest: [autenticar],
+        schema: {
+            params: z.object({ id: z.uuid() }),
+        },
+        handler: acaoCorretivaController.retirarAcaoCorretiva,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({

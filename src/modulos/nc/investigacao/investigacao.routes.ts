@@ -63,6 +63,16 @@ export async function investigacaoRoutes(app: FastifyInstance) {
 
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
+        url: "/investigacoes/:id/retirar",
+        onRequest: [autenticar],
+        schema: {
+            params: z.object({ id: z.uuid() }),
+        },
+        handler: investigacaoController.retirarInvestigacao,
+    });
+
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: "POST",
         url: "/investigacoes/:id/decidir",
         onRequest: [autenticar],
         schema: {

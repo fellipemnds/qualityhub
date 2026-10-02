@@ -89,7 +89,8 @@ ele não é o aprovador designado.
 
 | Item | Regra |
 |---|---|
-| Guarda de fechamento da NC passa a exigir planos de ação aprovados | RN-21 |
+| Planos de ação aprovados antes de submeter a investigação; a NC exige toda investigação fechada | RN-21, RN-24 |
+| Ação Corretiva nasce ligada a uma investigação aberta da mesma NC | RN-49 |
 | `NAO_EFICAZ` reabre só o que estiver fechado (hoje dá erro) | RN-23 |
 | `PARCIALMENTE_EFICAZ` copia todos os colaboradores da ação anterior | RN-23 |
 | Criar NC já com colaboradores, num passo só | RF-01 |
@@ -140,8 +141,10 @@ Contenção e Investigação correm **em paralelo** (RN-19). A ISO separa
 **correção** (conter o problema — `Contencao`) de **ação corretiva**
 (eliminar a causa — `AcaoCorretiva`).
 
-A NC fecha quando **a ação está definida e aprovada**, não quando ela
-termina. Execução e verificação de eficácia seguem depois; se a
+A NC fecha quando **a investigação está aprovada**, e a investigação só
+é aprovada com os planos das ações que ela propõe já aprovados (o A3
+inclui as contramedidas). A investigação pode concluir sem nenhuma ação
+corretiva (Q17). A NC não espera a ação terminar. Execução e verificação de eficácia seguem depois; se a
 verificação mostrar que a ação não funcionou, a NC é reaberta
 automaticamente (§5.4).
 
@@ -152,8 +155,8 @@ automaticamente (§5.4).
 | **Não Conformidade** | O registro do problema | `EDITOR` | Portão `FECHAMENTO` | Aprovador só é exigido na hora de submeter pra fechar, não ao publicar |
 | **Classificação** | Maior / Menor, com justificativa | Só `APROVADOR`/`GERENTE` (RN-20) | Portão único | Reclassificar = criar nova; a antiga fica no histórico |
 | **Contenção** | Ação imediata + destino (disposição) | `EDITOR` | Portão único | Disposição: `ACEITO`, `CORRIGIDO`, `ANULADO`, `EM_ANALISE` — termos genéricos, servem qualquer área, não só fábrica. Falhou? Cria outra, não reabre |
-| **Investigação** | Causa raiz, pelo método A3 SPS | `EDITOR` | Portão único | 1 "real problema" = 1 investigação. Hipóteses classificadas em causa direta / fator contribuinte / sem relação. Não reabre manualmente |
-| **Ação Corretiva** | Plano para eliminar a causa + execução | `EDITOR` | **Só o plano** é aprovado | Aprovado o plano, o colaborador executa e finaliza **sem nova aprovação** — isso gera a Verificação automaticamente |
+| **Investigação** | Causa raiz, pelo método A3 SPS | `EDITOR` | Portão único | 1 "real problema" = 1 investigação. Hipóteses classificadas em causa direta / fator contribuinte / sem relação. Só é submetida com os planos das suas ações aprovados (RN-24). Não reabre manualmente |
+| **Ação Corretiva** | Plano para eliminar a causa + execução | `EDITOR` | **Só o plano** é aprovado | Nasce ligada a uma investigação aberta (RN-49). Aprovado o plano, o colaborador executa e finaliza **sem nova aprovação** — isso gera a Verificação automaticamente |
 | **Verificação** | A ação funcionou? | Só `APROVADOR` colaborador | Nenhuma — conclui direto | Nunca criada à mão. Nasce já aberta, com prazo (hoje + N dias informados ao finalizar a ação) e com o aprovador da Ação Corretiva atribuído |
 
 ### 5.3 Estados
@@ -202,7 +205,7 @@ Legenda: ✅ pronto · 🔧 pronto, com ajuste decidido · ⬜ a construir
 | RF-05 | Investigação de causa raiz pelo método **A3 SPS** (inclui Ishikawa e 5 Porquês como etapas), com hipóteses testadas | b)1, b)2, b)3 | ✅ backend · formulário A3 no frontend |
 | RF-06 | Plano de ação corretiva **aprovado antes da execução**; execução registrada com evidência | c) | ✅ |
 | RF-07 | Verificação de eficácia com resultado em três níveis e reação automática (§5.4) | d) | 🔧 |
-| RF-08 | NC só fecha com classificação, investigação e **planos de ação** aprovados e nenhuma contenção pendente; reabrível | c), d) | 🔧 |
+| RF-08 | NC só fecha com classificação e investigações aprovadas (a investigação, só com os **planos de ação** aprovados) e nenhuma contenção pendente; reabrível | c), d) | 🔧 |
 | RF-09 | Rascunhos visíveis a todos, editáveis só pelos colaboradores | — | ✅ |
 | RF-10 | Grupo de colaboradores + um único aprovador por item | — | ✅ |
 | RF-11 | Feed por item: eventos do sistema + comentários com respostas e menções `@pessoa` / `#item` | 10.2.2 a) | ⬜ |
@@ -262,14 +265,16 @@ Legenda: ✅ pronto · 🔧 pronto, com ajuste decidido · ⬜ a construir
 |---|---|
 | RN-19 | Contenção e investigação correm em paralelo |
 | RN-20 | Classificar (criar, editar, publicar, submeter, excluir) é exclusivo de `APROVADOR`/`GERENTE` |
-| RN-21 | **(alterada)** Submeter a NC para fechamento exige: ≥1 Classificação `FECHADA`; ≥1 Investigação `FECHADA`; ≥1 Ação Corretiva **com plano aprovado**, e **toda** Ação Corretiva não cancelada com plano aprovado; riscos revisados e mudanças no SGQ preenchidos. Execução e Verificação **não** travam o fechamento |
+| RN-21 | **(alterada, Q17)** Submeter a NC para fechamento exige: ≥1 Classificação `FECHADA`; ≥1 Investigação `FECHADA`, e **toda** Investigação não cancelada `FECHADA`; nenhuma Contenção pendente (RN-22); riscos revisados e mudanças no SGQ preenchidos. A NC **não** confere as Ações Corretivas: quem confere os planos é a Investigação (RN-24). Execução e Verificação **não** travam o fechamento |
 | RN-22 | Contenção não é obrigatória; se existir, precisa estar `FECHADA` ou `CANCELADA` |
 | RN-23 | **(alterada)** Verificação com resultado diferente de `EFICAZ` dispara a reação automática da §5.4 |
-| RN-24 | **(alterada)** Investigação só é submetida com método, conteúdo do A3, causa direta e causa raiz preenchidos, e todas as hipóteses completas |
+| RN-24 | **(alterada, Q17)** Investigação só é submetida com método, conteúdo do A3, causa direta e causa raiz preenchidos, todas as hipóteses completas, e **toda** Ação Corretiva não cancelada ligada a ela com o plano aprovado. Sem nenhuma ação, também pode ser submetida |
 | RN-25 | **(alterada)** Ação Corretiva só é finalizada com data de execução e evidência — sem aprovação da execução |
 | RN-26 | **(alterada)** Reclassificar = nova Classificação; a anterior fica no histórico. *(O campo "classificação atual" na NC foi removido — ninguém definiu qual é "a atual" quando há várias.)* |
 | RN-41 | **(nova)** Verificação só é concluída por colaborador com papel `APROVADOR` |
 | RN-42 | **(nova)** Contenção, Classificação e Investigação não são reabertas manualmente — cria-se uma nova. Só a NC é reaberta manualmente (a Investigação, só pela reação a `NAO_EFICAZ`) |
+| RN-49 | **(nova)** Ação Corretiva **nasce ligada** a uma Investigação da mesma NC, **em `ABERTO`**: nem em rascunho, que ainda não existe formalmente, nem depois do envio. O vínculo não pode ser apagado. Assim nenhuma ação aparece depois que a investigação foi enviada, e nenhuma fica solta: investigação com ação está sempre publicada, e item publicado não se exclui, só se cancela (RN-50). Única exceção: a ação criada pelo `PARCIALMENTE_EFICAZ` (§5.4), na mesma investigação, mesmo fechada — Q17 |
+| RN-50 | **(nova)** Cancelar uma Investigação exige que todas as Ações Corretivas ligadas a ela estejam `CANCELADAS` ou `FECHADAS`; senão, recusa com a lista das que faltam. Sem isso, a NC (que ignora investigação cancelada) fecharia com ações soltas — Q18 |
 
 ### Aprovação
 | ID | Regra |
@@ -340,7 +345,7 @@ em 2026-09-24.
 
 | # | Pergunta | Decisão |
 |---|---|---|
-| Q1 | Quando a NC pode fechar? | Quando **todos** os planos de Ação Corretiva (não cancelados) estiverem aprovados, com pelo menos um. Execução e Verificação não travam — **confirmado com a analista**. A regra anterior (não esperar nenhuma Ação Corretiva) tinha mudado sem registro → RN-21 |
+| Q1 | Quando a NC pode fechar? | Quando **todos** os planos de Ação Corretiva (não cancelados) estiverem aprovados, com pelo menos um. Execução e Verificação não travam — **confirmado com a analista**. A regra anterior (não esperar nenhuma Ação Corretiva) tinha mudado sem registro → RN-21. **Revista na Q17** |
 | Q2 | `NAO_EFICAZ` com NC/Investigação ainda abertas dava erro | Reabre **só o que estiver fechado**; o resto fica como está → §5.4 |
 | Q3 | Quem assume a nova Ação Corretiva de `PARCIALMENTE_EFICAZ`? | **Todos os colaboradores** da ação anterior → §5.4 |
 | Q4 | Pessoa sai da empresa / muda de função | Inativar + revogar papel, **com trava** se for aprovadora de itens abertos → RN-43 |
@@ -367,6 +372,13 @@ em 2026-09-24.
 | Q15 | Atribuições mudam em qualquer estado (inclusive item fechado ou cancelado)? | **Só em `RASCUNHO` e `ABERTO`.** Em `EM_APROVACAO`, só o `GERENTE` troca o aprovador — sem essa exceção, um aprovador ausente prenderia o item, e a única saída seria cancelar → RN-47 |
 | Q16 | O colaborador pode desistir de um envio para aprovação? | **Sim**, volta a `ABERTO`, auditado. Regra de UX, sem impacto no processo → RN-48 |
 
+**Guarda de fechamento, na A3** (2026-10-01, Matthew, confirmado com a analista):
+
+| # | Pergunta | Decisão |
+|---|---|---|
+| Q18 | O que acontece com as ações quando a investigação é cancelada? | **O cancelamento é recusado** enquanto houver ação ligada que não esteja cancelada ou fechada; a pessoa resolve uma a uma. Cancelar as ações junto, sozinho, faria algo que ninguém pediu → RN-50 |
+| Q17 | Quem confere os planos de ação: a NC ou a Investigação? | **A Investigação.** O QA não aprovaria a investigação, cujo A3 inclui as contramedidas, sem aprovar os planos que ela propõe. Ela só é submetida com os planos das suas ações aprovados, e pode fechar **sem nenhuma ação** ("pelo menos você investigou" — analista). A NC passa a exigir toda investigação não cancelada fechada. Para nenhuma ação escapar, ela nasce ligada a uma investigação aberta; a do `PARCIALMENTE_EFICAZ` é a exceção, e segue depois do fechamento como a execução e a verificação → RN-21, RN-24, RN-49. Substitui a Q1 |
+
 Limite de tamanho e armazenamento dos anexos foram resolvidos no TRD (§8).
 
 ---
@@ -378,3 +390,4 @@ Limite de tamanho e armazenamento dos anexos foram resolvidos no TRD (§8).
 | 2026-09-24 | v1 — consolidação de `arquitetura.md` + changelog + código; decisões Q1–Q12 |
 | 2026-09-24 | v1.1 — revisão cruzada com o código: RN-06 e RN-24 ajustadas, RN-46 nova (Q13, Q14) |
 | 2026-09-30 | v1.2 — RN-47 (atribuições por estado) e RN-48 (retirar da aprovação), dos testes da A2 (Q15, Q16) |
+| 2026-10-01 | v1.3 — planos de ação conferidos pela Investigação, não pela NC: RN-21 e RN-24 revistas, RN-49 nova (Q17); RN-50, cancelar investigação com ações pendentes (Q18) |

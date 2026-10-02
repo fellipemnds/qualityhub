@@ -30,20 +30,35 @@ const acoes = {
         chamar(aprovador, "POST", `/nc/${nc.id}/reabrir`, 409, {
             motivo: "Tentativa de reabrir fora do estado permitido",
         }),
+    // Retirar da aprovação (RN-48): só sai de EM_APROVACAO
+    retirar: ({ editor, nc }: Contexto) => chamar(editor, "POST", `/nc/${nc.id}/retirar`, 409),
 };
 
 type NomeAcao = keyof typeof acoes;
 
 const tabela: { estado: EstadoRegistro; proibidas: NomeAcao[] }[] = [
-    // cancelar fica de fora: hoje o código permite (B12). Submeter também: numa NC em rascunho a guarda RN-21
-    // (sem filhos fechados) barra antes da de estado — o 409 viria pelo motivo errado
-    { estado: "RASCUNHO", proibidas: ["aprovar", "reprovar", "reabrir"] },
-    { estado: "ABERTO", proibidas: ["excluir", "publicar", "aprovar", "reprovar", "reabrir"] },
+    // Rascunho só se exclui, não se cancela (B12, RN-06). O submeter entra desde a 8d: a guarda RN-21 roda depois da
+    // checagem de estado, e o 409 vem pelo motivo certo
+    { estado: "RASCUNHO", proibidas: ["submeter", "aprovar", "reprovar", "reabrir", "cancelar", "retirar"] },
+    { estado: "ABERTO", proibidas: ["excluir", "publicar", "aprovar", "reprovar", "reabrir", "retirar"] },
     { estado: "EM_APROVACAO", proibidas: ["editar", "excluir", "publicar", "submeter", "reabrir"] },
-    { estado: "FECHADO", proibidas: ["editar", "excluir", "publicar", "submeter", "aprovar", "reprovar", "cancelar"] },
+    {
+        estado: "FECHADO",
+        proibidas: ["editar", "excluir", "publicar", "submeter", "aprovar", "reprovar", "cancelar", "retirar"],
+    },
     {
         estado: "CANCELADO",
-        proibidas: ["editar", "excluir", "publicar", "submeter", "aprovar", "reprovar", "cancelar", "reabrir"],
+        proibidas: [
+            "editar",
+            "excluir",
+            "publicar",
+            "submeter",
+            "aprovar",
+            "reprovar",
+            "cancelar",
+            "reabrir",
+            "retirar",
+        ],
     },
 ];
 

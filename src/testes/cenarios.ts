@@ -1,9 +1,12 @@
 import { expect } from "vitest";
 import { app } from "../app.js";
+import { hojeEmSaoPaulo } from "../compartilhado/datas/hoje-em-sao-paulo.js";
 import { loginComo } from "./fabricas.js";
 
 // Cenários de teste montados pela API — passando pelas mesmas permissões e guardas que um usuário real. Cada
-// um parte do anterior: ncPublicada → ncProntaParaFechar → fecharNC → aprovarPlano → executarAcao.
+// um parte do anterior, na ordem do fluxo real (PRD Q17): ncPublicada → investigacaoAberta → ncProntaParaFechar
+// (a ação nasce com a investigação aberta e tem o plano aprovado antes do envio, pelo aprovarPlano) → fecharNC →
+// executarAcao.
 
 type Quem = Awaited<ReturnType<typeof loginComo>>;
 type Metodo = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
@@ -17,9 +20,16 @@ export async function chamar(quem: Quem, metodo: Metodo, url: string, statusEspe
     return resposta.body ? resposta.json() : undefined;
 }
 
-// Uma data a N dias de hoje, para o teste não depender do dia em que roda
+// Um instante a N dias de agora (para o relógio falso), para o teste não depender do dia em que roda
 export function daquiA(dias: number) {
     return new Date(Date.now() + dias * 24 * 60 * 60 * 1000).toISOString();
+}
+
+// Um dia de calendário a N dias de hoje em São Paulo, como "AAAA-MM-DD" — o formato dos campos de dia (TRD §6)
+export function diaDaquiA(dias: number) {
+    const dia = new Date(`${hojeEmSaoPaulo()}T00:00:00Z`);
+    dia.setUTCDate(dia.getUTCDate() + dias);
+    return dia.toISOString().slice(0, 10);
 }
 
 // Os quatro perfis do fluxo e uma NC publicada, com o aprovador designado
@@ -35,7 +45,7 @@ export async function ncPublicada() {
         requisitoViolado: "Procedimento PO-07, item 4.3 - inspeção de recebimento",
         processoAfetado: "Linha de Produção 2",
         setorId: editor.usuario.setorId,
-        detectadoEm: "2026-09-10T10:00:00.000Z",
+        detectadoEm: "2026-09-10",
         origem: "OPERACAO",
     });
     await chamar(editor, "PATCH", `/nc/${nc.id}`, 200, {
@@ -61,40 +71,12 @@ export async function perfisDeFora() {
     return { admin, visualizador, semPapel };
 }
 
-// A NC com contenção, classificação e investigação FECHADAS (guarda RN-21 satisfeita), mas ainda sem os campos
-// de fechamento
-export async function ncProntaParaFechar() {
+// A investigação ABERTA, com método, conteúdo e as duas causas preenchidos: pronta para receber as ações
+// corretivas, que só se ligam a uma investigação editável (RN-49)
+export async function investigacaoAberta() {
     const cenario = await ncPublicada();
-    const { editor, gerente, aprovador, qa, nc } = cenario;
+    const { editor, gerente, aprovador, nc } = cenario;
 
-    // Contenção: rascunho → publicação → aprovação
-    const contencao = await chamar(editor, "POST", `/nc/${nc.id}/contencoes`, 201, {
-        descricao: "Retrabalho realizado na peça com defeito, substituindo a vedação danificada.",
-    });
-    await chamar(editor, "PATCH", `/contencoes/${contencao.id}`, 200, {
-        executadaEm: "2026-09-15T14:30:00.000Z",
-        disposicao: "CORRIGIDO",
-    });
-    await chamar(editor, "POST", `/contencoes/${contencao.id}/publicar`, 200);
-    await chamar(gerente, "PUT", `/registros/${contencao.id}/aprovador`, 200, { usuarioId: aprovador.usuario.id });
-    await chamar(editor, "POST", `/contencoes/${contencao.id}/submeter`, 200);
-    await chamar(aprovador, "POST", `/contencoes/${contencao.id}/decidir`, 200, { decisao: "APROVADO" });
-    expect(await chamar(editor, "GET", `/contencoes/${contencao.id}`, 200)).toMatchObject({ estado: "FECHADO" });
-
-    // Classificação (RN-20: só APROVADOR/GERENTE), aprovada pelo aprovador designado — o QA, não quem criou
-    const classificacao = await chamar(aprovador, "POST", `/nc/${nc.id}/classificacoes`, 201, {
-        valor: "MAIOR",
-        justificativa: "Vazamento afeta a segurança operacional e a qualidade do produto entregue ao cliente.",
-    });
-    await chamar(aprovador, "POST", `/classificacoes/${classificacao.id}/publicar`, 200);
-    await chamar(gerente, "PUT", `/registros/${classificacao.id}/aprovador`, 200, { usuarioId: qa.usuario.id });
-    await chamar(aprovador, "POST", `/classificacoes/${classificacao.id}/submeter`, 200);
-    await chamar(qa, "POST", `/classificacoes/${classificacao.id}/decidir`, 200, { decisao: "APROVADO" });
-    expect(await chamar(aprovador, "GET", `/classificacoes/${classificacao.id}`, 200)).toMatchObject({
-        estado: "FECHADO",
-    });
-
-    // Investigação: causas preenchidas já em ABERTO (editável até ser submetida)
     const investigacao = await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
         realProblema: "Vedação da bomba hidráulica com desgaste prematuro, causando vazamento contínuo de óleo.",
     });
@@ -112,16 +94,66 @@ export async function ncProntaParaFechar() {
         causaDireta: "Vedação de material incompatível com o fluido hidráulico utilizado na máquina.",
         causaRaiz: "Procedimento de manutenção não especifica o material correto de vedação para esta bomba.",
     });
+    expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
+        estado: "ABERTO",
+    });
+
+    return { ...cenario, investigacao };
+}
+
+export type CenarioComInvestigacao = Awaited<ReturnType<typeof investigacaoAberta>>;
+
+// A NC com contenção, classificação e investigação FECHADAS (guarda RN-21 satisfeita), mas ainda sem os campos
+// de fechamento. A investigação fecha com uma ação de plano aprovado: o plano é aprovado antes do envio (RN-24)
+export async function ncProntaParaFechar() {
+    const cenario = await investigacaoAberta();
+    const { editor, gerente, aprovador, nc, investigacao } = cenario;
+
+    // Contenção: rascunho → publicação → aprovação
+    const contencao = await chamar(editor, "POST", `/nc/${nc.id}/contencoes`, 201, {
+        descricao: "Retrabalho realizado na peça com defeito, substituindo a vedação danificada.",
+    });
+    await chamar(editor, "PATCH", `/contencoes/${contencao.id}`, 200, {
+        executadaEm: "2026-09-15",
+        disposicao: "CORRIGIDO",
+    });
+    await chamar(editor, "POST", `/contencoes/${contencao.id}/publicar`, 200);
+    await chamar(gerente, "PUT", `/registros/${contencao.id}/aprovador`, 200, { usuarioId: aprovador.usuario.id });
+    await chamar(editor, "POST", `/contencoes/${contencao.id}/submeter`, 200);
+    await chamar(aprovador, "POST", `/contencoes/${contencao.id}/decidir`, 200, { decisao: "APROVADO" });
+    expect(await chamar(editor, "GET", `/contencoes/${contencao.id}`, 200)).toMatchObject({ estado: "FECHADO" });
+
+    await classificarNC(cenario);
+
+    // Investigação: a ação corretiva tem o plano aprovado com ela ainda aberta, e só depois ela é enviada
+    const acao = await aprovarPlano(cenario);
     await chamar(editor, "POST", `/investigacoes/${investigacao.id}/submeter`, 200);
     await chamar(aprovador, "POST", `/investigacoes/${investigacao.id}/decidir`, 200, { decisao: "APROVADO" });
     expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
         estado: "FECHADO",
     });
 
-    return { ...cenario, investigacao };
+    return { ...cenario, acao };
 }
 
-export type CenarioComInvestigacao = Awaited<ReturnType<typeof ncProntaParaFechar>>;
+export type CenarioProntoParaFechar = Awaited<ReturnType<typeof ncProntaParaFechar>>;
+
+// Classificação (RN-20: só APROVADOR/GERENTE), aprovada pelo aprovador designado — o QA, não quem criou
+export async function classificarNC({ gerente, aprovador, qa, nc }: Cenario) {
+    const classificacao = await chamar(aprovador, "POST", `/nc/${nc.id}/classificacoes`, 201, {
+        valor: "MAIOR",
+        justificativa: "Vazamento afeta a segurança operacional e a qualidade do produto entregue ao cliente.",
+    });
+    await chamar(aprovador, "POST", `/classificacoes/${classificacao.id}/publicar`, 200);
+    await chamar(gerente, "PUT", `/registros/${classificacao.id}/aprovador`, 200, { usuarioId: qa.usuario.id });
+    await chamar(aprovador, "POST", `/classificacoes/${classificacao.id}/submeter`, 200);
+    await chamar(qa, "POST", `/classificacoes/${classificacao.id}/decidir`, 200, { decisao: "APROVADO" });
+    expect(await chamar(aprovador, "GET", `/classificacoes/${classificacao.id}`, 200)).toMatchObject({
+        estado: "FECHADO",
+    });
+
+    return classificacao;
+}
 
 // A NC FECHADA: campos de fechamento → submissão → aprovação. A ação corretiva continua depois daqui.
 export async function fecharNC() {
@@ -147,7 +179,7 @@ export async function aprovarPlano({ editor, gerente, aprovador, nc, investigaca
     await chamar(gerente, "PUT", `/registros/${acao.id}/aprovador`, 200, { usuarioId: aprovador.usuario.id });
     await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
         descricao: "Atualizar o procedimento de manutenção para especificar o material correto de vedação.",
-        prazo: daquiA(15),
+        prazo: diaDaquiA(15),
         instrucoesVerificacao: "Após 30 dias de uso, inspecionar a vedação e confirmar ausência de vazamento.",
     });
     await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/submeter`, 200);
@@ -158,13 +190,12 @@ export async function aprovarPlano({ editor, gerente, aprovador, nc, investigaca
     return acao;
 }
 
-// Execução registrada e finalizada sem aprovação → a ação fecha e a verificação nasce já ABERTA
-export async function executarAcao(cenario: CenarioComInvestigacao) {
-    const { editor } = cenario;
-    const acao = await aprovarPlano(cenario);
+// Execução da ação do cenário registrada e finalizada sem aprovação → a ação fecha e a verificação nasce já ABERTA
+export async function executarAcao(cenario: CenarioProntoParaFechar) {
+    const { editor, acao } = cenario;
 
     await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
-        executadoEm: daquiA(-1),
+        executadoEm: diaDaquiA(-1),
         evidencia: "Procedimento PO-07 revisado e publicado na intranet, versão 3.0, com o material correto.",
     });
     const acaoFinalizada = await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/finalizar-execucao`, 200, {
@@ -191,7 +222,7 @@ export async function concluirVerificacao(
     await chamar(aprovador, "PATCH", `/verificacoes/${verificacaoId}`, 200, {
         resultado,
         conclusao: "Verificação feita na linha 2 depois do prazo, conforme as instruções do plano.",
-        verificadoEm: daquiA(0),
+        verificadoEm: diaDaquiA(0),
     });
     await chamar(aprovador, "POST", `/verificacoes/${verificacaoId}/concluir`, 200);
 }

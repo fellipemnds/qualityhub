@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { chamar, ncPublicada, perfisDeFora } from "../../testes/cenarios.js";
+import { type Cenario, chamar, ncPublicada, perfisDeFora } from "../../testes/cenarios.js";
+import { levarContencaoAte } from "../../testes/levar-ate/contencao.js";
 import { prisma } from "../prisma/cliente.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
@@ -81,6 +82,76 @@ describe("PUT /registros/:id/aprovador", () => {
     });
 });
 
+// Cada filho criado pelo usuário: devolve o id. A ação corretiva precisa de uma investigação aberta (RN-49)
+const FILHOS: { tipo: string; criar: (cenario: Cenario) => Promise<string> }[] = [
+    {
+        tipo: "Contenção",
+        criar: async ({ editor, nc }) =>
+            (
+                await chamar(editor, "POST", `/nc/${nc.id}/contencoes`, 201, {
+                    descricao: "Retrabalho realizado na peça com defeito, substituindo a vedação danificada.",
+                })
+            ).id,
+    },
+    {
+        tipo: "Classificação",
+        criar: async ({ aprovador, nc }) =>
+            (
+                await chamar(aprovador, "POST", `/nc/${nc.id}/classificacoes`, 201, {
+                    valor: "MAIOR",
+                    justificativa: "Vazamento afeta a segurança operacional e a qualidade do produto entregue.",
+                })
+            ).id,
+    },
+    {
+        tipo: "Investigação",
+        criar: async ({ editor, nc }) =>
+            (
+                await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
+                    realProblema: "Vedação da bomba hidráulica com desgaste prematuro.",
+                })
+            ).id,
+    },
+    {
+        tipo: "Ação corretiva",
+        criar: async ({ editor, nc }) => {
+            const investigacao = await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
+                realProblema: "Vedação da bomba hidráulica com desgaste prematuro.",
+            });
+            await chamar(editor, "POST", `/investigacoes/${investigacao.id}/publicar`, 200);
+            return (
+                await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, { investigacaoId: investigacao.id })
+            ).id;
+        },
+    },
+];
+
+// O filho nasce com o aprovador da NC, para o colaborador não ficar travado na hora de enviar (B13, RN-46)
+describe("Criação de um filho da NC", () => {
+    it.each(FILHOS)("$tipo nasce com o aprovador da NC (B13, RN-46)", async ({ criar }) => {
+        // Prepara
+        const cenario = await ncPublicada();
+
+        // Chama
+        const filhoId = await criar(cenario);
+
+        // Confere
+        expect(await aprovadoresDe(filhoId)).toEqual([cenario.aprovador.usuario.id]);
+    });
+
+    it.each(FILHOS)("$tipo nasce sem aprovador quando a NC não tem um (RN-46)", async ({ criar }) => {
+        // Prepara: uma NC em rascunho, ainda sem aprovador
+        const cenario = await ncPublicada();
+        const nc = await chamar(cenario.editor, "POST", "/nc", 201, { titulo: "NC ainda sem aprovador" });
+
+        // Chama
+        const filhoId = await criar({ ...cenario, nc });
+
+        // Confere
+        expect(await aprovadoresDe(filhoId)).toEqual([]);
+    });
+});
+
 describe("POST /registros/:id/colaboradores", () => {
     it("um EDITOR que não está no item adiciona colaborador (RN-18, auto-organização)", async () => {
         // Prepara (o qa não é colaborador nem aprovador da NC)
@@ -96,6 +167,21 @@ describe("POST /registros/:id/colaboradores", () => {
             adicionados: [{ usuarioId: gerente.usuario.id, funcao: "COLABORADOR", atribuidoPorId: qa.usuario.id }],
             jaEramColaboradores: [],
         });
+    });
+
+    it("responde 404 quando um dos usuários não existe, e não adiciona nenhum (B16)", async () => {
+        // Prepara: um usuário que existe e um que não
+        const { editor, gerente, nc } = await ncPublicada();
+
+        // Chama
+        const resposta = await chamar(editor, "POST", `/registros/${nc.id}/colaboradores`, 404, {
+            colaboradores: [gerente.usuario.id, ID_INEXISTENTE],
+        });
+
+        // Confere: nem o que existe entrou (tudo ou nada)
+        expect(resposta.mensagem).toEqual(expect.any(String));
+        const colaboradores = await prisma.atribuicao.findMany({ where: { registroId: nc.id, funcao: "COLABORADOR" } });
+        expect(colaboradores.map((atribuicao) => atribuicao.usuarioId)).toEqual([editor.usuario.id]);
     });
 
     it("quem já é colaborador não entra de novo", async () => {
@@ -239,5 +325,49 @@ describe("DELETE /registros/:id/colaboradores", () => {
         await chamar(visualizador, "DELETE", `/registros/${nc.id}/colaboradores`, 403, {
             colaboradores: [qa.usuario.id],
         });
+    });
+});
+
+// Atribuições só mudam com o item em rascunho ou aberto. Em aprovação, só o GERENTE troca o aprovador (férias, saída
+// da empresa); fechado ou cancelado, nada muda (B17, RN-47). Estado errado → 409; pessoa errada → 403
+describe("Atribuições conforme o estado do item (RN-47)", () => {
+    const congelados = ["EM_APROVACAO", "FECHADO", "CANCELADO"] as const;
+    const definitivos = ["FECHADO", "CANCELADO"] as const;
+
+    it.each(congelados)("%s recusa adicionar e remover colaboradores (B17)", async (estado) => {
+        // Prepara
+        const { editor, gerente, contencao } = await levarContencaoAte(estado);
+        const corpo = { colaboradores: [gerente.usuario.id] };
+
+        // Chama
+        const adicionar = await chamar(editor, "POST", `/registros/${contencao.id}/colaboradores`, 409, corpo);
+        const remover = await chamar(editor, "DELETE", `/registros/${contencao.id}/colaboradores`, 409, corpo);
+
+        // Confere
+        expect(adicionar.mensagem).toContain("rascunho ou aberto");
+        expect(remover.mensagem).toContain("rascunho ou aberto");
+    });
+
+    it.each(definitivos)("%s recusa trocar o aprovador, mesmo para o gerente (B17)", async (estado) => {
+        // Prepara
+        const { gerente, qa, contencao } = await levarContencaoAte(estado);
+
+        // Chama
+        await chamar(gerente, "PUT", `/registros/${contencao.id}/aprovador`, 409, { usuarioId: qa.usuario.id });
+
+        // Confere
+        expect(await aprovadoresDe(contencao.id)).not.toContain(qa.usuario.id);
+    });
+
+    it("EM_APROVACAO: só o gerente troca o aprovador (B17, RN-47)", async () => {
+        // Prepara
+        const { aprovador, gerente, qa, contencao } = await levarContencaoAte("EM_APROVACAO");
+
+        // Chama: um APROVADOR que não é gerente é recusado; o gerente consegue
+        await chamar(aprovador, "PUT", `/registros/${contencao.id}/aprovador`, 403, { usuarioId: qa.usuario.id });
+        await chamar(gerente, "PUT", `/registros/${contencao.id}/aprovador`, 200, { usuarioId: qa.usuario.id });
+
+        // Confere
+        expect(await aprovadoresDe(contencao.id)).toEqual([qa.usuario.id]);
     });
 });

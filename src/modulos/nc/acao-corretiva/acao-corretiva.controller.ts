@@ -1,12 +1,16 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
-import type { AcaoCorretivaRascunhoInput, FinalizarExecucaoInput } from "./acao-corretiva.schema.js";
+import type {
+    AcaoCorretivaCriacaoInput,
+    AcaoCorretivaRascunhoInput,
+    FinalizarExecucaoInput,
+} from "./acao-corretiva.schema.js";
 import { acaoCorretivaService } from "./acao-corretiva.service.js";
 
 export const acaoCorretivaController = {
     async criarRascunhoAcaoCorretiva(
-        request: FastifyRequest<{ Params: { naoConformidadeId: string }; Body: AcaoCorretivaRascunhoInput }>,
+        request: FastifyRequest<{ Params: { naoConformidadeId: string }; Body: AcaoCorretivaCriacaoInput }>,
         reply: FastifyReply,
     ) {
         const acaoCorretiva = await acaoCorretivaService.criarRascunhoAcaoCorretiva(
@@ -42,6 +46,12 @@ export const acaoCorretivaController = {
     async submeterAcaoCorretiva(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
         const acaoCorretiva = await acaoCorretivaService.submeterAcaoCorretiva(request.params.id, request.user);
         return reply.status(200).send(acaoCorretiva);
+    },
+
+    async retirarAcaoCorretiva(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
+        const retirado = await acaoCorretivaService.retirarAcaoCorretiva(request.params.id, request.user);
+
+        return reply.status(200).send(retirado);
     },
 
     async decidirAcaoCorretiva(

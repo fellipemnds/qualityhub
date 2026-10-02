@@ -33,6 +33,8 @@ const acoes = {
         chamar(contexto[quem], "POST", `/classificacoes/${contexto.classificacao.id}/decidir`, 403, {
             decisao: "APROVADO",
         }),
+    retirar: (contexto: Contexto, quem: Quem) =>
+        chamar(contexto[quem], "POST", `/classificacoes/${contexto.classificacao.id}/retirar`, 403),
 };
 
 type NomeAcao = keyof typeof acoes;
@@ -57,6 +59,8 @@ const tabela: { estado: EstadoAlcancavel; recusas: [NomeAcao, Quem[]][] }[] = [
     {
         estado: "EM_APROVACAO",
         recusas: [
+            // Retirar (RN-48): quem não pode submeter também não pode retirar
+            ["retirar", ["editor", "gerente"]],
             // O aprovador criou e tem o papel APROVADOR, mas o designado é o qa
             ["decidir", ["editor", "admin", "aprovador", "gerente"]],
         ],

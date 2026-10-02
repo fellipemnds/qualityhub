@@ -39,7 +39,7 @@ describe("Fluxo completo da NC", () => {
         // Chama
         await concluirVerificacao(cenario, verificacao.id, "PARCIALMENTE_EFICAZ");
 
-        // Confere (sem autor nem colaboradores da ação nova: bugs B3 e B6, da A3)
+        // Confere (o autor e os colaboradores da ação nova: verificacao.routes.test.ts, B3 e B6)
         const rascunhos = await chamar(
             editor,
             "GET",
@@ -65,7 +65,7 @@ describe("Fluxo completo da NC", () => {
         // Chama
         await concluirVerificacao(cenario, verificacao.id, "NAO_EFICAZ");
 
-        // Confere (só o caso com as duas fechadas: com alguma aberta é o bug B4, da A3)
+        // Confere (o caso com as duas fechadas; com alguma não fechada, verificacao.routes.test.ts, B4)
         expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
             estado: "ABERTO",
         });

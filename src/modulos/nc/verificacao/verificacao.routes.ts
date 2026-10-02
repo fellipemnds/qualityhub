@@ -25,14 +25,6 @@ export async function verificacaoRoutes(app: FastifyInstance) {
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
-        method: "DELETE",
-        url: "/verificacoes/:id",
-        onRequest: [autenticar],
-        schema: { params: z.object({ id: z.uuid() }) },
-        handler: verificacaoController.excluirRascunhoVerificacao,
-    });
-
-    app.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
         url: "/verificacoes/:id/cancelar",
         onRequest: [autenticar],

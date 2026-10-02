@@ -51,6 +51,12 @@ export const ncController = {
         return reply.status(200).send(ncSubmetida);
     },
 
+    async retirarNC(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
+        const retirado = await ncService.retirarNC(request.params.id, request.user);
+
+        return reply.status(200).send(retirado);
+    },
+
     async decidirNC(request: FastifyRequest<{ Params: { id: string }; Body: DecisaoInput }>, reply: FastifyReply) {
         const id = request.params.id;
         const ator = request.user;
@@ -79,6 +85,12 @@ export const ncController = {
         const ncCancelada = await ncService.cancelarNC(id, ator, motivo);
 
         return reply.status(200).send(ncCancelada);
+    },
+
+    async checklistFechamentoNC(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
+        const checklist = await ncService.checklistFechamentoNC(request.params.id, request.user);
+
+        return reply.status(200).send(checklist);
     },
 
     async buscarPorIdNC(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {

@@ -1,0 +1,58 @@
+# Ambiente: trabalho
+hostname: Nortetel
+
+## Sistema e ferramentas
+ubuntu: Ubuntu 26.04.1 LTS
+nvm: 0.40.7
+nvm (node padrão): v24.20.0
+node: v24.20.0
+npm: 12.0.2
+git: git version 2.53.0
+docker: Docker version 29.8.1, build 4a63305
+docker compose: Docker Compose version v5.5.1
+gh: gh version 2.101.0 (2026-09-15)
+claude code: 2.1.280 (Claude Code)
+
+## Contas e configuração
+git user.name: Mateus Felipe Mendes
+git user.email: fellipemendes1@gmail.com
+gh: account fellipemnds
+gh escopos: Token scopes: 'gist', 'read:org', 'repo', 'workflow'
+
+## Projeto
+.env: todas as chaves do .env.example
+banco (docker): postgres:17-alpine
+migrations: em dia
+
+## VS Code — extensões no WSL
+anthropic.claude-code@2.1.287
+biomejs.biome@3.7.1
+eamodio.gitlens@19.2.0
+github.vscode-github-actions@0.32.3
+github.vscode-pull-request-github@0.166.1
+humao.rest-client@0.25.1
+miguelsolorio.symbols@0.0.26
+ms-azuretools.vscode-containers@2.5.2
+ms-azuretools.vscode-docker@2.0.0
+ms-ceintl.vscode-language-pack-pt-br@1.131.2026090407
+prisma.prisma@31.12.10
+ritwickdey.liveserver@5.7.10
+usernamehw.errorlens@3.29.0
+
+## VS Code — extensões no Windows
+anthropic.claude-code@2.1.287
+biomejs.biome@3.7.1
+eamodio.gitlens@19.2.0
+esbenp.prettier-vscode@12.4.0
+github.vscode-github-actions@0.32.3
+github.vscode-pull-request-github@0.166.1
+humao.rest-client@0.25.1
+miguelsolorio.symbols@0.0.26
+ms-azuretools.vscode-containers@2.5.2
+ms-azuretools.vscode-docker@2.0.0
+ms-ceintl.vscode-language-pack-pt-br@1.131.2026090407
+ms-vscode-remote.remote-containers@0.469.0
+ms-vscode-remote.remote-wsl@0.104.3
+prisma.prisma@31.12.10
+ritwickdey.liveserver@5.7.10
+usernamehw.errorlens@3.29.0

@@ -21,11 +21,6 @@ export const verificacaoController = {
         return reply.status(200).send(verificacao);
     },
 
-    async excluirRascunhoVerificacao(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
-        await verificacaoService.excluirRascunhoVerificacao(request.params.id, request.user);
-        return reply.status(204).send();
-    },
-
     async cancelarVerificacao(
         request: FastifyRequest<{ Params: { id: string }; Body: { motivo: string } }>,
         reply: FastifyReply,

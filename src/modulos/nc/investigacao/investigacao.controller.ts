@@ -62,6 +62,12 @@ export const investigacaoController = {
         return reply.status(200).send(investigacaoSubmetida);
     },
 
+    async retirarInvestigacao(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
+        const retirado = await investigacaoService.retirarInvestigacao(request.params.id, request.user);
+
+        return reply.status(200).send(retirado);
+    },
+
     async decidirInvestigacao(
         request: FastifyRequest<{ Params: { id: string }; Body: DecisaoInput }>,
         reply: FastifyReply,

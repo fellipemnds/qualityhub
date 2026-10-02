@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
-import { chamar, daquiA, ncPublicada } from "../../../testes/cenarios.js";
+import { chamar, diaDaquiA, ncPublicada } from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
 import { levarContencaoAte } from "../../../testes/levar-ate/contencao.js";
 
@@ -38,6 +38,25 @@ describe("PATCH /contencoes/:id", () => {
         expect(resposta).toMatchObject({
             mensagem: "Dados inválidos",
             error: expect.arrayContaining([expect.objectContaining({ instancePath: "/disposicao" })]),
+        });
+    });
+});
+
+describe("PATCH /contencoes/:id", () => {
+    it("recusa número como data: 0 viraria 01/01/1970 (B14)", async () => {
+        // Prepara
+        const { editor, nc } = await ncPublicada();
+        const contencao = await chamar(editor, "POST", `/nc/${nc.id}/contencoes`, 201, {
+            descricao: "Retrabalho realizado na peça com defeito.",
+        });
+
+        // Chama
+        const resposta = await chamar(editor, "PATCH", `/contencoes/${contencao.id}`, 400, { executadaEm: 0 });
+
+        // Confere
+        expect(resposta).toMatchObject({
+            mensagem: "Dados inválidos",
+            error: expect.arrayContaining([expect.objectContaining({ instancePath: "/executadaEm" })]),
         });
     });
 });
@@ -84,12 +103,28 @@ describe("GET /contencoes", () => {
 });
 
 describe("POST /contencoes/:id/submeter", () => {
+    it("recusa sem a data de execução (B14)", async () => {
+        // Prepara: a disposição preenchida, a data não
+        const { editor, contencao } = await levarContencaoAte("ABERTO");
+        await chamar(editor, "PATCH", `/contencoes/${contencao.id}`, 200, { disposicao: "CORRIGIDO" });
+
+        // Chama
+        const resposta = await chamar(editor, "POST", `/contencoes/${contencao.id}/submeter`, 400);
+
+        // Confere
+        expect(resposta).toMatchObject({
+            mensagem: "Dados inválidos",
+            error: [expect.objectContaining({ path: ["executadaEm"] })],
+        });
+    });
+
     it("recusa sem aprovador definido (RN-13)", async () => {
-        // Prepara (o filho nasce sem aprovador: B13)
-        const { editor, nc } = await ncPublicada();
+        // Prepara: a NC ainda sem aprovador, então o filho também nasce sem (RN-46)
+        const { editor } = await ncPublicada();
+        const nc = await chamar(editor, "POST", "/nc", 201, { titulo: "NC ainda sem aprovador" });
         const contencao = await chamar(editor, "POST", `/nc/${nc.id}/contencoes`, 201, {
             descricao: "Retrabalho realizado na peça com defeito.",
-            executadaEm: daquiA(-1),
+            executadaEm: diaDaquiA(-1),
             disposicao: "CORRIGIDO",
         });
         await chamar(editor, "POST", `/contencoes/${contencao.id}/publicar`, 200);
@@ -139,7 +174,7 @@ describe("POST /contencoes/:id/decidir", () => {
         const { gerente, qa, nc } = await ncPublicada();
         const contencao = await chamar(qa, "POST", `/nc/${nc.id}/contencoes`, 201, {
             descricao: "Retrabalho realizado na peça com defeito.",
-            executadaEm: daquiA(-1),
+            executadaEm: diaDaquiA(-1),
             disposicao: "CORRIGIDO",
         });
         await chamar(qa, "POST", `/contencoes/${contencao.id}/publicar`, 200);
@@ -160,9 +195,8 @@ describe("POST /contencoes/:id/decidir", () => {
 });
 
 describe("POST /contencoes/:id/cancelar", () => {
-    // B18 (esquema-backend.md §7): o motivo em branco é recusado, mas com 409 e mensagem de estado. No conserto (A3),
-    // trocar para it.
-    it.fails("recusa motivo só com espaços (RN-06)", async () => {
+    // B18 (esquema-backend.md §7): o motivo em branco é um erro de campo (400, no schema), não de estado (409)
+    it("recusa motivo só com espaços (RN-06)", async () => {
         // Prepara
         const { editor, aprovador, contencao } = await levarContencaoAte("ABERTO");
 
@@ -171,5 +205,24 @@ describe("POST /contencoes/:id/cancelar", () => {
 
         // Confere
         expect(await chamar(editor, "GET", `/contencoes/${contencao.id}`, 200)).toMatchObject({ estado: "ABERTO" });
+    });
+});
+
+// Retirar da aprovação (RN-48): o colaborador desiste do envio. O ciclo de vida genérico é testado aqui, pela contenção
+describe("POST /contencoes/:id/retirar", () => {
+    it("volta a ABERTO sem registrar decisão, fica na auditoria e pode ser enviada de novo (RN-48)", async () => {
+        // Prepara
+        const { editor, contencao } = await levarContencaoAte("EM_APROVACAO");
+
+        // Chama
+        const resposta = await chamar(editor, "POST", `/contencoes/${contencao.id}/retirar`, 200);
+
+        // Confere: no mesmo portão, sem Aprovacao (não é reprovação), auditado, e o envio volta a ser possível
+        expect(resposta).toMatchObject({ estado: "ABERTO", portaoAtual: 0 });
+        expect(await prisma.aprovacao.findMany({ where: { registroId: contencao.id } })).toEqual([]);
+        expect(
+            await prisma.auditoria.findMany({ where: { entidadeId: contencao.id, acao: "RETIRAR_DA_APROVACAO" } }),
+        ).toMatchObject([{ usuarioId: editor.usuario.id }]);
+        await chamar(editor, "POST", `/contencoes/${contencao.id}/submeter`, 200);
     });
 });

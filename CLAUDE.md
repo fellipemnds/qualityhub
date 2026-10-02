@@ -37,11 +37,11 @@ para os outros documentos em vez de repetir o que já está neles.
 Ainda pendente fora do código: hospedagem (TRD §10.6), identidade
 visual.
 
-**Bugs conhecidos, ainda não corrigidos:** `docs/esquema-backend.md` §7
-(B1–B18). Os mais graves: B1/B2 (Ação Corretiva executável sem plano
-aprovado, e plano editável depois de aprovado) e **B9** (a validação de
-`detectadoEm` usa um `new Date()` calculado na carga do módulo — com o
-servidor ligado há dias, nenhuma NC nova pode ser registrada).
+**Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B18; os
+corrigidos têm ✅). Corrigidos na A3: B9, B11, B14, B1, B2, B10, B5,
+B4, B6, B3, B13, B12, B8, B15, B16, B17, B18 (e a RN-48, retirar da
+aprovação, regra nova) — todos os da A3. Falta fechar a fase (PR #4); o
+B7 é da A4.
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
@@ -52,12 +52,18 @@ de Matthew, salvo pedido explícito.
 
 **Dois computadores:** Matthew alterna entre o do trabalho e o de casa
 (mesmo ambiente: Windows + WSL2 + Docker Desktop + nvm). Seguir o
-`SETUP.md` §12. Quando ele disser **"vou trocar de computador"**: rodar
-`npm run typecheck` e `npm run lint`, atualizar o `handoff.md`, propor o
-commit na branch da fase e lembrá-lo do `git push`. Quando disser
-**"continuar de onde parei"**: ler o `handoff.md`, conferir a branch
-(`git status`), lembrar do `npm run preparar` se ele ainda não rodou, e
-retomar pelo "Próximo passo". Memória e conversas do Claude **não**
+`SETUP.md` §12. **Qual máquina é esta:** compare o `hostname` com a
+linha `hostname:` de `docs/ambiente/trabalho.txt` e `casa.txt`. Quando
+ele disser **"vou trocar de computador"**: rodar `npm run typecheck`,
+`npm run lint` e `npm run ambiente -- <esta máquina>` (foto do
+ambiente), atualizar o `handoff.md`, propor o commit na branch da fase
+(com a foto) e lembrá-lo do `git push`. Quando disser **"continuar de
+onde parei"**: ler o `handoff.md`, conferir a branch (`git status`),
+lembrar do `npm run preparar` se ele ainda não rodou, rodar `npm run
+ambiente -- <esta máquina>` e `npm run ambiente -- comparar`, contar a
+Matthew o que difere do outro PC (e o que mudou nesta máquina desde a
+última foto, pelo `git diff`), registrar no `handoff.md` e retomar pelo
+"Próximo passo". Memória e conversas do Claude **não**
 passam de uma máquina para a outra — o que precisa sobreviver vai para
 o `handoff.md` (estado) ou para este arquivo (regras).
 
@@ -114,8 +120,10 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   primária compartilhada (`id` = FK para `Registro.id`, sem `@default`).
   `Registro` carrega `tipo`, `estado`, `codigo`, `portaoAtual`.
 - **Ciclo de vida genérico** (`compartilhado/registro/ciclo-vida.service.ts`):
-  `criarRascunho`, `publicar`, `submeter`, `decidir`, `reabrir`, `cancelar`,
-  `excluirRascunho`, `concluir` — reaproveitado por todas as entidades.
+  `criarRascunho`, `publicar`, `submeter`, `retirar` (RN-48), `decidir`,
+  `reabrir`, `cancelar`, `excluirRascunho`, `concluir` — reaproveitado
+  por todas as entidades. `submeter` e `cancelar` aceitam um validador
+  (a guarda do tipo, depois de estado e permissão).
   `decidir` aceita um parâmetro `fecharAoAprovarUltimoPortao` (default
   `true`) para os casos onde aprovar o último portão não deve fechar o
   item (ver `AcaoCorretiva` abaixo). `publicar`/`submeter`/
@@ -165,27 +173,44 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   para aprovação — `finalizarExecucaoAcaoCorretiva` fecha direto, sem
   aprovação, e **gera automaticamente uma `Verificacao`** já em
   `ABERTO` (pula rascunho), com prazo calculado a partir de dias
-  informados pelo colaborador. **Bugs conhecidos, ainda não
-  corrigidos** (`docs/esquema-backend.md` §7): `portaoAtual` continua 0
-  depois da aprovação, então `finalizarExecucao` não consegue distinguir
-  "plano aprovado" de "nunca submetido" (B1), e o plano segue editável
-  em `ABERTO` depois de aprovado (B2). "Plano aprovado" deve ser
-  derivado de `Aprovacao` (portão `PLANO`, `APROVADO`).
+  informados pelo colaborador. O `portaoAtual` continua 0 depois da
+  aprovação: **"plano aprovado" é derivado de `Aprovacao`** (portão
+  `PLANO`, `APROVADO`) por `acaoCorretivaRepository.planoAprovado` —
+  é o que o `finalizarExecucao` exige (B1). Depois da aprovação, o plano
+  trava: o `PATCH` só aceita a execução (`CAMPOS_DO_PLANO` recusados com
+  409) e não há mais nada a submeter (B2). Nos testes, o degrau
+  `"PLANO_APROVADO"` do `levarAcaoCorretivaAte` é esse `ABERTO`.
 - **`Verificacao`**: nunca criada diretamente pelo usuário — só nasce
   via `finalizarExecucaoAcaoCorretiva`. Sem portão, conclui direto
   (`concluir()`). O `resultado` da conclusão dispara lógica automática:
   `PARCIALMENTE_EFICAZ` cria nova `AcaoCorretiva` (mesma investigação);
   `NAO_EFICAZ` reabre a `Investigacao` e a `NaoConformidade`
   automaticamente.
-- **Guarda de fechamento da NC** (`submeterNC`, reconciliado com RN-21):
-  exige ≥1 `Classificacao` FECHADA, ≥1 `Investigacao` FECHADA, nenhuma
-  `Contencao` pendente. **Não** espera `AcaoCorretiva`/`Verificacao` —
-  essas continuam depois do fechamento, e podem reabrir a NC via o
-  mecanismo acima. **Regra revista no PRD, ainda não implementada**:
-  passa a exigir todos os planos de `AcaoCorretiva` aprovados (RN-21);
-  `NAO_EFICAZ` deve reabrir só o que estiver fechado (hoje dá erro se a
-  NC estiver aberta); `PARCIALMENTE_EFICAZ` deve copiar todos os
-  colaboradores da ação anterior.
+- **Guarda de fechamento da NC** (`submeterNC`, RN-21 revista na PRD
+  Q17, **implementada na 8c/8d**): a função pura `avaliarFechamentoNC`
+  (`nc/nc/avaliar-fechamento.ts`, escrita por Matthew) devolve um item
+  por requisito, em dois grupos (filhos e envio); o service carrega os
+  dados e a usa no submeter (409 com os não atendidos em `error`, como
+  validador do ciclo de vida, depois de estado/permissão/aprovador) e em
+  `GET /nc/:id/checklist-fechamento`. Exige ≥1 `Classificacao` FECHADA,
+  **toda** `Investigacao` não cancelada FECHADA (≥1), nenhuma `Contencao`
+  pendente, os campos do envio e o aprovador; **não** olha as ações.
+  `AcaoCorretiva`/`Verificacao` continuam depois do fechamento, e podem
+  reabrir a NC via o mecanismo acima. Quem confere os planos de ação é a
+  **Investigação** — ela só é submetida com toda `AcaoCorretiva` não
+  cancelada ligada a ela com plano aprovado, e pode fechar sem nenhuma
+  ação (RN-24, **implementada na 8e**, com a função pura
+  `avaliarSubmissaoInvestigacao` no validador do submeter); a ação
+  nasce ligada a uma investigação `ABERTA` da mesma NC, e
+  o vínculo não se apaga (RN-49, **já implementada na 8b**, com
+  `investigacaoId` `NOT NULL`; exceção: a do `PARCIALMENTE_EFICAZ`);
+  cancelar a investigação exige as ações dela canceladas ou fechadas
+  (RN-50, **implementada na 8f**: o `cicloVidaService.cancelar` aceita um
+  validador opcional, chamado depois de estado e permissão, como o do
+  `submeter`).
+  `NAO_EFICAZ` reabre só o que estiver fechado (B4) e
+  `PARCIALMENTE_EFICAZ` copia todos os colaboradores da ação anterior
+  (B6), os dois corrigidos.
 
 ## Testes
 

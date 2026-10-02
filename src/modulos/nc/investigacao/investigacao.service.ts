@@ -1,4 +1,5 @@
 import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
+import { herdarAprovadorDaNC } from "../../../compartilhado/atribuicao/herdar-aprovador.js";
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
 import type { Ator } from "../../../compartilhado/entidades/ator.js";
@@ -10,7 +11,10 @@ import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.ser
 import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
 import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
+import { acaoCorretivaRepository } from "../acao-corretiva/acao-corretiva.repository.js";
 import { ncRepository } from "../nc/nc.repository.js";
+import { avaliarCancelamentoInvestigacao } from "./avaliar-cancelamento.js";
+import { type AcaoNaGuarda, avaliarSubmissaoInvestigacao } from "./avaliar-submissao.js";
 import { hipoteseRepository } from "./hipotese.repository.js";
 import { hipoteseFechamentoSchema } from "./hipotese.schema.js";
 import { investigacaoRepository } from "./investigacao.repository.js";
@@ -44,6 +48,7 @@ export const investigacaoService = {
             });
 
             await atribuicaoRepository.inserirAtribuicao(tx, registro.id, ator.id, ator.id, "COLABORADOR");
+            await herdarAprovadorDaNC(tx, naoConformidadeId, registro.id, ator.id);
 
             return { ...registro, ...investigacao };
         });
@@ -124,15 +129,47 @@ export const investigacaoService = {
                 hipoteseFechamentoSchema.parse(hipotese);
             }
 
+            // Os planos das ações ligadas são aprovados antes do envio (RN-24, B5). Como na NC, a guarda roda como
+            // validador, depois de estado, permissão e aprovador
+            // Uma consulta por vez: dentro da transação, todas usam a mesma conexão
+            const acoes: AcaoNaGuarda[] = [];
+            for (const acao of await acaoCorretivaRepository.listarPorInvestigacao(tx, registroId)) {
+                acoes.push({
+                    id: acao.id,
+                    codigo: acao.registro.codigo,
+                    estado: acao.registro.estado,
+                    planoAprovado: await acaoCorretivaRepository.planoAprovado(tx, acao.id),
+                });
+            }
+            const faltando = avaliarSubmissaoInvestigacao({ acoes }).filter((item) => !item.atendido);
+
             const registroSubmetido = await cicloVidaService.submeter(
                 tx,
                 registroId,
                 ator,
                 investigacao,
-                (dadosParaValidar) => investigacaoFechamentoSchema.parse(dadosParaValidar),
+                (dadosParaValidar) => {
+                    if (faltando.length > 0) {
+                        throw new TransicaoInvalidaError(
+                            "Ainda falta o que está na lista para submeter esta investigação.",
+                            faltando,
+                        );
+                    }
+                    return investigacaoFechamentoSchema.parse(dadosParaValidar);
+                },
             );
 
             return { ...registroSubmetido, ...investigacao };
+        });
+    },
+
+    // O colaborador desiste do envio: volta a ABERTO, sem decisão registrada (RN-48)
+    async retirarInvestigacao(registroId: string, ator: Ator) {
+        return prisma.$transaction(async (tx) => {
+            const registroRetirado = await cicloVidaService.retirar(tx, registroId, ator);
+            const investigacao = await investigacaoRepository.buscarPorId(tx, registroId);
+
+            return { ...registroRetirado, ...investigacao };
         });
     },
 
@@ -147,7 +184,22 @@ export const investigacaoService = {
 
     async cancelarInvestigacao(registroId: string, ator: Ator, motivo: string) {
         return prisma.$transaction(async (tx) => {
-            const registroCancelado = await cicloVidaService.cancelar(tx, registroId, ator, motivo);
+            // As ações ligadas precisam estar canceladas ou fechadas, para nenhuma ficar solta (RN-50)
+            const acoes = (await acaoCorretivaRepository.listarPorInvestigacao(tx, registroId)).map((acao) => ({
+                id: acao.id,
+                codigo: acao.registro.codigo,
+                estado: acao.registro.estado,
+            }));
+            const faltando = avaliarCancelamentoInvestigacao({ acoes }).filter((item) => !item.atendido);
+
+            const registroCancelado = await cicloVidaService.cancelar(tx, registroId, ator, motivo, () => {
+                if (faltando.length > 0) {
+                    throw new TransicaoInvalidaError(
+                        "Ainda falta o que está na lista para cancelar esta investigação.",
+                        faltando,
+                    );
+                }
+            });
             const investigacao = await investigacaoRepository.buscarPorId(tx, registroId);
 
             return { ...registroCancelado, ...investigacao };

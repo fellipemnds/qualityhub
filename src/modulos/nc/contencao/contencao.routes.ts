@@ -63,6 +63,16 @@ export async function contencaoRoutes(app: FastifyInstance) {
 
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
+        url: "/contencoes/:id/retirar",
+        onRequest: [autenticar],
+        schema: {
+            params: z.object({ id: z.uuid() }),
+        },
+        handler: contencaoController.retirarContencao,
+    });
+
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: "POST",
         url: "/contencoes/:id/decidir",
         onRequest: [autenticar],
         schema: {

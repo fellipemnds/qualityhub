@@ -9,6 +9,73 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Fase A3 — correções de regra (branch `fase/a3-correcoes`)
+
+- **Planos de ação conferidos pela Investigação, não pela NC** (PRD Q17,
+  2026-10-01, Matthew, confirmado com a analista). Diverge da RN-21
+  confirmada na Q1, que punha os planos na guarda da NC. O A3 da
+  investigação inclui as contramedidas, então o QA não aprovaria a
+  investigação sem aprovar os planos que ela propõe. Fica assim:
+  - a Investigação só é submetida com toda ação não cancelada ligada a
+    ela com o plano aprovado, e pode fechar sem nenhuma ação (RN-24);
+  - a NC exige **toda** investigação não cancelada fechada, e não olha
+    mais as ações (RN-21);
+  - a ação nasce ligada a uma investigação em `ABERTO`, e o
+    vínculo não se apaga (RN-49). Sem isso, uma ação criada depois do
+    envio escaparia das duas guardas. A exceção é a ação do
+    `PARCIALMENTE_EFICAZ`, que segue depois do fechamento.
+
+  Efeitos: a etapa "Em plano de ação" deixa de existir (10 etapas,
+  `fluxo-app.md` §4); o B5 muda de lugar (esquema §7); o B10 é ampliado.
+  Implementação na ordem 8 da A3, dividida em 8a–8f.
+- **Cancelar investigação com ações pendentes é recusado** (PRD Q18,
+  RN-50, Matthew). Com a NC ignorando investigação cancelada e sem olhar
+  as ações, cancelar a investigação deixaria ações soltas. Recusar (409
+  com a lista) foi preferido a cancelar as ações junto, que faria algo
+  que ninguém pediu.
+- **Escada de cenários na ordem real** (ordem 8a): `ncPublicada` →
+  `investigacaoAberta` → `ncProntaParaFechar` → `fecharNC` →
+  `executarAcao`. A ação nasce com a investigação aberta e tem o plano
+  aprovado (`aprovarPlano`) antes do envio; o `ncProntaParaFechar`
+  devolve essa ação, e o `executarAcao` a usa em vez de criar outra. O
+  `levarAcaoCorretivaAte` parte da `investigacaoAberta`. Refatoração
+  pura: mesmos testes, e um pouco mais rápida (39 testes da ação e da
+  verificação: 54 s → 50 s).
+- **`AcaoCorretiva.investigacaoId` obrigatório no banco** (ordem 8b,
+  migration `investigacao_obrigatoria_na_acao`): a RN-49 também garantida
+  pelo `NOT NULL`, não só pelo schema. A chave estrangeira passou de
+  `SET NULL` (que soltava a ação sem aviso quando a investigação era
+  apagada) para `RESTRICT`. **Ação só em investigação aberta, não em
+  rascunho** (sugestão de Matthew, no lugar de recusar a exclusão do
+  rascunho com ação): rascunho ainda não existe formalmente, e assim
+  investigação com ação está sempre publicada — item publicado não se
+  exclui, então o caso da exclusão nem aparece. Barrar só na tela foi
+  descartado: a API deixaria passar. A NC em rascunho continua sendo
+  excluída com os filhos (testado). A checagem "ação sem
+  investigação" do `NAO_EFICAZ` saiu: o caso não existe mais. O banco de
+  desenvolvimento precisou de reset (tinha 10 ações sem investigação):
+  quem tiver ações assim no banco local precisa do mesmo
+  (`SETUP.md` §12, passos 6 e 7).
+
+- **Guardas que respondem "o que falta"** (ordens 8c/8d): a decisão é uma
+  função pura (`avaliarFechamentoNC`, testada sem banco, escrita por
+  Matthew), e o service só carrega os dados. A lista tem **um item por
+  requisito, sempre os mesmos e na mesma ordem**, com os registros que
+  faltam em `pendentes` — e não um item por registro, para a tela mostrar
+  o ✅ também do que está atendido. O tipo `ItemChecklist` fica em
+  `compartilhado/registro/checklist.ts`, para a guarda da investigação
+  (8e). O `AppError` ganhou `detalhes`, enviados no campo `error` da
+  resposta. A guarda roda como **validador** do `cicloVidaService.submeter`,
+  depois de estado, permissão e aprovador: assim quem não pode submeter
+  continua recebendo 403, e não a lista. A guarda da investigação (8e,
+  RN-24) segue o mesmo desenho (`avaliarSubmissaoInvestigacao`). Fica
+  para a C2: o aprovador entrar na lista dos seis tipos, em vez de ser
+  barrado antes pela checagem genérica.
+- **RN-50 (8f):** o `cicloVidaService.cancelar` ganhou um validador
+  opcional, chamado depois de estado e permissão — o mesmo gancho do
+  `submeter`. A investigação o usa com `avaliarCancelamentoInvestigacao`;
+  os outros tipos não passam nada e continuam iguais.
+
 ### Fase A2 — rede de proteção (branch `fase/a2-rede-protecao`)
 
 - **Máquina de estados e permissões: um arquivo por tipo**

@@ -1,35 +1,64 @@
 import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
+import { herdarAprovadorDaNC } from "../../../compartilhado/atribuicao/herdar-aprovador.js";
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
+import { meiaNoiteUtc } from "../../../compartilhado/datas/dia-de-calendario.js";
+import { hojeEmSaoPaulo } from "../../../compartilhado/datas/hoje-em-sao-paulo.js";
 import type { Ator } from "../../../compartilhado/entidades/ator.js";
 import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
-import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js";
+import {
+    NaoEncontradoError,
+    SemPermissaoError,
+    TransicaoInvalidaError,
+    ValidacaoError,
+} from "../../../compartilhado/errors/errors.js";
 import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
+import type { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
 import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
 import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
 import { prefixoPorTipo } from "../../../compartilhado/registro/prefixos.js";
 import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
 import { sequenciaService } from "../../../compartilhado/sequencia/sequencia.service.js";
+import { investigacaoRepository } from "../investigacao/investigacao.repository.js";
 import { ncRepository } from "../nc/nc.repository.js";
 import { verificacaoRepository } from "../verificacao/verificacao.repository.js";
 import { acaoCorretivaRepository } from "./acao-corretiva.repository.js";
 import {
+    type AcaoCorretivaCriacaoInput,
     type AcaoCorretivaRascunhoInput,
     acaoCorretivaExecucaoSchema,
     acaoCorretivaPlanoSchema,
     acaoCorretivaPublicacaoSchema,
+    CAMPOS_DO_PLANO,
 } from "./acao-corretiva.schema.js";
 
+// A investigação apontada pela ação é a que a Verificação NAO_EFICAZ reabre: tem de existir e ser da mesma NC
+// (B10). E é ela que confere o plano antes do envio (RN-24): só recebe ação enquanto está aberta — nem em rascunho,
+// que ainda não existe formalmente, nem depois do envio (RN-49)
+async function conferirInvestigacao(tx: ClientePrisma, naoConformidadeId: string, investigacaoId: string) {
+    const investigacao = await investigacaoRepository.buscarPorId(tx, investigacaoId);
+    if (investigacao === null || investigacao.naoConformidadeId !== naoConformidadeId) {
+        throw new ValidacaoError("A investigação não existe ou não é desta Não Conformidade.");
+    }
+
+    const registro = await registroRepository.buscarPorId(tx, investigacaoId);
+    if (registro?.estado !== "ABERTO") {
+        throw new ValidacaoError("A investigação precisa estar aberta para receber ações corretivas.");
+    }
+}
+
 export const acaoCorretivaService = {
-    async criarRascunhoAcaoCorretiva(ator: Ator, naoConformidadeId: string, dados: AcaoCorretivaRascunhoInput) {
+    async criarRascunhoAcaoCorretiva(ator: Ator, naoConformidadeId: string, dados: AcaoCorretivaCriacaoInput) {
         return prisma.$transaction(async (tx) => {
             const papel = temPapel(ator, "GERENCIAR_RASCUNHO");
             if (!papel) throw new SemPermissaoError("Você não tem permissões suficientes para criar um novo rascunho.");
 
             const nc = await ncRepository.buscarPorId(tx, naoConformidadeId);
             if (nc === null) throw new NaoEncontradoError("A Não Conformidade não existe ou não foi encontrada");
+
+            await conferirInvestigacao(tx, naoConformidadeId, dados.investigacaoId);
 
             const registro = await cicloVidaService.criarRascunho(tx, { tipo: "ACAO_CORRETIVA", criadoPorId: ator.id });
             const acaoCorretiva = await acaoCorretivaRepository.criar(tx, {
@@ -39,6 +68,7 @@ export const acaoCorretivaService = {
             });
 
             await atribuicaoRepository.inserirAtribuicao(tx, registro.id, ator.id, ator.id, "COLABORADOR");
+            await herdarAprovadorDaNC(tx, naoConformidadeId, registro.id, ator.id);
 
             return { ...registro, ...acaoCorretiva };
         });
@@ -57,7 +87,24 @@ export const acaoCorretivaService = {
             if (!papel || !atribuicao)
                 throw new SemPermissaoError("Você não tem permissões suficientes para atualizar este item.");
 
+            // Com o plano aprovado, só a execução muda: o que o QA aprovou fica como foi aprovado (B2). Recusa se o campo
+            // vier, mesmo com o mesmo valor
+            const camposDoPlano = CAMPOS_DO_PLANO.filter((campo) => dados[campo] !== undefined);
+            if (camposDoPlano.length > 0 && (await acaoCorretivaRepository.planoAprovado(tx, registroId))) {
+                throw new TransicaoInvalidaError(
+                    `O plano já foi aprovado e não pode mais ser alterado: ${camposDoPlano.join(", ")}.`,
+                );
+            }
+
             const antes = await acaoCorretivaRepository.buscarPorId(tx, registroId);
+            if (antes === null) throw new NaoEncontradoError("Item não encontrado.");
+
+            // Só confere quando o vínculo muda: a ação do PARCIALMENTE_EFICAZ aponta para uma investigação já fechada, e
+            // mandar o mesmo vínculo ao editar o plano não é ligar de novo (RN-49)
+            if (dados.investigacaoId !== undefined && dados.investigacaoId !== antes.investigacaoId) {
+                await conferirInvestigacao(tx, antes.naoConformidadeId, dados.investigacaoId);
+            }
+
             const atualizada = await acaoCorretivaRepository.atualizar(tx, registroId, dados);
 
             await auditoriaRepository.registrar(tx, {
@@ -100,6 +147,11 @@ export const acaoCorretivaService = {
             const acaoCorretiva = await acaoCorretivaRepository.buscarPorId(tx, registroId);
             if (acaoCorretiva === null) throw new NaoEncontradoError("Item não encontrado.");
 
+            // O único portão da ação é o plano: aprovado, não há mais nada a submeter (B2)
+            if (await acaoCorretivaRepository.planoAprovado(tx, registroId)) {
+                throw new TransicaoInvalidaError("O plano já foi aprovado: não há mais nada a submeter.");
+            }
+
             const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, acaoCorretiva, (d) =>
                 acaoCorretivaPlanoSchema.parse(d),
             );
@@ -110,6 +162,16 @@ export const acaoCorretivaService = {
     // fecharAoAprovarUltimoPortao = false: aprovar o PLANO volta o item
     // para ABERTO (autorizando a execucao) em vez de fechar — mesmo sendo
     // o unico portao.
+    // O colaborador desiste do envio: volta a ABERTO, sem decisão registrada (RN-48)
+    async retirarAcaoCorretiva(registroId: string, ator: Ator) {
+        return prisma.$transaction(async (tx) => {
+            const registroRetirado = await cicloVidaService.retirar(tx, registroId, ator);
+            const acaoCorretiva = await acaoCorretivaRepository.buscarPorId(tx, registroId);
+
+            return { ...registroRetirado, ...acaoCorretiva };
+        });
+    },
+
     async decidirAcaoCorretiva(registroId: string, ator: Ator, dados: DecisaoInput) {
         return prisma.$transaction(async (tx) => {
             const registroDecidido = await cicloVidaService.decidir(tx, registroId, ator, dados, false);
@@ -118,7 +180,7 @@ export const acaoCorretivaService = {
         });
     },
 
-    // Leva o item de ABERTO (plano ja aprovado, portaoAtual continua 0)
+    // Leva o item de ABERTO (plano ja aprovado — derivado de Aprovacao, B1)
     // direto para FECHADO, sem aprovacao — feito pelo colaborador que
     // executou, exige executadoEm/evidencia preenchidos (RN-25).
     //
@@ -138,7 +200,10 @@ export const acaoCorretivaService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            if (registro.estado !== "ABERTO" || registro.portaoAtual !== 0) {
+            // O portaoAtual continua 0 antes e depois da aprovação: quem diz se o plano foi aprovado é o histórico (B1)
+            const planoAprovado = await acaoCorretivaRepository.planoAprovado(tx, registroId);
+
+            if (registro.estado !== "ABERTO" || !planoAprovado) {
                 throw new TransicaoInvalidaError("O plano precisa estar aprovado antes de finalizar a execução.");
             }
 
@@ -165,7 +230,11 @@ export const acaoCorretivaService = {
 
             const registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "FECHADO" });
 
-            const prazoVerificacao = new Date(Date.now() + diasParaVerificar * 24 * 60 * 60 * 1000);
+            // Um "hoje" só, para o prazo e o ano do código nunca discordarem. O prazo é um dia de calendário:
+            // meia-noite UTC do dia (TRD §6, B11)
+            const hoje = hojeEmSaoPaulo();
+            const prazoVerificacao = meiaNoiteUtc(hoje);
+            prazoVerificacao.setUTCDate(prazoVerificacao.getUTCDate() + diasParaVerificar);
 
             const registroVerificacao = await cicloVidaService.criarRascunho(tx, {
                 tipo: "VERIFICACAO",
@@ -173,7 +242,7 @@ export const acaoCorretivaService = {
             });
 
             const prefixo = prefixoPorTipo.VERIFICACAO;
-            const anoAtual = new Date().getFullYear();
+            const anoAtual = Number(hoje.slice(0, 4));
             const codigoVerificacao = await sequenciaService.proximoCodigo(tx, prefixo, anoAtual);
 
             const verificacaoRegistroAtualizado = await registroRepository.atualizar(tx, registroVerificacao.id, {
@@ -244,7 +313,8 @@ export const acaoCorretivaService = {
         if (!papel) throw new SemPermissaoError("Você não tem permissões suficientes para visualizar.");
 
         const acaoCorretiva = await acaoCorretivaRepository.buscarPorId(prisma, registroId);
-        return { ...registro, ...acaoCorretiva };
+        const planoAprovado = await acaoCorretivaRepository.planoAprovado(prisma, registroId);
+        return { ...registro, ...acaoCorretiva, planoAprovado };
     },
 
     async listarAcoesCorretivas(ator: Ator, filtros: { naoConformidadeId?: string; estado?: EstadoRegistro }) {

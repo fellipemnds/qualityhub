@@ -1,5 +1,7 @@
 export class AppError extends Error {
     statusCode = 500;
+    // Vai no campo "error" da resposta, junto da mensagem (TRD §7.1): ex., a lista do que falta de uma guarda
+    detalhes?: unknown;
 }
 
 export class ValidacaoError extends AppError {
@@ -47,8 +49,9 @@ export class NaoEncontradoError extends AppError {
 export class TransicaoInvalidaError extends AppError {
     statusCode = 409;
 
-    constructor(mensagem = "Transição inválida") {
+    constructor(mensagem = "Transição inválida", detalhes?: unknown) {
         super(mensagem);
         this.name = "TransicaoInvalidaError";
+        this.detalhes = detalhes;
     }
 }
