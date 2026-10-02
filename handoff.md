@@ -5,7 +5,7 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-01 (fim do dia, no trabalho; Matthew dá o push daqui e o merge em casa).
+**Última atualização:** 2026-10-02 (início do dia, no trabalho; Matthew não mexeu em casa, então a A3 ainda não foi mesclada e o `casa.txt` ainda não existe).
 
 ## 1. Objetivo
 
@@ -103,9 +103,11 @@ sem investigação) e os usuários de teste recarregados.
 
 **Fechar a A3** (de onde estiver):
 
-1. Conferir o **CI do PR #4** (verde).
+1. ~~Conferir o **CI do PR #4**~~ — **verde** no `c173051` (conferido em 2026-10-02).
+   Foto do trabalho de 2026-10-02: só Docker 29.8.0 → 29.8.1 e a
+   extensão do Claude Code 2.1.286 → 2.1.287 (nada que afete o projeto).
 2. Checklist "pronto quando" do plano §1.1; tirar o PR #4 do rascunho e
-   fazer o merge na `main` — Matthew pretende fazer em casa.
+   fazer o merge na `main` (pode ser no trabalho mesmo).
 3. Depois: a **A4 — Sessão nova** (o B7), conforme o plano.
 
 **Chegando em casa** (primeira vez com esta branch; `SETUP.md` §12.1 se
