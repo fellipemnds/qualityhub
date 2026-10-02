@@ -70,14 +70,7 @@ export const cicloVidaService = {
         return registro;
     },
 
-    async publicar(
-        tx: ClientePrisma,
-        registroId: string,
-        ator: Ator,
-        dados: unknown,
-        validador: (dados: unknown) => unknown,
-        acao: Acao = "PUBLICAR",
-    ) {
+    async publicar(tx: ClientePrisma, registroId: string, ator: Ator, validador: () => void, acao: Acao = "PUBLICAR") {
         const registro = await buscarRegistroOuFalhar(tx, registroId);
 
         if (registro.estado !== "RASCUNHO") {
@@ -90,7 +83,7 @@ export const cicloVidaService = {
             throw new SemPermissaoError("Você não pode realizar esta ação pois você não está atribuido neste item.");
         }
 
-        validador(dados);
+        validador();
 
         const prefixo = prefixoPorTipo[registro.tipo];
         const anoAtual = Number(hojeEmSaoPaulo().slice(0, 4));
@@ -127,14 +120,7 @@ export const cicloVidaService = {
         return registroDeletado;
     },
 
-    async submeter(
-        tx: ClientePrisma,
-        registroId: string,
-        ator: Ator,
-        dados: unknown,
-        validador: (dados: unknown) => unknown,
-        acao: Acao = "SUBMETER",
-    ) {
+    async submeter(tx: ClientePrisma, registroId: string, ator: Ator, validador: () => void, acao: Acao = "SUBMETER") {
         const registro = await buscarRegistroOuFalhar(tx, registroId);
 
         if (registro.estado !== "ABERTO" || portoesPorTipo[registro.tipo].length <= 0) {
@@ -155,7 +141,7 @@ export const cicloVidaService = {
             throw new TransicaoInvalidaError("Este item deve possuir um aprovador delegado antes de ser submetido.");
         }
 
-        validador(dados);
+        validador();
 
         return aplicarTransicao(tx, registro, { estado: "EM_APROVACAO" }, "SUBMETER", ator);
     },
@@ -241,13 +227,7 @@ export const cicloVidaService = {
         return aplicarTransicao(tx, registro, mudanca, aprovacao.decisao, ator);
     },
 
-    async concluir(
-        tx: ClientePrisma,
-        registroId: string,
-        ator: Ator,
-        dados: unknown,
-        validador: (dados: unknown) => unknown,
-    ) {
+    async concluir(tx: ClientePrisma, registroId: string, ator: Ator, validador: () => void) {
         const registro = await buscarRegistroOuFalhar(tx, registroId);
 
         if (registro.estado !== "ABERTO" || portoesPorTipo[registro.tipo].length !== 0) {
@@ -266,7 +246,7 @@ export const cicloVidaService = {
             );
         }
 
-        validador(dados);
+        validador();
 
         return aplicarTransicao(tx, registro, { estado: "FECHADO" }, "CONCLUIR_VERIFICACAO", ator);
     },

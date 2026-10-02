@@ -131,8 +131,8 @@ export const acaoCorretivaService = {
             const acaoCorretiva = await acaoCorretivaRepository.buscarPorId(tx, registroId);
             if (acaoCorretiva === null) throw new NaoEncontradoError("Item não encontrado.");
 
-            const registroPublicado = await cicloVidaService.publicar(tx, registroId, ator, acaoCorretiva, (d) =>
-                acaoCorretivaPublicacaoSchema.parse(d),
+            const registroPublicado = await cicloVidaService.publicar(tx, registroId, ator, () =>
+                acaoCorretivaPublicacaoSchema.parse(acaoCorretiva),
             );
             return { ...registroPublicado, ...acaoCorretiva };
         });
@@ -152,8 +152,8 @@ export const acaoCorretivaService = {
                 throw new TransicaoInvalidaError("O plano já foi aprovado: não há mais nada a submeter.");
             }
 
-            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, acaoCorretiva, (d) =>
-                acaoCorretivaPlanoSchema.parse(d),
+            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, () =>
+                acaoCorretivaPlanoSchema.parse(acaoCorretiva),
             );
             return { ...registroSubmetido, ...acaoCorretiva };
         });
