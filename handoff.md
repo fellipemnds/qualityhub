@@ -5,57 +5,48 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-02 (início do dia, no trabalho; Matthew não mexeu em casa, então a A3 ainda não foi mesclada e o `casa.txt` ainda não existe).
+**Última atualização:** 2026-10-02 (meio do dia, no trabalho). A A3 foi mesclada; a análise do repositório está no PR #5, ainda aberto; o `casa.txt` ainda não existe.
 
 ## 1. Objetivo
 
-Fase **A3 — correções de regra** (`docs/plano-implementacao.md`, seção
-A3): cada bug com um teste que falha antes e passa depois (TDD). **Todas
-as 19 ordens estão feitas e commitadas**; falta fechar a fase (CI e merge).
+**Análise do repositório antes da A4**, com as skills do `agent-skills`:
+contrato de qualidade, auditoria de segurança, revisão e simplificação
+de código, e mais uma análise que Matthew vai trazer. Depois, a **A4 —
+Sessão nova** (`docs/plano-implementacao.md`, seção A4).
 
 ## 2. Estado atual
 
-- Branch **`fase/a3-correcoes`**, PR **#4 em rascunho**
-  (https://github.com/fellipemnds/qualityhub/pull/4), com a lista de
-  ordens marcada até a 18 e um parágrafo sobre a regra revista.
-- **Feito em 2026-10-01** (detalhes em cada linha do `docs/esquema-backend.md` §7):
-  - **B10**: a ação só aponta para investigação desta NC.
-  - **Regra revista com a analista (PRD Q17, Q18):** os planos de ação
-    são conferidos pela **Investigação**, não pela NC — RN-21 e RN-24
-    revistas, RN-49 (ação nasce ligada a investigação **aberta**, coluna
-    `NOT NULL`) e RN-50 (cancelar investigação com ação pendente é
-    recusado). Registro no `docs/changelog-arquitetura.md` (seção A3).
-  - **Ordem 8 (8a–8f):** escada de cenários na ordem real
-    (`investigacaoAberta` → `ncProntaParaFechar` com a ação de plano
-    aprovado); RN-49; **`avaliarFechamentoNC`, escrita por Matthew em TDD**
-    (primeira função pura do projeto); submeter da NC com 409 e a lista
-    no campo `error` + `GET /nc/:id/checklist-fechamento`; RN-24 na
-    investigação (o **B5**); RN-50.
-  - **B4, B6, B3, B13, B12, B8, B15, B16, B17, RN-48 e B18** (ordens 9 a 19).
-- Suíte: **250 passando, nenhuma falha esperada** (os `it.fails` do B15
-  e do B18 viraram `it`), 33 arquivos, ~140–160 s. Lint e typecheck
-  limpos.
-- O que Matthew aprendeu hoje: função pura (sem banco nem relógio,
-  testada em milissegundos) e a divisão "o service carrega, a função
-  decide"; `.some`, `.filter`, `.map`, `.every`; ternário e `&&`; `??` com
-  `.trim()`; alargamento de tipos (`"RASCUNHO"` virando `string` sem a
-  anotação); `toMatchObject` em listas; distinguir **teste errado** de
-  **código errado**; prova de quebra; o Copilot embutido no VS Code (e
-  por que desligá-lo para aprender).
+- **A3 concluída:** PR #4 mesclado na `main` (`ea71cb7`), branch local
+  apagada.
+- Branch **`chore/analise-repositorio`**, **PR #5 aberto**
+  (https://github.com/fellipemnds/qualityhub/pull/5), CI verde no
+  `36d27c3`. Matthew faz o merge.
+  - `CONSTRAINTS.md` (contrato de qualidade) e a regra no `CLAUDE.md`.
+  - Auditoria de segurança: L2, L7 e L8 aplicados; B19 registrado
+    (`esquema-backend.md` §7); os outros achados alocados no plano (A4,
+    A5, A6).
+  - Revisão de código: o alvo é o `ciclo-vida.service.ts`. Os testes de
+    caracterização e as quatro simplificações estão na tabela da A4,
+    **antes do B19**. O texto dos testes já foi aprovado na conversa de
+    2026-10-02: auditoria de cada transição e 404 das transições, num
+    arquivo novo, `src/compartilhado/registro/ciclo-vida.service.test.ts`.
+- Suíte: **251 passando** (o teste novo do bcrypt), ~175 s nesta
+  máquina. Lint e typecheck limpos.
+- O que Matthew aprendeu hoje: contrato de qualidade ("medir e travar",
+  piso, exceção com dono e prazo); modelagem de ameaças e OWASP (IDOR,
+  TOCTOU, enumeração por tempo, custo do bcrypt); Cerca de Chesterton;
+  teste de caracterização.
 
 ## 3. Arquivos no meio de uma mudança
 
-Nenhum. O B18 foi commitado no fim do dia, com este handoff.
+Nenhum.
 
 ## 4. O que foi alterado nesta sessão
 
-`git log 3744a21..fase/a3-correcoes` — de B10 a RN-48, um commit por
-item. **Push:** Matthew dá no trabalho, no fim do dia. Depois: conferir
-o **CI do PR #4** (o primeiro com a migration
-`investigacao_obrigatoria_na_acao`).
-
-O banco de desenvolvimento **do trabalho** foi resetado (tinha 10 ações
-sem investigação) e os usuários de teste recarregados.
+`git log ea71cb7..chore/analise-repositorio`: o contrato de qualidade,
+a alocação da auditoria, o endurecimento (L2, L7, L8) e este registro.
+O container do banco **do trabalho** foi recriado (porta só em
+`127.0.0.1`).
 
 ## 5. Falhas (e o porquê)
 
@@ -104,7 +95,10 @@ sem investigação) e os usuários de teste recarregados.
   que um auditor ISO pergunta ("quem revisa quem?"), e a RN-29 (proibir
   auto-aprovação) está prevista e não implementada. Perguntar se vale ao
   menos impedir alguém de se indicar como aprovador. Junto: a revisão do
-  `podeExecutar` (item acima).
+  `podeExecutar` (item acima) e o `cicloVidaService.cancelar`, que
+  confere `GERENTE` direto, sem o catálogo de permissões (revisão de
+  código de 2026-10-02): as três perguntas são o mesmo assunto, quem pode
+  o quê.
 - **Em casa, antes do `npm run dev`:** o `JWT_SECRET` do `.env` de lá
   precisa ter **32 caracteres ou mais** (auditoria L8; o servidor recusa
   subir com menos). O do trabalho tem 44. Gerar com
@@ -117,32 +111,41 @@ sem investigação) e os usuários de teste recarregados.
 
 ## 6. Próximo passo
 
-**Fechar a A3** (de onde estiver):
+1. **A outra análise** que Matthew vai trazer, ainda na
+   `chore/analise-repositorio` (o PR #5 recebe os commits novos).
+2. Merge do PR #5; voltar para a `main`, `git pull`, apagar a branch
+   local.
+3. **Abrir a A4** (`fase/a4-sessao`), na ordem da tabela da A4:
+   1. commit `docs:`: este handoff no início da fase;
+   2. commit `test:`: os testes de caracterização (o texto aprovado);
+   3. as quatro simplificações do `ciclo-vida`, cada uma num commit
+      `refactor:` com a suíte completa (a `estadoAposDecisao` é de
+      Matthew);
+   4. o B19;
+   5. depois, o resto da A4.
+4. Durante a A4: Matthew instala as cinco ferramentas do
+   `CONSTRAINTS.md` antes de o aviso virar bloqueio.
 
-1. ~~Conferir o **CI do PR #4**~~ — **verde** no `c173051` (conferido em 2026-10-02).
-   Foto do trabalho de 2026-10-02: só Docker 29.8.0 → 29.8.1 e a
-   extensão do Claude Code 2.1.286 → 2.1.287 (nada que afete o projeto).
-2. Checklist "pronto quando" do plano §1.1; tirar o PR #4 do rascunho e
-   fazer o merge na `main` (pode ser no trabalho mesmo).
-3. Depois: a **A4 — Sessão nova** (o B7), conforme o plano.
-
-**Chegando em casa** (primeira vez com esta branch; `SETUP.md` §12.1 se
-o PC estiver parado há tempo):
+**Chegando em casa** (primeira vez depois da A3; `SETUP.md` §12.1 se o
+PC estiver parado há tempo):
 
 1. Docker Desktop aberto ("Engine running"), Ubuntu, pasta do projeto.
-2. `git fetch` e `git switch fase/a3-correcoes` (ou a `main`, se a A3
-   já tiver sido mesclada), depois `git pull`.
-3. **`npm run preparar`** — obrigatório: aplica as migrations do
+2. `git fetch`, `git switch main` (ou a branch onde o trabalho estiver),
+   `git pull`.
+3. **`npm run preparar`**: obrigatório. Aplica as migrations do
    `@db.Date` e do `investigacaoId` obrigatório (`NOT NULL`, RN-49) no
    banco de lá. Se esta última falhar (o banco de casa tem ações sem
    investigação), recriar o banco: `SETUP.md` §12, passos 6 e 7 (reset +
    usuários de teste).
-4. Extensões do VS Code: a lista do **`SETUP.md` §12.4** (um comando no
+4. **`JWT_SECRET` com 32 caracteres ou mais** no `.env` de casa, e
+   `docker compose up -d` para recriar o container (ver as pendências
+   acima).
+5. Extensões do VS Code: a lista do **`SETUP.md` §12.4** (um comando no
    terminal do WSL + duas no Windows). Conferir `node -v` (24). O Copilot
    já vem desligado pelo `.vscode/settings.json` do projeto.
-5. **Primeira foto de casa:** `npm run ambiente -- casa` e depois
+6. **Primeira foto de casa:** `npm run ambiente -- casa` e depois
    `npm run ambiente -- comparar` (`SETUP.md` §12.5). O esperado: só o
    `hostname` e as extensões que **não** vão para casa (Prettier, REST
    Client, Live Server, Docker antiga, Dev Containers). Registrar aqui o
    que mais aparecer, e commitar o `docs/ambiente/casa.txt`.
-6. `npm test` para confirmar: 250 passando.
+7. `npm test` para confirmar: 251 passando.

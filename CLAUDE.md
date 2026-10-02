@@ -22,7 +22,7 @@ próprio, com aprovação de Matthew (`CONSTRAINTS.md` §6).
 | `docs/fluxo-app.md` | Telas, navegação, etapa calculada da NC, jornadas, ações por estado, "Minhas pendências" |
 | `docs/ui-ux.md` | Fundações visuais, componentes (shadcn/ui), wireframes em texto, textos da tela |
 | `docs/trd.md` | Stack, sessão, API, anexos, testes, infraestrutura, hospedagem, ADR-33 a ADR-38 |
-| `docs/esquema-backend.md` | Modelo de dados, mudanças M1–M5, valores calculados, contrato da API, correções B1–B18 |
+| `docs/esquema-backend.md` | Modelo de dados, mudanças M1–M5, valores calculados, contrato da API, correções B1–B19 |
 | `docs/plano-implementacao.md` | **Ordem de execução**: fases A0–A6 (fundação do backend), B (design), C0–C8 (frontend em fatias), D (produção) |
 | `docs/changelog-arquitetura.md` | Registro de toda decisão de arquitetura e divergência do documento original. **Leia antes de propor mudança estrutural** |
 | `docs/arquitetura.md` | Documento de design **original** (histórico). Onde diverge dos documentos acima, eles valem |
@@ -42,11 +42,12 @@ para os outros documentos em vez de repetir o que já está neles.
 Ainda pendente fora do código: hospedagem (TRD §10.6), identidade
 visual.
 
-**Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B18; os
-corrigidos têm ✅). Corrigidos na A3: B9, B11, B14, B1, B2, B10, B5,
-B4, B6, B3, B13, B12, B8, B15, B16, B17, B18 (e a RN-48, retirar da
-aprovação, regra nova) — todos os da A3. Falta fechar a fase (PR #4); o
-B7 é da A4.
+**Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B19; os
+corrigidos têm ✅). A A3 corrigiu B1–B6 e B8–B18, e a RN-48 entrou como
+regra nova (fase fechada em 2026-10-02, PR #4). Ficam abertos o **B7**
+(papéis no token) e o **B19** (transições sem trava sob concorrência,
+achado na auditoria de segurança), os dois na A4: o B19 primeiro,
+depois de simplificar o `ciclo-vida.service.ts`.
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com

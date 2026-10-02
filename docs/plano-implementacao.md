@@ -202,7 +202,9 @@ regra deve morar num lugar só.
 
 | Entrega | Quem |
 |---|---|
-| **B19** (primeiro item) — transições sem trava sob concorrência (`esquema-backend.md` §7): um teste de concorrência que falha por transição, depois o `UPDATE` condicionado ao estado esperado. Inclui o convite usado duas vezes no `definir-senha` | 🤖 o padrão do teste já é conhecido (A2) |
+| **Antes do B19: simplificar o `ciclo-vida.service.ts`** (revisão de código de 2026-10-02), para o conserto do B19 cair num lugar só. Primeiro, os **testes de caracterização** (auditoria de cada transição e 404 das transições, em `ciclo-vida.service.test.ts`; o texto foi aprovado na conversa). Depois, um commit `refactor:` por item, com a suíte completa a cada um: (1) `aplicarTransicao`, o "atualizar + auditar" que hoje está copiado em 7 transições; (2) `buscarRegistroOuFalhar`, com a mensagem única "Item não encontrado." (muda o texto; a asserção entra antes, vermelha); (3) o validador no formato do `cancelar` (`() => void`), sem o parâmetro `dados: unknown`; (4) `estadoAposDecisao`, uma função pura, com `{ fecharAoAprovarUltimoPortao }` no lugar do booleano solto e sem o ramo de vários portões, que não roda desde que a Ação Corretiva voltou a ter um portão só | 🤖 os testes e os itens 1–3; 🧑 o item 4 (função pura) |
+| **B19**: transições sem trava sob concorrência (`esquema-backend.md` §7). Um teste de concorrência que falha por transição, depois o `UPDATE` condicionado ao estado esperado. Inclui o convite usado duas vezes no `definir-senha` | 🤖 o padrão do teste já é conhecido (A2) |
+| **Depois do B19:** simplificar o `finalizarExecucaoAcaoCorretiva` (100 linhas; extrair um `gerarVerificacao`) e corrigir os comentários de `acao-corretiva.service.ts:141-165` (sem acento; o do `decidir` está em cima do `retirar`) | 🤖 |
 | Migration **M1**: `desativadoEm`, `sessaoValidaDesde`, `telaInicial` | 🧑 |
 | Login com cookie `HttpOnly`/`Secure`/`SameSite=Strict`; "manter conectado" (30 dias) ou cookie de sessão (teto 12 h) | 🧑 |
 | Middleware `autenticar`: busca usuário ativo, papéis atuais e `sessaoValidaDesde` a cada requisição | 🧑 |
@@ -211,6 +213,7 @@ regra deve morar num lugar só.
 | Login com o **mesmo tempo de resposta** para e-mail inexistente (comparar com um hash falso) — auditoria L1 | 🤖 |
 | `@fastify/helmet` (cabeçalhos de segurança) e `@fastify/cors` com lista explícita de origens, nunca `*` com cookie — auditoria R3. O HTTPS fica na D1 | 🤖 |
 | Testes: papel revogado vale na hora; usuário inativo recebe 401; "sair de todos" derruba sessão antiga; cookie de sessão sem validade | 🧑 |
+| **Instalar as cinco ferramentas do `CONSTRAINTS.md`** (gitleaks, Semgrep, osv-scanner, dependency-cruiser, `@vitest/coverage-v8`) antes do fim da fase: o "só avisa" de SAST, dependências e cobertura vira bloqueio no fim da A4 | 🧑 (configuração) |
 
 **Aprendizado:** cookie × token no cabeçalho; o que `HttpOnly`,
 `Secure` e `SameSite` protegem; por que papéis no token atrasam a
@@ -231,6 +234,7 @@ cliente (TRD §7, ADR-37).
 | Último motivo de reprovação no detalhe de todo item (L7) | 🤖 |
 | Erros do próprio Fastify (JSON malformado, corpo grande demais) respondem com o status deles (400, 413), não 500 — auditoria L3; bug, começa por teste | 🤖 |
 | Permissão conferida **antes** de buscar o usuário-alvo no `definirAprovador` (quem não pode agir não aprende nada com a resposta) — auditoria L5 | 🤖 |
+| **Avaliar** as funções repetidas nos seis services de entidade (`retirarX`, `decidirX`, `cancelarX`, `buscarPorIdX`, `listarX`; revisão de código de 2026-10-02). Mudar o padrão de módulo é decisão de arquitetura: registrar no `changelog-arquitetura.md` antes de mexer | 🧑 decide; 🤖 propõe |
 | Tetos de entrada (auditoria L4): `.max()` nos textos, paginação nas listas dos filhos, avaliar `z.strictObject` (recusar campo extra com 400 em vez de descartar) | 🤖 |
 
 **Aprendizado:** o que é OpenAPI e por que o schema de **resposta**
@@ -378,4 +382,6 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-09-30 | B15 entra na A3 (ordem 15), achado pelo teste de concorrência da A2 |
 | 2026-09-30 | B16, B17 e RN-48 entram na A3 (ordens 16–18), dos testes de atribuição da A2 |
 | 2026-09-30 | B18 entra na A3 (ordem 19), dos testes que aposentaram os `.http` |
-| 2026-09-30 | **A2 concluída** (branch `fase/a2-rede-protecao`, PR #3): fluxo completo, máquina de estados e permissões nos seis tipos, concorrência do código sequencial (escrito por Matthew), atribuições, e os `.http` aposentados. Achados B15–B18 e regras RN-47/RN-48, todos na A3. Falta o CI verde no PR e o merge |
+| 2026-09-30 | **A2 concluída** (branch `fase/a2-rede-protecao`, PR #3): fluxo completo, máquina de estados e permissões nos seis tipos, concorrência do código sequencial (escrito por Matthew), atribuições, e os `.http` aposentados. Achados B15–B18 e regras RN-47/RN-48, todos na A3. CI verde e merge na `main` |
+| 2026-10-02 | **A3 concluída** (branch `fase/a3-correcoes`, PR #4): B1–B6 e B8–B18, regra revista dos planos de ação (RN-21 e RN-24 revistas, RN-49, RN-50, PRD Q17/Q18), checklist de fechamento, RN-46 a RN-48. 250 testes. O B7 fica na A4 |
+| 2026-10-02 | v1.4 — análise do repositório (branch `chore/analise-repositorio`, PR #5): na A4, a simplificação do `ciclo-vida` antes do B19, a do `finalizarExecucao` depois dele e a instalação das ferramentas do `CONSTRAINTS.md`; na A5, avaliar a duplicação dos services de entidade |
