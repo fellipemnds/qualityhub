@@ -7,6 +7,7 @@ import { hojeEmSaoPaulo } from "../datas/hoje-em-sao-paulo.js";
 import type { Acao } from "../entidades/acoes.js";
 import type { Ator } from "../entidades/ator.js";
 import type { Decisao } from "../entidades/decisao.js";
+import type { EstadoRegistro } from "../entidades/estados.js";
 import type { TipoRegistro } from "../entidades/tipos-registro.js";
 import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError, ValidacaoError } from "../errors/errors.js";
 import { podeExecutar, temPapel } from "../permissoes/pode-executar.js";
@@ -16,6 +17,31 @@ import { sequenciaService } from "../sequencia/sequencia.service.js";
 import { portoesPorTipo } from "./portoes.js";
 import { prefixoPorTipo } from "./prefixos.js";
 import { registroRepository } from "./registro.repository.js";
+
+type Registro = NonNullable<Awaited<ReturnType<typeof registroRepository.buscarPorId>>>;
+
+// O fim de toda transição: grava a mudança no Registro e a auditoria com o antes e o depois, na mesma transação. Num
+// lugar só, para a trava do B19 (o UPDATE condicionado ao estado esperado) entrar uma vez, valendo para todas
+async function aplicarTransicao(
+    tx: ClientePrisma,
+    registro: Registro,
+    mudanca: { estado: EstadoRegistro; codigo?: string; portaoAtual?: number },
+    acao: string,
+    ator: Ator,
+) {
+    const registroAtualizado = await registroRepository.atualizar(tx, registro.id, mudanca);
+
+    await auditoriaRepository.registrar(tx, {
+        entidade: EntidadeAuditada[registroAtualizado.tipo],
+        entidadeId: registroAtualizado.id,
+        acao,
+        usuarioId: ator.id,
+        antes: registro,
+        depois: registroAtualizado,
+    });
+
+    return registroAtualizado;
+}
 
 export const cicloVidaService = {
     async criarRascunho(tx: ClientePrisma, dados: { tipo: TipoRegistro; criadoPorId: string }) {
@@ -64,18 +90,7 @@ export const cicloVidaService = {
 
         const codigo = await sequenciaService.proximoCodigo(tx, prefixo, anoAtual);
 
-        const registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "ABERTO", codigo });
-
-        await auditoriaRepository.registrar(tx, {
-            entidade: EntidadeAuditada[registro.tipo],
-            entidadeId: registroAtualizado.id,
-            acao: "PUBLICAR",
-            usuarioId: ator.id,
-            antes: registro,
-            depois: registroAtualizado,
-        });
-
-        return registroAtualizado;
+        return aplicarTransicao(tx, registro, { estado: "ABERTO", codigo }, "PUBLICAR", ator);
     },
 
     async excluirRascunho(tx: ClientePrisma, registroId: string, ator: Ator, acao: Acao = "GERENCIAR_RASCUNHO") {
@@ -143,18 +158,7 @@ export const cicloVidaService = {
 
         validador(dados);
 
-        const dadoAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "EM_APROVACAO" });
-
-        await auditoriaRepository.registrar(tx, {
-            entidade: EntidadeAuditada[dadoAtualizado.tipo],
-            entidadeId: dadoAtualizado.id,
-            acao: "SUBMETER",
-            usuarioId: ator.id,
-            antes: registro,
-            depois: dadoAtualizado,
-        });
-
-        return dadoAtualizado;
+        return aplicarTransicao(tx, registro, { estado: "EM_APROVACAO" }, "SUBMETER", ator);
     },
 
     // Retirar da aprovação (RN-48): o colaborador desiste do envio. Volta a ABERTO no mesmo portão, sem registro em
@@ -178,18 +182,7 @@ export const cicloVidaService = {
             );
         }
 
-        const registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "ABERTO" });
-
-        await auditoriaRepository.registrar(tx, {
-            entidade: EntidadeAuditada[registroAtualizado.tipo],
-            entidadeId: registroAtualizado.id,
-            acao: "RETIRAR_DA_APROVACAO",
-            usuarioId: ator.id,
-            antes: registro,
-            depois: registroAtualizado,
-        });
-
-        return registroAtualizado;
+        return aplicarTransicao(tx, registro, { estado: "ABERTO" }, "RETIRAR_DA_APROVACAO", ator);
     },
 
     async decidir(
@@ -239,35 +232,22 @@ export const cicloVidaService = {
             autoAprovacao,
         });
 
-        let registroAtualizado: Awaited<ReturnType<typeof registroRepository.atualizar>>;
+        let mudanca: { estado: EstadoRegistro; portaoAtual?: number };
 
         if (aprovacao.decisao === "REPROVADO") {
-            registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "ABERTO" });
+            mudanca = { estado: "ABERTO" };
         } else if (
             aprovacao.decisao === "APROVADO" &&
             registro.portaoAtual + 1 < portoesPorTipo[registro.tipo].length
         ) {
-            const novoPortao = registro.portaoAtual + 1;
-            registroAtualizado = await registroRepository.atualizar(tx, registroId, {
-                estado: "ABERTO",
-                portaoAtual: novoPortao,
-            });
+            mudanca = { estado: "ABERTO", portaoAtual: registro.portaoAtual + 1 };
         } else if (aprovacao.decisao === "APROVADO" && !fecharAoAprovarUltimoPortao) {
-            registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "ABERTO" });
+            mudanca = { estado: "ABERTO" };
         } else {
-            registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "FECHADO" });
+            mudanca = { estado: "FECHADO" };
         }
 
-        await auditoriaRepository.registrar(tx, {
-            entidade: EntidadeAuditada[registroAtualizado.tipo],
-            entidadeId: registroAtualizado.id,
-            acao: aprovacao.decisao,
-            usuarioId: ator.id,
-            antes: registro,
-            depois: registroAtualizado,
-        });
-
-        return registroAtualizado;
+        return aplicarTransicao(tx, registro, mudanca, aprovacao.decisao, ator);
     },
 
     async concluir(
@@ -301,18 +281,7 @@ export const cicloVidaService = {
 
         validador(dados);
 
-        const dadoAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "FECHADO" });
-
-        await auditoriaRepository.registrar(tx, {
-            entidade: EntidadeAuditada[dadoAtualizado.tipo],
-            entidadeId: dadoAtualizado.id,
-            acao: "CONCLUIR_VERIFICACAO",
-            usuarioId: ator.id,
-            antes: registro,
-            depois: dadoAtualizado,
-        });
-
-        return dadoAtualizado;
+        return aplicarTransicao(tx, registro, { estado: "FECHADO" }, "CONCLUIR_VERIFICACAO", ator);
     },
 
     async reabrir(tx: ClientePrisma, registroId: string, ator: Ator, motivo: string) {
@@ -337,21 +306,7 @@ export const cicloVidaService = {
 
         await reaberturaRepository.criar(tx, { registroId, reabertoPorId: ator.id, motivo });
 
-        const registroAtualizado = await registroRepository.atualizar(tx, registroId, {
-            estado: "ABERTO",
-            portaoAtual: 0,
-        });
-
-        await auditoriaRepository.registrar(tx, {
-            entidade: EntidadeAuditada[registroAtualizado.tipo],
-            entidadeId: registroAtualizado.id,
-            acao: "REABRIR",
-            usuarioId: ator.id,
-            antes: registro,
-            depois: registroAtualizado,
-        });
-
-        return registroAtualizado;
+        return aplicarTransicao(tx, registro, { estado: "ABERTO", portaoAtual: 0 }, "REABRIR", ator);
     },
 
     // O validador roda depois das checagens de estado e permissão, como no submeter: a guarda própria do tipo (ex.:
@@ -393,17 +348,6 @@ export const cicloVidaService = {
 
         await cancelamentoRepository.criar(tx, { registroId, canceladoPorId: ator.id, motivo });
 
-        const registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "CANCELADO" });
-
-        await auditoriaRepository.registrar(tx, {
-            entidade: EntidadeAuditada[registroAtualizado.tipo],
-            entidadeId: registroAtualizado.id,
-            acao: "CANCELAR",
-            usuarioId: ator.id,
-            antes: registro,
-            depois: registroAtualizado,
-        });
-
-        return registroAtualizado;
+        return aplicarTransicao(tx, registro, { estado: "CANCELADO" }, "CANCELAR", ator);
     },
 };
