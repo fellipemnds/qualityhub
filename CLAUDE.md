@@ -57,21 +57,13 @@ Claude pode abrir PRs e ler o CI com ele. O `git push` continua sendo
 de Matthew, salvo pedido explícito.
 
 **Dois computadores:** Matthew alterna entre o do trabalho e o de casa
-(mesmo ambiente: Windows + WSL2 + Docker Desktop + nvm). Seguir o
-`SETUP.md` §12. **Qual máquina é esta:** compare o `hostname` com a
-linha `hostname:` de `docs/ambiente/trabalho.txt` e `casa.txt`. Quando
-ele disser **"vou trocar de computador"**: rodar `npm run typecheck`,
-`npm run lint` e `npm run ambiente -- <esta máquina>` (foto do
-ambiente), atualizar o `handoff.md`, propor o commit na branch da fase
-(com a foto) e lembrá-lo do `git push`. Quando disser **"continuar de
-onde parei"**: ler o `handoff.md`, conferir a branch (`git status`),
-lembrar do `npm run preparar` se ele ainda não rodou, rodar `npm run
-ambiente -- <esta máquina>` e `npm run ambiente -- comparar`, contar a
-Matthew o que difere do outro PC (e o que mudou nesta máquina desde a
-última foto, pelo `git diff`), registrar no `handoff.md` e retomar pelo
-"Próximo passo". Memória e conversas do Claude **não**
-passam de uma máquina para a outra — o que precisa sobreviver vai para
-o `handoff.md` (estado) ou para este arquivo (regras).
+(mesmo ambiente: Windows + WSL2 + Docker Desktop + nvm; `SETUP.md` §12).
+**Saindo** ("vou trocar de computador"): skill **`/trocar-pc`**.
+**Chegando** ("continuar de onde parei"): skill **`/retomar`**. Os
+passos estão nas skills (`.claude/skills/`, versionadas, as mesmas nos
+dois PCs). Memória e conversas do Claude **não** passam de uma máquina
+para a outra — o que precisa sobreviver vai para o `handoff.md`
+(estado), para este arquivo (regras) ou para uma skill (rotinas).
 
 ## Como trabalhamos (workflow com Claude)
 

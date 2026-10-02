@@ -24,7 +24,10 @@ Thumbs.db
 !.vscode/settings.json
 !.vscode/extensions.json
 .idea/
-.claude/
+# Skills e configuração compartilhada do projeto vão para o Git (as mesmas nos dois PCs); o settings.local.json, não
+.claude/*
+!.claude/skills/
+!.claude/settings.json
 .cursor/
 .windsurf/
 .agents/
