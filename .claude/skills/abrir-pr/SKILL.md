@@ -1,6 +1,6 @@
 ---
 name: abrir-pr
-description: Abre (ou atualiza) o Pull Request da branch atual com título e descrição no padrão do projeto, e acompanha o CI até o fim. Também tira o PR de fase do rascunho quando o "pronto quando" está cumprido. Use quando Matthew pedir para abrir o PR, atualizar a descrição, ou chamar /abrir-pr.
+description: Abre (ou atualiza) o Pull Request da branch atual com título e descrição no padrão do projeto, acompanha o CI até o fim e entrega a mensagem do merge pronta para colar. Também tira o PR de fase do rascunho quando o "pronto quando" está cumprido. Use quando Matthew pedir para abrir o PR, atualizar a descrição, ou chamar /abrir-pr.
 ---
 
 # Abrir o Pull Request
@@ -65,7 +65,8 @@ Em português, curta, para quem não acompanhou a conversa:
 Rode em background: `gh pr checks <n> --watch --interval 30`. Ao terminar:
 
 - Verde: diga o tempo, confira `gh pr view <n> --json mergeable` e avise Matthew que pode fazer
-  o merge (ou tirar do rascunho, passo 7).
+  o merge (ou tirar do rascunho, passo 7). PR pronto para o merge: entregue a mensagem do
+  passo 8 na mesma resposta.
 - Vermelho: `gh run view <id> --log-failed`, resuma a causa em poucas linhas e proponha o
   conserto. Nada de mudar código sem o ok, e nunca afrouxar um check (`CONSTRAINTS.md` §6).
 
@@ -77,3 +78,21 @@ Quando Matthew disser que a fase acabou:
    o resultado. O último item ("Matthew consegue explicar o que a fase mudou e por quê") é dele:
    ofereça umas perguntas rápidas sobre a fase.
 2. Com tudo marcado e o ok dele: `gh pr ready <n>`.
+
+## 8. Mensagem do merge (sempre, antes de Matthew mesclar)
+
+Matthew mescla pelo site do GitHub e cola a mensagem na caixa do merge. Entregue sempre, com o
+PR verde e pronto (e também quando ele pedir), seguindo o modelo dos merges anteriores
+(`git log origin/main --merges --format='%B' -3`):
+
+- **Título:** o padrão do GitHub, `Merge pull request #<n> from fellipemnds/<branch>`.
+- **Descrição** (texto puro: é mensagem de commit, não Markdown; sem negrito e sem crases,
+  uma ideia por linha, sem quebrar linha no meio da frase):
+  1. o título do PR;
+  2. uma frase com o objetivo da branch ou da fase;
+  3. `- ` uma linha por assunto, com os IDs (B-xx, RN-xx, achados);
+  4. se houve decisão nova, um parágrafo dizendo qual e onde ficou registrada;
+  5. por último, `Suíte: <n> testes passando.` e o que fica para depois (a próxima fase, o que
+     não entrou).
+
+Entregue o título e a descrição em dois blocos de código separados, prontos para copiar.
