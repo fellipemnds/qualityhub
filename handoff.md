@@ -5,7 +5,7 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-02 (tarde, no trabalho). A análise do repositório foi mesclada (PR #5); a A4 começou; o `casa.txt` ainda não existe.
+**Última atualização:** 2026-10-02 (fim do dia, no trabalho; Matthew continua em casa). A A4 começou: caracterização e três das quatro simplificações do `ciclo-vida` feitas; a quarta, `estadoAposDecisao`, é de Matthew e ainda não começou. O `casa.txt` ainda não existe.
 
 ## 1. Objetivo
 
@@ -16,35 +16,38 @@ simplificações do `ciclo-vida.service.ts` e o B19.
 
 ## 2. Estado atual
 
-- Branch **`fase/a4-sessao`**, criada da `main` em `c10844c` (o merge do
-  PR #5). Ainda sem PR (o `/abrir-pr` abre em rascunho).
-- **Análise do repositório concluída** (PR #5, branch apagada): o
-  `CONSTRAINTS.md`; a auditoria de segurança (L2, L7 e L8 aplicados, B19
-  registrado, os outros achados alocados na A4, A5 e A6); a revisão de
-  código (o alvo é o `ciclo-vida`); a coerência documental; e as skills
-  `/trocar-pc`, `/retomar`, `/abrir-pr` e `/fechar-fase` em
-  `.claude/skills/`. As decisões estão no changelog, seção "Análise do
-  repositório".
-- **Testes de caracterização:** o texto já foi aprovado na conversa de
-  2026-10-02 (auditoria de cada transição e 404 das transições, num
-  arquivo novo, `src/compartilhado/registro/ciclo-vida.service.test.ts`).
-  Não está em nenhum arquivo ainda: o Claude reescreve a partir da tabela
-  da A4 e do `esquema-backend.md` §7 (B19).
-- Suíte: **251 passando**, ~175 s nesta máquina. Lint e typecheck limpos.
-- O que Matthew aprendeu hoje: contrato de qualidade ("medir e travar",
-  piso, exceção com dono e prazo); modelagem de ameaças e OWASP (IDOR,
-  TOCTOU, enumeração por tempo, custo do bcrypt); Cerca de Chesterton;
-  teste de caracterização; skills locais do Claude Code.
+- Branch **`fase/a4-sessao`**, ainda sem PR (o `/abrir-pr` abre em
+  rascunho). Commits da fase até aqui (`git log c10844c..fase/a4-sessao`):
+  - a colinha das skills (`docs/colinha-agent-skills.md`) e a abertura
+    da A4;
+  - **`test:`** caracterização do ciclo de vida
+    (`src/compartilhado/registro/ciclo-vida.service.test.ts`, 15 testes:
+    auditoria de cada transição e 404);
+  - **`refactor:`** `aplicarTransicao` (o "atualizar + auditar" num
+    lugar só, onde a trava do B19 vai entrar);
+  - **`fix:`** `buscarRegistroOuFalhar`, com o 404 sempre "Item não
+    encontrado." (o teste ficou vermelho antes, nos 5 casos);
+  - **`refactor:`** validador `() => void` em `publicar`, `submeter` e
+    `concluir`, como o do `cancelar` (11 chamadas nos 6 services).
+- Suíte: **266 passando** (251 + 15). Lint e typecheck limpos. A suíte
+  levou de 141 s a 276 s hoje, com os mesmos testes: a máquina estava
+  lenta. Se continuar, olhar o Docker Desktop antes de mexer nos testes.
+- O que Matthew aprendeu hoje: contrato de qualidade; modelagem de
+  ameaças e OWASP (IDOR, TOCTOU, enumeração por tempo, custo do bcrypt);
+  Cerca de Chesterton; teste de caracterização; skills locais do Claude
+  Code; refatoração em passos pequenos, cada um com a suíte completa.
 
 ## 3. Arquivos no meio de uma mudança
 
-Nenhum.
+Nenhum arquivo pela metade. O **item 4 das simplificações** (a
+`estadoAposDecisao`) ainda não foi começado: o roteiro dele está no
+"Próximo passo".
 
 ## 4. O que foi alterado nesta sessão
 
-`git log ea71cb7..c10844c`: a análise do repositório inteira (PR #5).
-O container do banco **do trabalho** foi recriado (porta só em
-`127.0.0.1`).
+`git log ea71cb7..fase/a4-sessao`: a análise do repositório inteira (PR
+#5, mesclado) e os commits da A4 listados acima. O container do banco
+**do trabalho** foi recriado (porta só em `127.0.0.1`).
 
 ## 5. Falhas (e o porquê)
 
@@ -109,24 +112,48 @@ O container do banco **do trabalho** foi recriado (porta só em
 
 ## 6. Próximo passo
 
-Na ordem da tabela da A4:
+1. **`estadoAposDecisao`, escrita por Matthew** (função pura, TDD, como
+   a `avaliarFechamentoNC`). O que foi combinado na conversa:
+   - **O que decide:** o estado do item depois da decisão do aprovador,
+     no fim do `cicloVidaService.decidir`. Sem o ramo de vários portões
+     (morto: todo tipo tem um portão só), são três casos:
 
-1. Commit `test:` com os **testes de caracterização** (Claude; o padrão
-   já é conhecido). Têm de passar inteiros de primeira.
-2. As simplificações do `ciclo-vida`, um commit `refactor:` cada, com a
-   suíte completa: `aplicarTransicao`; `buscarRegistroOuFalhar` (a
-   asserção da mensagem única entra antes, vermelha); o validador
-   `() => void`; e a **`estadoAposDecisao`, escrita por Matthew** (função
-   pura, sem o ramo de vários portões).
-3. O B19: começar pela skill **`/bug`** (registrar e fechar bugs nos
+     | Decisão | Fecha ao aprovar? | Estado depois |
+     |---|---|---|
+     | `REPROVADO` | (não importa) | `ABERTO` |
+     | `APROVADO` | sim (NC, contenção, classificação, investigação) | `FECHADO` |
+     | `APROVADO` | não (plano da Ação Corretiva) | `ABERTO` |
+
+     Sem o ramo morto, o `portaoAtual` não muda no `decidir`: a função
+     devolve **só o estado**.
+   - **Contrato:** recebe a `decisao` (`Decisao`) e um **objeto de
+     opções** `{ fecharAoAprovar: boolean }` (nome sugerido; o combinado
+     era `fecharAoAprovarUltimoPortao`, que perdeu sentido sem vários
+     portões; Matthew decide); devolve `EstadoRegistro`.
+   - **Conceito novo:** objeto de opções no lugar do booleano solto
+     (`decidir(..., false)` em `acao-corretiva.service.ts` vira
+     `decidir(..., { fecharAoAprovar: false })`).
+   - **Arquivos:** `src/compartilhado/registro/estado-apos-decisao.ts` e
+     `.test.ts`. O teste primeiro (3 casos), vermelho, depois a função.
+   - **Depois:** Claude revisa; a cadeia de `if` do `decidir` sai e entra
+     a função; a chamada da Ação Corretiva muda (mecânico, Claude ou
+     Matthew). Testes de caracterização e suíte completa; commit
+     `refactor:`.
+2. O **B19**: começar pela skill **`/bug`** (registrar e fechar bugs nos
    documentos), testada no registro dele; depois, o teste de
-   concorrência que falha e o conserto.
-4. Durante a fase: Matthew instala as cinco ferramentas do
+   concorrência que falha e o conserto, dentro do `aplicarTransicao`.
+3. Durante a fase: Matthew instala as cinco ferramentas do
    `CONSTRAINTS.md` e escreve os scripts `verificar:rapido`,
    `verificar:item` e `scripts/piso.mjs`.
 
 **Chegando em casa:** rodar o **`/retomar`** (primeiro uso real; ele
-segue os passos abaixo e confere plugins e ferramentas). Se algo sair
+segue os passos abaixo e confere plugins e ferramentas). Desde a última
+vez que a branch foi usada em casa (antes da A3 entrar): as duas
+migrations da A3 (`dias_de_calendario_como_date` e
+`investigacao_obrigatoria_na_acao`), o
+`.env.example` com as credenciais do compose e o `JWT_SECRET` de 32
+caracteres ou mais, e nenhuma dependência nova (o `package-lock.json`
+não mudou). O `npm run preparar` resolve as migrations. Se algo sair
 diferente do esperado, ajustar a skill. Os passos, para referência
 (`SETUP.md` §12.1 se o PC estiver parado há tempo):
 
@@ -149,4 +176,4 @@ diferente do esperado, ajustar a skill. Os passos, para referência
    `hostname` e as extensões que **não** vão para casa (Prettier, REST
    Client, Live Server, Docker antiga, Dev Containers). Registrar aqui o
    que mais aparecer, e commitar o `docs/ambiente/casa.txt`.
-7. `npm test` para confirmar: 251 passando.
+7. `npm test` para confirmar: **266 passando**.
