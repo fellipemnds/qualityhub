@@ -101,7 +101,9 @@ só conhece essas três, então a escolha de **onde** os arquivos ficam
 
 Node.js 24 · TypeScript 7 · Fastify 5 · `fastify-type-provider-zod` ·
 Prisma 7 (`@prisma/adapter-pg`) · PostgreSQL 17 · Zod 4 · bcrypt ·
-`@fastify/jwt` · `tsx` (desenvolvimento).
+`@fastify/jwt` · `tsx` (desenvolvimento). Desenvolvimento e CI: Vitest +
+`@testcontainers/postgresql` (ADR-36) e Biome (§9.5), instalados na A0
+e na A1.
 
 ### 3.2 Backend — acréscimos
 
@@ -112,8 +114,9 @@ Prisma 7 (`@prisma/adapter-pg`) · PostgreSQL 17 · Zod 4 · bcrypt ·
 | `@fastify/multipart` | Receber upload de anexos | ADR-34 |
 | Cliente S3 (`minio` ou equivalente) | **Só se** os anexos forem para armazenamento de objetos; em disco, usa o `fs` do próprio Node | ADR-34, §8.1 |
 | `@fastify/swagger` + `@fastify/swagger-ui` | Gerar e exibir o OpenAPI (a interface visual só em desenvolvimento) | ADR-37 |
-| **Dev:** `vitest`, `@testcontainers/postgresql` | Testes automáticos com banco real e descartável (mais um contêiner do MinIO pelo Testcontainers, se os anexos forem para armazenamento de objetos) | ADR-36 |
-| **Dev:** `@biomejs/biome` | Lint e formatação num só binário | §9.5 |
+| `@fastify/helmet` | Cabeçalhos de segurança (A4, auditoria R3) | `CONSTRAINTS.md`, changelog "Análise do repositório" |
+| **Dev:** contêiner do MinIO pelo Testcontainers | **Só se** os anexos forem para armazenamento de objetos | ADR-34, ADR-36 |
+| **Dev:** `@vitest/coverage-v8`, `dependency-cruiser`; **CI:** gitleaks, Semgrep, osv-scanner | Os checks do contrato de qualidade (cobertura, arquitetura, segredos, SAST, dependências), instalados por Matthew na A4 | `CONSTRAINTS.md` §2 |
 
 ### 3.3 Frontend
 
@@ -296,7 +299,7 @@ necessárias) fica no **Esquema Backend**.
   400 validação · 401 sem sessão · 403 sem permissão · 404 não
   encontrado · 409 transição inválida · 413 arquivo grande demais ·
   429 muitas tentativas · 500 erro interno.
-- `ignoreTrailingSlash` migra para `routerOptions` (aviso de
+- `ignoreTrailingSlash` migrou para `routerOptions` na A0 (aviso de
   depreciação `FSTDEP022`, pendência 5 do changelog).
 
 ### 7.2 Contrato com o frontend (ADR-37)
@@ -567,12 +570,12 @@ Entram no Plano de Implementação:
 | Papéis dentro do JWT (revogação atrasada) | §4 |
 | Rotas sem prefixo `/api` | §7.1 |
 | Respostas das rotas sem schema declarado | §7.2 |
-| `ignoreTrailingSlash` na forma depreciada | Changelog, pendência 5 |
+| ~~`ignoreTrailingSlash` na forma depreciada~~ — resolvido na A0 | Changelog, pendência 5 |
 | Ações de auditoria como strings soltas | Changelog, pendência 1 |
 | Login não auditado | Changelog, pendência 4 |
-| Barramento de eventos sem uso | §2.3 |
-| `package.json` sem scripts de `build`, `test`, `lint` e `typecheck` | — |
-| `testes/requests-acao-corretiva.http` descreve o modelo antigo de dois portões | `CLAUDE.md` |
+| ~~Barramento de eventos sem uso~~ — removido na A0 (ADR-38) | §2.3 |
+| `package.json` sem script de `build` (`test`, `lint` e `typecheck` entraram na A0/A1) | Plano, D1 |
+| ~~`testes/requests-acao-corretiva.http` descreve o modelo antigo de dois portões~~ — apagado na A0 | `CLAUDE.md` |
 
 ---
 
@@ -589,7 +592,7 @@ Entram no Plano de Implementação:
 | `partialIndexes` do Prisma é *preview* | Mantido; coberto por teste (um aprovador por item) |
 | Mudança na API quebrar o frontend sem aviso | Cliente gerado pelo Orval + TypeScript |
 | Guarda de fechamento contornável por alguma rota nova | Fechamento só pelo ciclo de vida; teste de que nenhuma rota altera `estado` diretamente |
-| **Vulnerabilidades nas dependências do Prisma 7** (`npm audit`, 2026-09-24): `deepmerge-ts` (estouro de pilha com objetos recursivos) e `mysql2` (vazamento de credencial e DoS), ambas de severidade alta | Risco prático baixo: o `deepmerge-ts` só junta a configuração do Prisma, que vem de arquivo nosso; o `mysql2` só é usado com MySQL, e usamos PostgreSQL. **Nunca rodar `npm audit fix --force`**: a "correção" rebaixa para o Prisma 6 e quebra o projeto. Reavaliar a cada atualização do Prisma |
+| **Vulnerabilidades nas dependências do Prisma 7** (`npm audit`, 2026-09-24): `deepmerge-ts` (estouro de pilha com objetos recursivos) e `mysql2` (vazamento de credencial e DoS), ambas de severidade alta | Risco prático baixo: o `deepmerge-ts` só junta a configuração do Prisma, que vem de arquivo nosso; o `mysql2` só é usado com MySQL, e usamos PostgreSQL. **Nunca rodar `npm audit fix --force`**: a "correção" rebaixa para o Prisma 6 e quebra o projeto. Reavaliar a cada atualização do Prisma. Dono e prazo da aceitação: exceção **X1** do `CONSTRAINTS.md` §5 (vence em 2026-12-31) |
 
 ---
 
@@ -638,3 +641,4 @@ backend — só a fase de deploy.
 | 2026-09-30 | v1.4 — colunas de dia de calendário como `@db.Date` (§6) |
 | 2026-09-30 | v1.3 — dias de calendário só em `"AAAA-MM-DD"` na entrada da API (§6, §7, B14) |
 | 2026-09-30 | v1.2 — convenção de dia de calendário (meia-noite UTC, lido em UTC; "hoje" pelo `hojeEmSaoPaulo()`), testes em `TZ=UTC` (§6, B11) |
+| 2026-10-02 | v1.5 — coerência documental: Vitest, Testcontainers e Biome no "como está" (§3.1); ferramentas do `CONSTRAINTS.md` e `@fastify/helmet` nos acréscimos (§3.2); dívidas resolvidas riscadas (§12); risco do Prisma ligado à exceção X1 (§13) |

@@ -9,7 +9,7 @@
 > **Fonte de verdade do banco é o `prisma/schema.prisma`.** Este
 > documento explica o porquê e lista o que muda; não repete cada campo.
 >
-> **Status:** v1 (2026-09-24). Decisões na §9.
+> **Status:** v1.32 (2026-10-02). Decisões na §9.
 
 ---
 
@@ -65,7 +65,7 @@ registra coisas que não são registros, como login e criação de usuário).
 | `Atribuicao` | Colaboradores e aprovador de cada item | **Um aprovador por item** (índice único parcial `atribuicao_um_aprovador`); a mesma pessoa não é atribuída duas vezes na mesma função |
 | `Aprovacao` | Cada decisão: portão, aprovado/reprovado, motivo, quem, se foi auto-aprovação | — (append-only por convenção do código) |
 | `Reabertura` / `Cancelamento` | Evento + motivo + autor + data | — |
-| `ContadorSequencia` | Último número por prefixo e ano | Chave `(prefixo, ano)`; lido com `SELECT FOR UPDATE` para não repetir número (ADR-17) |
+| `ContadorSequencia` | Último número por prefixo e ano | Chave `(prefixo, ano)`; criado ou incrementado num comando só (`INSERT ... ON CONFLICT ... RETURNING`), para não repetir nem pular número sob concorrência (ADR-17, B15) |
 | `Auditoria` | Histórico de toda escrita: entidade, ação, antes/depois, quem, quando | Índice por `(entidade, entidadeId, registradoEm)` — é o que o feed vai ler |
 
 ### 2.2 NC e filhos
@@ -77,7 +77,7 @@ registra coisas que não são registros, como login e criação de usuário).
 | `Contencao` | N por NC | — |
 | `Investigacao` | N por NC | `conteudo` (JSON livre) guarda as etapas do A3; `causaDireta` e `causaRaiz` são texto consultável |
 | `Hipotese` | N por Investigação | **Não** é `Registro`: sem ciclo de vida próprio |
-| `AcaoCorretiva` | N por NC, ligada a uma Investigação | `investigacaoId` anulável no banco, mas preenchido pelo fluxo |
+| `AcaoCorretiva` | N por NC, ligada a uma Investigação | `investigacaoId` obrigatório (`NOT NULL`, chave estrangeira em `RESTRICT`) desde a A3 (RN-49) |
 | `Verificacao` | N por Ação Corretiva | Nasce só por `finalizarExecucaoAcaoCorretiva` |
 
 ### 2.3 Usuários
@@ -327,7 +327,7 @@ UUID v7, paginação por cursor, erros `{ mensagem, error? }`, **schema
 declarado na entrada e na resposta** de toda rota (é o que alimenta o
 OpenAPI e o cliente gerado).
 
-Legenda: **=** mantém · **Δ** muda · **＋** nova · **✕** remove.
+Legenda: **=** mantém · **Δ** muda · **＋** nova · **✕** remove · **✅** já feito (até a A3).
 
 Os caminhos abaixo são mostrados **sem** o prefixo `/api`.
 
@@ -375,43 +375,49 @@ de todo mundo não precisam ir para qualquer tela.
 | Δ | `POST /nc` | Aceita `colaboradores: id[]` opcional (PRD Q10), na mesma transação |
 | Δ | `GET /nc` | Filtros novos: `etapa`, `setorId`, `prazoVencido`, `semAprovador`, `busca` (código ou título). Cada item volta com **etapa** e **indicadores**. Como a etapa é calculada no código (não no SQL), o filtro por etapa é aplicado **em memória** antes da paginação — viável porque o volume é pequeno (TRD §10); se crescer muito, revisita-se |
 | Δ | `GET /nc/:id` | + etapa, indicadores, último motivo de reprovação |
-| ＋ | `GET /nc/:id/checklist-fechamento` | A lista do que falta, nos dois grupos (§4.3) |
-| Δ | `POST /nc/:id/submeter` | Guarda nova (RN-21): toda investigação não cancelada fechada; responde 409 com a lista do que falta |
-| Δ | `PATCH /nc/:id` · `POST /nc` | `detectadoEm` comparado com o **dia de hoje em São Paulo**, calculado a cada requisição (B9, B11) |
-| Δ | `POST /nc/:id/cancelar` | Recusa `RASCUNHO` (B12) |
-| ＋ | `POST /nc/:id/retirar` | Retira da aprovação: `EM_APROVACAO` → `ABERTO`, mesmo portão, sem `Aprovacao` (RN-48) |
+| ＋ ✅ | `GET /nc/:id/checklist-fechamento` | A lista do que falta, nos dois grupos (§4.3) |
+| Δ ✅ | `POST /nc/:id/submeter` | Guarda nova (RN-21): toda investigação não cancelada fechada; responde 409 com a lista do que falta |
+| Δ ✅ | `PATCH /nc/:id` · `POST /nc` | `detectadoEm` comparado com o **dia de hoje em São Paulo**, calculado a cada requisição (B9, B11) |
+| Δ ✅ | `POST /nc/:id/cancelar` | Recusa `RASCUNHO` (B12) |
+| ＋ ✅ | `POST /nc/:id/retirar` | Retira da aprovação: `EM_APROVACAO` → `ABERTO`, mesmo portão, sem `Aprovacao` (RN-48) |
 | = | `DELETE`, `/publicar`, `/decidir`, `/reabrir` | — |
 
 ### 6.4 Filhos
 
 Mesma forma para os cinco tipos: `POST /nc/:ncId/<tipo>` para criar;
 `GET`, `PATCH`, `DELETE /<tipo>/:id`; ações `/publicar`, `/submeter`,
-`/decidir`, `/cancelar`; `GET /<tipo>?naoConformidadeId=`.
+`/retirar`, `/decidir`, `/cancelar`; `GET /<tipo>?naoConformidadeId=&estado=`.
+Exceções: a **Classificação** não tem `/cancelar` (reclassificar é
+criar outra, RN-26); a **Verificação** não é criada pela API (nasce do
+`/finalizar-execucao`), não tem `DELETE`, `/publicar`, `/submeter`,
+`/retirar` nem `/decidir`, fecha por `POST /verificacoes/:id/concluir`, e
+a lista dela filtra por `acaoCorretivaId`. A Ação Corretiva tem ainda
+`/finalizar-execucao`.
 
 | | Rota | O que muda |
 |---|---|---|
-| Δ | Todos os `POST /nc/:ncId/<tipo>` | O filho nasce com o **aprovador da NC**, se houver (RN-46, B13) |
-| Δ | Todos os `/<tipo>/:id/cancelar` | Recusam `RASCUNHO` (B12) |
-| ＋ | Todos os `POST /<tipo>/:id/retirar` | Retira da aprovação, como na NC (RN-48). Não vale para Verificação (não tem portão). **Feito na A3** (2026-10-01): `cicloVidaService.retirar`, com a ação do submeter como parâmetro (`CLASSIFICAR` na Classificação); auditoria `RETIRAR_DA_APROVACAO` |
+| Δ ✅ | Todos os `POST /nc/:ncId/<tipo>` | O filho nasce com o **aprovador da NC**, se houver (RN-46, B13) |
+| Δ ✅ | Todos os `/<tipo>/:id/cancelar` | Recusam `RASCUNHO` (B12) |
+| ＋ ✅ | Todos os `POST /<tipo>/:id/retirar` | Retira da aprovação, como na NC (RN-48). Não vale para Verificação (não tem portão). **Feito na A3** (2026-10-01): `cicloVidaService.retirar`, com a ação do submeter como parâmetro (`CLASSIFICAR` na Classificação); auditoria `RETIRAR_DA_APROVACAO` |
 | Δ | Todos os `GET /<tipo>/:id` | + último motivo de reprovação |
-| Δ | `POST /nc/:ncId/acoes-corretivas` · `PATCH /acoes-corretivas/:id` | `investigacaoId` **obrigatório já na criação**, de uma investigação **desta NC** em `ABERTO`; o `PATCH` não o apaga (B10, RN-49) |
-| Δ | `POST /investigacoes/:id/submeter` | Exige os planos das ações ligadas aprovados (RN-24, B5); responde 409 com a lista do que falta |
-| Δ | `POST /investigacoes/:id/cancelar` | Exige as ações ligadas canceladas ou fechadas (RN-50); responde 409 com a lista das que faltam. **Feito na A3 (8f):** `avaliarCancelamentoInvestigacao`, no validador opcional que o `cicloVidaService.cancelar` ganhou (roda depois de estado e permissão) |
+| Δ ✅ | `POST /nc/:ncId/acoes-corretivas` · `PATCH /acoes-corretivas/:id` | `investigacaoId` **obrigatório já na criação**, de uma investigação **desta NC** em `ABERTO`; o `PATCH` não o apaga (B10, RN-49) |
+| Δ ✅ | `POST /investigacoes/:id/submeter` | Exige os planos das ações ligadas aprovados (RN-24, B5); responde 409 com a lista do que falta |
+| Δ ✅ | `POST /investigacoes/:id/cancelar` | Exige as ações ligadas canceladas ou fechadas (RN-50); responde 409 com a lista das que faltam. **Feito na A3 (8f):** `avaliarCancelamentoInvestigacao`, no validador opcional que o `cicloVidaService.cancelar` ganhou (roda depois de estado e permissão) |
 | ＋ | `POST /investigacoes/:id/hipoteses` | Cria hipótese (lacuna L1) — só colaborador, investigação editável |
 | ＋ | `PATCH /hipoteses/:id` · `DELETE /hipoteses/:id` | Edita / apaga — mesmas regras |
 | Δ | `GET /investigacoes/:id` | + lista de hipóteses e de ações corretivas vinculadas |
-| Δ | `GET /acoes-corretivas/:id` | + `planoAprovado` |
-| Δ | `PATCH /acoes-corretivas/:id` | Com plano aprovado, só aceita os campos de **execução** (B2) |
-| Δ | `POST /acoes-corretivas/:id/finalizar-execucao` | Exige plano aprovado (B1) |
-| Δ | `POST /verificacoes/:id/concluir` | Reações corrigidas (B3, B4, B6) |
-| ✕ | `DELETE /verificacoes/:id` | Verificação nunca é rascunho — a rota sempre falha (B8) |
+| Δ ✅ | `GET /acoes-corretivas/:id` | + `planoAprovado` |
+| Δ ✅ | `PATCH /acoes-corretivas/:id` | Com plano aprovado, só aceita os campos de **execução** (B2) |
+| Δ ✅ | `POST /acoes-corretivas/:id/finalizar-execucao` | Exige plano aprovado (B1) |
+| Δ ✅ | `POST /verificacoes/:id/concluir` | Reações corrigidas (B3, B4, B6) |
+| ✕ ✅ | `DELETE /verificacoes/:id` | Verificação nunca é rascunho — a rota sempre falha (B8) |
 
 ### 6.5 Genéricas de item (valem para qualquer `Registro`)
 
 | | Método e caminho | O que faz |
 |---|---|---|
 | ＋ | `GET /registros/:id/atribuicoes` | Colaboradores e aprovador (painel de atribuições) |
-| Δ | `PUT /registros/:id/aprovador` · `POST`/`DELETE /registros/:id/colaboradores` | Só em `RASCUNHO`/`ABERTO`; em `EM_APROVACAO`, só o `GERENTE` troca o aprovador (RN-47, B17). Colaborador inexistente → 404 (B16) |
+| Δ ✅ | `PUT /registros/:id/aprovador` · `POST`/`DELETE /registros/:id/colaboradores` | Só em `RASCUNHO`/`ABERTO`; em `EM_APROVACAO`, só o `GERENTE` troca o aprovador (RN-47, B17). Colaborador inexistente → 404 (B16) |
 | ＋ | `GET /registros/:id/feed?cursor=` | Eventos + comentários, em ordem cronológica, paginado |
 | ＋ | `POST /registros/:id/comentarios` | Comenta (ou responde, com `respostaAId`) |
 | ＋ | `PATCH /comentarios/:id` · `DELETE /comentarios/:id` | RN-31 a RN-33 |
@@ -468,6 +474,7 @@ Encontradas na **revisão cruzada** dos documentos com o código
 | **B16** ✅ | **Adicionar como colaborador um usuário que não existe dá 500.** O service não confere se o usuário existe, e o erro de chave estrangeira do Prisma (P2003) cai no tratador genérico. Achado pelos testes da A2 | `atribuicao.service.ts` (`adicionarColaboradores`) | Conferir cada id antes de inserir e responder 404, como o `definirAprovador` já faz. **Corrigido na A3** (2026-10-01): todos os ids conferidos antes de inserir qualquer um (tudo ou nada). Teste "B16" em `atribuicao.routes.test.ts` |
 | **B17** ✅ | **Atribuições mudam em qualquer estado**, inclusive em item `FECHADO` ou `CANCELADO`: nenhuma das três rotas confere o estado (PRD Q15). Achado pelos testes da A2 | `atribuicao.service.ts` | Recusar (409) fora de `RASCUNHO`/`ABERTO`; em `EM_APROVACAO`, aceitar só a troca de aprovador por `GERENTE` (RN-47). **Corrigido na A3** (2026-10-01): as três operações conferem o estado; em `EM_APROVACAO`, a troca de aprovador exige a ação nova `TROCAR_APROVADOR_EM_APROVACAO` (só `GERENTE`, 403 para os outros). Testes "B17" em `atribuicao.routes.test.ts` |
 | **B18** ✅ | **Motivo em branco em reabrir e cancelar volta 409, não 400.** O `motivoSchema` aceita `"   "` (só `min(1)`); quem recusa é o service, com `TransicaoInvalidaError` e uma mensagem que mistura estado e motivo — e diz "concluído" nas duas rotas. O frontend trataria um erro de campo como erro de estado. Achado pelos testes da A2 | `motivo.schema.ts`, `ciclo-vida.service.ts` (`reabrir`, `cancelar`) | `z.string().trim().min(1)` no `motivoSchema` (400 antes do service); tirar a checagem de motivo do `if` de estado e corrigir as mensagens. Testes prontos com `it.fails` (`nc.routes.test.ts`, `contencao.routes.test.ts`). **Corrigido na A3** (2026-10-01): `z.string().trim().min(1)` no `motivoSchema` (400 antes do service); no `reabrir` e no `cancelar`, o `if` de estado ficou só com o estado, e as mensagens dizem "reaberto"/"cancelado". Os `it.fails` viraram `it` |
+| **B19** | **Transições sem trava: duas requisições simultâneas passam pela mesma checagem** (TOCTOU — "confere e depois age"). As transições leem o estado, conferem e atualizam com `WHERE` só pelo `id`; no *read committed* do PostgreSQL, o `UPDATE` da segunda transação espera o da primeira e executa mesmo assim. Efeitos prováveis: duplo clique em "Finalizar execução" gera **duas Verificações**; duas publicações do mesmo rascunho consomem **dois códigos** (um número some da sequência, contra a garantia da A2); duas decisões criam dois registros em `Aprovacao`; o mesmo convite usado duas vezes no `definir-senha`. Mecanismo certo, ainda não provado por teste. Achado na auditoria de segurança de 2026-10-02 (R1) | `ciclo-vida.service.ts` (todas as transições), `acao-corretiva.service.ts` (`finalizarExecucao`), `auth.service.ts` (`definirSenha`) | Começa por um teste de concorrência que falha (como o da A2), por transição. Conserto: atualizar só se o estado ainda for o esperado (`updateMany` com `{ id, estado }` no `where`, 409 se `count === 0`) ou travar a linha no início (`SELECT ... FOR UPDATE`). Fase: **A4, primeiro item** (decidido em 2026-10-02) |
 
 **Os mais graves são B1, B2 e B9.** B1 e B2, juntos, permitem que a ação
 corretiva seja feita sem o QA concordar com o plano — exatamente o que o
@@ -482,7 +489,7 @@ coluna da correção, com o teste que o prova.
 ## 8. Ordem sugerida (para o Plano de Implementação)
 
 1. Testes sobre o comportamento **atual** (rede de proteção)
-2. B1–B18, cada um com seu teste
+2. B1–B18, cada um com seu teste (feito na A3; o que veio depois, como o B19, está no plano)
 3. Sessão nova (M1 parcial + rotas de auth)
 4. Schema de resposta em todas as rotas + prefixo `/api` + OpenAPI
 5. Usuários, setores, pessoas (M1, M2)
@@ -516,30 +523,32 @@ Com Matthew, em 2026-09-24.
 | 2026-09-24 | v1.1 — revisão cruzada com o código: B9–B13; guarda em dois grupos (filhos/envio) com aprovador; triagem inclui filhos; catálogo de permissões novas; eventos do feed; regras de convite e usuário inativo |
 | 2026-09-28 | v1.2 — B14 (data obrigatória vazia passa na validação), achado pelos testes da fase A2 |
 | 2026-09-30 | v1.3 — B15 (primeira publicação do ano sob concorrência dá erro 500), achado pelo teste de concorrência da A2 |
-| 2026-10-01 | v1.30 — B18 corrigido (A3): todos os bugs B1–B18 da A3 corrigidos (o B7 é da A4) |
-| 2026-10-01 | v1.29 — RN-48 implementada (A3): `POST /<tipo>/:id/retirar` nos cinco tipos com portão |
-| 2026-10-01 | v1.28 — B17 corrigido (A3): RN-47 e a ação `TROCAR_APROVADOR_EM_APROVACAO` |
-| 2026-10-01 | v1.27 — B16 corrigido (A3) |
-| 2026-10-01 | v1.26 — B15 corrigido (A3) |
-| 2026-10-01 | v1.25 — B8 corrigido (A3) |
-| 2026-10-01 | v1.24 — B12 corrigido (A3) |
-| 2026-10-01 | v1.23 — B13 corrigido (A3) |
-| 2026-10-01 | v1.22 — B3 corrigido (A3) |
-| 2026-10-01 | v1.21 — B6 corrigido (A3) |
-| 2026-10-01 | v1.20 — B4 corrigido (A3) |
-| 2026-10-01 | v1.19 — RN-50 implementada (A3 8f): cancelar investigação com ação pendente recusado |
-| 2026-10-01 | v1.18 — B5 corrigido (A3 8e): a investigação só é submetida com os planos das ações aprovados |
-| 2026-10-01 | v1.17 — guarda de fechamento da NC implementada (A3 8c/8d): lista do que falta, 409 com `error`, `GET /nc/:id/checklist-fechamento` |
-| 2026-10-01 | v1.16 — RN-49 implementada (A3 8b): `investigacaoId` `NOT NULL`, ação só em investigação aberta |
-| 2026-10-01 | v1.15 — planos de ação conferidos pela Investigação (PRD Q17): §4.3 em duas guardas, B5 redefinido, B10 ampliado (RN-49), 10 etapas; cancelar investigação com ações pendentes (RN-50, Q18) |
-| 2026-10-01 | v1.14 — B10 corrigido (A3) |
-| 2026-09-30 | v1.13 — B2 corrigido (A3) |
-| 2026-09-30 | v1.12 — B1 corrigido (A3) |
-| 2026-09-30 | v1.11 — plano aprovado (§4.2) implementado |
-| 2026-09-30 | v1.10 — `detectadoEm`, `executadaEm`, `prazo` (ação e verificação), `executadoEm` e `verificadoEm` como `@db.Date` (migration `dias_de_calendario_como_date`) |
-| 2026-09-30 | v1.9 — B14 fechado também na entrada: dias só em `"AAAA-MM-DD"` (A3) |
-| 2026-09-30 | v1.8 — B14 corrigido nas transições (A3) |
-| 2026-09-30 | v1.7 — B11 corrigido (A3) |
-| 2026-09-30 | v1.6 — B9 corrigido (A3, primeiro TDD) |
-| 2026-09-30 | v1.5 — B18 (motivo em branco volta 409), dos testes que aposentaram os `.http` |
 | 2026-09-30 | v1.4 — B16 (colaborador inexistente dá 500) e B17 (atribuições em qualquer estado), dos testes de atribuição da A2; rota nova `/retirar` (RN-48); ação `TROCAR_APROVADOR_EM_APROVACAO` no catálogo |
+| 2026-09-30 | v1.5 — B18 (motivo em branco volta 409), dos testes que aposentaram os `.http` |
+| 2026-09-30 | v1.6 — B9 corrigido (A3, primeiro TDD) |
+| 2026-09-30 | v1.7 — B11 corrigido (A3) |
+| 2026-09-30 | v1.8 — B14 corrigido nas transições (A3) |
+| 2026-09-30 | v1.9 — B14 fechado também na entrada: dias só em `"AAAA-MM-DD"` (A3) |
+| 2026-09-30 | v1.10 — `detectadoEm`, `executadaEm`, `prazo` (ação e verificação), `executadoEm` e `verificadoEm` como `@db.Date` (migration `dias_de_calendario_como_date`) |
+| 2026-09-30 | v1.11 — plano aprovado (§4.2) implementado |
+| 2026-09-30 | v1.12 — B1 corrigido (A3) |
+| 2026-09-30 | v1.13 — B2 corrigido (A3) |
+| 2026-10-01 | v1.14 — B10 corrigido (A3) |
+| 2026-10-01 | v1.15 — planos de ação conferidos pela Investigação (PRD Q17): §4.3 em duas guardas, B5 redefinido, B10 ampliado (RN-49), 10 etapas; cancelar investigação com ações pendentes (RN-50, Q18) |
+| 2026-10-01 | v1.16 — RN-49 implementada (A3 8b): `investigacaoId` `NOT NULL`, ação só em investigação aberta |
+| 2026-10-01 | v1.17 — guarda de fechamento da NC implementada (A3 8c/8d): lista do que falta, 409 com `error`, `GET /nc/:id/checklist-fechamento` |
+| 2026-10-01 | v1.18 — B5 corrigido (A3 8e): a investigação só é submetida com os planos das ações aprovados |
+| 2026-10-01 | v1.19 — RN-50 implementada (A3 8f): cancelar investigação com ação pendente recusado |
+| 2026-10-01 | v1.20 — B4 corrigido (A3) |
+| 2026-10-01 | v1.21 — B6 corrigido (A3) |
+| 2026-10-01 | v1.22 — B3 corrigido (A3) |
+| 2026-10-01 | v1.23 — B13 corrigido (A3) |
+| 2026-10-01 | v1.24 — B12 corrigido (A3) |
+| 2026-10-01 | v1.25 — B8 corrigido (A3) |
+| 2026-10-01 | v1.26 — B15 corrigido (A3) |
+| 2026-10-01 | v1.27 — B16 corrigido (A3) |
+| 2026-10-01 | v1.28 — B17 corrigido (A3): RN-47 e a ação `TROCAR_APROVADOR_EM_APROVACAO` |
+| 2026-10-01 | v1.29 — RN-48 implementada (A3): `POST /<tipo>/:id/retirar` nos cinco tipos com portão |
+| 2026-10-01 | v1.30 — B18 corrigido (A3): todos os bugs B1–B18 da A3 corrigidos (o B7 é da A4) |
+| 2026-10-02 | v1.31 — B19 registrado (transições sem trava sob concorrência), da auditoria de segurança |
+| 2026-10-02 | v1.32 — coerência documental: `ContadorSequencia` e `investigacaoId` do §2 como estão no banco; rotas já feitas marcadas com ✅ no §6; exceções de forma da Classificação e da Verificação no §6.4; histórico em ordem crescente |

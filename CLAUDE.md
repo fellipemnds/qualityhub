@@ -9,6 +9,11 @@ Este arquivo é o ponto de entrada rápido.
 **Princípio do produto:** funcional e sem risco de falha vale mais que
 entregar rápido.
 
+**Contrato de qualidade: ler o `CONSTRAINTS.md` antes de escrever
+código.** Nenhum agente afrouxa essa régua para uma mudança passar —
+check vermelho se resolve consertando o código; afrouxar só em commit
+próprio, com aprovação de Matthew (`CONSTRAINTS.md` §6).
+
 ## Documentos (planejamento concluído em 2026-09-24)
 
 | Documento | Responde |
@@ -17,7 +22,7 @@ entregar rápido.
 | `docs/fluxo-app.md` | Telas, navegação, etapa calculada da NC, jornadas, ações por estado, "Minhas pendências" |
 | `docs/ui-ux.md` | Fundações visuais, componentes (shadcn/ui), wireframes em texto, textos da tela |
 | `docs/trd.md` | Stack, sessão, API, anexos, testes, infraestrutura, hospedagem, ADR-33 a ADR-38 |
-| `docs/esquema-backend.md` | Modelo de dados, mudanças M1–M5, valores calculados, contrato da API, correções B1–B18 |
+| `docs/esquema-backend.md` | Modelo de dados, mudanças M1–M5, valores calculados, contrato da API, correções B1–B19 |
 | `docs/plano-implementacao.md` | **Ordem de execução**: fases A0–A6 (fundação do backend), B (design), C0–C8 (frontend em fatias), D (produção) |
 | `docs/changelog-arquitetura.md` | Registro de toda decisão de arquitetura e divergência do documento original. **Leia antes de propor mudança estrutural** |
 | `docs/arquitetura.md` | Documento de design **original** (histórico). Onde diverge dos documentos acima, eles valem |
@@ -37,11 +42,12 @@ para os outros documentos em vez de repetir o que já está neles.
 Ainda pendente fora do código: hospedagem (TRD §10.6), identidade
 visual.
 
-**Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B18; os
-corrigidos têm ✅). Corrigidos na A3: B9, B11, B14, B1, B2, B10, B5,
-B4, B6, B3, B13, B12, B8, B15, B16, B17, B18 (e a RN-48, retirar da
-aprovação, regra nova) — todos os da A3. Falta fechar a fase (PR #4); o
-B7 é da A4.
+**Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B19; os
+corrigidos têm ✅). A A3 corrigiu B1–B6 e B8–B18, e a RN-48 entrou como
+regra nova (fase fechada em 2026-10-02, PR #4). Ficam abertos o **B7**
+(papéis no token) e o **B19** (transições sem trava sob concorrência,
+achado na auditoria de segurança), os dois na A4: o B19 primeiro,
+depois de simplificar o `ciclo-vida.service.ts`.
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
@@ -51,21 +57,13 @@ Claude pode abrir PRs e ler o CI com ele. O `git push` continua sendo
 de Matthew, salvo pedido explícito.
 
 **Dois computadores:** Matthew alterna entre o do trabalho e o de casa
-(mesmo ambiente: Windows + WSL2 + Docker Desktop + nvm). Seguir o
-`SETUP.md` §12. **Qual máquina é esta:** compare o `hostname` com a
-linha `hostname:` de `docs/ambiente/trabalho.txt` e `casa.txt`. Quando
-ele disser **"vou trocar de computador"**: rodar `npm run typecheck`,
-`npm run lint` e `npm run ambiente -- <esta máquina>` (foto do
-ambiente), atualizar o `handoff.md`, propor o commit na branch da fase
-(com a foto) e lembrá-lo do `git push`. Quando disser **"continuar de
-onde parei"**: ler o `handoff.md`, conferir a branch (`git status`),
-lembrar do `npm run preparar` se ele ainda não rodou, rodar `npm run
-ambiente -- <esta máquina>` e `npm run ambiente -- comparar`, contar a
-Matthew o que difere do outro PC (e o que mudou nesta máquina desde a
-última foto, pelo `git diff`), registrar no `handoff.md` e retomar pelo
-"Próximo passo". Memória e conversas do Claude **não**
-passam de uma máquina para a outra — o que precisa sobreviver vai para
-o `handoff.md` (estado) ou para este arquivo (regras).
+(mesmo ambiente: Windows + WSL2 + Docker Desktop + nvm; `SETUP.md` §12).
+**Saindo** ("vou trocar de computador"): skill **`/trocar-pc`**.
+**Chegando** ("continuar de onde parei"): skill **`/retomar`**. Os
+passos estão nas skills (`.claude/skills/`, versionadas, as mesmas nos
+dois PCs). Memória e conversas do Claude **não** passam de uma máquina
+para a outra — o que precisa sobreviver vai para o `handoff.md`
+(estado), para este arquivo (regras) ou para uma skill (rotinas).
 
 ## Como trabalhamos (workflow com Claude)
 

@@ -1,0 +1,10 @@
+{
+  "enabledPlugins": {
+    "ponytail@ponytail": true,
+    "agent-skills@addy-agent-skills": true,
+    "taste-skill@taste-skill": true,
+    "understand-anything@understand-anything": true,
+    "frontend-slides@frontend-slides": true,
+    "diagram-design@diagram-design": true
+  }
+}
