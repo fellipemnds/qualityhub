@@ -9,6 +9,41 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Análise do repositório (branch `chore/analise-repositorio`, entre a A3 e a A4)
+
+Quatro análises com as skills do `agent-skills` (2026-10-02, Matthew):
+contrato de qualidade, auditoria de segurança, revisão e simplificação
+de código, e coerência documental. Nenhuma regra de negócio mudou.
+
+- **Contrato de qualidade em `CONSTRAINTS.md`** (raiz). Um piso
+  (nenhuma supressão, stub, teste facilitado, segredo ou configuração
+  afrouxada) e uma tabela com o comando, o momento e o efeito (bloqueia
+  ou avisa) de cada check. Tipos, lint, testes, segredos e arquitetura
+  bloqueiam; SAST, dependências e cobertura só avisam até o fim da A4. Os
+  números são "medir e travar", sem metas inventadas. Afrouxar a régua
+  só em commit próprio, com aprovação de Matthew. O `CLAUDE.md` exige
+  ler o arquivo antes de escrever código. **Sem ADR:** é regra de
+  trabalho, não escolha de arquitetura.
+- **Dependências de verificação novas** (TRD §1, princípio 2), instaladas
+  por Matthew na A4: `@vitest/coverage-v8` (cobertura) e
+  `dependency-cruiser` (as regras de arquitetura do `CLAUDE.md` viram
+  check) como dependências de desenvolvimento; gitleaks (segredos),
+  Semgrep (SAST) e osv-scanner (dependências) só no CI, sem instalar nas
+  máquinas. Escolhidas porque são as ferramentas de referência de cada
+  dimensão: config e formato de regra que o resto do ecossistema já usa.
+- **Endurecimento aplicado** (auditoria de segurança): bcrypt com custo
+  12 no `definir-senha` (era 10; um teste confere o hash); o servidor
+  recusa subir com `JWT_SECRET` com menos de 32 caracteres; Postgres de
+  desenvolvimento publicado só em `127.0.0.1`.
+- **Achados alocados no plano:** B19 (transições sem trava sob
+  concorrência) na A4, antes dele a simplificação do `ciclo-vida`; os
+  outros achados na A4, A5 e A6. `@fastify/helmet` entra na A4; o
+  `@fastify/cors` **não**: front e back na mesma origem (TRD §2.1).
+- **Vulnerabilidades do Prisma 7** viram a exceção **X1** do
+  `CONSTRAINTS.md` (dono e prazo: 2026-12-31), ligada ao risco do TRD §13
+  (o porquê). Os IDs de exceção começam com X para não colidir com as
+  decisões E1–E3 do esquema.
+
 ### Fase A3 — correções de regra (branch `fase/a3-correcoes`)
 
 - **Planos de ação conferidos pela Investigação, não pela NC** (PRD Q17,
@@ -825,7 +860,9 @@ registrar`. Lista já em uso: `CRIAR_RASCUNHO`, `PUBLICAR`,
    planos de Ação Corretiva aprovados. Junto, a reação a `NAO_EFICAZ` deve
    reabrir só o que estiver fechado (Q2 — hoje dá erro se a NC estiver
    aberta) e `PARCIALMENTE_EFICAZ` deve copiar todos os colaboradores (Q3).
-   Implementação pendente.
+   **Implementado na A3**, já com a regra revista na Q17: os planos são
+   conferidos pela Investigação (RN-24), e a NC exige toda investigação
+   fechada (RN-21).
 
 8. ~~**Listagem de NCs (`listarNC`)** — hoje sem filtros nem paginação~~ —
    **RESOLVIDO.** `GET /nc` aceita `estado`, `origem`, `classificacao`,

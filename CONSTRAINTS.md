@@ -166,11 +166,12 @@ primeiro. Quando a suíte ficar abaixo de ~90 s (um banco por worker,
 ## 5. Exceções
 
 Toda exceção tem dono e validade. Vencida, ou se renova com novo
-motivo, ou o problema é consertado.
+motivo, ou o problema é consertado. Os IDs começam com **X** para não
+colidir com as decisões E1–E3 do `docs/esquema-backend.md` §9.
 
 | ID | Regra | Onde | Motivo | Dono | Vence |
 |---|---|---|---|---|---|
-| E1 | Dependências: nada alto ou acima | `deepmerge-ts` e `mysql2`, transitivas do Prisma 7 (4 vulnerabilidades altas no `npm audit`) | Risco prático baixo (`docs/trd.md` §13): o `deepmerge-ts` só junta a config do Prisma, que é nossa; o `mysql2` só é usado com MySQL. A "correção" do `npm audit fix --force` rebaixa para o Prisma 6 e quebra o projeto — **nunca rodar**. Reavaliar a cada atualização do Prisma | Matthew | 2026-12-31 |
+| X1 | Dependências: nada alto ou acima | `deepmerge-ts` e `mysql2`, transitivas do Prisma 7 (4 vulnerabilidades altas no `npm audit`) | Risco prático baixo, aceito no `docs/trd.md` §13 (o porquê fica lá; aqui, o dono e o prazo): o `deepmerge-ts` só junta a config do Prisma, que é nossa; o `mysql2` só é usado com MySQL. A "correção" do `npm audit fix --force` rebaixa para o Prisma 6 e quebra o projeto — **nunca rodar**. Reavaliar a cada atualização do Prisma | Matthew | 2026-12-31 |
 
 ---
 

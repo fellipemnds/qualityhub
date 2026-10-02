@@ -82,6 +82,15 @@ ele não é o aprovador designado.
 - Criação de usuários e concessão de papéis
 - Listagem de NCs com filtros (estado, origem, classificação, período,
   "minhas") e paginação
+- **Ajustes decididos em §9, feitos na A3 (2026-10-02):** planos de ação
+  aprovados antes de submeter a investigação, e a NC exigindo toda
+  investigação fechada (RN-21, RN-24); Ação Corretiva nascendo ligada a
+  uma investigação aberta da mesma NC (RN-49); cancelar investigação só
+  com as ações resolvidas (RN-50); `NAO_EFICAZ` reabrindo só o que
+  estiver fechado e `PARCIALMENTE_EFICAZ` copiando todos os
+  colaboradores (RN-23); item filho herdando o aprovador da NC (RN-46);
+  rascunho que não se cancela, só se exclui (RN-06); atribuições só em
+  rascunho ou aberto (RN-47); retirar da aprovação (RN-48)
 
 ### 4.2 MVP — falta construir
 
@@ -89,13 +98,7 @@ ele não é o aprovador designado.
 
 | Item | Regra |
 |---|---|
-| Planos de ação aprovados antes de submeter a investigação; a NC exige toda investigação fechada | RN-21, RN-24 |
-| Ação Corretiva nasce ligada a uma investigação aberta da mesma NC | RN-49 |
-| `NAO_EFICAZ` reabre só o que estiver fechado (hoje dá erro) | RN-23 |
-| `PARCIALMENTE_EFICAZ` copia todos os colaboradores da ação anterior | RN-23 |
 | Criar NC já com colaboradores, num passo só | RF-01 |
-| Item filho herda o aprovador da NC | RN-46 |
-| Rascunho não pode ser cancelado, só excluído | RN-06 |
 
 **Funcionalidades novas:**
 
@@ -204,8 +207,8 @@ Legenda: ✅ pronto · 🔧 pronto, com ajuste decidido · ⬜ a construir
 | RF-04 | Registrar contenção e disposição | a)1, a)2 | ✅ |
 | RF-05 | Investigação de causa raiz pelo método **A3 SPS** (inclui Ishikawa e 5 Porquês como etapas), com hipóteses testadas | b)1, b)2, b)3 | ✅ backend · formulário A3 no frontend |
 | RF-06 | Plano de ação corretiva **aprovado antes da execução**; execução registrada com evidência | c) | ✅ |
-| RF-07 | Verificação de eficácia com resultado em três níveis e reação automática (§5.4) | d) | 🔧 |
-| RF-08 | NC só fecha com classificação e investigações aprovadas (a investigação, só com os **planos de ação** aprovados) e nenhuma contenção pendente; reabrível | c), d) | 🔧 |
+| RF-07 | Verificação de eficácia com resultado em três níveis e reação automática (§5.4) | d) | ✅ |
+| RF-08 | NC só fecha com classificação e investigações aprovadas (a investigação, só com os **planos de ação** aprovados) e nenhuma contenção pendente; reabrível | c), d) | ✅ |
 | RF-09 | Rascunhos visíveis a todos, editáveis só pelos colaboradores | — | ✅ |
 | RF-10 | Grupo de colaboradores + um único aprovador por item | — | ✅ |
 | RF-11 | Feed por item: eventos do sistema + comentários com respostas e menções `@pessoa` / `#item` | 10.2.2 a) | ⬜ |
@@ -391,3 +394,4 @@ Limite de tamanho e armazenamento dos anexos foram resolvidos no TRD (§8).
 | 2026-09-24 | v1.1 — revisão cruzada com o código: RN-06 e RN-24 ajustadas, RN-46 nova (Q13, Q14) |
 | 2026-09-30 | v1.2 — RN-47 (atribuições por estado) e RN-48 (retirar da aprovação), dos testes da A2 (Q15, Q16) |
 | 2026-10-01 | v1.3 — planos de ação conferidos pela Investigação, não pela NC: RN-21 e RN-24 revistas, RN-49 nova (Q17); RN-50, cancelar investigação com ações pendentes (Q18) |
+| 2026-10-02 | v1.4 — ajustes feitos na A3 passam para o §4.1; RF-07 e RF-08 prontos |
