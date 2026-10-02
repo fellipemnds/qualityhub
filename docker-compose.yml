@@ -8,7 +8,8 @@ services:
       POSTGRES_PASSWORD: qualityhub_dev
       POSTGRES_DB: qualityhub
     ports:
-      - "5432:5432"
+      # Só a própria máquina conecta: sem isso, a porta abre para a rede da empresa (auditoria L7)
+      - "127.0.0.1:5432:5432"
     volumes:
       - qualityhub-data:/var/lib/postgresql/data
 

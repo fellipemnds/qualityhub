@@ -24,8 +24,9 @@ app.setSerializerCompiler(serializerCompiler);
 
 const jwtSecret = process.env.JWT_SECRET;
 
-if (!jwtSecret) {
-    throw new Error("JWT_SECRET não está definida em .env");
+// Segredo curto pode ser descoberto por força bruta, e com ele qualquer um forja um token (auditoria L8)
+if (!jwtSecret || jwtSecret.length < 32) {
+    throw new Error("JWT_SECRET precisa estar definida em .env, com pelo menos 32 caracteres");
 }
 
 app.register(fastifyJwt, { secret: jwtSecret });

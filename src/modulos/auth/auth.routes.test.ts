@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { app } from "../../app.js";
+import { prisma } from "../../compartilhado/prisma/cliente.js";
 import { chamar, perfisDeFora } from "../../testes/cenarios.js";
 import { criarUsuario } from "../../testes/fabricas.js";
 
@@ -86,6 +87,22 @@ describe("POST /auth/definir-senha", () => {
         expect(resultado.statusCode).toBe(204);
         const login = await app.inject({ method: "POST", url: "/auth/login", payload: { email, senha } });
         expect(login.statusCode).toBe(200);
+    });
+
+    it("guarda a senha com bcrypt de custo 12", async () => {
+        // Prepara
+        const { email, tokenConvite } = await convidar();
+
+        // Chama
+        await app.inject({
+            method: "POST",
+            url: "/auth/definir-senha",
+            payload: { token: tokenConvite, senha: "SenhaDaConvidada123!" },
+        });
+
+        // Confere: o custo fica gravado no próprio hash ("$2b$12$..."); sem este teste, voltar para 10 passaria
+        const usuario = await prisma.usuario.findUniqueOrThrow({ where: { email } });
+        expect(usuario.senhaHash?.startsWith("$2b$12$")).toBe(true);
     });
 
     it("recusa o convite já usado", async () => {

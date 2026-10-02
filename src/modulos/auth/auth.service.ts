@@ -26,7 +26,8 @@ export const authService = {
                 throw new ValidacaoError("Token expirado.");
             }
 
-            const senhaHash = await bcrypt.hash(senha, 10);
+            // Custo 12: cada +1 dobra o tempo de quebrar a senha se o banco vazar (auditoria L2)
+            const senhaHash = await bcrypt.hash(senha, 12);
 
             await usuarioRepository.definirSenha(tx, tokenAcesso.usuarioId, senhaHash);
             await tokenAcessoRepository.marcarComoUsado(tx, tokenAcesso.id);
