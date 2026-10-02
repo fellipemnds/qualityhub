@@ -5,37 +5,36 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-02 (meio do dia, no trabalho). A A3 foi mesclada; a análise do repositório está no PR #5, ainda aberto; o `casa.txt` ainda não existe.
+**Última atualização:** 2026-10-02 (tarde, no trabalho). A análise do repositório foi mesclada (PR #5); a A4 começou; o `casa.txt` ainda não existe.
 
 ## 1. Objetivo
 
-**Análise do repositório antes da A4**, com as skills do `agent-skills`:
-contrato de qualidade, auditoria de segurança, revisão e simplificação
-de código, e mais uma análise que Matthew vai trazer. Depois, a **A4 —
-Sessão nova** (`docs/plano-implementacao.md`, seção A4).
+Fase **A4 — Sessão nova** (`docs/plano-implementacao.md`, seção A4):
+o B7 (cookie `HttpOnly`, papéis conferidos a cada requisição). **Antes**
+dele, na ordem da tabela da A4: os testes de caracterização, as quatro
+simplificações do `ciclo-vida.service.ts` e o B19.
 
 ## 2. Estado atual
 
-- **A3 concluída:** PR #4 mesclado na `main` (`ea71cb7`), branch local
-  apagada.
-- Branch **`chore/analise-repositorio`**, **PR #5 aberto**
-  (https://github.com/fellipemnds/qualityhub/pull/5), CI verde no
-  `36d27c3`. Matthew faz o merge.
-  - `CONSTRAINTS.md` (contrato de qualidade) e a regra no `CLAUDE.md`.
-  - Auditoria de segurança: L2, L7 e L8 aplicados; B19 registrado
-    (`esquema-backend.md` §7); os outros achados alocados no plano (A4,
-    A5, A6).
-  - Revisão de código: o alvo é o `ciclo-vida.service.ts`. Os testes de
-    caracterização e as quatro simplificações estão na tabela da A4,
-    **antes do B19**. O texto dos testes já foi aprovado na conversa de
-    2026-10-02: auditoria de cada transição e 404 das transições, num
-    arquivo novo, `src/compartilhado/registro/ciclo-vida.service.test.ts`.
-- Suíte: **251 passando** (o teste novo do bcrypt), ~175 s nesta
-  máquina. Lint e typecheck limpos.
+- Branch **`fase/a4-sessao`**, criada da `main` em `c10844c` (o merge do
+  PR #5). Ainda sem PR (o `/abrir-pr` abre em rascunho).
+- **Análise do repositório concluída** (PR #5, branch apagada): o
+  `CONSTRAINTS.md`; a auditoria de segurança (L2, L7 e L8 aplicados, B19
+  registrado, os outros achados alocados na A4, A5 e A6); a revisão de
+  código (o alvo é o `ciclo-vida`); a coerência documental; e as skills
+  `/trocar-pc`, `/retomar`, `/abrir-pr` e `/fechar-fase` em
+  `.claude/skills/`. As decisões estão no changelog, seção "Análise do
+  repositório".
+- **Testes de caracterização:** o texto já foi aprovado na conversa de
+  2026-10-02 (auditoria de cada transição e 404 das transições, num
+  arquivo novo, `src/compartilhado/registro/ciclo-vida.service.test.ts`).
+  Não está em nenhum arquivo ainda: o Claude reescreve a partir da tabela
+  da A4 e do `esquema-backend.md` §7 (B19).
+- Suíte: **251 passando**, ~175 s nesta máquina. Lint e typecheck limpos.
 - O que Matthew aprendeu hoje: contrato de qualidade ("medir e travar",
   piso, exceção com dono e prazo); modelagem de ameaças e OWASP (IDOR,
   TOCTOU, enumeração por tempo, custo do bcrypt); Cerca de Chesterton;
-  teste de caracterização.
+  teste de caracterização; skills locais do Claude Code.
 
 ## 3. Arquivos no meio de uma mudança
 
@@ -43,8 +42,7 @@ Nenhum.
 
 ## 4. O que foi alterado nesta sessão
 
-`git log ea71cb7..chore/analise-repositorio`: o contrato de qualidade,
-a alocação da auditoria, o endurecimento (L2, L7, L8) e este registro.
+`git log ea71cb7..c10844c`: a análise do repositório inteira (PR #5).
 O container do banco **do trabalho** foi recriado (porta só em
 `127.0.0.1`).
 
@@ -111,27 +109,29 @@ O container do banco **do trabalho** foi recriado (porta só em
 
 ## 6. Próximo passo
 
-1. **A outra análise** que Matthew vai trazer, ainda na
-   `chore/analise-repositorio` (o PR #5 recebe os commits novos).
-2. Merge do PR #5; voltar para a `main`, `git pull`, apagar a branch
-   local.
-3. **Abrir a A4** (`fase/a4-sessao`), na ordem da tabela da A4:
-   1. commit `docs:`: este handoff no início da fase;
-   2. commit `test:`: os testes de caracterização (o texto aprovado);
-   3. as quatro simplificações do `ciclo-vida`, cada uma num commit
-      `refactor:` com a suíte completa (a `estadoAposDecisao` é de
-      Matthew);
-   4. o B19;
-   5. depois, o resto da A4.
-4. Durante a A4: Matthew instala as cinco ferramentas do
-   `CONSTRAINTS.md` antes de o aviso virar bloqueio.
+Na ordem da tabela da A4:
 
-**Chegando em casa** (primeira vez depois da A3; `SETUP.md` §12.1 se o
-PC estiver parado há tempo):
+1. Commit `test:` com os **testes de caracterização** (Claude; o padrão
+   já é conhecido). Têm de passar inteiros de primeira.
+2. As simplificações do `ciclo-vida`, um commit `refactor:` cada, com a
+   suíte completa: `aplicarTransicao`; `buscarRegistroOuFalhar` (a
+   asserção da mensagem única entra antes, vermelha); o validador
+   `() => void`; e a **`estadoAposDecisao`, escrita por Matthew** (função
+   pura, sem o ramo de vários portões).
+3. O B19: começar pela skill **`/bug`** (registrar e fechar bugs nos
+   documentos), testada no registro dele; depois, o teste de
+   concorrência que falha e o conserto.
+4. Durante a fase: Matthew instala as cinco ferramentas do
+   `CONSTRAINTS.md` e escreve os scripts `verificar:rapido`,
+   `verificar:item` e `scripts/piso.mjs`.
+
+**Chegando em casa:** rodar o **`/retomar`** (primeiro uso real; ele
+segue os passos abaixo e confere plugins e ferramentas). Se algo sair
+diferente do esperado, ajustar a skill. Os passos, para referência
+(`SETUP.md` §12.1 se o PC estiver parado há tempo):
 
 1. Docker Desktop aberto ("Engine running"), Ubuntu, pasta do projeto.
-2. `git fetch`, `git switch main` (ou a branch onde o trabalho estiver),
-   `git pull`.
+2. `git fetch`, `git switch fase/a4-sessao`, `git pull`.
 3. **`npm run preparar`**: obrigatório. Aplica as migrations do
    `@db.Date` e do `investigacaoId` obrigatório (`NOT NULL`, RN-49) no
    banco de lá. Se esta última falhar (o banco de casa tem ações sem
@@ -139,7 +139,8 @@ PC estiver parado há tempo):
    usuários de teste).
 4. **`JWT_SECRET` com 32 caracteres ou mais** no `.env` de casa, e
    `docker compose up -d` para recriar o container (ver as pendências
-   acima).
+   acima). O `DATABASE_URL` do `.env.example` agora tem as credenciais
+   do compose.
 5. Extensões do VS Code: a lista do **`SETUP.md` §12.4** (um comando no
    terminal do WSL + duas no Windows). Conferir `node -v` (24). O Copilot
    já vem desligado pelo `.vscode/settings.json` do projeto.
