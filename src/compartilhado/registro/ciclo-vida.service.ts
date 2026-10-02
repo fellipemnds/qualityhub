@@ -20,6 +20,17 @@ import { registroRepository } from "./registro.repository.js";
 
 type Registro = NonNullable<Awaited<ReturnType<typeof registroRepository.buscarPorId>>>;
 
+// Toda transição começa pelo item, que tem de existir: uma resposta só para todas (eram três textos diferentes)
+async function buscarRegistroOuFalhar(tx: ClientePrisma, registroId: string): Promise<Registro> {
+    const registro = await registroRepository.buscarPorId(tx, registroId);
+
+    if (registro === null) {
+        throw new NaoEncontradoError("Item não encontrado.");
+    }
+
+    return registro;
+}
+
 // O fim de toda transição: grava a mudança no Registro e a auditoria com o antes e o depois, na mesma transação. Num
 // lugar só, para a trava do B19 (o UPDATE condicionado ao estado esperado) entrar uma vez, valendo para todas
 async function aplicarTransicao(
@@ -67,11 +78,7 @@ export const cicloVidaService = {
         validador: (dados: unknown) => unknown,
         acao: Acao = "PUBLICAR",
     ) {
-        const registro = await registroRepository.buscarPorId(tx, registroId);
-
-        if (registro === null) {
-            throw new NaoEncontradoError("Item não encontrado");
-        }
+        const registro = await buscarRegistroOuFalhar(tx, registroId);
 
         if (registro.estado !== "RASCUNHO") {
             throw new TransicaoInvalidaError("Apenas itens em rascunho podem ser publicados!");
@@ -94,11 +101,7 @@ export const cicloVidaService = {
     },
 
     async excluirRascunho(tx: ClientePrisma, registroId: string, ator: Ator, acao: Acao = "GERENCIAR_RASCUNHO") {
-        const registro = await registroRepository.buscarPorId(tx, registroId);
-
-        if (registro === null) {
-            throw new NaoEncontradoError("Item não foi encontrado.");
-        }
+        const registro = await buscarRegistroOuFalhar(tx, registroId);
 
         if (registro.estado !== "RASCUNHO") {
             throw new TransicaoInvalidaError("Apenas itens em rascunho podem ser deletados!");
@@ -132,11 +135,7 @@ export const cicloVidaService = {
         validador: (dados: unknown) => unknown,
         acao: Acao = "SUBMETER",
     ) {
-        const registro = await registroRepository.buscarPorId(tx, registroId);
-
-        if (registro === null) {
-            throw new NaoEncontradoError("Item não foi encontrado.");
-        }
+        const registro = await buscarRegistroOuFalhar(tx, registroId);
 
         if (registro.estado !== "ABERTO" || portoesPorTipo[registro.tipo].length <= 0) {
             throw new TransicaoInvalidaError();
@@ -164,11 +163,7 @@ export const cicloVidaService = {
     // Retirar da aprovação (RN-48): o colaborador desiste do envio. Volta a ABERTO no mesmo portão, sem registro em
     // Aprovacao (não é reprovação), e fica na auditoria. Quem pode submeter pode retirar: a ação é a mesma do submeter
     async retirar(tx: ClientePrisma, registroId: string, ator: Ator, acao: Acao = "SUBMETER") {
-        const registro = await registroRepository.buscarPorId(tx, registroId);
-
-        if (registro === null) {
-            throw new NaoEncontradoError("Item não foi encontrado.");
-        }
+        const registro = await buscarRegistroOuFalhar(tx, registroId);
 
         if (registro.estado !== "EM_APROVACAO") {
             throw new TransicaoInvalidaError("Só um item em aprovação pode ser retirado da aprovação.");
@@ -192,11 +187,7 @@ export const cicloVidaService = {
         dados: { decisao: Decisao; motivo?: string },
         fecharAoAprovarUltimoPortao: boolean = true,
     ) {
-        const registro = await registroRepository.buscarPorId(tx, registroId);
-
-        if (registro === null) {
-            throw new NaoEncontradoError("O item não foi encontrado");
-        }
+        const registro = await buscarRegistroOuFalhar(tx, registroId);
 
         if (registro.estado !== "EM_APROVACAO") {
             throw new TransicaoInvalidaError("O item não está em aprovação!");
@@ -257,11 +248,7 @@ export const cicloVidaService = {
         dados: unknown,
         validador: (dados: unknown) => unknown,
     ) {
-        const registro = await registroRepository.buscarPorId(tx, registroId);
-
-        if (registro === null) {
-            throw new NaoEncontradoError("O item não foi encontrado");
-        }
+        const registro = await buscarRegistroOuFalhar(tx, registroId);
 
         if (registro.estado !== "ABERTO" || portoesPorTipo[registro.tipo].length !== 0) {
             throw new TransicaoInvalidaError(
@@ -285,11 +272,7 @@ export const cicloVidaService = {
     },
 
     async reabrir(tx: ClientePrisma, registroId: string, ator: Ator, motivo: string) {
-        const registro = await registroRepository.buscarPorId(tx, registroId);
-
-        if (registro === null) {
-            throw new NaoEncontradoError("O item não foi encontrado");
-        }
+        const registro = await buscarRegistroOuFalhar(tx, registroId);
 
         // O motivo em branco já é recusado no schema (400, B18): aqui, só o estado
         if (registro.estado !== "FECHADO") {
@@ -318,11 +301,7 @@ export const cicloVidaService = {
         motivo: string,
         validador: () => void = () => {},
     ) {
-        const registro = await registroRepository.buscarPorId(tx, registroId);
-
-        if (registro === null) {
-            throw new NaoEncontradoError("O item não foi encontrado");
-        }
+        const registro = await buscarRegistroOuFalhar(tx, registroId);
 
         // Rascunho só se exclui, não se cancela: cancelado, ele ficaria para sempre, sem código (B12, RN-06)
         if (registro.estado === "RASCUNHO") {

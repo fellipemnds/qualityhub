@@ -162,11 +162,14 @@ const rotasDeItemInexistente: { nome: string; metodo: "POST" | "DELETE"; url: st
 ];
 
 describe("Ciclo de vida: item inexistente", () => {
-    it.each(rotasDeItemInexistente)("$nome responde 404, não 500", async ({ metodo, url, body }) => {
+    it.each(rotasDeItemInexistente)('$nome responde 404 com "Item não encontrado."', async ({ metodo, url, body }) => {
         // Prepara
         const gerente = await loginComo("gerente");
 
-        // Chama e confere
-        await chamar(gerente, metodo, url, 404, body);
+        // Chama
+        const resposta = await chamar(gerente, metodo, url, 404, body);
+
+        // Confere: a mesma mensagem em todas as transições (eram três textos diferentes)
+        expect(resposta).toEqual({ mensagem: "Item não encontrado." });
     });
 });
