@@ -22,13 +22,14 @@ Este módulo de Não-Conformidades foi criado com base no processo rodado na min
 
 Este módulo é capaz de controlar todo o fluxo do processo de Não-Conformidades, desde a sua abertura, contenções, investigações, ações corretivas, verificação de efetividade e fechamento. Além do processo, este módulo também possui as seguintes funcionalidades:
 
-- _Gates_ de aprovação para as etapas do processo — o sistema garante a aprovação do QA durante as etapas-chave do processo
-- Controle compensatório de autoaprovação — o sistema detecta automaticamente quando aprovador e executor são a mesma pessoa, exige justificativa registrada e sinaliza o caso, convertendo um risco invisível de auditoria em risco gerenciado
-- Função de Concessão para aceitação dos riscos de Não Conformidade — o sistema permite a aprovação da diretoria, exigindo justificativa registrada e sinalizando quando acontece.
-- Papéis de usuário segregados (Colaborador, QA, Diretoria)
-- Trilha de Auditoria — todo evento relevante é registrado com autor, data e valores antes/depois, de forma imutável e para qualquer entidade da plataforma
-- Activity Feed — eventos do sistema e comentários das pessoas numa linha do tempo única, permitindo entender o histórico completo de uma NC em segundos
-- Anexos
+- _Gates_ de aprovação para as etapas do processo — o sistema garante a aprovação do QA nas etapas-chave (classificação, contenção, investigação, plano de ação e fechamento da NC)
+- Guardas de fechamento — a NC só fecha com classificação e investigações aprovadas e nenhuma contenção pendente; a investigação só é enviada com os planos de ação aprovados
+- Autoaprovação permitida, mas registrada — quando quem aprova é quem criou o item, o sistema grava isso na decisão, para a auditoria enxergar o caso
+- Papéis que se somam (`EDITOR`, `APROVADOR`, `GERENTE`, `VISUALIZADOR`, `ADMIN`) e atribuição por item (colaboradores e um aprovador)
+- Trilha de Auditoria — todo evento relevante é registrado com autor, data e valores antes/depois
+- _Planejado:_ Activity Feed (eventos e comentários com menções numa linha do tempo única), anexos, "Minhas pendências" e relatórios do gestor
+
+Os requisitos completos estão em [`docs/prd.md`](docs/prd.md).
 
 ### Roadmap:
 
@@ -46,134 +47,120 @@ O projeto possui a arquitetura preparada para receber outros módulos. Como obje
 
 ---
 
-## Stacks
+## Stack
 
-As ferramentas e tecnologias utilizadas neste projeto são:
+- **Runtime:** Node.js 24 (via nvm)
+- **Linguagem:** TypeScript 7
+- **Framework HTTP:** Fastify 5, com `fastify-type-provider-zod`
+- **Validação:** Zod 4
+- **ORM:** Prisma 7, com `@prisma/adapter-pg`
+- **Banco:** PostgreSQL 17 (Docker Compose em desenvolvimento)
+- **Autenticação:** JWT (`@fastify/jwt`) e bcrypt; a sessão em cookie `HttpOnly` está planejada para a fase A4
+- **Testes:** Vitest + `app.inject()` + Testcontainers (um Postgres descartável por execução)
+- **Lint e formatação:** Biome
+- **CI:** GitHub Actions (lint → typecheck → testes em todo Pull Request)
+- **Ambiente:** WSL 2 + Ubuntu, Docker Desktop
+- **Frontend (planejado):** React + Vite + shadcn/ui + Tailwind
 
-- **Runtime:** Node.js v24.20.0
-- **Linguagem:** TypeScript v7.0.2 (instalado via `latest`; versão muito recenete, sob observação para anomalias de tipagem)
-- **Framework HTTP:** Fastify v5.12.1
-- **ORM:** Prisma 7.10.0
-- **Driver adapter:** @prisma/adapter-pg + pg v7.x
-- **Database:** PostgreSQL 17 Alpine
-- **Container**: Docker + Docker Compose
-- **Execução em dev:** tsx v4.23.13
-- **Variáveis de Ambiente:** dotenv v17.4.2
-- **Versionamento:** Git/GitHub
-- Ambiente: WSL 2 + Ubuntu
-
-### A definir:
-
-- Validação: Zod?
-- Autenticação: JWT ou sessão?
-- Testes: Vitest?
-- Front-End: React?
-- Design: Figma?
-- Deploy: A definir
+As decisões técnicas e o porquê de cada uma estão em [`docs/trd.md`](docs/trd.md) e [`docs/changelog-arquitetura.md`](docs/changelog-arquitetura.md).
 
 ---
 
-## Rotina de inicialização do projeto
+## Rodando o projeto
 
-### 0. Pré-requisitos
+O passo a passo do ambiente (WSL, nvm, Docker, Git e SSH) está no [`SETUP.md`](SETUP.md). Com o ambiente pronto, e o **Docker Desktop aberto**:
 
-Para o setup do ambiente de desenvolvimento, consulte [SETUP.MD](SETUP.md).
-
-### 1. Clonar o repositório
-
-Para clonar o repositório, consulte [SETUP.MD](SETUP.md).
-
-### 2. Instalação de Dependências
-
-Para instalação das dependências, entre na pasta raiz do projeto e execute o seguinte comando:
-
-```bash
-npm install
-```
-
-### 3. Configurar as variáveis de ambiente
-
-Para configurar as variáveis de ambiente, copie o arquivo `.env.example` e ajuste os valores conforme necessário:
+### 1. Variáveis de ambiente
 
 ```bash
 cp .env.example .env
 ```
 
-### 4. Subir o banco de dados
+O `DATABASE_URL` do exemplo já aponta para o banco do `docker-compose.yml`. Troque o `JWT_SECRET` por uma chave sua, com **pelo menos 32 caracteres** (o servidor recusa subir com menos):
 
-Para subir o banco de dados, suba o Docker container usando o seguinte comando:
+```bash
+openssl rand -base64 32
+```
+
+### 2. Banco de dados
 
 ```bash
 docker compose up -d
 ```
 
-Para verificar se o container subiu corretamente, digite:
+### 3. Dependências, cliente do Prisma e migrations
 
 ```bash
-docker compose ps
+npm run preparar
 ```
 
-### 5. Aplicar as migrations
+Ele roda `npm ci`, `prisma generate` e `prisma migrate deploy`. É o mesmo comando para deixar a máquina em dia depois de um `git pull`.
 
-Para aplicar as Prisma migrations criadas, use o seguinte comando:
+### 4. Usuários de teste (opcional)
 
 ```bash
-npx prisma migrate dev
+docker exec -i qualityhub_db psql -U qualityhub -d qualityhub < testes/setup-usuarios-teste.sql
 ```
 
-### 6. Iniciar o servidor
-
-Para iniciar o servidor, execute o arquivo `server.ts` usando o seguinte comando:
+### 5. Servidor
 
 ```bash
-npx tsx src/server.ts
+npm run dev
 ```
 
-A API ficará disponível em `http://localhost:3333`.
+A API fica disponível em `http://localhost:3333`.
+
+---
+
+## Scripts
+
+| Comando | O que faz |
+| --- | --- |
+| `npm run dev` | Servidor com recarga automática |
+| `npm test` | Testes (Vitest + Testcontainers; precisa do Docker Desktop aberto) |
+| `npm run typecheck` | Confere os tipos sem compilar (`tsc --noEmit`) |
+| `npm run lint` | Biome: formatação, lint e ordem dos imports |
+| `npm run lint:fix` | Corrige o que o Biome consegue sozinho |
+| `npm run preparar` | `npm ci` + `prisma generate` + `prisma migrate deploy` |
+| `npm run ambiente -- <trabalho\|casa\|comparar>` | Foto do ambiente da máquina, para comparar os dois PCs (`SETUP.md` §12.5) |
+
+Outros comandos úteis:
+
+| Comando | O que faz |
+| --- | --- |
+| `npx prisma studio` | Interface visual para os dados |
+| `npx prisma migrate dev --name <nome>` | Cria e aplica uma migration (depois, `npx prisma generate`) |
+| `docker compose down` | Para o banco, preservando os dados |
+| `docker compose down -v` | Para o banco **apagando os dados** |
 
 ---
 
 ## Trocando de máquina
 
-Durante o desenvolvimento, precisei alternar entre duas máquinas, para isso, usei os seguintes comandos no Terminal:
+O projeto é desenvolvido em dois computadores. A rotina completa está no [`SETUP.md`](SETUP.md) §12. Em resumo, ao chegar numa máquina:
 
 ```bash
 git pull
-npm install
 docker compose up -d
-npx prisma migrate dev
+npm run preparar
 ```
-
----
-
-## Comandos úteis
-
-| Comando                                | O que faz                            |
-| -------------------------------------- | ------------------------------------ |
-| `npx prisma studio`                    | Interface visual para os dados       |
-| `npx prisma migrate dev --name <nome>` | Cria e aplica uma Migration          |
-| `npx prisma generate`                  | Regenera o Prisma Client             |
-| `npx tsc --noEmit`                     | Verifica os tipos sem compilar       |
-| `docker compose down `                 | Para o banco — preservando os dados  |
-| `docker compose down -v`               | Para o banco — **apagando os dados** |
 
 ---
 
 ## Estado atual do projeto
 
+A ordem de construção está em [`docs/plano-implementacao.md`](docs/plano-implementacao.md).
+
 **Concluído**
 
-- Modelagem dos dados: 11 entidades cobrindo o fluxo completo de NCs
-- Servidor Fastify com endpoints iniciais
+- Backend do fluxo completo da NC: as seis entidades, ciclo de vida, permissões em três camadas, atribuições e auditoria
+- Testes automatizados (cerca de 250, de API, com banco real) e CI obrigatório na `main`
+- Correções de regra da fase A3 (bugs B1–B18, exceto o B7)
+- Contrato de qualidade ([`CONSTRAINTS.md`](CONSTRAINTS.md)) e auditoria de segurança
 
-**Em desenvolvimento**
+**Próximo**
 
-- API: Estrutura em camadas e regras de negócio
-
-**A fazer**
-
-- Autenticação e autorização
-- Protótipo da interface
-- Front-end
-- Testes automatizados
-- Deploy
+- A4 — sessão em cookie e revogação imediata de papéis (B7), e a correção de concorrência nas transições (B19)
+- A5 — contrato da API (OpenAPI) · A6 — gestão de usuários e setores
+- Design (identidade visual, wireframes, protótipo) e frontend em fatias
+- Hospedagem e produção
