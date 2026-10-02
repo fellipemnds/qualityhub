@@ -9,6 +9,11 @@ Este arquivo é o ponto de entrada rápido.
 **Princípio do produto:** funcional e sem risco de falha vale mais que
 entregar rápido.
 
+**Contrato de qualidade: ler o `CONSTRAINTS.md` antes de escrever
+código.** Nenhum agente afrouxa essa régua para uma mudança passar —
+check vermelho se resolve consertando o código; afrouxar só em commit
+próprio, com aprovação de Matthew (`CONSTRAINTS.md` §6).
+
 ## Documentos (planejamento concluído em 2026-09-24)
 
 | Documento | Responde |
