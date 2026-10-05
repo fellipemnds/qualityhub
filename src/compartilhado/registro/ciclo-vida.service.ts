@@ -14,6 +14,7 @@ import { podeExecutar, temPapel } from "../permissoes/pode-executar.js";
 import type { ClientePrisma } from "../prisma/tipos.js";
 import { reaberturaRepository } from "../reabertura/reabertura.repository.js";
 import { sequenciaService } from "../sequencia/sequencia.service.js";
+import { estadoAposDecisao } from "./estado-apos-decisao.js";
 import { portoesPorTipo } from "./portoes.js";
 import { prefixoPorTipo } from "./prefixos.js";
 import { registroRepository } from "./registro.repository.js";
@@ -171,7 +172,7 @@ export const cicloVidaService = {
         registroId: string,
         ator: Ator,
         dados: { decisao: Decisao; motivo?: string },
-        fecharAoAprovarUltimoPortao: boolean = true,
+        opcoes: { fecharAoAprovar: boolean } = { fecharAoAprovar: true },
     ) {
         const registro = await buscarRegistroOuFalhar(tx, registroId);
 
@@ -209,22 +210,9 @@ export const cicloVidaService = {
             autoAprovacao,
         });
 
-        let mudanca: { estado: EstadoRegistro; portaoAtual?: number };
+        const estado = estadoAposDecisao(aprovacao.decisao, opcoes);
 
-        if (aprovacao.decisao === "REPROVADO") {
-            mudanca = { estado: "ABERTO" };
-        } else if (
-            aprovacao.decisao === "APROVADO" &&
-            registro.portaoAtual + 1 < portoesPorTipo[registro.tipo].length
-        ) {
-            mudanca = { estado: "ABERTO", portaoAtual: registro.portaoAtual + 1 };
-        } else if (aprovacao.decisao === "APROVADO" && !fecharAoAprovarUltimoPortao) {
-            mudanca = { estado: "ABERTO" };
-        } else {
-            mudanca = { estado: "FECHADO" };
-        }
-
-        return aplicarTransicao(tx, registro, mudanca, aprovacao.decisao, ator);
+        return aplicarTransicao(tx, registro, { estado }, aprovacao.decisao, ator);
     },
 
     async concluir(tx: ClientePrisma, registroId: string, ator: Ator, validador: () => void) {

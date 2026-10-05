@@ -122,11 +122,12 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   `reabrir`, `cancelar`, `excluirRascunho`, `concluir` — reaproveitado
   por todas as entidades. `submeter` e `cancelar` aceitam um validador
   (a guarda do tipo, depois de estado e permissão).
-  `decidir` aceita um parâmetro `fecharAoAprovarUltimoPortao` (default
-  `true`) para os casos onde aprovar o último portão não deve fechar o
-  item (ver `AcaoCorretiva` abaixo). `publicar`/`submeter`/
-  `excluirRascunho` aceitam a `Acao` de permissão como parâmetro
-  (default a ação genérica), porque `Classificacao` exige `CLASSIFICAR`
+  `decidir` aceita as opções `{ fecharAoAprovar }` (default `true`)
+  para os casos onde aprovar não deve fechar o item (ver `AcaoCorretiva`
+  abaixo); o estado depois da decisão sai da função pura
+  `estadoAposDecisao` (`compartilhado/registro/estado-apos-decisao.ts`).
+  `publicar`/`submeter`/`excluirRascunho` aceitam a `Acao` de
+  permissão como parâmetro (default a ação genérica), porque `Classificacao` exige `CLASSIFICAR`
   em vez de `PUBLICAR`/`SUBMETER`/`GERENCIAR_RASCUNHO`.
 - **Permissões em três camadas**: papel (`temPapel`) → estado do registro
   → atribuição (`Atribuicao`, com `funcao: COLABORADOR | APROVADOR`).
@@ -167,7 +168,7 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
 - **`AcaoCorretiva`**: só **um** portão (`PLANO`) — decisão de rollback
   em relação ao documento original, que tinha dois (`PLANO`+`EXECUCAO`).
   Aprovar o plano volta para `ABERTO` (não fecha, via
-  `fecharAoAprovarUltimoPortao: false`). A execução nunca é submetida
+  `{ fecharAoAprovar: false }`). A execução nunca é submetida
   para aprovação — `finalizarExecucaoAcaoCorretiva` fecha direto, sem
   aprovação, e **gera automaticamente uma `Verificacao`** já em
   `ABERTO` (pula rascunho), com prazo calculado a partir de dias

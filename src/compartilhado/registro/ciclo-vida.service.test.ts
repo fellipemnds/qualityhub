@@ -73,7 +73,7 @@ const transicoes: {
         esperado: { entidade: "CONTENCAO", acao: "REPROVADO", de: "EM_APROVACAO", para: "ABERTO" },
     },
     {
-        // fecharAoAprovarUltimoPortao = false: aprovar o plano devolve a ação a ABERTO
+        // fecharAoAprovar: false: aprovar o plano devolve a ação a ABERTO
         nome: "decidir aprovando sem fechar (plano da ação corretiva)",
         agir: async () => {
             const { aprovador, acao } = await levarAcaoCorretivaAte("EM_APROVACAO");
