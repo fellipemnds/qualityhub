@@ -128,4 +128,4 @@ O plugin também traz quatro agentes (`code-reviewer`, `security-auditor`, `test
 | `/trocar-pc` | Vai sair deste PC |
 | `/abrir-pr` | Abrir ou atualizar o PR, acompanhar o CI e receber a mensagem do merge |
 | `/fechar-fase` | Depois do merge: voltar para a `main` e abrir a próxima branch |
-| `/bug` *(planejada, A4)* | Registrar e fechar bug nos documentos |
+| `/bug` | Achou um bug, ou terminou o conserto de um: registrar ou fechar nos documentos |

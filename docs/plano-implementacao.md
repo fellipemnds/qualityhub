@@ -334,7 +334,7 @@ Onde cada item dos documentos anteriores é feito:
 |---|---|
 | B1–B6, B8–B18 · RN-06, RN-46, RN-47, RN-48 · RN-21 e RN-24 revistas, RN-49, RN-50 (PRD Q17, Q18) | A3 |
 | Primeiro `ADMIN` e primeiro setor em produção | A6 (script), D1 (uso) |
-| B7 (papéis no JWT) · RNF-09, RNF-10 | A4 |
+| B7 (papéis no JWT) · B19 (transições sem trava) · RNF-09, RNF-10 | A4 |
 | Pendência 1 (ações de auditoria) · pendência 5 (`ignoreTrailingSlash`) | A5 · A0 |
 | Pendência 4 (login auditado) | A4 |
 | Pendência OpenAPI · RNF-04 (schema de resposta) · L7 (último motivo de reprovação) | A5 |
