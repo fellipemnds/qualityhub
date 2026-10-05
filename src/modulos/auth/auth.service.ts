@@ -29,8 +29,9 @@ export const authService = {
             // Custo 12: cada +1 dobra o tempo de quebrar a senha se o banco vazar (auditoria L2)
             const senhaHash = await bcrypt.hash(senha, 12);
 
-            await usuarioRepository.definirSenha(tx, tokenAcesso.usuarioId, senhaHash);
+            // Marcar primeiro: é a trava contra o mesmo convite usado duas vezes ao mesmo tempo (B19)
             await tokenAcessoRepository.marcarComoUsado(tx, tokenAcesso.id);
+            await usuarioRepository.definirSenha(tx, tokenAcesso.usuarioId, senhaHash);
 
             await auditoriaRepository.registrar(tx, {
                 entidade: EntidadeAuditada.USUARIO,

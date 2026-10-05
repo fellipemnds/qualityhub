@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { app } from "../../app.js";
 import { prisma } from "../../compartilhado/prisma/cliente.js";
-import { chamar, perfisDeFora } from "../../testes/cenarios.js";
+import { abrirDuasConexoes, chamar, perfisDeFora } from "../../testes/cenarios.js";
 import { criarUsuario } from "../../testes/fabricas.js";
 
 describe("POST /auth/login", () => {
@@ -117,5 +117,21 @@ describe("POST /auth/definir-senha", () => {
         // Confere
         expect(resultado.statusCode).toBe(400);
         expect(resultado.json()).toEqual({ mensagem: "Este token já foi utilizado" });
+    });
+
+    // B19 (esquema-backend.md §7): as duas leem o convite sem uso antes de qualquer uma marcar, e as duas definem a senha
+    it("o mesmo convite usado duas vezes ao mesmo tempo: só uma senha é definida (B19)", async () => {
+        // Prepara
+        const { tokenConvite } = await convidar();
+
+        // Chama: as duas de uma vez, cada uma com uma senha
+        const definir = (senha: string) =>
+            app.inject({ method: "POST", url: "/auth/definir-senha", payload: { token: tokenConvite, senha } });
+        await abrirDuasConexoes();
+        const respostas = await Promise.all([definir("SenhaDaPrimeira123!"), definir("SenhaDaSegunda123!")]);
+
+        // Confere: uma passa, a outra é recusada como convite já usado, e a senha foi definida uma vez só
+        expect(respostas.map((r) => r.statusCode).sort()).toEqual([204, 400]);
+        expect(await prisma.auditoria.count({ where: { acao: "DEFINIR_SENHA" } })).toBe(1);
     });
 });
