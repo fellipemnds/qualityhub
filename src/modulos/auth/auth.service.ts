@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import bcrypt from "bcrypt";
 import { auditoriaRepository } from "../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../compartilhado/auditoria/entidades-auditadas.js";
+import type { Ator } from "../../compartilhado/entidades/ator.js";
 import { CredenciaisInvalidasError, ValidacaoError } from "../../compartilhado/errors/errors.js";
 import { prisma } from "../../compartilhado/prisma/cliente.js";
 import { usuarioRepository } from "../usuario/usuario.repository.js";
@@ -38,6 +39,22 @@ export const authService = {
                 entidadeId: tokenAcesso.usuarioId,
                 acao: "DEFINIR_SENHA",
                 usuarioId: tokenAcesso.usuarioId,
+                antes: undefined,
+                depois: undefined,
+            });
+        });
+    },
+
+    // O sessaoValidaDesde vira "agora": o autenticar recusa todo token emitido antes (TRD §4.1, item 6)
+    async sairDeTodos(ator: Ator) {
+        return prisma.$transaction(async (tx) => {
+            await usuarioRepository.encerrarSessoes(tx, ator.id);
+
+            await auditoriaRepository.registrar(tx, {
+                entidade: EntidadeAuditada.USUARIO,
+                entidadeId: ator.id,
+                acao: "SAIR_DE_TODOS",
+                usuarioId: ator.id,
                 antes: undefined,
                 depois: undefined,
             });

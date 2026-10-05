@@ -343,8 +343,8 @@ Os caminhos abaixo são mostrados **sem** o prefixo `/api`.
 |---|---|---|---|
 | Δ | `POST /auth/login` | Público | + `manterConectado`; responde com **cookie**, não com token no corpo; limite de tentativas; recusa usuário **inativo** com a mesma mensagem de qualquer falha (RN-38) |
 | Δ | `POST /auth/definir-senha` | Público (token) | Define a senha pelo convite (também serve para redefinir); passa a atualizar `sessaoValidaDesde`; recusa usuário inativo |
-| ＋ | `POST /auth/logout` | Logado | Apaga o cookie deste navegador |
-| ＋ | `POST /auth/sair-de-todos` | Logado | Atualiza `sessaoValidaDesde` |
+| ＋ ✅ | `POST /auth/logout` | Logado | Apaga o cookie deste navegador |
+| ＋ ✅ | `POST /auth/sair-de-todos` | Logado | Atualiza `sessaoValidaDesde` (auditado: `SAIR_DE_TODOS`) e apaga o cookie deste navegador |
 | ＋ | `GET /auth/eu` | Logado | id, nome, setor, papéis, `telaInicial` |
 | ＋ | `PATCH /auth/eu` | Logado | Altera a própria `telaInicial` |
 

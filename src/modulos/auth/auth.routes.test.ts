@@ -1,8 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { app } from "../../app.js";
 import { prisma } from "../../compartilhado/prisma/cliente.js";
 import { abrirDuasConexoes, chamar, perfisDeFora } from "../../testes/cenarios.js";
-import { criarUsuario } from "../../testes/fabricas.js";
+import { criarUsuario, loginComo } from "../../testes/fabricas.js";
 
 describe("POST /auth/login", () => {
     it("responde 204 e o cookie de sessão, sem o token no corpo", async () => {
@@ -174,5 +174,50 @@ describe("POST /auth/definir-senha", () => {
         // Confere: uma passa, a outra é recusada como convite já usado, e a senha foi definida uma vez só
         expect(respostas.map((r) => r.statusCode).sort()).toEqual([204, 400]);
         expect(await prisma.auditoria.count({ where: { acao: "DEFINIR_SENHA" } })).toBe(1);
+    });
+});
+
+describe("POST /auth/logout", () => {
+    it("responde 204 e apaga o cookie de sessão deste navegador", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+
+        // Chama
+        const resultado = await app.inject({ method: "POST", url: "/auth/logout", headers: editor.autenticacao });
+
+        // Confere: o cookie volta vazio e já vencido, o que faz o navegador apagá-lo
+        expect(resultado.statusCode).toBe(204);
+        const cookie = resultado.cookies.find((c) => c.name === "qh_sessao");
+        expect(cookie).toMatchObject({ value: "", path: "/" });
+        expect(cookie?.expires?.getTime()).toBeLessThanOrEqual(Date.now());
+    });
+});
+
+describe("POST /auth/sair-de-todos", () => {
+    afterEach(() => {
+        vi.useRealTimers();
+    });
+
+    it("derruba toda sessão já emitida, e um login novo volta a funcionar", async () => {
+        // Prepara: o login agora; o pedido, alguns segundos depois (a comparação com o sessaoValidaDesde é em segundos)
+        const editor = await loginComo("editor");
+        vi.useFakeTimers({ toFake: ["Date"] });
+        vi.setSystemTime(Date.now() + 5000);
+
+        // Chama
+        await chamar(editor, "POST", "/auth/sair-de-todos", 204);
+
+        // Confere: a sessão antiga cai, um login novo entra, e o pedido fica na auditoria
+        await chamar(editor, "GET", "/nc", 401);
+        const login = await app.inject({
+            method: "POST",
+            url: "/auth/login",
+            payload: { email: editor.usuario.email, senha: "SenhaDeTeste123!" },
+        });
+        const cookie = login.cookies.find((c) => c.name === "qh_sessao");
+        await chamar({ ...editor, autenticacao: { cookie: `qh_sessao=${cookie?.value}` } }, "GET", "/nc", 200);
+        expect(
+            await prisma.auditoria.findMany({ where: { entidadeId: editor.usuario.id, acao: "SAIR_DE_TODOS" } }),
+        ).toMatchObject([{ entidade: "USUARIO", usuarioId: editor.usuario.id }]);
     });
 });

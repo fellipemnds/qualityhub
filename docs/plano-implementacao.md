@@ -249,7 +249,7 @@ RF-20).
 |---|---|
 | Migration **M2** (`Setor.desativadoEm`) | 🤖 |
 | **Trava da RN-43**: não inativar/revogar `APROVADOR` de quem é aprovador de item aberto, devolvendo a lista | 🧑 |
-| Rotas de usuários, setores e `GET /pessoas` (`esquema-backend.md` §6.2), incluindo reativar (E2); convite novo invalida os anteriores; definir senha recusa usuário inativo | 🤖 seguindo o padrão; 🧑 revisa |
+| Rotas de usuários, setores e `GET /pessoas` (`esquema-backend.md` §6.2), incluindo reativar (E2); convite novo invalida os anteriores; definir senha recusa usuário inativo e **atualiza o `sessaoValidaDesde`** (redefinir a senha derruba as sessões antigas, TRD §4.1; na A4 a senha só era definida no primeiro acesso, sem sessão a derrubar) | 🤖 seguindo o padrão; 🧑 revisa |
 | **Script do primeiro acesso** (`npm run criar-admin`): cria o primeiro setor e o primeiro `ADMIN` e mostra o link de convite. Sem ele, produção não tem como começar — criar usuário exige já ser `ADMIN`, e todo usuário exige um setor | 🧑 |
 | Testes das travas e das permissões de `ADMIN` | 🧑 |
 | Setor inexistente no `POST`/`PATCH` da NC responde 404, não 500 (auditoria L6 — confirmar antes com teste, como o B16) | 🤖 |

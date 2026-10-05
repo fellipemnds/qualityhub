@@ -6,6 +6,7 @@ import { ZodError } from "zod";
 import { atribuicaoRoutes } from "./compartilhado/atribuicao/atribuicao.routes.js";
 import { AppError } from "./compartilhado/errors/errors.js";
 import { authRoutes } from "./modulos/auth/auth.routes.js";
+import { COOKIE_SESSAO } from "./modulos/auth/cookie-sessao.js";
 import { acaoCorretivaRoutes } from "./modulos/nc/acao-corretiva/acao-corretiva.routes.js";
 import { classificacaoRoutes } from "./modulos/nc/classificacao/classificacao.routes.js";
 import { contencaoRoutes } from "./modulos/nc/contencao/contencao.routes.js";
@@ -33,7 +34,7 @@ if (!jwtSecret || jwtSecret.length < 32) {
 app.register(fastifyCookie);
 app.register(fastifyJwt, {
     secret: jwtSecret,
-    cookie: { cookieName: "qh_sessao", signed: false },
+    cookie: { cookieName: COOKIE_SESSAO, signed: false },
     verify: { onlyCookie: true },
 });
 app.get("/", async () => {

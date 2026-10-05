@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import { autenticar } from "../../middlewares/autenticar.js";
 import { authController } from "./auth.controller.js";
 import { definirSenhaSchema, loginSchema } from "./auth.schema.js";
 
@@ -19,5 +20,17 @@ export async function authRoutes(app: FastifyInstance) {
             body: loginSchema,
         },
         handler: authController.login,
+    });
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: "POST",
+        url: "/auth/logout",
+        onRequest: [autenticar],
+        handler: authController.logout,
+    });
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: "POST",
+        url: "/auth/sair-de-todos",
+        onRequest: [autenticar],
+        handler: authController.sairDeTodos,
     });
 }

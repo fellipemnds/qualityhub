@@ -19,6 +19,13 @@ export const usuarioRepository = {
         return tx.usuario.create({ data: dados });
     },
 
+    async encerrarSessoes(tx: ClientePrisma, id: string) {
+        return tx.usuario.update({
+            where: { id },
+            data: { sessaoValidaDesde: new Date() },
+        });
+    },
+
     async definirSenha(tx: ClientePrisma, id: string, senhaHash: string) {
         return tx.usuario.update({
             where: { id },
