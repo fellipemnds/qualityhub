@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { app } from "../../../app.js";
+import { prisma } from "../../../compartilhado/prisma/cliente.js";
 import {
     abrirDuasConexoes,
     chamar,
@@ -342,6 +343,34 @@ describe("POST /acoes-corretivas/:id/finalizar-execucao", () => {
                 expect.objectContaining({ path: ["evidencia"] }),
             ]),
         });
+    });
+
+    it("audita a finalização na ação e o nascimento da verificação", async () => {
+        // Prepara e chama
+        const cenario = await ncProntaParaFechar();
+        const { acao, verificacao } = await executarAcao(cenario);
+
+        // Confere: na ação, o antes e o depois; na verificação, já ABERTA com o código, sem o antes
+        expect(
+            await prisma.auditoria.findMany({ where: { entidadeId: acao.id, acao: "FINALIZAR_EXECUCAO" } }),
+        ).toMatchObject([
+            {
+                entidade: "ACAO_CORRETIVA",
+                usuarioId: cenario.editor.usuario.id,
+                antes: { estado: "ABERTO" },
+                depois: { estado: "FECHADO" },
+            },
+        ]);
+        expect(
+            await prisma.auditoria.findMany({ where: { entidadeId: verificacao.id, acao: "GERAR_VERIFICACAO" } }),
+        ).toMatchObject([
+            {
+                entidade: "VERIFICACAO",
+                usuarioId: cenario.editor.usuario.id,
+                antes: null,
+                depois: { estado: "ABERTO", codigo: verificacao.codigo, acaoCorretivaId: acao.id },
+            },
+        ]);
     });
 
     // B19 (esquema-backend.md §7): as duas leem a ação ABERTA antes de qualquer uma gravar, e as duas passam
