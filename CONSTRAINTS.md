@@ -55,7 +55,8 @@ Hoje o código cumpre o piso inteiro: nenhuma supressão, `TODO` ou
 | Arquitetura | Zero violações das regras da §2.1 | `npm run lint` (Biome: `noRestrictedImports` por grupo de arquivo e `noImportCycles`, no `biome.json`) | cada edição, CI | **bloqueia** | ✅ em uso |
 | Segurança: código (SAST) | Nada de severidade alta ou acima | `semgrep scan --config p/default --config p/owasp-top-ten` | CI | avisa até o fim da A4, depois **bloqueia** | ⏳ a instalar |
 | Segurança: dependências | Nada de severidade alta ou acima, fora as exceções (§5) | `osv-scanner scan source -r .` | CI | avisa até o fim da A4, depois **bloqueia** | ⏳ a instalar |
-| Cobertura do projeto | Não cai mais de 0,5% abaixo do valor da §3 | `vitest run --coverage` (`@vitest/coverage-v8`) | ao fechar um item (§4), CI | avisa até o fim da A4, depois **bloqueia** | ⏳ a instalar |
+| Cobertura do projeto | Não cai mais de 0,5% abaixo do valor da §3 | `npm run test:cobertura` (`vitest run --coverage`, `@vitest/coverage-v8`; a trava é o `thresholds.lines` do `vitest.config.ts`) | ao fechar um item (§4), CI | **bloqueia** | ✅ em uso |
+| Cobertura das linhas novas | 100% das linhas de produção novas ou modificadas no PR são executadas por algum teste. Linha impossível de alcançar vira exceção na §5, nunca trava mais baixa | `pipx run diff-cover==10.6.0 coverage/cobertura-coverage.xml --compare-branch=origin/<destino> --fail-under=100` (lê o relatório do `npm run test:cobertura`) | CI (só em PR) | **bloqueia** | ✅ em uso |
 
 **Por que esses números:**
 - **Tipos, lint e testes em zero:** já são a regra hoje; o CI bloqueia o
@@ -132,8 +133,8 @@ número; quando piora, é achado.
 
 | Métrica | Hoje | Direção | Quando vira regra |
 |---|---|---|---|
-| Cobertura do projeto (linhas) | *a medir na instalação do `@vitest/coverage-v8`* | não pode cair | já entra na §2 com o valor medido |
-| Cobertura das linhas novas ou modificadas no PR | *medida em cada PR da A4* | — | **fim da A4**: trava no valor que os PRs da fase de fato atingiram |
+| Cobertura do projeto (linhas) | **95,16%** (2026-10-05, na instalação; trava em 94,66%) | não pode cair | já na §2 |
+| Cobertura das linhas novas ou modificadas no PR | **100%** (A4 inteira: 141 linhas novas, nenhuma sem teste) | não pode cair | já na §2 |
 | Tempo da suíte completa | ~140–160 s (+ ~15 s do Postgres) | não passar de ~5 min | se passar: um banco por worker (`handoff.md`), **nunca** cortar teste |
 
 A cobertura das linhas novas é medida e reportada desde o primeiro PR:
@@ -148,7 +149,7 @@ nenhum, porque ele quase não mexe no total.
 |---|---|---|
 | **Depois de cada edição de arquivo** | `npm run lint` + `npm run typecheck` + piso (§1) no diff | < 10 s (hoje: ~1,7 s + ~3,8 s) |
 | **Commit intermediário** (parte de um item ainda em andamento) | Tudo acima + os arquivos de teste do que mudou (`npx vitest run <arquivo>`) | ~20–40 s |
-| **Fechar um item do plano, ou mudança no compartilhado** | Tudo acima + `npm test` (suíte **completa**, com cobertura) | ~3 min, sem atalho |
+| **Fechar um item do plano, ou mudança no compartilhado** | Tudo acima + `npm run test:cobertura` (suíte **completa**, com a trava da cobertura) | ~3 min, sem atalho |
 | **No CI (todo PR)** | Tudo acima + gitleaks, Semgrep e osv-scanner | sem limite |
 
 **O que conta como "fechar um item":** o último commit de um item do

@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "vitest run",
+    "test:cobertura": "vitest run --coverage",
     "dev": "tsx watch src/server.ts",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
@@ -29,11 +30,12 @@
     "@testcontainers/postgresql": "^12.1.0",
     "@types/bcrypt": "^6.0.0",
     "@types/node": "^26.4.1",
+    "@vitest/coverage-v8": "^5.0.3",
     "dotenv": "^17.4.2",
     "prisma": "^7.10.0",
     "tsx": "^4.23.13",
     "typescript": "^7.0.2",
-    "vitest": "^5.0.2"
+    "vitest": "^5.0.3"
   },
   "allowScripts": {
     "esbuild@0.28.2": true,

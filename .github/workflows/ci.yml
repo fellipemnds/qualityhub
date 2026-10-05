@@ -10,6 +10,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v7
+              with:
+                fetch-depth: 0
             - uses: actions/setup-node@v7
               with:
                 node-version: 24
@@ -18,4 +20,7 @@ jobs:
             - run: npx prisma generate
             - run: npm run lint
             - run: npm run typecheck
-            - run: npm test
+            - run: npm run test:cobertura
+            - name: Cobertura das linhas novas (CONSTRAINTS §2)
+              if: github.event_name == 'pull_request'
+              run: pipx run diff-cover==10.6.0 coverage/cobertura-coverage.xml --compare-branch=origin/${{ github.base_ref }} --fail-under=100

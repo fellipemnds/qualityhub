@@ -100,7 +100,8 @@ o banco. Frontend (planejado, não iniciado): React + Vite + **shadcn/ui**
 (não Mantine — ver changelog) + Tailwind.
 
 **Comandos:** `npm run dev` (servidor com recarga) · `npm test`
-(Vitest; Docker Desktop aberto) · `npm run typecheck`
+(Vitest; Docker Desktop aberto) · `npm run test:cobertura` (a suíte
+completa com a trava da cobertura, `CONSTRAINTS.md` §2; é o que o CI roda) · `npm run typecheck`
 (`tsc --noEmit`) · `npm run lint` (Biome: formatação + lint + ordem dos
 imports) · `npm run lint:fix` (corrige o que é automático) ·
 `npm run preparar` (`npm ci` + `prisma generate` + `prisma migrate

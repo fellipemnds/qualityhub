@@ -53,6 +53,14 @@ documento de arquitetura.
   (`noRestrictedImports` em `overrides` por grupo de arquivo, sem
   sobreposição, e `noImportCycles`) dentro do `npm run lint`: confere a
   cada edição, no editor e no CI, sem dependência nem passo novo.
+- **Cobertura de testes** (Matthew, 2026-10-05): `@vitest/coverage-v8`
+  (com o Vitest junto, 5.0.2 → 5.0.3, porque as versões andam casadas).
+  Script próprio, `npm run test:cobertura`, porque a trava não faz
+  sentido rodando um arquivo só; é o que o CI roda. Projeto: 95,16% das
+  linhas, trava em 94,66% (`thresholds.lines`). Linhas novas do PR: o
+  `diff-cover` (Python, só no CI, pelo `pipx`, versão fixa) lê o
+  relatório no formato Cobertura e falha abaixo de **100%**, o valor que
+  a A4 atingiu (141 linhas, nenhuma sem teste).
 - **Tela inicial calculada no backend** (Matthew, 2026-10-05): a regra do
   `fluxo-app.md` §2.1 e §3 (que telas cada papel permite, qual é o
   padrão, e a volta ao padrão de quem perdeu o papel da tela escolhida)
