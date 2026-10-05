@@ -36,6 +36,14 @@ documento de arquitetura.
   `Authorization` é ignorado. A comparação com o `sessaoValidaDesde` é em
   segundos (o grão do `iat`); o preço é um token emitido no mesmo segundo
   de um "sair de todos" sobreviver.
+- **Tela inicial calculada no backend** (Matthew, 2026-10-05): a regra do
+  `fluxo-app.md` §2.1 e §3 (que telas cada papel permite, qual é o
+  padrão, e a volta ao padrão de quem perdeu o papel da tela escolhida)
+  é uma função pura, `telaInicial` (`modulos/auth/tela-inicial.ts`).
+  O `GET /auth/eu` devolve a tela efetiva e a lista das permitidas; o
+  `PATCH /auth/eu` recusa com 400 uma tela fora da lista. **Pensado para
+  o MVP de NCs: rever quando o QualityHub ganhar outros módulos** (a
+  lista de telas cresce, e os papéis podem passar a valer por módulo).
 
 ### Análise do repositório (branch `chore/analise-repositorio`, entre a A3 e a A4)
 

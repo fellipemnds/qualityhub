@@ -3,9 +3,11 @@ import bcrypt from "bcrypt";
 import { auditoriaRepository } from "../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../compartilhado/auditoria/entidades-auditadas.js";
 import type { Ator } from "../../compartilhado/entidades/ator.js";
-import { CredenciaisInvalidasError, ValidacaoError } from "../../compartilhado/errors/errors.js";
+import { CredenciaisInvalidasError, NaoEncontradoError, ValidacaoError } from "../../compartilhado/errors/errors.js";
 import { prisma } from "../../compartilhado/prisma/cliente.js";
 import { usuarioRepository } from "../usuario/usuario.repository.js";
+import type { AlterarEuInput } from "./auth.schema.js";
+import { telaInicial } from "./tela-inicial.js";
 import { tokenAcessoRepository } from "./token-acesso.repository.js";
 
 export const authService = {
@@ -43,6 +45,28 @@ export const authService = {
                 depois: undefined,
             });
         });
+    },
+
+    // Quem está logado, com a tela em que começa e as que pode escolher (o frontend chama ao abrir)
+    async eu(ator: Ator) {
+        const perfil = await usuarioRepository.buscarPerfil(prisma, ator.id);
+        if (perfil === null) throw new NaoEncontradoError("Item não encontrado.");
+
+        const { papeisRecebidos, telaInicial: preferencia, ...dados } = perfil;
+        const papeis = papeisRecebidos.map((usuarioPapel) => usuarioPapel.papel);
+
+        return { ...dados, papeis, ...telaInicial(papeis, preferencia) };
+    },
+
+    // Só uma tela que os papéis permitem (fluxo-app.md §3); null volta para o padrão
+    async alterarEu(ator: Ator, dados: AlterarEuInput) {
+        if (dados.telaInicial !== null && !telaInicial(ator.papeis, null).telasIniciais.includes(dados.telaInicial)) {
+            throw new ValidacaoError("Esta tela inicial não está entre as que os seus papéis permitem.");
+        }
+
+        await usuarioRepository.alterarTelaInicial(prisma, ator.id, dados.telaInicial);
+
+        return authService.eu(ator);
     },
 
     // O sessaoValidaDesde vira "agora": o autenticar recusa todo token emitido antes (TRD §4.1, item 6)

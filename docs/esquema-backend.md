@@ -345,8 +345,8 @@ Os caminhos abaixo são mostrados **sem** o prefixo `/api`.
 | Δ | `POST /auth/definir-senha` | Público (token) | Define a senha pelo convite (também serve para redefinir); passa a atualizar `sessaoValidaDesde`; recusa usuário inativo |
 | ＋ ✅ | `POST /auth/logout` | Logado | Apaga o cookie deste navegador |
 | ＋ ✅ | `POST /auth/sair-de-todos` | Logado | Atualiza `sessaoValidaDesde` (auditado: `SAIR_DE_TODOS`) e apaga o cookie deste navegador |
-| ＋ | `GET /auth/eu` | Logado | id, nome, setor, papéis, `telaInicial` |
-| ＋ | `PATCH /auth/eu` | Logado | Altera a própria `telaInicial` |
+| ＋ ✅ | `GET /auth/eu` | Logado | id, nome, e-mail, setor, papéis, `telaInicial` (a **efetiva**: a escolhida, se os papéis ainda a permitem; senão, o padrão do papel) e `telasIniciais` (as que pode escolher) |
+| ＋ ✅ | `PATCH /auth/eu` | Logado | Altera a própria `telaInicial`; 400 se os papéis não a permitem; `null` volta para o padrão |
 
 ### 6.2 Usuários e setores
 

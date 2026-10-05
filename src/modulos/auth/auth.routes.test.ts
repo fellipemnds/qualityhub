@@ -221,3 +221,53 @@ describe("POST /auth/sair-de-todos", () => {
         ).toMatchObject([{ entidade: "USUARIO", usuarioId: editor.usuario.id }]);
     });
 });
+
+describe("GET /auth/eu", () => {
+    it("devolve quem está logado, com a tela inicial e as que pode escolher, sem a senha", async () => {
+        // Prepara
+        const gerente = await loginComo("gerente");
+
+        // Chama
+        const eu = await chamar(gerente, "GET", "/auth/eu", 200);
+
+        // Confere
+        expect(eu).toEqual({
+            id: gerente.usuario.id,
+            nome: "gerente",
+            email: "gerente@teste.com",
+            setor: { id: gerente.usuario.setorId, nome: "Qualidade" },
+            papeis: expect.arrayContaining(["EDITOR", "APROVADOR", "GERENTE"]),
+            telaInicial: "PENDENCIAS",
+            telasIniciais: ["PENDENCIAS", "NCS", "RELATORIOS"],
+        });
+    });
+});
+
+describe("PATCH /auth/eu", () => {
+    it("grava a tela inicial escolhida, e null volta para o padrão", async () => {
+        // Prepara
+        const gerente = await loginComo("gerente");
+
+        // Chama e confere: a escolha vale, inclusive num GET depois
+        expect(await chamar(gerente, "PATCH", "/auth/eu", 200, { telaInicial: "RELATORIOS" })).toMatchObject({
+            telaInicial: "RELATORIOS",
+        });
+        expect(await chamar(gerente, "GET", "/auth/eu", 200)).toMatchObject({ telaInicial: "RELATORIOS" });
+        expect(await chamar(gerente, "PATCH", "/auth/eu", 200, { telaInicial: null })).toMatchObject({
+            telaInicial: "PENDENCIAS",
+        });
+    });
+
+    it("recusa com 400 uma tela que os papéis não permitem", async () => {
+        // Prepara
+        const visualizador = await loginComo("visualizador");
+
+        // Chama
+        const resposta = await chamar(visualizador, "PATCH", "/auth/eu", 400, { telaInicial: "USUARIOS" });
+
+        // Confere: nada gravado
+        expect(resposta.mensagem).toContain("tela inicial");
+        const usuario = await prisma.usuario.findUniqueOrThrow({ where: { id: visualizador.usuario.id } });
+        expect(usuario.telaInicial).toBeNull();
+    });
+});

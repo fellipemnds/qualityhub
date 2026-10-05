@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { DefinirSenhaInput, LoginInput } from "./auth.schema.js";
+import type { AlterarEuInput, DefinirSenhaInput, LoginInput } from "./auth.schema.js";
 import { authService } from "./auth.service.js";
 import { COOKIE_SESSAO, OPCOES_COOKIE_SESSAO } from "./cookie-sessao.js";
 
@@ -26,6 +26,14 @@ export const authController = {
             })
             .status(204)
             .send();
+    },
+
+    async eu(request: FastifyRequest, reply: FastifyReply) {
+        return reply.status(200).send(await authService.eu(request.user));
+    },
+
+    async alterarEu(request: FastifyRequest<{ Body: AlterarEuInput }>, reply: FastifyReply) {
+        return reply.status(200).send(await authService.alterarEu(request.user, request.body));
     },
 
     // Apaga o cookie deste navegador. As outras sessões continuam: para elas, o sair-de-todos
