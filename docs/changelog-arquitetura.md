@@ -46,6 +46,13 @@ documento de arquitetura.
   cabeçalhos de segurança em toda resposta, com o padrão do plugin
   (`nosniff`, `frame-ancestors 'self'`, HSTS, CSP). Sem `@fastify/cors`:
   front e back na mesma origem (TRD §2.1).
+- **Regras de arquitetura no Biome, não no dependency-cruiser** (Matthew,
+  2026-10-05): o dependency-cruiser só lê TypeScript até a versão 6; no
+  7 ele analisava 0 arquivos e passaria sempre verde. O Biome, já
+  instalado, faz as quatro regras do `CONSTRAINTS.md` §2.1
+  (`noRestrictedImports` em `overrides` por grupo de arquivo, sem
+  sobreposição, e `noImportCycles`) dentro do `npm run lint`: confere a
+  cada edição, no editor e no CI, sem dependência nem passo novo.
 - **Tela inicial calculada no backend** (Matthew, 2026-10-05): a regra do
   `fluxo-app.md` §2.1 e §3 (que telas cada papel permite, qual é o
   padrão, e a volta ao padrão de quem perdeu o papel da tela escolhida)

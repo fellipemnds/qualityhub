@@ -52,7 +52,7 @@ Hoje o código cumpre o piso inteiro: nenhuma supressão, `TODO` ou
 | Lint e formatação | Zero erros na nossa config (Biome `recommended`) | `npm run lint` (`biome check .`) | cada edição, CI | **bloqueia** | ✅ em uso |
 | Testes | Todos passando | `npm test` (Vitest + Testcontainers) | ao fechar um item (§4), CI | **bloqueia** | ✅ em uso |
 | Segredos | Nenhum segredo no código nem no histórico | `gitleaks detect --redact --no-banner` | CI | **bloqueia** | ⏳ a instalar |
-| Arquitetura | Zero violações das regras da §2.1 | `depcruise --validate src` (dependency-cruiser) | antes de cada commit, CI | **bloqueia** | ⏳ a instalar |
+| Arquitetura | Zero violações das regras da §2.1 | `npm run lint` (Biome: `noRestrictedImports` por grupo de arquivo e `noImportCycles`, no `biome.json`) | cada edição, CI | **bloqueia** | ✅ em uso |
 | Segurança: código (SAST) | Nada de severidade alta ou acima | `semgrep scan --config p/default --config p/owasp-top-ten` | CI | avisa até o fim da A4, depois **bloqueia** | ⏳ a instalar |
 | Segurança: dependências | Nada de severidade alta ou acima, fora as exceções (§5) | `osv-scanner scan source -r .` | CI | avisa até o fim da A4, depois **bloqueia** | ⏳ a instalar |
 | Cobertura do projeto | Não cai mais de 0,5% abaixo do valor da §3 | `vitest run --coverage` (`@vitest/coverage-v8`) | ao fechar um item (§4), CI | avisa até o fim da A4, depois **bloqueia** | ⏳ a instalar |
@@ -97,10 +97,16 @@ comando rodar — cada instalação é configuração, escrita por Matthew.
   PR, não bloqueia. No fim da A4, essa linha sai e o check passa a
   bloquear.
 
-### 2.1 Regras de arquitetura (o que o dependency-cruiser vai conferir)
+### 2.1 Regras de arquitetura (o que o Biome confere)
 
-Hoje só escritas no `CLAUDE.md`; o arquivo de regras as transforma em
-check:
+No `biome.json` (A4, 2026-10-05, escrito por Matthew): os `overrides`
+dividem `src/` em grupos que não se sobrepõem (repositórios, services,
+testes, `compartilhado/prisma/` e o resto), cada um com a lista
+completa do que não pode importar, e o `noImportCycles` vale para todos.
+O dependency-cruiser, escolhido antes, não lê o TypeScript 7 (analisava
+0 arquivos e passaria sempre verde); o Biome já estava instalado e
+confere a cada edição, não só antes do commit. A mensagem de cada
+proibição aponta para a regra abaixo.
 
 1. O client gerado do Prisma (`src/generated/prisma`) só é importado
    por arquivos `*.repository.ts` e por `src/compartilhado/prisma/`.
@@ -113,9 +119,8 @@ check:
    `*.test.ts`.
 4. Nenhum ciclo de importação.
 
-Hoje (2026-10-02) a regra 1 se cumpre: importam o client gerado só
-`compartilhado/prisma/` e três repositories. As outras são conferidas
-na instalação.
+Na instalação (2026-10-05), o código cumpria as quatro, sem nenhuma
+exceção; cada regra foi provada com arquivos de mentira que a violavam.
 
 ---
 
@@ -143,7 +148,7 @@ nenhum, porque ele quase não mexe no total.
 |---|---|---|
 | **Depois de cada edição de arquivo** | `npm run lint` + `npm run typecheck` + piso (§1) no diff | < 10 s (hoje: ~1,7 s + ~3,8 s) |
 | **Commit intermediário** (parte de um item ainda em andamento) | Tudo acima + os arquivos de teste do que mudou (`npx vitest run <arquivo>`) | ~20–40 s |
-| **Fechar um item do plano, ou mudança no compartilhado** | Tudo acima + `npm test` (suíte **completa**, com cobertura) + arquitetura | ~3 min, sem atalho |
+| **Fechar um item do plano, ou mudança no compartilhado** | Tudo acima + `npm test` (suíte **completa**, com cobertura) | ~3 min, sem atalho |
 | **No CI (todo PR)** | Tudo acima + gitleaks, Semgrep e osv-scanner | sem limite |
 
 **O que conta como "fechar um item":** o último commit de um item do
