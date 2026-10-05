@@ -1,0 +1,7 @@
+# X2 (CONSTRAINTS.md §5): tokens JWT de desenvolvimento em .http antigos, já aposentados. Vencidos (5 h) e de um
+# JWT_SECRET já trocado; o repositório é público, então removê-los do histórico não desfaz nada
+9226ebb713d4c8f62988255da89bfb44c9b3ee02:requests-modos-falha.http:jwt:393
+e30f6f9dc3766d66c008e686e4a8672b23d364c5:requests.http:generic-api-key:11
+
+# X3 (CONSTRAINTS.md §5): o JWT_SECRET dos testes, que só vale no Postgres descartável do Testcontainers
+36d27c3a2d4b1b125bae8ef3e8d8e590ec6832f0:src/testes/setup-ambiente.ts:generic-api-key:4

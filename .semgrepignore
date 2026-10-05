@@ -1,0 +1,5 @@
+# Continua pulando o que o Git ignora (node_modules/, src/generated/, coverage/)
+:include .gitignore
+
+# X4 (CONSTRAINTS.md §5): os 7 usuários de teste do banco de desenvolvimento, com senhas de teste conhecidas
+testes/setup-usuarios-teste.sql

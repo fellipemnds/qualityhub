@@ -1,0 +1,17 @@
+# X1 (CONSTRAINTS.md §5): transitivas do Prisma 7. O "npm audit fix --force" rebaixa para o Prisma 6 e quebra o projeto.
+# A de severidade média (rgwj) está aqui porque o osv-scanner não filtra por severidade
+
+[[IgnoredVulns]]
+id = "GHSA-ggr8-5vv4-36mx"
+ignoreUntil = 2026-12-31
+reason = "X1: deepmerge-ts, transitiva do Prisma 7 (CONSTRAINTS.md §5)"
+
+[[IgnoredVulns]]
+id = "GHSA-3f6p-5ww8-9rcr"
+ignoreUntil = 2026-12-31
+reason = "X1: mysql2, transitiva do Prisma 7 (CONSTRAINTS.md §5)"
+
+[[IgnoredVulns]]
+id = "GHSA-rgwj-5xj2-c3m3"
+ignoreUntil = 2026-12-31
+reason = "X1: mysql2, transitiva do Prisma 7 (CONSTRAINTS.md §5)"

@@ -178,6 +178,9 @@ colidir com as decisões E1–E3 do `docs/esquema-backend.md` §9.
 | ID | Regra | Onde | Motivo | Dono | Vence |
 |---|---|---|---|---|---|
 | X1 | Dependências: nada alto ou acima | `deepmerge-ts` e `mysql2`, transitivas do Prisma 7 (4 vulnerabilidades altas no `npm audit`) | Risco prático baixo, aceito no `docs/trd.md` §13 (o porquê fica lá; aqui, o dono e o prazo): o `deepmerge-ts` só junta a config do Prisma, que é nossa; o `mysql2` só é usado com MySQL. A "correção" do `npm audit fix --force` rebaixa para o Prisma 6 e quebra o projeto — **nunca rodar**. Reavaliar a cada atualização do Prisma | Matthew | 2026-12-31 |
+| X2 | Segredos: nenhum no histórico | Dois tokens JWT de desenvolvimento em `.http` antigos (commits `e30f6f9` e `9226ebb`, de 16 e 17/09), no `.gitleaksignore` | Vencidos (5 h) e de um `JWT_SECRET` já trocado (L8). O repositório é público: o que entrou no histórico pode ter sido copiado, e reescrever o histórico não desfaz isso. Trocar o `JWT_SECRET` de todo ambiente que ainda use o antigo (o PC de casa) | Matthew | permanente (histórico); revisar se um token novo aparecer |
+| X3 | Segredos: nenhum no código | O `JWT_SECRET` dos testes em `src/testes/setup-ambiente.ts`, no `.gitleaksignore` | Só vale no Postgres descartável do Testcontainers; não abre nenhum ambiente real. Se o arquivo mudar e o gitleaks acusar de novo, renovar a impressão | Matthew | permanente, enquanto for só de teste |
+| X4 | SAST: nada alto ou acima | `testes/setup-usuarios-teste.sql` (hashes bcrypt dos 7 usuários de teste), no `.semgrepignore` | Seed do banco de desenvolvimento, com senhas de teste conhecidas. Nunca roda em produção | Matthew | permanente, enquanto for só de desenvolvimento |
 
 ---
 
