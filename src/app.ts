@@ -31,7 +31,11 @@ if (!jwtSecret || jwtSecret.length < 32) {
 }
 
 app.register(fastifyCookie);
-app.register(fastifyJwt, { secret: jwtSecret, cookie: { cookieName: "qh_sessao", signed: false } });
+app.register(fastifyJwt, {
+    secret: jwtSecret,
+    cookie: { cookieName: "qh_sessao", signed: false },
+    verify: { onlyCookie: true },
+});
 app.get("/", async () => {
     return { status: "Servidor online" };
 });

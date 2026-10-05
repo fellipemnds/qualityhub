@@ -15,9 +15,8 @@ export const authController = {
         const { email, senha, manterConectado } = request.body;
 
         const usuario = await authService.fazerLogin(email, senha);
-        const papeis = usuario.papeisRecebidos.map((usuarioPapel) => usuarioPapel.papel);
 
-        const token = await reply.jwtSign({ id: usuario.id, papeis }, { expiresIn: manterConectado ? "30d" : "12h" });
+        const token = await reply.jwtSign({ id: usuario.id }, { expiresIn: manterConectado ? "30d" : "12h" });
 
         return reply
             .setCookie("qh_sessao", token, {

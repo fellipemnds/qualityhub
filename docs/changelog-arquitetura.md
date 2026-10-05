@@ -26,6 +26,16 @@ documento de arquitetura.
   (com `/api`, o navegador nunca mandaria o cookie). Troca na A5.
 - **`@fastify/cookie`** (dependência nova, plugin oficial do Fastify),
   registrado antes do `@fastify/jwt`, que passa a ler o token do cookie.
+- **Middleware `autenticar` pergunta ao banco (B7):** o JWT carrega só o
+  `id` (o `payload` tipado no `fastify-jwt.d.ts` recusa outra coisa no
+  `jwtSign`); a cada requisição, o `usuarioRepository.buscarPorId`
+  (o que já existia, com os papéis) diz se o usuário existe, está ativo
+  e se o token não é anterior ao `sessaoValidaDesde`, e os papéis do
+  `request.user` são os de agora. **Só o cookie** vale
+  (`verify: { onlyCookie: true }` no registro do plugin): o cabeçalho
+  `Authorization` é ignorado. A comparação com o `sessaoValidaDesde` é em
+  segundos (o grão do `iat`); o preço é um token emitido no mesmo segundo
+  de um "sair de todos" sobreviver.
 
 ### Análise do repositório (branch `chore/analise-repositorio`, entre a A3 e a A4)
 
