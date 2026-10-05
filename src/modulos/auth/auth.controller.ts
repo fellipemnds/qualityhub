@@ -12,13 +12,22 @@ export const authController = {
     },
 
     async login(request: FastifyRequest<{ Body: LoginInput }>, reply: FastifyReply) {
-        const { email, senha } = request.body;
+        const { email, senha, manterConectado } = request.body;
 
         const usuario = await authService.fazerLogin(email, senha);
         const papeis = usuario.papeisRecebidos.map((usuarioPapel) => usuarioPapel.papel);
 
-        const token = await reply.jwtSign({ id: usuario.id, papeis }, { expiresIn: "5h" });
+        const token = await reply.jwtSign({ id: usuario.id, papeis }, { expiresIn: manterConectado ? "30d" : "12h" });
 
-        return reply.status(200).send({ token });
+        return reply
+            .setCookie("qh_sessao", token, {
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict",
+                path: "/",
+                maxAge: manterConectado ? 30 * 24 * 60 * 60 : undefined,
+            })
+            .status(204)
+            .send();
     },
 };

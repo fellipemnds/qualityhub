@@ -5,7 +5,7 @@ import { abrirDuasConexoes, chamar, perfisDeFora } from "../../testes/cenarios.j
 import { criarUsuario } from "../../testes/fabricas.js";
 
 describe("POST /auth/login", () => {
-    it("responde 200 e token se login é bem sucedido", async () => {
+    it("responde 204 e o cookie de sessão, sem o token no corpo", async () => {
         // Prepara
         const {
             usuario: { email },
@@ -15,9 +15,50 @@ describe("POST /auth/login", () => {
         // Chama
         const resultado = await app.inject({ method: "POST", url: "/auth/login", payload: { email, senha } });
 
+        const cookie = resultado.cookies.find((c) => c.name === "qh_sessao");
+
         // Confere
-        expect(resultado.statusCode).toBe(200);
-        expect(resultado.json()).toEqual({ token: expect.any(String) });
+        expect(resultado.statusCode).toBe(204);
+        expect(resultado.body).toBe("");
+        expect(cookie).toMatchObject({
+            httpOnly: true,
+            secure: true,
+            sameSite: "Strict",
+            path: "/",
+        });
+        expect(cookie?.maxAge).toBeUndefined();
+        const { iat, exp } = app.jwt.verify<{ iat: number; exp: number }>(cookie?.value ?? "");
+        expect(exp - iat).toBe(12 * 60 * 60);
+    });
+
+    it("responde 204 e o cookie com manter conectado ativado, com o cookie valendo 30 dias", async () => {
+        // Prepara
+        const {
+            usuario: { email },
+            senha,
+        } = await criarUsuario();
+
+        // Chama
+        const resultado = await app.inject({
+            method: "POST",
+            url: "/auth/login",
+            payload: { email, senha, manterConectado: true },
+        });
+
+        const cookie = resultado.cookies.find((c) => c.name === "qh_sessao");
+
+        // Confere
+        expect(resultado.statusCode).toBe(204);
+        expect(resultado.body).toBe("");
+        expect(cookie).toMatchObject({
+            httpOnly: true,
+            secure: true,
+            sameSite: "Strict",
+            path: "/",
+        });
+        expect(cookie?.maxAge).toBe(30 * 24 * 60 * 60);
+        const { iat, exp } = app.jwt.verify<{ iat: number; exp: number }>(cookie?.value ?? "");
+        expect(exp - iat).toBe(30 * 24 * 60 * 60);
     });
 
     it("responde 401 e mensagem quando senha está errada", async () => {
@@ -86,7 +127,7 @@ describe("POST /auth/definir-senha", () => {
         // Confere
         expect(resultado.statusCode).toBe(204);
         const login = await app.inject({ method: "POST", url: "/auth/login", payload: { email, senha } });
-        expect(login.statusCode).toBe(200);
+        expect(login.statusCode).toBe(204);
     });
 
     it("guarda a senha com bcrypt de custo 12", async () => {

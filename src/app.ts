@@ -1,3 +1,4 @@
+import fastifyCookie from "@fastify/cookie";
 import fastifyJwt from "@fastify/jwt";
 import Fastify from "fastify";
 import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
@@ -29,7 +30,8 @@ if (!jwtSecret || jwtSecret.length < 32) {
     throw new Error("JWT_SECRET precisa estar definida em .env, com pelo menos 32 caracteres");
 }
 
-app.register(fastifyJwt, { secret: jwtSecret });
+app.register(fastifyCookie);
+app.register(fastifyJwt, { secret: jwtSecret, cookie: { cookieName: "qh_sessao", signed: false } });
 app.get("/", async () => {
     return { status: "Servidor online" };
 });

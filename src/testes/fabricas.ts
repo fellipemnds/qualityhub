@@ -44,7 +44,6 @@ export const PERFIS = {
 
 export type Perfil = keyof typeof PERFIS;
 
-// O único helper de autenticação dos testes: na A4 o login passa a devolver cookie, e só ele muda
 export async function loginComo(perfil: Perfil) {
     const { usuario, senha } = await criarUsuario({ nome: perfil, email: `${perfil}@teste.com` });
     const papeis: Papel[] = PERFIS[perfil];
@@ -61,12 +60,16 @@ export async function loginComo(perfil: Perfil) {
     });
 
     // Falha no Prepara, e não um token undefined que só quebraria lá na frente, longe da causa
-    if (resposta.statusCode !== 200) {
+    if (resposta.statusCode !== 204) {
         throw new Error(`loginComo("${perfil}") falhou: ${resposta.statusCode} ${resposta.body}`);
     }
 
-    const { token } = resposta.json<{ token: string }>();
+    const cookie = resposta.cookies.find((c) => c.name === "qh_sessao");
 
-    // O cabeçalho pronto: o formato mora só aqui (na A4 vira cookie)
-    return { usuario, token, autenticacao: { authorization: `Bearer ${token}` } };
+    if (cookie === undefined) {
+        throw new Error(`loginComo("${perfil}"): o login não devolveu o cookie qh_sessao`);
+    }
+    const token = cookie.value;
+
+    return { usuario, token, autenticacao: { cookie: `qh_sessao=${token}` } };
 }

@@ -9,6 +9,24 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Fase A4 — sessão nova (branch `fase/a4-sessao`, em andamento)
+
+- **Trava de concorrência no repositório (B19):** o
+  `registroRepository.atualizar`/`excluir` exigem o estado em que o item
+  foi lido e **lançam o 409** se ele mudou. É a primeira vez que um
+  repositório lança erro de regra; escolhido (Matthew, 2026-10-05) porque
+  o erro é sempre o mesmo e assim nenhum chamador esquece a checagem. O
+  convite segue o mesmo desenho (`marcarComoUsado`, 400).
+- **Login com cookie:** responde **204** sem corpo (o token não vai mais
+  no JSON, senão o `HttpOnly` não protegeria nada) e grava `qh_sessao`
+  (`HttpOnly`, `Secure`, `SameSite=Strict`). `manterConectado` tem
+  default `false`: sem pedir, a sessão é a curta (cookie de sessão, JWT
+  de 12 h); pedindo, 30 dias. **Divergência temporária do TRD §4.1:**
+  `Path=/` em vez de `/api`, porque as rotas só ganham o prefixo na A5
+  (com `/api`, o navegador nunca mandaria o cookie). Troca na A5.
+- **`@fastify/cookie`** (dependência nova, plugin oficial do Fastify),
+  registrado antes do `@fastify/jwt`, que passa a ler o token do cookie.
+
 ### Análise do repositório (branch `chore/analise-repositorio`, entre a A3 e a A4)
 
 Quatro análises com as skills do `agent-skills` (2026-10-02, Matthew):

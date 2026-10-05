@@ -10,6 +10,7 @@ export const definirSenhaSchema = z.object({
 export const loginSchema = z.object({
     email: z.email(),
     senha: z.string().min(1),
+    manterConectado: z.boolean().default(false),
 });
 
 export type DefinirSenhaInput = z.infer<typeof definirSenhaSchema>;
