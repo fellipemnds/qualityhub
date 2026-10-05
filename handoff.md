@@ -5,7 +5,7 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-02 (fim do dia, no trabalho; Matthew continua em casa). A A4 começou: caracterização e três das quatro simplificações do `ciclo-vida` feitas; a quarta, `estadoAposDecisao`, é de Matthew e ainda não começou. O `casa.txt` ainda não existe.
+**Última atualização:** 2026-10-05 (chegada no trabalho, `/retomar`). Nada foi feito em casa no fim de semana: o estado é o de 2026-10-02. A foto do trabalho só mudou na extensão do Claude Code (2.1.287 → 2.1.289); ferramentas, `.env`, migrations e plugins em dia. O `comparar` ainda não roda: o `casa.txt` não existe, e a primeira foto de casa continua pendente. Nesta sessão, a quarta simplificação, `estadoAposDecisao`, ficou pronta (Matthew passou o item para Claude e acompanhou). As quatro simplificações do `ciclo-vida` estão feitas; o próximo é o B19.
 
 ## 1. Objetivo
 
@@ -28,20 +28,24 @@ simplificações do `ciclo-vida.service.ts` e o B19.
   - **`fix:`** `buscarRegistroOuFalhar`, com o 404 sempre "Item não
     encontrado." (o teste ficou vermelho antes, nos 5 casos);
   - **`refactor:`** validador `() => void` em `publicar`, `submeter` e
-    `concluir`, como o do `cancelar` (11 chamadas nos 6 services).
-- Suíte: **266 passando** (251 + 15). Lint e typecheck limpos. A suíte
-  levou de 141 s a 276 s hoje, com os mesmos testes: a máquina estava
-  lenta. Se continuar, olhar o Docker Desktop antes de mexer nos testes.
-- O que Matthew aprendeu hoje: contrato de qualidade; modelagem de
+    `concluir`, como o do `cancelar` (11 chamadas nos 6 services);
+  - **`refactor:`** `estadoAposDecisao` (2026-10-05): função pura com 3
+    testes, sem o ramo de vários portões, e `{ fecharAoAprovar }` no
+    lugar do booleano solto.
+- Suíte: **269 passando** (266 + 3). Lint e typecheck limpos.
+- **A suíte está cada vez mais lenta, com os mesmos testes:** 141 s →
+  276 s (2026-10-02) → **568 s** (2026-10-05, no trabalho). Só o arquivo
+  da `estadoAposDecisao` (3 testes) levou 84 s, quase tudo para subir o
+  Postgres. Olhar o Docker Desktop (Settings → Resources) e a memória do
+  WSL (`free -h`) **antes** de mexer nos testes.
+- O que Matthew aprendeu em 2026-10-02: contrato de qualidade; modelagem de
   ameaças e OWASP (IDOR, TOCTOU, enumeração por tempo, custo do bcrypt);
   Cerca de Chesterton; teste de caracterização; skills locais do Claude
   Code; refatoração em passos pequenos, cada um com a suíte completa.
 
 ## 3. Arquivos no meio de uma mudança
 
-Nenhum arquivo pela metade. O **item 4 das simplificações** (a
-`estadoAposDecisao`) ainda não foi começado: o roteiro dele está no
-"Próximo passo".
+Nenhum.
 
 ## 4. O que foi alterado nesta sessão
 
@@ -112,37 +116,10 @@ Nenhum arquivo pela metade. O **item 4 das simplificações** (a
 
 ## 6. Próximo passo
 
-1. **`estadoAposDecisao`, escrita por Matthew** (função pura, TDD, como
-   a `avaliarFechamentoNC`). O que foi combinado na conversa:
-   - **O que decide:** o estado do item depois da decisão do aprovador,
-     no fim do `cicloVidaService.decidir`. Sem o ramo de vários portões
-     (morto: todo tipo tem um portão só), são três casos:
-
-     | Decisão | Fecha ao aprovar? | Estado depois |
-     |---|---|---|
-     | `REPROVADO` | (não importa) | `ABERTO` |
-     | `APROVADO` | sim (NC, contenção, classificação, investigação) | `FECHADO` |
-     | `APROVADO` | não (plano da Ação Corretiva) | `ABERTO` |
-
-     Sem o ramo morto, o `portaoAtual` não muda no `decidir`: a função
-     devolve **só o estado**.
-   - **Contrato:** recebe a `decisao` (`Decisao`) e um **objeto de
-     opções** `{ fecharAoAprovar: boolean }` (nome sugerido; o combinado
-     era `fecharAoAprovarUltimoPortao`, que perdeu sentido sem vários
-     portões; Matthew decide); devolve `EstadoRegistro`.
-   - **Conceito novo:** objeto de opções no lugar do booleano solto
-     (`decidir(..., false)` em `acao-corretiva.service.ts` vira
-     `decidir(..., { fecharAoAprovar: false })`).
-   - **Arquivos:** `src/compartilhado/registro/estado-apos-decisao.ts` e
-     `.test.ts`. O teste primeiro (3 casos), vermelho, depois a função.
-   - **Depois:** Claude revisa; a cadeia de `if` do `decidir` sai e entra
-     a função; a chamada da Ação Corretiva muda (mecânico, Claude ou
-     Matthew). Testes de caracterização e suíte completa; commit
-     `refactor:`.
-2. O **B19**: começar pela skill **`/bug`** (registrar e fechar bugs nos
+1. O **B19**: começar pela skill **`/bug`** (registrar e fechar bugs nos
    documentos), testada no registro dele; depois, o teste de
    concorrência que falha e o conserto, dentro do `aplicarTransicao`.
-3. Durante a fase: Matthew instala as cinco ferramentas do
+2. Durante a fase: Matthew instala as cinco ferramentas do
    `CONSTRAINTS.md` e escreve os scripts `verificar:rapido`,
    `verificar:item` e `scripts/piso.mjs`.
 
