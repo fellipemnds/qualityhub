@@ -109,7 +109,9 @@ por item). Se algum dia uma consulta ficar lenta, mede-se primeiro.
 Cada linha vira uma migration. Nomes de campo seguindo o padrão atual
 (português, camelCase).
 
-### M1 — `Usuario`: inativação, sessão e preferência
+### M1 — `Usuario`: inativação, sessão e preferência ✅
+
+Aplicada na A4 (2026-10-05), migration `sessao_e_preferencia_do_usuario`. Os usuários que já existiam recebem `sessaoValidaDesde` = o momento da migration.
 
 | Campo | Tipo | Para quê |
 |---|---|---|
@@ -553,3 +555,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-02 | v1.31 — B19 registrado (transições sem trava sob concorrência), da auditoria de segurança |
 | 2026-10-02 | v1.32 — coerência documental: `ContadorSequencia` e `investigacaoId` do §2 como estão no banco; rotas já feitas marcadas com ✅ no §6; exceções de forma da Classificação e da Verificação no §6.4; histórico em ordem crescente |
 | 2026-10-05 | v1.33 — B19 corrigido (A4): gravação no `Registro` e uso do convite condicionados ao estado lido |
+| 2026-10-05 | v1.34 — M1 aplicada (A4): `desativadoEm`, `sessaoValidaDesde` e `telaInicial` no `Usuario` |
