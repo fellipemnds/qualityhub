@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { app } from "../../app.js";
 import { chamar, diaDaquiA } from "../../testes/cenarios.js";
 import { loginComo } from "../../testes/fabricas.js";
 import { levarAcaoCorretivaAte } from "../../testes/levar-ate/acao-corretiva.js";
@@ -148,6 +149,120 @@ describe("Ciclo de vida: auditoria de cada transição", () => {
         expect(
             await prisma.auditoria.findMany({ where: { entidadeId: contencao.id, acao: "EXCLUIR_RASCUNHO" } }),
         ).toMatchObject([{ usuarioId: editor.usuario.id, antes: { estado: "RASCUNHO" }, depois: null }]);
+    });
+});
+
+// B19 (esquema-backend.md §7): a mesma transição duas vezes ao mesmo tempo. As duas leem o mesmo estado; sem a trava,
+// as duas passam. Cada linha prepara o item e diz qual rota chamar; o teste chama duas vezes de uma vez
+const transicoesSimultaneas: {
+    nome: string;
+    preparar: () => Promise<{ id: string; quem: Quem; url: string; metodo?: "POST" | "DELETE"; body?: object }>;
+    acao: string;
+    status?: number;
+}[] = [
+    {
+        nome: "publicar",
+        preparar: async () => {
+            const { editor, contencao } = await levarContencaoAte("RASCUNHO");
+            return { id: contencao.id, quem: editor, url: `/contencoes/${contencao.id}/publicar` };
+        },
+        acao: "PUBLICAR",
+    },
+    {
+        nome: "submeter",
+        preparar: async () => {
+            const { editor, contencao } = await levarContencaoAte("ABERTO");
+            await chamar(editor, "PATCH", `/contencoes/${contencao.id}`, 200, {
+                executadaEm: diaDaquiA(-1),
+                disposicao: "CORRIGIDO",
+            });
+            return { id: contencao.id, quem: editor, url: `/contencoes/${contencao.id}/submeter` };
+        },
+        acao: "SUBMETER",
+    },
+    {
+        nome: "retirar",
+        preparar: async () => {
+            const { editor, contencao } = await levarContencaoAte("EM_APROVACAO");
+            return { id: contencao.id, quem: editor, url: `/contencoes/${contencao.id}/retirar` };
+        },
+        acao: "RETIRAR_DA_APROVACAO",
+    },
+    {
+        nome: "decidir",
+        preparar: async () => {
+            const { aprovador, contencao } = await levarContencaoAte("EM_APROVACAO");
+            return {
+                id: contencao.id,
+                quem: aprovador,
+                url: `/contencoes/${contencao.id}/decidir`,
+                body: { decisao: "APROVADO" },
+            };
+        },
+        acao: "APROVADO",
+    },
+    {
+        nome: "concluir",
+        preparar: async () => {
+            const { aprovador, verificacao } = await levarVerificacaoAte("ABERTO");
+            await chamar(aprovador, "PATCH", `/verificacoes/${verificacao.id}`, 200, {
+                resultado: "EFICAZ",
+                conclusao: "Verificação feita na linha 2 depois do prazo, conforme as instruções do plano.",
+                verificadoEm: diaDaquiA(0),
+            });
+            return { id: verificacao.id, quem: aprovador, url: `/verificacoes/${verificacao.id}/concluir` };
+        },
+        acao: "CONCLUIR_VERIFICACAO",
+    },
+    {
+        nome: "reabrir",
+        preparar: async () => {
+            const { aprovador, nc } = await levarNCAte("FECHADO");
+            return {
+                id: nc.id,
+                quem: aprovador,
+                url: `/nc/${nc.id}/reabrir`,
+                body: { motivo: "Reclamação nova do cliente." },
+            };
+        },
+        acao: "REABRIR",
+    },
+    {
+        nome: "cancelar",
+        preparar: async () => {
+            const { aprovador, contencao } = await levarContencaoAte("ABERTO");
+            return {
+                id: contencao.id,
+                quem: aprovador,
+                url: `/contencoes/${contencao.id}/cancelar`,
+                body: { motivo: "Contenção registrada em duplicidade." },
+            };
+        },
+        acao: "CANCELAR",
+    },
+    {
+        nome: "excluir rascunho",
+        preparar: async () => {
+            const { editor, contencao } = await levarContencaoAte("RASCUNHO");
+            return { id: contencao.id, quem: editor, url: `/contencoes/${contencao.id}`, metodo: "DELETE" };
+        },
+        acao: "EXCLUIR_RASCUNHO",
+        status: 204,
+    },
+];
+
+describe("Ciclo de vida: a mesma transição duas vezes ao mesmo tempo (B19)", () => {
+    it.each(transicoesSimultaneas)("$nome: uma passa, a outra recebe 409", async ({ preparar, acao, status = 200 }) => {
+        // Prepara
+        const { id, quem, url, metodo = "POST", body } = await preparar();
+
+        // Chama: as duas de uma vez, sem o chamar, porque não dá para saber qual chega primeiro
+        const transicionar = () => app.inject({ method: metodo, url, headers: quem.autenticacao, body });
+        const respostas = await Promise.all([transicionar(), transicionar()]);
+
+        // Confere: uma resposta de sucesso, um 409, e a transição gravada uma vez só
+        expect(respostas.map((r) => r.statusCode).sort()).toEqual([status, 409]);
+        expect(await prisma.auditoria.count({ where: { entidadeId: id, acao } })).toBe(1);
     });
 });
 

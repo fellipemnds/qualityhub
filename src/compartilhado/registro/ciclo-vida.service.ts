@@ -107,18 +107,18 @@ export const cicloVidaService = {
             throw new SemPermissaoError("Você não pode realizar esta ação pois você não está atribuido neste item.");
         }
 
-        const registroDeletado = await registroRepository.excluir(tx, registroId);
+        await registroRepository.excluir(tx, registroId, registro.estado);
 
         await auditoriaRepository.registrar(tx, {
-            entidade: EntidadeAuditada[registroDeletado.tipo],
-            entidadeId: registroDeletado.id,
+            entidade: EntidadeAuditada[registro.tipo],
+            entidadeId: registro.id,
             acao: "EXCLUIR_RASCUNHO",
             usuarioId: ator.id,
-            antes: registroDeletado,
+            antes: registro,
             depois: undefined,
         });
 
-        return registroDeletado;
+        return registro;
     },
 
     async submeter(tx: ClientePrisma, registroId: string, ator: Ator, validador: () => void, acao: Acao = "SUBMETER") {

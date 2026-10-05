@@ -1,6 +1,9 @@
 import type { EstadoRegistro } from "../entidades/estados.js";
 import type { TipoRegistro } from "../entidades/tipos-registro.js";
 import { TransicaoInvalidaError } from "../errors/errors.js";
+
+const ITEM_MUDOU = "O item mudou enquanto a ação era feita. Atualize a página e tente de novo.";
+
 import type { ClientePrisma } from "../prisma/tipos.js";
 
 export const registroRepository = {
@@ -44,18 +47,21 @@ export const registroRepository = {
         });
 
         if (registro === undefined) {
-            throw new TransicaoInvalidaError(
-                "O item mudou enquanto a ação era feita. Atualize a página e tente de novo.",
-            );
+            throw new TransicaoInvalidaError(ITEM_MUDOU);
         }
 
         return registro;
     },
 
-    async excluir(tx: ClientePrisma, id: string) {
-        return tx.registro.delete({
-            where: { id },
+    // Apaga só se o item ainda estiver no estado em que foi lido, pelo mesmo motivo do atualizar (B19)
+    async excluir(tx: ClientePrisma, id: string, estadoEsperado: EstadoRegistro) {
+        const { count } = await tx.registro.deleteMany({
+            where: { id, estado: estadoEsperado },
         });
+
+        if (count === 0) {
+            throw new TransicaoInvalidaError(ITEM_MUDOU);
+        }
     },
 
     async listar(tx: ClientePrisma, filtros: { tipo: TipoRegistro }) {
