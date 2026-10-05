@@ -10,9 +10,14 @@ import type { AlterarEuInput } from "./auth.schema.js";
 import { telaInicial } from "./tela-inicial.js";
 import { tokenAcessoRepository } from "./token-acesso.repository.js";
 
-// Hash bcrypt de custo 12 (o mesmo do definir-senha) de uma senha aleatória que ninguém sabe. Fixo no código: gerar na
-// hora custaria ~250 ms a cada vez que o módulo carrega
-const HASH_FALSO = "$2b$12$JDx42xa1sNy0iirQn8R8g.6Cd49XCZJEuJLTtjE9Sp3dMwArd2s4S";
+// Hash bcrypt de custo 12 (o mesmo do definir-senha) de uma senha aleatória que ninguém sabe. Gerado na primeira vez
+// que é preciso e guardado: os ~250 ms do custo 12 uma vez só, e nenhum hash escrito no código (o Semgrep acusa)
+let hashFalso: Promise<string> | undefined;
+
+function obterHashFalso() {
+    hashFalso ??= bcrypt.hash(crypto.randomBytes(32).toString("hex"), 12);
+    return hashFalso;
+}
 
 export const authService = {
     async definirSenha(token: string, senha: string) {
@@ -96,7 +101,7 @@ export const authService = {
 
         // Sem usuário ou sem senha, compara com o hash falso: a resposta leva o mesmo tempo de uma senha errada, e o tempo
         // não denuncia quais e-mails têm conta (auditoria L1)
-        const senhaConfere = await bcrypt.compare(senha, usuario?.senhaHash ?? HASH_FALSO);
+        const senhaConfere = await bcrypt.compare(senha, usuario?.senhaHash ?? (await obterHashFalso()));
 
         if (usuario === null || usuario.senhaHash === null || !senhaConfere || usuario.desativadoEm !== null) {
             throw new CredenciaisInvalidasError();
