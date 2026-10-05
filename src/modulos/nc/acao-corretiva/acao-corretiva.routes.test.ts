@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { app } from "../../../app.js";
 import {
+    abrirDuasConexoes,
     chamar,
     concluirVerificacao,
     diaDaquiA,
@@ -360,6 +361,7 @@ describe("POST /acoes-corretivas/:id/finalizar-execucao", () => {
                 headers: editor.autenticacao,
                 body: { diasParaVerificar: 30 },
             });
+        await abrirDuasConexoes();
         const respostas = await Promise.all([finalizar(), finalizar()]);
 
         // Confere: uma passa, a outra é recusada, e nasce uma verificação só

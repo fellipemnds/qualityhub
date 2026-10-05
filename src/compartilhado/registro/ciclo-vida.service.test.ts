@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { app } from "../../app.js";
-import { chamar, diaDaquiA } from "../../testes/cenarios.js";
+import { abrirDuasConexoes, chamar, diaDaquiA } from "../../testes/cenarios.js";
 import { loginComo } from "../../testes/fabricas.js";
 import { levarAcaoCorretivaAte } from "../../testes/levar-ate/acao-corretiva.js";
 import { levarContencaoAte } from "../../testes/levar-ate/contencao.js";
@@ -258,6 +258,7 @@ describe("Ciclo de vida: a mesma transição duas vezes ao mesmo tempo (B19)", (
 
         // Chama: as duas de uma vez, sem o chamar, porque não dá para saber qual chega primeiro
         const transicionar = () => app.inject({ method: metodo, url, headers: quem.autenticacao, body });
+        await abrirDuasConexoes();
         const respostas = await Promise.all([transicionar(), transicionar()]);
 
         // Confere: uma resposta de sucesso, um 409, e a transição gravada uma vez só

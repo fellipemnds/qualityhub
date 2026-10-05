@@ -1,6 +1,7 @@
 import { expect } from "vitest";
 import { app } from "../app.js";
 import { hojeEmSaoPaulo } from "../compartilhado/datas/hoje-em-sao-paulo.js";
+import { prisma } from "../compartilhado/prisma/cliente.js";
 import { loginComo } from "./fabricas.js";
 
 // Cenários de teste montados pela API — passando pelas mesmas permissões e guardas que um usuário real. Cada
@@ -30,6 +31,13 @@ export function diaDaquiA(dias: number) {
     const dia = new Date(`${hojeEmSaoPaulo()}T00:00:00Z`);
     dia.setUTCDate(dia.getUTCDate() + dias);
     return dia.toISOString().slice(0, 10);
+}
+
+// Duas requisições ao mesmo tempo (B19) só correm juntas se houver duas conexões abertas com o banco. Com uma só, a
+// segunda espera abrir a dela (~20 ms) e, se a transação da primeira for curta, ela já terminou: a corrida não
+// acontece, e o teste passa mesmo sem a trava. Chamar logo antes do Promise.all
+export async function abrirDuasConexoes() {
+    await Promise.all([prisma.$queryRaw`SELECT 1`, prisma.$queryRaw`SELECT 1`]);
 }
 
 // Os quatro perfis do fluxo e uma NC publicada, com o aprovador designado
