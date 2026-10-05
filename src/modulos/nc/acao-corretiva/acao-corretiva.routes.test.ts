@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { app } from "../../../app.js";
 import {
     chamar,
     concluirVerificacao,
@@ -340,6 +341,30 @@ describe("POST /acoes-corretivas/:id/finalizar-execucao", () => {
                 expect.objectContaining({ path: ["evidencia"] }),
             ]),
         });
+    });
+
+    // B19 (esquema-backend.md §7): as duas leem a ação ABERTA antes de qualquer uma gravar, e as duas passam
+    it("duplo clique: duas finalizações ao mesmo tempo geram uma verificação só (B19)", async () => {
+        // Prepara: plano aprovado e execução registrada
+        const { editor, acao } = await ncProntaParaFechar();
+        await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
+            executadoEm: diaDaquiA(-1),
+            evidencia: "Procedimento PO-07 revisado e publicado na intranet.",
+        });
+
+        // Chama: as duas ao mesmo tempo. Sem o chamar, porque não dá para saber qual delas chega primeiro
+        const finalizar = () =>
+            app.inject({
+                method: "POST",
+                url: `/acoes-corretivas/${acao.id}/finalizar-execucao`,
+                headers: editor.autenticacao,
+                body: { diasParaVerificar: 30 },
+            });
+        const respostas = await Promise.all([finalizar(), finalizar()]);
+
+        // Confere: uma passa, a outra é recusada, e nasce uma verificação só
+        expect(respostas.map((r) => r.statusCode).sort()).toEqual([200, 409]);
+        expect(await chamar(editor, "GET", `/verificacoes?acaoCorretivaId=${acao.id}`, 200)).toHaveLength(1);
     });
 
     it("recusa prazo de verificação negativo", async () => {

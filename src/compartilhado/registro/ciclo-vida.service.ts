@@ -41,7 +41,7 @@ async function aplicarTransicao(
     acao: string,
     ator: Ator,
 ) {
-    const registroAtualizado = await registroRepository.atualizar(tx, registro.id, mudanca);
+    const registroAtualizado = await registroRepository.atualizar(tx, registro.id, registro.estado, mudanca);
 
     await auditoriaRepository.registrar(tx, {
         entidade: EntidadeAuditada[registroAtualizado.tipo],

@@ -228,7 +228,9 @@ export const acaoCorretivaService = {
                 );
             }
 
-            const registroAtualizado = await registroRepository.atualizar(tx, registroId, { estado: "FECHADO" });
+            const registroAtualizado = await registroRepository.atualizar(tx, registroId, "ABERTO", {
+                estado: "FECHADO",
+            });
 
             // Um "hoje" só, para o prazo e o ano do código nunca discordarem. O prazo é um dia de calendário:
             // meia-noite UTC do dia (TRD §6, B11)
@@ -245,10 +247,15 @@ export const acaoCorretivaService = {
             const anoAtual = Number(hoje.slice(0, 4));
             const codigoVerificacao = await sequenciaService.proximoCodigo(tx, prefixo, anoAtual);
 
-            const verificacaoRegistroAtualizado = await registroRepository.atualizar(tx, registroVerificacao.id, {
-                estado: "ABERTO",
-                codigo: codigoVerificacao,
-            });
+            const verificacaoRegistroAtualizado = await registroRepository.atualizar(
+                tx,
+                registroVerificacao.id,
+                "RASCUNHO",
+                {
+                    estado: "ABERTO",
+                    codigo: codigoVerificacao,
+                },
+            );
 
             const verificacao = await verificacaoRepository.criar(tx, {
                 id: registroVerificacao.id,
