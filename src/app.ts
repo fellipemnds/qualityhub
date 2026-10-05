@@ -1,4 +1,5 @@
 import fastifyCookie from "@fastify/cookie";
+import fastifyHelmet from "@fastify/helmet";
 import fastifyJwt from "@fastify/jwt";
 import fastifyRateLimit from "@fastify/rate-limit";
 import Fastify from "fastify";
@@ -32,6 +33,8 @@ if (!jwtSecret || jwtSecret.length < 32) {
     throw new Error("JWT_SECRET precisa estar definida em .env, com pelo menos 32 caracteres");
 }
 
+// Cabeçalhos de segurança em toda resposta (auditoria R3). O padrão do helmet serve para uma API que só devolve JSON
+app.register(fastifyHelmet);
 app.register(fastifyCookie);
 // Só nas rotas que pedem (config.rateLimit), hoje o login. O erro é o nosso, para a resposta sair no formato de sempre
 app.register(fastifyRateLimit, { global: false, errorResponseBuilder: () => new MuitasTentativasError() });

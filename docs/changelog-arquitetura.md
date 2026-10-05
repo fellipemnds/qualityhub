@@ -42,6 +42,10 @@ documento de arquitetura.
   sair no formato de sempre). Nos testes, o `loginComo` usa um IP por
   login: o limite fica ligado de verdade, e o teste do 429 usa um IP
   próprio. O L1 compara com um hash falso de custo 12, fixo no código.
+- **`@fastify/helmet`** (dependência nova, plugin oficial; auditoria R3):
+  cabeçalhos de segurança em toda resposta, com o padrão do plugin
+  (`nosniff`, `frame-ancestors 'self'`, HSTS, CSP). Sem `@fastify/cors`:
+  front e back na mesma origem (TRD §2.1).
 - **Tela inicial calculada no backend** (Matthew, 2026-10-05): a regra do
   `fluxo-app.md` §2.1 e §3 (que telas cada papel permite, qual é o
   padrão, e a volta ao padrão de quem perdeu o papel da tela escolhida)
