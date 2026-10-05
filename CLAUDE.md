@@ -45,8 +45,8 @@ visual.
 **Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B19; os
 corrigidos têm ✅). A A3 corrigiu B1–B6 e B8–B18, e a RN-48 entrou como
 regra nova (fase fechada em 2026-10-02, PR #4). A A4 corrigiu o B19
-(transições sem trava sob concorrência, 2026-10-05). Fica aberto o
-**B7** (papéis no token), na A4.
+(transições sem trava sob concorrência) e o B7 (papéis no token), os
+dois em 2026-10-05. **Nenhum bug aberto.**
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
@@ -161,6 +161,14 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   `{ id: string, papeis: Papel[] }`) — usado em toda função de
   service/controller que recebe quem está executando a ação, e também
   no tipo do `request.user` (`types/fastify-jwt.d.ts`).
+- **Sessão (B7, TRD §4.1)**: o login grava o cookie `qh_sessao`
+  (`HttpOnly`, `Secure`, `SameSite=Strict`) com um JWT que carrega **só
+  o `id`**. O middleware `autenticar` busca o usuário no banco **a cada
+  requisição** (existe? ativo? token posterior ao `sessaoValidaDesde`?)
+  e monta o `request.user` com os **papéis atuais**. O cabeçalho
+  `Authorization` não vale. Nos testes, o `loginComo` devolve o cookie
+  pronto em `autenticacao`; papel revogado direto no banco vale na
+  próxima requisição.
 
 ## Particularidades por entidade (as pegadinhas reais)
 

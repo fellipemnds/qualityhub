@@ -118,8 +118,9 @@ Nenhum.
 
 1. O **`gerarVerificacao`** (🤖): extrair do `finalizarExecucaoAcaoCorretiva`
    e corrigir os comentários (plano, A4, "Depois do B19").
-2. O **B7**, começando pela M1, **escrito por Matthew com Claude
-   guiando passo a passo** (combinado em 2026-10-05).
+2. ~~O **B7**~~ (feito em 2026-10-05, M1, login e middleware escritos
+   por Matthew com Claude guiando). O resto da A4: rotas de sessão,
+   login endurecido, `helmet`, as ferramentas.
 3. Durante a fase: Matthew instala as cinco ferramentas do
    `CONSTRAINTS.md` e escreve os scripts `verificar:rapido`,
    `verificar:item` e `scripts/piso.mjs`.
