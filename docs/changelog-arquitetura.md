@@ -61,6 +61,15 @@ documento de arquitetura.
   `diff-cover` (Python, só no CI, pelo `pipx`, versão fixa) lê o
   relatório no formato Cobertura e falha abaixo de **100%**, o valor que
   a A4 atingiu (141 linhas, nenhuma sem teste).
+- **Checks de segurança no CI** (Matthew, 2026-10-05): gitleaks, Semgrep
+  e osv-scanner, cada um num job próprio (rodam em paralelo e aparecem
+  separados no PR), com versão fixa, e já **bloqueando**: o código
+  estava limpo no fim da A4, então o período de aviso não foi preciso.
+  Na instalação acharam: dois tokens de desenvolvimento no histórico e o
+  segredo dos testes (X2, X3), os hashes do seed de desenvolvimento (X4)
+  e a X1 de sempre; e dois problemas consertados no código, a injeção
+  pelo `${{ }}` dentro de um `run:` do CI (passou para `env:`) e o hash
+  falso do login escrito no código (passou a ser gerado na hora).
 - **Tela inicial calculada no backend** (Matthew, 2026-10-05): a regra do
   `fluxo-app.md` §2.1 e §3 (que telas cada papel permite, qual é o
   padrão, e a volta ao padrão de quem perdeu o papel da tela escolhida)

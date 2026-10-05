@@ -51,10 +51,10 @@ Hoje o código cumpre o piso inteiro: nenhuma supressão, `TODO` ou
 | Tipos | Zero erros | `npm run typecheck` (`tsc --noEmit`) | cada edição, CI | **bloqueia** | ✅ em uso |
 | Lint e formatação | Zero erros na nossa config (Biome `recommended`) | `npm run lint` (`biome check .`) | cada edição, CI | **bloqueia** | ✅ em uso |
 | Testes | Todos passando | `npm test` (Vitest + Testcontainers) | ao fechar um item (§4), CI | **bloqueia** | ✅ em uso |
-| Segredos | Nenhum segredo no código nem no histórico | `gitleaks detect --redact --no-banner` | CI | **bloqueia** | ⏳ a instalar |
+| Segredos | Nenhum segredo no código nem no histórico, fora as exceções (§5) | `gitleaks detect --redact --no-banner` (v8.30.1, job `segredos`; exceções no `.gitleaksignore`) | CI | **bloqueia** | ✅ em uso |
 | Arquitetura | Zero violações das regras da §2.1 | `npm run lint` (Biome: `noRestrictedImports` por grupo de arquivo e `noImportCycles`, no `biome.json`) | cada edição, CI | **bloqueia** | ✅ em uso |
-| Segurança: código (SAST) | Nada de severidade alta ou acima | `semgrep scan --config p/default --config p/owasp-top-ten` | CI | avisa até o fim da A4, depois **bloqueia** | ⏳ a instalar |
-| Segurança: dependências | Nada de severidade alta ou acima, fora as exceções (§5) | `osv-scanner scan source -r .` | CI | avisa até o fim da A4, depois **bloqueia** | ⏳ a instalar |
+| Segurança: código (SAST) | Nada de severidade alta ou acima, fora as exceções (§5) | `semgrep scan --config p/default --config p/owasp-top-ten --severity ERROR --error --quiet` (1.179.0 pelo `pipx`, job `sast`; exceções no `.semgrepignore`) | CI | **bloqueia** | ✅ em uso |
+| Segurança: dependências | Nada de severidade alta ou acima, fora as exceções (§5) | `osv-scanner scan source -r .` (v2.6.0, job `dependencias`; exceções no `osv-scanner.toml`, com `ignoreUntil` na validade da §5) | CI | **bloqueia** | ✅ em uso |
 | Cobertura do projeto | Não cai mais de 0,5% abaixo do valor da §3 | `npm run test:cobertura` (`vitest run --coverage`, `@vitest/coverage-v8`; a trava é o `thresholds.lines` do `vitest.config.ts`) | ao fechar um item (§4), CI | **bloqueia** | ✅ em uso |
 | Cobertura das linhas novas | 100% das linhas de produção novas ou modificadas no PR são executadas por algum teste. Linha impossível de alcançar vira exceção na §5, nunca trava mais baixa | `pipx run diff-cover==10.6.0 coverage/cobertura-coverage.xml --compare-branch=origin/<destino> --fail-under=100` (lê o relatório do `npm run test:cobertura`) | CI (só em PR) | **bloqueia** | ✅ em uso |
 
