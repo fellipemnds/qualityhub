@@ -55,3 +55,12 @@ export class TransicaoInvalidaError extends AppError {
         this.detalhes = detalhes;
     }
 }
+
+export class MuitasTentativasError extends AppError {
+    statusCode = 429;
+
+    constructor(mensagem = "Muitas tentativas, aguarde um minuto.") {
+        super(mensagem);
+        this.name = "MuitasTentativasError";
+    }
+}

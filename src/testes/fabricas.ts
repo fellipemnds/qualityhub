@@ -12,7 +12,7 @@ export async function criarUsuario({
     email?: string;
     senha?: string | null;
 } = {}) {
-    // 4 para diminuir o custo dos testes. Produção é 10
+    // 4 para diminuir o custo dos testes. Produção é 12 (definir-senha)
     const senhaHash = senha === null ? null : await bcrypt.hash(senha, 4);
     const usuario = await prisma.usuario.create({
         data: {
@@ -44,6 +44,8 @@ export const PERFIS = {
 
 export type Perfil = keyof typeof PERFIS;
 
+let loginsFeitos = 0;
+
 export async function loginComo(perfil: Perfil) {
     const { usuario, senha } = await criarUsuario({ nome: perfil, email: `${perfil}@teste.com` });
     const papeis: Papel[] = PERFIS[perfil];
@@ -53,9 +55,13 @@ export async function loginComo(perfil: Perfil) {
         data: papeis.map((papel) => ({ usuarioId: usuario.id, papel, concedidoPorId: usuario.id })),
     });
 
+    // Um IP por login: o limite de 5 tentativas por minuto (IP + e-mail) vale de verdade nos testes, e o mesmo perfil
+    // entra dezenas de vezes por minuto
+    loginsFeitos++;
     const resposta = await app.inject({
         method: "POST",
         url: "/auth/login",
+        remoteAddress: `10.0.${Math.floor(loginsFeitos / 250)}.${(loginsFeitos % 250) + 1}`,
         payload: { email: usuario.email, senha },
     });
 

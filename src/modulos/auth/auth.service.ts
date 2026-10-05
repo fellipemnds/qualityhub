@@ -10,6 +10,10 @@ import type { AlterarEuInput } from "./auth.schema.js";
 import { telaInicial } from "./tela-inicial.js";
 import { tokenAcessoRepository } from "./token-acesso.repository.js";
 
+// Hash bcrypt de custo 12 (o mesmo do definir-senha) de uma senha aleatória que ninguém sabe. Fixo no código: gerar na
+// hora custaria ~250 ms a cada vez que o módulo carrega
+const HASH_FALSO = "$2b$12$JDx42xa1sNy0iirQn8R8g.6Cd49XCZJEuJLTtjE9Sp3dMwArd2s4S";
+
 export const authService = {
     async definirSenha(token: string, senha: string) {
         return prisma.$transaction(async (tx) => {
@@ -85,27 +89,27 @@ export const authService = {
         });
     },
 
-    // Realiza o login, comparando o a senha com seu Hash e retorna o objeto usuário.
+    // Confere e-mail e senha. Toda recusa é a mesma CredenciaisInvalidasError, para quem tenta não descobrir se a conta
+    // existe, se já tem senha ou se está inativa (RN-38). O sucesso fica na auditoria
     async fazerLogin(email: string, senha: string) {
-        // Busca do banco se o cadastro foi feito pelo Admin
         const usuario = await usuarioRepository.buscarPorEmail(prisma, email);
 
-        // Verifica se não chegou vazio
-        if (!usuario) {
+        // Sem usuário ou sem senha, compara com o hash falso: a resposta leva o mesmo tempo de uma senha errada, e o tempo
+        // não denuncia quais e-mails têm conta (auditoria L1)
+        const senhaConfere = await bcrypt.compare(senha, usuario?.senhaHash ?? HASH_FALSO);
+
+        if (usuario === null || usuario.senhaHash === null || !senhaConfere || usuario.desativadoEm !== null) {
             throw new CredenciaisInvalidasError();
         }
 
-        // Verifica se a pessoa já realizou o primeiro acesso
-        if (!usuario.senhaHash) {
-            throw new CredenciaisInvalidasError();
-        }
-
-        const senhaConfere = await bcrypt.compare(senha, usuario.senhaHash);
-
-        // Retorna se a senha não confere.
-        if (!senhaConfere) {
-            throw new CredenciaisInvalidasError();
-        }
+        await auditoriaRepository.registrar(prisma, {
+            entidade: EntidadeAuditada.USUARIO,
+            entidadeId: usuario.id,
+            acao: "LOGIN",
+            usuarioId: usuario.id,
+            antes: undefined,
+            depois: undefined,
+        });
 
         return usuario;
     },

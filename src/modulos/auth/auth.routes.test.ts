@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { app } from "../../app.js";
 import { prisma } from "../../compartilhado/prisma/cliente.js";
@@ -5,6 +6,10 @@ import { abrirDuasConexoes, chamar, perfisDeFora } from "../../testes/cenarios.j
 import { criarUsuario, loginComo } from "../../testes/fabricas.js";
 
 describe("POST /auth/login", () => {
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
     it("responde 204 e o cookie de sessão, sem o token no corpo", async () => {
         // Prepara
         const {
@@ -59,6 +64,74 @@ describe("POST /auth/login", () => {
         expect(cookie?.maxAge).toBe(30 * 24 * 60 * 60);
         const { iat, exp } = app.jwt.verify<{ iat: number; exp: number }>(cookie?.value ?? "");
         expect(exp - iat).toBe(30 * 24 * 60 * 60);
+    });
+
+    it("registra o login na auditoria", async () => {
+        // Prepara
+        const { usuario, senha } = await criarUsuario({ email: "auditado@teste.com" });
+
+        // Chama
+        await app.inject({ method: "POST", url: "/auth/login", payload: { email: usuario.email, senha } });
+
+        // Confere
+        expect(await prisma.auditoria.findMany({ where: { entidadeId: usuario.id, acao: "LOGIN" } })).toMatchObject([
+            { entidade: "USUARIO", usuarioId: usuario.id },
+        ]);
+    });
+
+    it("recusa o usuário inativo com a mesma resposta da senha errada (RN-38)", async () => {
+        // Prepara
+        const { usuario, senha } = await criarUsuario({ email: "inativo@teste.com" });
+        await prisma.usuario.update({ where: { id: usuario.id }, data: { desativadoEm: new Date() } });
+
+        // Chama
+        const resultado = await app.inject({
+            method: "POST",
+            url: "/auth/login",
+            payload: { email: usuario.email, senha },
+        });
+
+        // Confere: nada diz que a conta existe nem que está inativa
+        expect(resultado.statusCode).toBe(401);
+        expect(resultado.json()).toEqual({ mensagem: "Credenciais inválidas" });
+    });
+
+    it("e-mail inexistente também passa pelo bcrypt, para a resposta levar o mesmo tempo (auditoria L1)", async () => {
+        // Prepara: medir o tempo daria um teste instável; o que importa é a comparação acontecer
+        const comparar = vi.spyOn(bcrypt, "compare");
+
+        // Chama
+        const resultado = await app.inject({
+            method: "POST",
+            url: "/auth/login",
+            payload: { email: "ninguem@teste.com", senha: "QualquerSenha123!" },
+        });
+
+        // Confere
+        expect(resultado.statusCode).toBe(401);
+        expect(comparar).toHaveBeenCalledTimes(1);
+    });
+
+    it("a 6ª tentativa no mesmo minuto, do mesmo IP e e-mail, recebe 429", async () => {
+        // Prepara: um IP só deste teste (o loginComo usa um IP por login, para o limite não pegar os outros testes)
+        const tentar = (email: string) =>
+            app.inject({
+                method: "POST",
+                url: "/auth/login",
+                remoteAddress: "10.99.99.99",
+                payload: { email, senha: "SenhaErrada123!" },
+            });
+        for (let i = 0; i < 5; i++) {
+            expect((await tentar("insistente@teste.com")).statusCode).toBe(401);
+        }
+
+        // Chama
+        const sexta = await tentar("insistente@teste.com");
+
+        // Confere: barrada, e o limite é por e-mail: outro e-mail do mesmo IP ainda tenta
+        expect(sexta.statusCode).toBe(429);
+        expect(sexta.json()).toEqual({ mensagem: "Muitas tentativas, aguarde um minuto." });
+        expect((await tentar("outra@teste.com")).statusCode).toBe(401);
     });
 
     it("responde 401 e mensagem quando senha está errada", async () => {

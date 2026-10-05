@@ -1,4 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
+import { CredenciaisInvalidasError } from "../../compartilhado/errors/errors.js";
 import type { AlterarEuInput, DefinirSenhaInput, LoginInput } from "./auth.schema.js";
 import { authService } from "./auth.service.js";
 import { COOKIE_SESSAO, OPCOES_COOKIE_SESSAO } from "./cookie-sessao.js";
@@ -15,7 +16,17 @@ export const authController = {
     async login(request: FastifyRequest<{ Body: LoginInput }>, reply: FastifyReply) {
         const { email, senha, manterConectado } = request.body;
 
-        const usuario = await authService.fazerLogin(email, senha);
+        let usuario: Awaited<ReturnType<typeof authService.fazerLogin>>;
+        try {
+            usuario = await authService.fazerLogin(email, senha);
+        } catch (erro) {
+            // A falha vai para o log, não para a auditoria: não há usuário identificado para ser o autor (esquema, E1).
+            // Nunca a senha
+            if (erro instanceof CredenciaisInvalidasError) {
+                request.log.warn({ email, ip: request.ip }, "Login recusado");
+            }
+            throw erro;
+        }
 
         const token = await reply.jwtSign({ id: usuario.id }, { expiresIn: manterConectado ? "30d" : "12h" });
 

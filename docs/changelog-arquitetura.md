@@ -36,6 +36,12 @@ documento de arquitetura.
   `Authorization` é ignorado. A comparação com o `sessaoValidaDesde` é em
   segundos (o grão do `iat`); o preço é um token emitido no mesmo segundo
   de um "sair de todos" sobreviver.
+- **Login endurecido** (TRD §4.3): `@fastify/rate-limit` (dependência
+  nova, plugin oficial) só no login, com chave IP + e-mail em minúsculas
+  e o 429 como `MuitasTentativasError` (um `AppError`, para a resposta
+  sair no formato de sempre). Nos testes, o `loginComo` usa um IP por
+  login: o limite fica ligado de verdade, e o teste do 429 usa um IP
+  próprio. O L1 compara com um hash falso de custo 12, fixo no código.
 - **Tela inicial calculada no backend** (Matthew, 2026-10-05): a regra do
   `fluxo-app.md` §2.1 e §3 (que telas cada papel permite, qual é o
   padrão, e a volta ao padrão de quem perdeu o papel da tela escolhida)

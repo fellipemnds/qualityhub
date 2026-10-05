@@ -341,7 +341,7 @@ Os caminhos abaixo são mostrados **sem** o prefixo `/api`.
 
 | | Método e caminho | Quem | O que faz |
 |---|---|---|---|
-| Δ | `POST /auth/login` | Público | + `manterConectado`; responde com **cookie**, não com token no corpo; limite de tentativas; recusa usuário **inativo** com a mesma mensagem de qualquer falha (RN-38) |
+| Δ ✅ | `POST /auth/login` | Público | + `manterConectado`; responde com **cookie**, não com token no corpo; limite de tentativas (5/min por IP + e-mail, 429); recusa usuário **inativo** com a mesma mensagem de qualquer falha (RN-38); sucesso na auditoria (`LOGIN`), falha no log (E1); e-mail inexistente compara com um hash falso, no mesmo tempo (auditoria L1) |
 | Δ | `POST /auth/definir-senha` | Público (token) | Define a senha pelo convite (também serve para redefinir); passa a atualizar `sessaoValidaDesde`; recusa usuário inativo |
 | ＋ ✅ | `POST /auth/logout` | Logado | Apaga o cookie deste navegador |
 | ＋ ✅ | `POST /auth/sair-de-todos` | Logado | Atualiza `sessaoValidaDesde` (auditado: `SAIR_DE_TODOS`) e apaga o cookie deste navegador |

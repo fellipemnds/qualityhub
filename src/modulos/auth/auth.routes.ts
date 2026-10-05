@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { autenticar } from "../../middlewares/autenticar.js";
 import { authController } from "./auth.controller.js";
-import { alterarEuSchema, definirSenhaSchema, loginSchema } from "./auth.schema.js";
+import { alterarEuSchema, definirSenhaSchema, type LoginInput, loginSchema } from "./auth.schema.js";
 
 export async function authRoutes(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -16,6 +16,18 @@ export async function authRoutes(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
         url: "/auth/login",
+        // 5 tentativas por minuto por IP + e-mail (TRD §4.3). No preHandler, depois da validação, para o e-mail do corpo
+        // já estar lá; em minúsculas, para "Ana@" e "ana@" contarem juntos
+        config: {
+            rateLimit: {
+                max: 5,
+                timeWindow: "1 minute",
+                hook: "preHandler",
+                keyGenerator: (request) => `${request.ip}:${(request.body as LoginInput).email.toLowerCase()}`,
+                // O sinal de alguém tentando adivinhar uma senha: vai para o log, como as outras falhas (esquema, E1)
+                onExceeded: (request, chave) => request.log.warn({ chave }, "Limite de tentativas de login atingido"),
+            },
+        },
         schema: {
             body: loginSchema,
         },

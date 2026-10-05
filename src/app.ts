@@ -1,10 +1,11 @@
 import fastifyCookie from "@fastify/cookie";
 import fastifyJwt from "@fastify/jwt";
+import fastifyRateLimit from "@fastify/rate-limit";
 import Fastify from "fastify";
 import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
 import { ZodError } from "zod";
 import { atribuicaoRoutes } from "./compartilhado/atribuicao/atribuicao.routes.js";
-import { AppError } from "./compartilhado/errors/errors.js";
+import { AppError, MuitasTentativasError } from "./compartilhado/errors/errors.js";
 import { authRoutes } from "./modulos/auth/auth.routes.js";
 import { COOKIE_SESSAO } from "./modulos/auth/cookie-sessao.js";
 import { acaoCorretivaRoutes } from "./modulos/nc/acao-corretiva/acao-corretiva.routes.js";
@@ -32,6 +33,8 @@ if (!jwtSecret || jwtSecret.length < 32) {
 }
 
 app.register(fastifyCookie);
+// Só nas rotas que pedem (config.rateLimit), hoje o login. O erro é o nosso, para a resposta sair no formato de sempre
+app.register(fastifyRateLimit, { global: false, errorResponseBuilder: () => new MuitasTentativasError() });
 app.register(fastifyJwt, {
     secret: jwtSecret,
     cookie: { cookieName: COOKIE_SESSAO, signed: false },
