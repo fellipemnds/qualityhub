@@ -44,10 +44,9 @@ visual.
 
 **Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B19; os
 corrigidos têm ✅). A A3 corrigiu B1–B6 e B8–B18, e a RN-48 entrou como
-regra nova (fase fechada em 2026-10-02, PR #4). Ficam abertos o **B7**
-(papéis no token) e o **B19** (transições sem trava sob concorrência,
-achado na auditoria de segurança), os dois na A4: o B19 primeiro,
-depois de simplificar o `ciclo-vida.service.ts`.
+regra nova (fase fechada em 2026-10-02, PR #4). A A4 corrigiu o B19
+(transições sem trava sob concorrência, 2026-10-05). Fica aberto o
+**B7** (papéis no token), na A4.
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
@@ -127,8 +126,16 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   abaixo); o estado depois da decisão sai da função pura
   `estadoAposDecisao` (`compartilhado/registro/estado-apos-decisao.ts`).
   `publicar`/`submeter`/`excluirRascunho` aceitam a `Acao` de
-  permissão como parâmetro (default a ação genérica), porque `Classificacao` exige `CLASSIFICAR`
-  em vez de `PUBLICAR`/`SUBMETER`/`GERENCIAR_RASCUNHO`.
+  permissão como parâmetro (default a ação genérica), porque
+  `Classificacao` exige `CLASSIFICAR` em vez de
+  `PUBLICAR`/`SUBMETER`/`GERENCIAR_RASCUNHO`.
+- **Trava de concorrência (B19)**: toda gravação no `Registro` passa
+  pelo `registroRepository.atualizar`/`excluir`, que exigem o **estado
+  em que o item foi lido** e respondem 409 se ele mudou no meio (outra
+  requisição chegou antes). Transição nova passa por eles, de
+  preferência pelo `aplicarTransicao`. Teste de concorrência chama o
+  `abrirDuasConexoes()` antes do `Promise.all`, senão a corrida pode não
+  acontecer e o teste passa sem provar nada.
 - **Permissões em três camadas**: papel (`temPapel`) → estado do registro
   → atribuição (`Atribuicao`, com `funcao: COLABORADOR | APROVADOR`).
   `podeExecutar` combina as três; algumas transições usam checagem

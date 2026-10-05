@@ -116,10 +116,11 @@ Nenhum.
 
 ## 6. Próximo passo
 
-1. O **B19**: começar pela skill **`/bug`** (registrar e fechar bugs nos
-   documentos), testada no registro dele; depois, o teste de
-   concorrência que falha e o conserto, dentro do `aplicarTransicao`.
-2. Durante a fase: Matthew instala as cinco ferramentas do
+1. O **`gerarVerificacao`** (🤖): extrair do `finalizarExecucaoAcaoCorretiva`
+   e corrigir os comentários (plano, A4, "Depois do B19").
+2. O **B7**, começando pela M1, **escrito por Matthew com Claude
+   guiando passo a passo** (combinado em 2026-10-05).
+3. Durante a fase: Matthew instala as cinco ferramentas do
    `CONSTRAINTS.md` e escreve os scripts `verificar:rapido`,
    `verificar:item` e `scripts/piso.mjs`.
 

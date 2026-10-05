@@ -258,7 +258,7 @@ RF-20).
 
 Antes do Bloco C começar:
 - A0–A6 concluídas, CI verde na `main`.
-- Nenhum bug B1–B18 aberto.
+- Nenhum bug aberto no `esquema-backend.md` §7.
 - OpenAPI completo, gerando sem erro.
 
 ---
