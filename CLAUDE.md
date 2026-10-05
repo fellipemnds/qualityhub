@@ -82,6 +82,13 @@ item de volta. **Ao propor
 mudanças, prefira explicar o raciocínio e perguntar antes de reescrever
 grandes blocos.**
 
+**Itens 🧑, passo a passo (combinado em 2026-10-05):** Matthew escreve,
+guiado em passos pequenos: antes, um passeio curto pelo código que o
+item toca; depois, um passo por vez (o conceito, qual arquivo, onde, o
+que escrever), e Claude revisa e roda os testes antes do próximo. Sem
+colar a solução inteira, salvo se ele pedir. Motivo: com muitos commits
+seguidos feitos por Claude, ele deixou de reconhecer o código.
+
 A partir do plano de implementação:
 - **Uma branch e um Pull Request por fase**; CI verde para entrar na `main`.
 - **Bug começa por um teste que falha.**
