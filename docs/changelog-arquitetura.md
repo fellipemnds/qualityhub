@@ -18,6 +18,19 @@ documento de arquitetura.
   `qh_sessao` passa a `Path=/api` (fim da divergência da A4). Nos testes,
   as URLs ficam **por extenso, com `/api`** (trocadas por script): o
   `chamar` não acrescenta o prefixo, para o teste mostrar a URL real.
+- **Contrato de resposta das rotas de NC** (Matthew, 2026-10-06; levantamento
+  das respostas reais com o `api-and-interface-design`): **D1** um formato
+  só, o `ncSchema` (os campos do `Registro` e da NC lado a lado), em
+  criar, detalhe, itens da lista e todas as transições; o `PATCH`, que
+  devolvia só os campos da NC, passa a devolver o formato completo.
+  **D2** o `portaoAtual` não sai (detalhe interno do ciclo de vida; o que
+  é exposto vira compromisso). **D3** a lista mantém o envelope
+  `{ itensDaPagina, proximoCursor }`. **D4** erros declarados com
+  `"4xx": erroSchema` (`{ mensagem, error? }`, compartilhado). **D5** o
+  detalhe não ganha filhos, aprovador, colaboradores nem etapa na A5: o
+  formato certo depende da T-06, e acrescentar campo depois não quebra
+  quem usa (anotado na C1); a exceção é o último motivo de reprovação
+  (L7), que o plano põe nesta fase.
 
 ### Fase A4 — sessão nova (branch `fase/a4-sessao`, PR #6)
 
