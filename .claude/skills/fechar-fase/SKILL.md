@@ -59,14 +59,18 @@ Ache o PR da branch atual: `gh pr list --head <branch> --state all --json number
 Mostre os arquivos e a mensagem (`docs: <ID> concluída e abertura da <próxima>`, ou
 `docs: abertura da <próxima>`) e espere o ok para o commit.
 
-## 5. Rever as skills
+## 5. Rever as skills (fim de bloco)
 
-Com Matthew, poucas perguntas sobre a fase que fechou:
+Só quando a fase que fechou é a última do seu bloco do plano, isto é, a próxima começa com
+outra letra (A6 → B, B → C0, C8 → D0; e a última fase da D). Nas outras, pule este passo.
+
+Com Matthew, poucas perguntas sobre o bloco que fechou:
 
 - O que foi feito à mão mais de uma vez e podia virar passo de uma skill nossa
   (`.claude/skills/`)?
 - Algum passo de skill foi pulado, deu errado ou ficou desatualizado?
-- A linha da próxima fase na tabela §2 da `docs/colinha-agent-skills.md` ainda serve?
+- As linhas das fases do próximo bloco na tabela §2 da `docs/colinha-agent-skills.md` ainda
+  servem?
 
 Mudança proposta: mostre o texto e espere o ok; entra num commit `chore:` próprio, separado
 do registro da fase. Nada a mudar: diga e siga.
