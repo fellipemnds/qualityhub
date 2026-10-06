@@ -5,7 +5,7 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-06 (`/retomar` no **trabalho**: a sessão em casa não aconteceu; foto do ambiente idêntica à de ontem, sem alertas, plugins em dia; `casa.txt` ainda não existe). Antes: 2026-10-05 (fim do dia, no trabalho). A A4 ficou **pronta no código**: B19 e B7 corrigidos (nenhum bug aberto), sessão nova inteira e as cinco ferramentas do `CONSTRAINTS.md` instaladas. No fim, três revisões (código, segurança, documentos) deixaram **três decisões e um bug novo provável (B20)** para resolver antes do PR (§6). Saída do trabalho com push; Matthew continua em casa. O PC desligou no meio da sessão, sem perda.
+**Última atualização:** 2026-10-06 (no **trabalho**; a sessão em casa não aconteceu). Resolvido tudo o que as revisões de 2026-10-05 deixaram: B21 e B20 corrigidos por Matthew (passo a passo, com o `setErrorHandler` simplificado no meio), checksum no CI, os 9 ajustes de documentos. Três revisões novas no diff do dia: código aprovado; segurança achou o S5 (POST sem corpo, para a D1); documentos, dois ajustes, feitos. Próximo: push e PR (§6).
 
 ## 1. Objetivo
 
@@ -15,7 +15,7 @@ PR, CI verde nos quatro jobs, merge e `/fechar-fase`. Depois, o
 
 ## 2. Estado atual
 
-- Branch **`fase/a4-sessao`**, 31 commits desde a `main`
+- Branch **`fase/a4-sessao`**, 41 commits desde a `main`
   (`git log c10844c..fase/a4-sessao`), **ainda sem PR**. Por item do
   plano:
   - simplificações do `ciclo-vida` (caracterização, `aplicarTransicao`,
@@ -30,8 +30,10 @@ PR, CI verde nos quatro jobs, merge e `/fechar-fase`. Depois, o
     cobertura e os jobs de segurança do CI;
   - por Claude: `logout`, `sair-de-todos`, `GET`/`PATCH /auth/eu` (tela
     inicial calculada no backend), login endurecido (limite, auditoria,
-    RN-38, L1), `helmet`.
-- Suíte: **302 passando**; cobertura **95,16%** das linhas (trava em
+    RN-38, L1), `helmet`;
+  - **2026-10-06**: B21 e B20 (escritos por Matthew), refactor do
+    `setErrorHandler`, checksum do gitleaks e do osv-scanner no CI.
+- Suíte: **304 passando**; cobertura **95,17%** das linhas (trava em
   94,66%); as linhas novas da A4: **100%** (141, trava em 100% no CI).
   Lint, typecheck, gitleaks, Semgrep e osv-scanner limpos (rodados à
   mão; o CI ainda não rodou os jobs novos).
@@ -59,7 +61,7 @@ Nenhum.
 
 ## 4. O que foi alterado nesta sessão
 
-Os 31 commits da §2 (`git log c10844c..fase/a4-sessao`). Dependências
+Os 41 commits da §2 (`git log c10844c..fase/a4-sessao`). Dependências
 novas: `@fastify/cookie`, `@fastify/rate-limit`, `@fastify/helmet`
 (produção) e `@vitest/coverage-v8`, com o Vitest 5.0.2 → 5.0.3; o
 `fastify` foi para 5.12.5 e o `fast-uri` para 3.1.8/4.2.1 por avisos de
@@ -85,6 +87,8 @@ segurança novos. Migration nova: `sessao_e_preferencia_do_usuario` (M1).
 | O Semgrep acusou injeção no `ci.yml` | `${{ github.base_ref }}` dentro de `run:` vira texto do comando | Variáveis do GitHub em `run:` sempre por `env:` |
 | No WSL, sem `pip` nem `venv` para rodar ferramenta Python | O Python do Ubuntu vem sem eles | Claude: o binário do `uv` na pasta temporária da sessão, com o cache lá também |
 | O PC desligou no meio da sessão | — | Nada se perdeu (commits e arquivos salvos); as ferramentas na pasta temporária somem, e o CI baixa as dele |
+| Uma rodada da suíte terminou em 1 min 16 s com **0% de cobertura** (2026-10-06) | Nenhum teste chegou a rodar; o filtro da saída escondeu a causa. A rodada seguinte, com o mesmo código, passou | Provável falha na subida do container. Claude: guardar a saída inteira da suíte num arquivo antes de filtrar |
+| Sonda com `tsx` reclamou de *top-level await* | Arquivo `.ts` fora do projeto vira CommonJS | Claude: sonda com extensão `.mts` |
 
 **Pendências anotadas:**
 - **⚠️ Em casa, trocar o `JWT_SECRET` do `.env` (prioridade).** Tokens
@@ -149,44 +153,16 @@ segurança novos. Migration nova: `sessao_e_preferencia_do_usuario` (M1).
 
 ## 6. Próximo passo
 
-**Antes do PR, as revisões de 2026-10-05 (fim do dia).** Rodadas no diff
-da fase (`c10844c..HEAD`) a pedido de Matthew:
+**As revisões de 2026-10-05 e de 2026-10-06 estão resolvidas.** O que
+ficou para depois foi registrado: S2 e S5 na D1 do plano (`trustProxy`,
+limite em memória, *Fetch Metadata*); o S4 (log de login) já estava na
+D0. Sugestões sem prazo da revisão de código de 2026-10-05: o `logout`
+sem `autenticar` não apaga o cookie de sessão vencida (inofensivo); o
+`include` de papéis no `usuarioRepository.buscarPorEmail` sobrou; o
+`gitleaks detect` vira `gitleaks git` nas versões novas; testes do 413 e
+da mensagem padrão do `setErrorHandler`.
 
-- **Código** (`agent-skills:code-review-and-quality`): **aprovar**. O
-  único achado com consequência foi para a D1 (abaixo). Sugestões: o
-  `logout` sem `autenticar` (com a sessão vencida, ele responde 401 e não
-  apaga o cookie velho; inofensivo); o `include` de papéis no
-  `usuarioRepository.buscarPorEmail` sobrou; o `gitleaks detect` virou
-  "antigo" nas versões novas (`gitleaks git`), lembrar ao atualizar.
-- **Segurança** (`agent-skills:security-and-hardening`):
-  - **S1 → B20 ✅** (2026-10-06): a API aceitava corpo `text/plain`.
-    Investigando, apareceu o **B21 ✅**: erro 4xx do Fastify (JSON
-    malformado, 415) respondia 500. Os dois corrigidos por Matthew,
-    passo a passo, com o `setErrorHandler` simplificado no meio
-    (`esquema-backend.md` §7).
-  - **S2, para a D1:** `trustProxy` no Fastify atrás do nginx (sem ele, o
-    `request.ip` é o do nginx, a chave do limite vira só o e-mail, e
-    qualquer um bloqueia o login de outro por 1 minuto); o limite de
-    tentativas fica em memória (vale com um servidor só).
-  - **S3, Consider:** o CI baixa o gitleaks e o osv-scanner sem conferir
-    o checksum (`sha256sum -c`); fixar as actions pelo commit fica para
-    depois (precisa de quem as atualize).
-  - S4, FYI: e-mail e IP no log de login (retenção já anotada na D0).
-- **Documentos** (`agent-skills:documentation-and-adrs`): 9 afirmações
-  desatualizadas, todas mecânicas: TRD §4.1 item 2 ("hoje carrega também
-  os papéis") e item 3 (`Path=/api` sem dizer que é `/` até a A5), TRD
-  §4.2 (o S1), TRD tabela da stack (`dependency-cruiser`),
-  `CONSTRAINTS.md` §2 ("avisam até o fim da A4" e o `continue-on-error`)
-  e §3/§4 (suíte em "~140–160 s"), `README.md` (sem o
-  `test:cobertura`), `CLAUDE.md` (o lint agora confere a arquitetura) e
-  o plano da D1 (o S2). Nenhum ADR novo: as decisões da fase estão no
-  changelog, e a sessão já tem o ADR-35.
-
-**Decisões de Matthew (2026-10-06): fazer tudo agora, na A4.** Feitos:
-o B21 e o B20. Faltam o checksum no CI (S3) e os 9 ajustes de
-documentos, os dois por Claude. Depois disso:
-
-1. Commit(s) dos ajustes, suíte completa, push.
+1. Push (Matthew): `git push`.
 2. **`/abrir-pr`**: a descrição com o "pronto quando" do plano §1.1. O
    CI do PR é a primeira execução real dos jobs novos (`diff-cover`,
    `segredos`, `sast`, `dependencias`); se algum falhar, ler o log e
@@ -222,4 +198,4 @@ parado há tempo):
 6. **Primeira foto de casa:** `npm run ambiente -- casa` e depois
    `npm run ambiente -- comparar` (`SETUP.md` §12.5). Commitar o
    `docs/ambiente/casa.txt`.
-7. `npm run test:cobertura`: **302 passando**, cobertura acima de 94,66%.
+7. `npm run test:cobertura`: **304 passando**, cobertura acima de 94,66%.
