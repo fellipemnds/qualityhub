@@ -4,6 +4,7 @@ import z from "zod";
 import { erroSchema } from "../../../compartilhado/errors/erro.schema.js";
 import { decisaoSchema } from "../../../compartilhado/registro/decidir.schema.js";
 import { motivoSchema } from "../../../compartilhado/registro/motivo.schema.js";
+import { paginaSchema } from "../../../compartilhado/registro/paginacao-cursor.js";
 import { autenticar } from "../../../middlewares/autenticar.js";
 import { ncController } from "./nc.controller.js";
 import { ncFiltrosListagemSchema, ncRascunhoSchema, ncRespostaSchema } from "./nc.schema.js";
@@ -130,6 +131,7 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             querystring: ncFiltrosListagemSchema,
+            response: { 200: paginaSchema(ncRespostaSchema), "4xx": erroSchema },
         },
         handler: ncController.listarNC,
     });

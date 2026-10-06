@@ -268,6 +268,17 @@ describe("GET /nc", () => {
         // Confere
         expect(resposta.itensDaPagina.map((item: { id: string }) => item.id)).toEqual([nc.id]);
     });
+
+    it("os itens da lista trazem a data de detecção como dia, sem hora (B22)", async () => {
+        // Prepara: o ncPublicada cria a NC com detectadoEm "2026-09-10"
+        const { editor } = await ncPublicada();
+
+        // Chama
+        const resposta = await chamar(editor, "GET", "/api/nc", 200);
+
+        // Confere
+        expect(resposta.itensDaPagina[0].detectadoEm).toBe("2026-09-10");
+    });
 });
 
 describe("GET /nc/:id", () => {
