@@ -9,7 +9,7 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
-### Fase A4 — sessão nova (branch `fase/a4-sessao`, em andamento)
+### Fase A4 — sessão nova (branch `fase/a4-sessao`, PR #6)
 
 - **Trava de concorrência no repositório (B19):** o
   `registroRepository.atualizar`/`excluir` exigem o estado em que o item

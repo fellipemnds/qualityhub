@@ -390,3 +390,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-06 | v1.6 — B21 e B20 entram na A4 (nessa ordem), da revisão de segurança de 2026-10-05 |
 | 2026-10-06 | v1.7 — D1: `trustProxy` e o limite de tentativas em memória (revisão de segurança da A4, S2) |
 | 2026-10-06 | v1.8 — D1: *Fetch Metadata* para o POST sem corpo (revisão de segurança da A4, S5) |
+| 2026-10-06 | **A4 concluída** (branch `fase/a4-sessao`, PR #6): sessão por cookie com papéis conferidos no banco a cada requisição (B7), trava de concorrência nas transições (B19), login endurecido, `helmet`, B20 e B21, e o contrato de qualidade bloqueando no CI (cobertura, arquitetura, gitleaks, Semgrep, osv-scanner). 304 testes. S2 e S5 ficam para a D1 |

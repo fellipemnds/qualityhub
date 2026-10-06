@@ -5,19 +5,18 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-06 (no **trabalho**; a sessão em casa não aconteceu). Resolvido tudo o que as revisões de 2026-10-05 deixaram: B21 e B20 corrigidos por Matthew (passo a passo, com o `setErrorHandler` simplificado no meio), checksum no CI, os 9 ajustes de documentos. Três revisões novas no diff do dia: código aprovado; segurança achou o S5 (POST sem corpo, para a D1); documentos, dois ajustes, feitos. Próximo: push e PR (§6).
+**Última atualização:** 2026-10-06 (no **trabalho**; a sessão em casa não aconteceu). **A4 fechada** (PR #6, CI verde nos quatro jobs, merge `a66c11b`). Branch nova `chore/skills-de-fase`, para as skills de início e fim de fase antes da A5 (§6). No mesmo dia: B21 e B20 corrigidos por Matthew, checksum no CI, ajustes de documentos e três revisões.
 
 ## 1. Objetivo
 
-Fechar a fase **A4 — Sessão nova** (`docs/plano-implementacao.md`, A4):
-PR, CI verde nos quatro jobs, merge e `/fechar-fase`. Depois, o
-**passeio guiado pelo código** (combinado em 2026-10-05, ver §6).
+Antes da A5 (**Contrato da API**, `docs/plano-implementacao.md`): as
+skills de início e fim de fase (branch `chore/skills-de-fase`) e o
+**passeio guiado pelo código** (§6).
 
 ## 2. Estado atual
 
-- Branch **`fase/a4-sessao`**, 41 commits desde a `main`
-  (`git log c10844c..fase/a4-sessao`), **ainda sem PR**. Por item do
-  plano:
+- **A4 fechada** em 2026-10-06 (PR #6, 41 commits,
+  `git log c10844c..a66c11b`). Por item do plano:
   - simplificações do `ciclo-vida` (caracterização, `aplicarTransicao`,
     `buscarRegistroOuFalhar`, validador `() => void`, `estadoAposDecisao`);
   - **B19**: `registroRepository.atualizar`/`excluir` e o convite exigem
@@ -61,7 +60,7 @@ Nenhum.
 
 ## 4. O que foi alterado nesta sessão
 
-Os 41 commits da §2 (`git log c10844c..fase/a4-sessao`). Dependências
+Os 41 commits da A4 (`git log c10844c..a66c11b`). Dependências
 novas: `@fastify/cookie`, `@fastify/rate-limit`, `@fastify/helmet`
 (produção) e `@vitest/coverage-v8`, com o Vitest 5.0.2 → 5.0.3; o
 `fastify` foi para 5.12.5 e o `fast-uri` para 3.1.8/4.2.1 por avisos de
@@ -162,32 +161,29 @@ sem `autenticar` não apaga o cookie de sessão vencida (inofensivo); o
 `gitleaks detect` vira `gitleaks git` nas versões novas; testes do 413 e
 da mensagem padrão do `setErrorHandler`.
 
-1. Push (Matthew): `git push`.
-2. **`/abrir-pr`**: a descrição com o "pronto quando" do plano §1.1. O
-   CI do PR é a primeira execução real dos jobs novos (`diff-cover`,
-   `segredos`, `sast`, `dependencias`); se algum falhar, ler o log e
-   consertar (o `diff-cover` precisa do `fetch-depth: 0`, já no
-   checkout).
-3. CI verde → merge → **`/fechar-fase`** → abre a `fase/a5-...`.
-   **Antes da A5, numa branch `chore/...`** (combinado em 2026-10-06):
-   as skills de início e fim de fase. O `/abrir-pr` §7 roda as três
-   revisões (`code-review-and-quality` no diff da fase,
-   `security-and-hardening` se mexeu em login, sessão, permissão ou
-   entrada, `documentation-and-adrs`) antes do "pronto quando"; skill
-   nova **`/comecar-fase`** (plano da fase, skills da tabela §2 da
-   colinha, `interview-me`/`doubt-driven-development`/`spec`+`plan`
-   conforme a entrega, os itens 🧑, PR em rascunho), chamada no fim do
+1. **Skills de início e fim de fase** (branch `chore/skills-de-fase`,
+   combinado em 2026-10-06): o `/abrir-pr` §7 roda as três revisões
+   (`code-review-and-quality` no diff da fase, `security-and-hardening`
+   se mexeu em login, sessão, permissão ou entrada,
+   `documentation-and-adrs`) antes do "pronto quando"; skill nova
+   **`/comecar-fase`** (plano da fase, skills da tabela §2 da colinha,
+   `interview-me`/`doubt-driven-development`/`spec`+`plan` conforme a
+   entrega, os itens 🧑, PR em rascunho), chamada no fim do
    `/fechar-fase`; o `/bug` aponta o `test-driven-development`; a
    colinha §1 passa a apontar para as skills. Claude escreve, Matthew
-   revisa o texto antes do commit.
-4. **Passeio guiado pelo código** (combinado em 2026-10-05, antes da
-   A5): seguir uma requisição de ponta a ponta (rota → controller →
-   service → `cicloVidaService` → `aplicarTransicao` →
+   revisa o texto antes do commit. Depois, PR e merge.
+2. **Passeio guiado pelo código** (combinado em 2026-10-05, antes da
+   A5). **Inclui o último item do "pronto quando" da A4**, adiado no
+   merge: Matthew explicar o B19 ("confere e depois age", o `UPDATE`
+   condicionado ao estado lido) e o que o `SameSite=Strict` bloqueia e
+   o que não bloqueia. Roteiro: seguir uma requisição de ponta a ponta
+   (rota → controller → service → `cicloVidaService` → `aplicarTransicao` →
    `registroRepository.atualizar` → banco → auditoria → resposta), com
    Matthew dizendo o que cada parte faz antes de Claude explicar.
    Motivo: Matthew disse que não estava mais reconhecendo o código.
-5. Nos itens 🧑 da A5 em diante: o **passo a passo** combinado (regra no
-   `CLAUDE.md`, "Como trabalhamos").
+3. **`/comecar-fase`** da A5 (`fase/a5-...`). Nos itens 🧑 da A5 em
+   diante: o **passo a passo** combinado (regra no `CLAUDE.md`, "Como
+   trabalhamos").
 
 **Chegando em casa:** rodar o **`/retomar`**. Desde a última vez que a
 branch foi usada em casa (antes da A3): as migrations da A3 e a **M1**
@@ -197,8 +193,8 @@ resolve as duas coisas. Os passos (`SETUP.md` §12.1 se o PC estiver
 parado há tempo):
 
 1. Docker Desktop aberto ("Engine running"), Ubuntu, pasta do projeto.
-2. `git fetch`, `git switch fase/a4-sessao`, `git pull` (o PR ainda não
-   foi aberto).
+2. `git fetch`, `git switch main`, `git pull` e, se a branch das skills
+   ainda estiver aberta, `git switch chore/skills-de-fase`.
 3. **`npm run preparar`**: obrigatório. Se a migration do
    `investigacaoId` falhar (o banco de casa tem ações sem investigação),
    recriar o banco: `SETUP.md` §12, passos 6 e 7.
