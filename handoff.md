@@ -169,6 +169,17 @@ da mensagem padrão do `setErrorHandler`.
    consertar (o `diff-cover` precisa do `fetch-depth: 0`, já no
    checkout).
 3. CI verde → merge → **`/fechar-fase`** → abre a `fase/a5-...`.
+   **Antes da A5, numa branch `chore/...`** (combinado em 2026-10-06):
+   as skills de início e fim de fase. O `/abrir-pr` §7 roda as três
+   revisões (`code-review-and-quality` no diff da fase,
+   `security-and-hardening` se mexeu em login, sessão, permissão ou
+   entrada, `documentation-and-adrs`) antes do "pronto quando"; skill
+   nova **`/comecar-fase`** (plano da fase, skills da tabela §2 da
+   colinha, `interview-me`/`doubt-driven-development`/`spec`+`plan`
+   conforme a entrega, os itens 🧑, PR em rascunho), chamada no fim do
+   `/fechar-fase`; o `/bug` aponta o `test-driven-development`; a
+   colinha §1 passa a apontar para as skills. Claude escreve, Matthew
+   revisa o texto antes do commit.
 4. **Passeio guiado pelo código** (combinado em 2026-10-05, antes da
    A5): seguir uma requisição de ponta a ponta (rota → controller →
    service → `cicloVidaService` → `aplicarTransicao` →
