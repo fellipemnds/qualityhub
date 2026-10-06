@@ -159,12 +159,11 @@ da fase (`c10844c..HEAD`) a pedido de Matthew:
   `usuarioRepository.buscarPorEmail` sobrou; o `gitleaks detect` virou
   "antigo" nas versões novas (`gitleaks git`), lembrar ao atualizar.
 - **Segurança** (`agent-skills:security-and-hardening`):
-  - **S1, provável B20:** a API **aceita corpo `text/plain`** (provado:
-    `sair-de-todos` com `content-type: text/plain` → 204), contra o TRD
-    §4.2 ("só `application/json`"), a segunda camada contra CSRF além do
-    `SameSite` (que deixa passar subdomínios irmãos da mesma empresa).
-    Conserto: `app.removeContentTypeParser("text/plain")` (415) e um
-    teste que falha primeiro, pelo `/bug`.
+  - **S1 → B20 ✅** (2026-10-06): a API aceitava corpo `text/plain`.
+    Investigando, apareceu o **B21 ✅**: erro 4xx do Fastify (JSON
+    malformado, 415) respondia 500. Os dois corrigidos por Matthew,
+    passo a passo, com o `setErrorHandler` simplificado no meio
+    (`esquema-backend.md` §7).
   - **S2, para a D1:** `trustProxy` no Fastify atrás do nginx (sem ele, o
     `request.ip` é o do nginx, a chave do limite vira só o e-mail, e
     qualquer um bloqueia o login de outro por 1 minuto); o limite de
@@ -183,9 +182,9 @@ da fase (`c10844c..HEAD`) a pedido de Matthew:
   o plano da D1 (o S2). Nenhum ADR novo: as decisões da fase estão no
   changelog, e a sessão já tem o ADR-35.
 
-**Decisões de Matthew, em aberto:** (1) o B20 agora, na A4? (Claude
-recomenda que sim: pequeno e de segurança); (2) o checksum no CI agora
-ou depois?; (3) Claude aplica os 9 ajustes de documentos? Depois disso:
+**Decisões de Matthew (2026-10-06): fazer tudo agora, na A4.** Feitos:
+o B21 e o B20. Faltam o checksum no CI (S3) e os 9 ajustes de
+documentos, os dois por Claude. Depois disso:
 
 1. Commit(s) dos ajustes, suíte completa, push.
 2. **`/abrir-pr`**: a descrição com o "pronto quando" do plano §1.1. O

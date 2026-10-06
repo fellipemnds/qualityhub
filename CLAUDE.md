@@ -46,8 +46,9 @@ visual.
 corrigidos têm ✅). A A3 corrigiu B1–B6 e B8–B18, e a RN-48 entrou como
 regra nova (fase fechada em 2026-10-02, PR #4). A A4 corrigiu o B19
 (transições sem trava sob concorrência) e o B7 (papéis no token), os
-dois em 2026-10-05. **Abertos, na A4:** B21 (erro 4xx do Fastify
-responde 500) e B20 (a API aceita corpo `text/plain`), nessa ordem.
+dois em 2026-10-05, e o B21 (erro 4xx do Fastify respondia 500) e o B20
+(a API aceitava corpo `text/plain`), em 2026-10-06. **Nenhum bug
+aberto.**
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
