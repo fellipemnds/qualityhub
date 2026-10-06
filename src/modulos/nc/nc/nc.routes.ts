@@ -7,7 +7,12 @@ import { motivoSchema } from "../../../compartilhado/registro/motivo.schema.js";
 import { paginaSchema } from "../../../compartilhado/registro/paginacao-cursor.js";
 import { autenticar } from "../../../middlewares/autenticar.js";
 import { ncController } from "./nc.controller.js";
-import { ncFiltrosListagemSchema, ncRascunhoSchema, ncRespostaSchema } from "./nc.schema.js";
+import {
+    checklistFechamentoRespostaSchema,
+    ncFiltrosListagemSchema,
+    ncRascunhoSchema,
+    ncRespostaSchema,
+} from "./nc.schema.js";
 
 export async function ncRoutes(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -38,6 +43,7 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 204: z.null(), "4xx": erroSchema },
         },
         handler: ncController.excluirRascunhoNC,
     });
@@ -81,6 +87,7 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: checklistFechamentoRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.checklistFechamentoNC,
     });

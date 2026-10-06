@@ -6,6 +6,7 @@ import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { OrigemNC } from "../../../compartilhado/entidades/origem-nc.js";
 import { TipoRegistro } from "../../../compartilhado/entidades/tipos-registro.js";
 import { paginacaoCursorSchema } from "../../../compartilhado/registro/paginacao-cursor.js";
+import { GrupoFechamento, RequisitoFechamento } from "./avaliar-fechamento.js";
 
 // Compara dias, não instantes (TRD §6, B11): o dia guardado é lido em UTC (meia-noite UTC do dia), e o "hoje" é o de São
 // Paulo. Os dois no formato "AAAA-MM-DD", que ordena como texto
@@ -74,3 +75,14 @@ export const ncRespostaSchema = z.object({
     origem: z.enum(OrigemNC).nullable(),
     detectadoEm: diaDeCalendario().nullable(),
 });
+
+// A lista da guarda de fechamento (RN-21), um item por requisito, atendido ou não, na ordem do avaliarFechamentoNC
+export const checklistFechamentoRespostaSchema = z.array(
+    z.object({
+        requisito: z.enum(RequisitoFechamento),
+        grupo: z.enum(GrupoFechamento),
+        atendido: z.boolean(),
+        mensagem: z.string(),
+        pendentes: z.array(z.object({ id: z.uuid(), codigo: z.string().nullable() })),
+    }),
+);
