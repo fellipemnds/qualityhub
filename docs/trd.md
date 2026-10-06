@@ -299,8 +299,11 @@ necessárias) fica no **Esquema Backend**.
 - **Erros** sempre no formato
   `{ "mensagem": string, "error"?: detalhes }`, com os status atuais:
   400 validação · 401 sem sessão · 403 sem permissão · 404 não
-  encontrado · 409 transição inválida · 413 arquivo grande demais ·
-  429 muitas tentativas · 500 erro interno.
+  encontrado · 409 transição inválida · 413 arquivo ou corpo grande
+  demais · 415 corpo que não é JSON (B20) · 429 muitas tentativas ·
+  500 erro interno. Erro 4xx do próprio Fastify (corpo malformado,
+  grande demais, de outro tipo) sai com o status dele e uma mensagem em
+  português (B21).
 - `ignoreTrailingSlash` migrou para `routerOptions` na A0 (aviso de
   depreciação `FSTDEP022`, pendência 5 do changelog).
 

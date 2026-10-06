@@ -78,6 +78,22 @@ documento de arquitetura.
   `PATCH /auth/eu` recusa com 400 uma tela fora da lista. **Pensado para
   o MVP de NCs: rever quando o QualityHub ganhar outros módulos** (a
   lista de telas cresce, e os papéis podem passar a valer por módulo).
+- **Erros 4xx do Fastify e corpo só em JSON** (Matthew, 2026-10-06; B21 e
+  B20, da revisão de segurança): o `setErrorHandler` responde com o
+  status do Fastify todo erro abaixo de 500 que não é dos ramos
+  conhecidos, com a mensagem de uma tabela em português
+  (`MENSAGENS_ERRO_CLIENTE`: 400, 413, 415; "Requisição inválida." para
+  os outros), em vez do texto em inglês do Fastify. O parser de
+  `text/plain` sai (`removeContentTypeParser`): corpo que não é JSON
+  para no 415, antes do handler. No mesmo passo, o ramo de validação
+  passou a usar o `hasZodFastifySchemaValidationErrors` da biblioteca, e
+  o do `AppError`, um `send` só. **Limite conhecido:** POST **sem** corpo
+  não tem `content-type` e continua passando; a proteção dele é o
+  `SameSite=Strict`, e o *Fetch Metadata* fica para a D1 (S5).
+- **Checksum dos binários no CI** (2026-10-06, revisão de segurança S3):
+  o gitleaks e o osv-scanner só rodam depois do `sha256sum -c` com o hash
+  fixo no `ci.yml`, tirado do arquivo de checksums da release. Trocar a
+  versão exige trocar o hash. As actions continuam por tag (`@v7`).
 
 ### Análise do repositório (branch `chore/analise-repositorio`, entre a A3 e a A4)
 
