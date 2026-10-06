@@ -102,8 +102,6 @@ segurança novos. Migration nova: `sessao_e_preferencia_do_usuario` (M1).
   → tela (`modulos/auth/tela-inicial.ts`) são do MVP de NCs.
 - **Falhas de login só no log (E1):** reavaliar na D0, junto com a
   retenção do log (anotado no plano).
-- **Cookie `Path=/` → `/api` na A5**, junto com o prefixo (anotado no
-  plano).
 - Melhoria, não regra: o Semgrep avisa (severidade baixa) que as actions
   do CI usam tag solta (`@v7`) em vez do commit fixo.
 - Os scripts `verificar:rapido`, `verificar:item` e `scripts/piso.mjs`
@@ -175,7 +173,7 @@ da mensagem padrão do `setErrorHandler`.
    Motivo: Matthew disse que não estava mais reconhecendo o código.
 3. **A5, pela ordem do plano** (`/comecar-fase` feito em 2026-10-06; a
    tabela de entregas, com o que é novo para Matthew, está na conversa
-   e resumida aqui): (1) prefixo `/api` e cookie `Path=/api` 🤖;
+   e resumida aqui): (1) ~~prefixo `/api` e cookie `Path=/api`~~ feito (`af7b4fa`);
    (2) **schema de resposta** em todas as rotas, as de NC por Matthew
    (o conceito da fase; atenção: com schema também nas respostas de
    erro, o `error: undefined` passa pelo serializer do Zod e não mais

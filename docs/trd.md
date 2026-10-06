@@ -155,8 +155,7 @@ Docker Compose com **nginx**, **app**, **postgres** e **backup**, mais
    saíram do token na A4, B7).
 3. Cookie: `HttpOnly` (o JavaScript da página não lê), `Secure` (só via
    HTTPS), `SameSite=Strict` (o navegador não o envia em requisições
-   vindas de outros sites), `Path=/api` (até a A5, `Path=/`: as rotas
-   ainda não têm o prefixo `/api`).
+   vindas de outros sites), `Path=/api` (desde a A5; na A4, `Path=/`).
 4. **Duração** (T2):
 
    | "Manter conectado" | Cookie | Validade do JWT | Efeito |
@@ -288,7 +287,8 @@ necessárias) fica no **Esquema Backend**.
 
 ### 7.1 Convenções
 
-- **Prefixo `/api`** em todas as rotas (hoje não há prefixo — muda).
+- **Prefixo `/api`** em todas as rotas (desde a A5: um plugin com
+  `prefix` no `app.ts`; os `*.routes.ts` declaram o caminho sem ele).
 - REST, JSON, nomes em português e no plural (`/api/contencoes/:id`),
   ações de ciclo de vida como sub-rotas `POST` (`/publicar`,
   `/submeter`, `/decidir`...), como já é hoje.
@@ -572,12 +572,12 @@ Entram no Plano de Implementação:
 
 | Dívida | Origem |
 |---|---|
-| Papéis dentro do JWT (revogação atrasada) | §4 |
-| Rotas sem prefixo `/api` | §7.1 |
+| ~~Papéis dentro do JWT (revogação atrasada)~~ — resolvido na A4 (B7) | §4 |
+| ~~Rotas sem prefixo `/api`~~ — resolvido na A5 | §7.1 |
 | Respostas das rotas sem schema declarado | §7.2 |
 | ~~`ignoreTrailingSlash` na forma depreciada~~ — resolvido na A0 | Changelog, pendência 5 |
 | Ações de auditoria como strings soltas | Changelog, pendência 1 |
-| Login não auditado | Changelog, pendência 4 |
+| ~~Login não auditado~~ — resolvido na A4 (sucesso na auditoria, falha no log) | Changelog, pendência 4 |
 | ~~Barramento de eventos sem uso~~ — removido na A0 (ADR-38) | §2.3 |
 | `package.json` sem script de `build` (`test`, `lint` e `typecheck` entraram na A0/A1) | Plano, D1 |
 | ~~`testes/requests-acao-corretiva.http` descreve o modelo antigo de dois portões~~ — apagado na A0 | `CLAUDE.md` |

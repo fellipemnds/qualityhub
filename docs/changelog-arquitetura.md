@@ -9,6 +9,16 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Fase A5 — contrato da API (branch `fase/a5-contrato-api`, em andamento)
+
+- **Prefixo `/api` num plugin só** (2026-10-06): as nove chamadas de
+  rotas foram para dentro de um `app.register(..., { prefix: "/api" })`
+  no `app.ts`; os `*.routes.ts` continuam declarando o caminho sem o
+  prefixo, e rota nova registrada ali ganha o `/api` sozinha. O cookie
+  `qh_sessao` passa a `Path=/api` (fim da divergência da A4). Nos testes,
+  as URLs ficam **por extenso, com `/api`** (trocadas por script): o
+  `chamar` não acrescenta o prefixo, para o teste mostrar a URL real.
+
 ### Fase A4 — sessão nova (branch `fase/a4-sessao`, PR #6)
 
 - **Trava de concorrência no repositório (B19):** o
@@ -23,7 +33,7 @@ documento de arquitetura.
   default `false`: sem pedir, a sessão é a curta (cookie de sessão, JWT
   de 12 h); pedindo, 30 dias. **Divergência temporária do TRD §4.1:**
   `Path=/` em vez de `/api`, porque as rotas só ganham o prefixo na A5
-  (com `/api`, o navegador nunca mandaria o cookie). Troca na A5.
+  (com `/api`, o navegador nunca mandaria o cookie). Trocado na A5.
 - **`@fastify/cookie`** (dependência nova, plugin oficial do Fastify),
   registrado antes do `@fastify/jwt`, que passa a ler o token do cookie.
 - **Middleware `autenticar` pergunta ao banco (B7):** o JWT carrega só o
