@@ -26,6 +26,9 @@ const app = Fastify({
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
+// A API só aceita corpo JSON: um formulário de outro site manda text/plain sem o preflight do navegador (TRD §4.2, B20)
+app.removeContentTypeParser("text/plain");
+
 const jwtSecret = process.env.JWT_SECRET;
 
 // Segredo curto pode ser descoberto por força bruta, e com ele qualquer um forja um token (auditoria L8)

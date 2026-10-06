@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { app } from "./app.js";
+import { prisma } from "./compartilhado/prisma/cliente.js";
+import { loginComo } from "./testes/fabricas.js";
 
 describe("GET /", () => {
     it("responde que o servidor está online", async () => {
@@ -42,5 +44,26 @@ describe("Corpo da requisição (B20, B21)", () => {
         // Confere
         expect(resposta.statusCode).toBe(400);
         expect(resposta.json()).toEqual({ mensagem: expect.any(String) });
+    });
+
+    it("corpo text/plain responde 415 e a ação não é executada (B20)", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+
+        // Chama
+        const resposta = await app.inject({
+            method: "POST",
+            url: "/auth/sair-de-todos",
+            headers: {
+                ...editor.autenticacao,
+                "content-type": "text/plain",
+            },
+            payload: "oi",
+        });
+
+        // Confere
+        expect(resposta.statusCode).toBe(415);
+        expect(resposta.json()).toEqual({ mensagem: expect.any(String) });
+        expect(await prisma.auditoria.findMany({ where: { acao: "SAIR_DE_TODOS" } })).toEqual([]);
     });
 });
