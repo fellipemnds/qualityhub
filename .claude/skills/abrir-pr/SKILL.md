@@ -74,10 +74,20 @@ Rode em background: `gh pr checks <n> --watch --interval 30`. Ao terminar:
 
 Quando Matthew disser que a fase acabou:
 
-1. Confira o "pronto quando" do `docs/plano-implementacao.md` §1.1, item por item, e mostre
+1. **Revisões da fase**, no diff inteiro (`git diff origin/main...HEAD`), uma skill por vez:
+   - `agent-skills:code-review-and-quality`;
+   - `agent-skills:security-and-hardening`, se a fase mexeu em login, sessão, permissão,
+     entrada de usuário ou no CI;
+   - `agent-skills:documentation-and-adrs`: os documentos alterados conferidos contra o código.
+
+   Mostre os achados por severidade. O obrigatório se resolve antes de sair do rascunho: bug
+   pelo `/bug` (com o teste que falha primeiro), documento errado consertado. O que fica para
+   depois vai para o plano, na fase certa, com o ok de Matthew; o opcional é decisão dele.
+   Mudou algo: commit pedido, push de Matthew, CI de novo (passo 6).
+2. Confira o "pronto quando" do `docs/plano-implementacao.md` §1.1, item por item, e mostre
    o resultado. O último item ("Matthew consegue explicar o que a fase mudou e por quê") é dele:
    ofereça umas perguntas rápidas sobre a fase.
-2. Com tudo marcado e o ok dele: `gh pr ready <n>`.
+3. Com tudo marcado e o ok dele: `gh pr ready <n>`.
 
 ## 8. Mensagem do merge (sempre, antes de Matthew mesclar)
 

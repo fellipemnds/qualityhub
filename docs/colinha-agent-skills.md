@@ -8,12 +8,10 @@
 
 **Início do dia:** `/retomar`.
 
-**Começo de fase** (depois do `/fechar-fase`):
-1. Ler a seção da fase no plano, juntos.
-2. Regra ainda vaga → `interview-me`. Duas saídas técnicas → `idea-refine`.
-   Alto risco (sessão, migration, concorrência) → `doubt-driven-development`.
-3. Funcionalidade nova grande (Bloco C) → `/agent-skills:spec` e depois `/agent-skills:plan`.
-4. `/abrir-pr`, para o PR nascer em rascunho.
+**Começo de fase:** `/comecar-fase` (o `/fechar-fase` aponta para ela). Lê a fase no plano
+com você, puxa a linha da §2, diz em cada entrega o que é seu e o que é novo, e quando cabe
+`interview-me`, `idea-refine`, `doubt-driven-development` ou `spec` + `plan`. Termina com o PR
+em rascunho.
 
 **Cada item da fase:**
 1. O Claude diz o que é novo para você e espera o "pode".
@@ -24,12 +22,10 @@
 6. Ficou pesado → `code-simplification`. Decidiu algo → `documentation-and-adrs`.
 7. Commit pedido, com a verificação do `CONSTRAINTS.md` §4.
 
-**Fim da fase:**
-1. `code-review-and-quality` no diff da fase; `security-and-hardening` se mexeu em
-   login, sessão, permissão ou entrada.
-2. `documentation-and-adrs` para conferir os documentos contra o código.
-3. `/abrir-pr`: "pronto quando" (§1.1), PR fora do rascunho, CI verde, mensagem do merge.
-4. Você faz o merge → `/fechar-fase`.
+**Fim da fase:** diga "a fase acabou" e chame o `/abrir-pr`. O §7 dele roda
+`code-review-and-quality`, `security-and-hardening` (se mexeu em login, sessão, permissão,
+entrada ou CI) e `documentation-and-adrs` no diff da fase, confere o "pronto quando" (§1.1),
+tira o PR do rascunho e entrega a mensagem do merge. Você faz o merge → `/fechar-fase`.
 
 **Saída:** `/trocar-pc`.
 
@@ -126,6 +122,7 @@ O plugin também traz quatro agentes (`code-reviewer`, `security-auditor`, `test
 |---|---|
 | `/retomar` | Chegou no PC (início do dia, ou depois de trocar de máquina) |
 | `/trocar-pc` | Vai sair deste PC |
-| `/abrir-pr` | Abrir ou atualizar o PR, acompanhar o CI e receber a mensagem do merge |
-| `/fechar-fase` | Depois do merge: voltar para a `main` e abrir a próxima branch |
+| `/abrir-pr` | Abrir ou atualizar o PR, acompanhar o CI e, no fim da fase, as revisões e a mensagem do merge |
+| `/comecar-fase` | Começo de fase: ler a fase, as skills de cada entrega, PR em rascunho |
+| `/fechar-fase` | Depois do merge: voltar para a `main`, abrir a próxima branch e rever as skills |
 | `/bug` | Achou um bug, ou terminou o conserto de um: registrar ou fechar nos documentos |

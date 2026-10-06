@@ -93,6 +93,8 @@ seguidos feitos por Claude, ele deixou de reconhecer o código.
 
 A partir do plano de implementação:
 - **Uma branch e um Pull Request por fase**; CI verde para entrar na `main`.
+  Começo: `/comecar-fase` (o PR nasce em rascunho). Fim: `/abrir-pr`
+  (revisões da fase e "pronto quando") → merge → `/fechar-fase`.
 - **Bug começa por um teste que falha.**
 - Cada fase termina com o checklist "pronto quando" (plano §1.1).
 - **Pedir antes de cada commit**, inclusive dentro da branch da fase,
