@@ -3,7 +3,7 @@ import fastifyHelmet from "@fastify/helmet";
 import fastifyJwt from "@fastify/jwt";
 import fastifyRateLimit from "@fastify/rate-limit";
 import Fastify from "fastify";
-import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
+import { hasZodFastifySchemaValidationErrors, serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
 import { ZodError } from "zod";
 import { atribuicaoRoutes } from "./compartilhado/atribuicao/atribuicao.routes.js";
 import { AppError, MuitasTentativasError } from "./compartilhado/errors/errors.js";
@@ -70,19 +70,16 @@ app.setErrorHandler((erro, request, reply) => {
         });
     }
 
-    if (erro instanceof Error && "code" in erro && erro.code === "FST_ERR_VALIDATION") {
-        const erroValidacao = erro as Error & { code: string; validation: unknown[] };
+    if (hasZodFastifySchemaValidationErrors(erro)) {
         return reply.status(400).send({
             mensagem: "Dados inválidos",
-            error: erroValidacao.validation,
+            error: erro.validation,
         });
     }
 
     if (erro instanceof AppError) {
-        if (erro.detalhes !== undefined) {
-            return reply.status(erro.statusCode).send({ mensagem: erro.message, error: erro.detalhes });
-        }
-        return reply.status(erro.statusCode).send({ mensagem: erro.message });
+        // Sem detalhes, o campo "error" sai "undefined" e o JSON omite ele.
+        return reply.status(erro.statusCode).send({ mensagem: erro.message, error: erro.detalhes });
     }
 
     if (erro instanceof Error && "statusCode" in erro && typeof erro.statusCode === "number" && erro.statusCode < 500) {
