@@ -5,13 +5,13 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-06 (no **trabalho**; a sessão em casa não aconteceu). **A4 fechada** (PR #6, merge `a66c11b`). Na branch `chore/skills-de-fase`, as skills de início e fim de fase estão escritas; falta o PR (§6). No mesmo dia: B21 e B20 corrigidos por Matthew, checksum no CI, ajustes de documentos e três revisões.
+**Última atualização:** 2026-10-06 (no **trabalho**; a sessão em casa não aconteceu). **A4 fechada** (PR #6) e as skills de início e fim de fase mescladas (PR #7, `/comecar-fase` novo). Branch nova **`fase/a5-contrato-api`**, ainda sem código: antes da A5, o passeio guiado pelo código; depois, o `/comecar-fase` (§6).
 
 ## 1. Objetivo
 
-Antes da A5 (**Contrato da API**, `docs/plano-implementacao.md`): as
-skills de início e fim de fase (branch `chore/skills-de-fase`) e o
-**passeio guiado pelo código** (§6).
+Começar a fase **A5 — Contrato da API** (`docs/plano-implementacao.md`),
+na branch `fase/a5-contrato-api`. Antes do primeiro item, o **passeio
+guiado pelo código** (§6).
 
 ## 2. Estado atual
 
@@ -161,15 +161,9 @@ sem `autenticar` não apaga o cookie de sessão vencida (inofensivo); o
 `gitleaks detect` vira `gitleaks git` nas versões novas; testes do 413 e
 da mensagem padrão do `setErrorHandler`.
 
-1. **Skills de início e fim de fase**: escritas e commitadas na branch
-   `chore/skills-de-fase` (2026-10-06): `/comecar-fase` novo, as três
-   revisões no `/abrir-pr` §7, o `/fechar-fase` apontando o
-   `/comecar-fase` e revendo as skills **no fim de cada bloco** (A, B,
-   C, D), o `/bug` com o `test-driven-development`, a colinha e o
-   `CLAUDE.md`. Falta: push (Matthew, `git push -u origin
-   chore/skills-de-fase`), `/abrir-pr`, CI e merge. Depois do merge,
-   `/fechar-fase` (como não é fase, ele só volta para a `main`, abre a
-   branch seguinte e atualiza o handoff).
+1. ~~Skills de início e fim de fase~~: mescladas (PR #7, 2026-10-06).
+   O ciclo agora: `/comecar-fase` → itens → `/abrir-pr` (revisões e
+   "pronto quando") → merge → `/fechar-fase`.
 2. **Passeio guiado pelo código** (combinado em 2026-10-05, antes da
    A5). **Inclui o último item do "pronto quando" da A4**, adiado no
    merge: Matthew explicar o B19 ("confere e depois age", o `UPDATE`
@@ -179,7 +173,7 @@ da mensagem padrão do `setErrorHandler`.
    `registroRepository.atualizar` → banco → auditoria → resposta), com
    Matthew dizendo o que cada parte faz antes de Claude explicar.
    Motivo: Matthew disse que não estava mais reconhecendo o código.
-3. **`/comecar-fase`** da A5 (`fase/a5-...`). Nos itens 🧑 da A5 em
+3. **`/comecar-fase`** da A5 (branch `fase/a5-contrato-api`, já criada). Nos itens 🧑 da A5 em
    diante: o **passo a passo** combinado (regra no `CLAUDE.md`, "Como
    trabalhamos").
 
@@ -191,8 +185,7 @@ resolve as duas coisas. Os passos (`SETUP.md` §12.1 se o PC estiver
 parado há tempo):
 
 1. Docker Desktop aberto ("Engine running"), Ubuntu, pasta do projeto.
-2. `git fetch`, `git switch main`, `git pull` e, se a branch das skills
-   ainda estiver aberta, `git switch chore/skills-de-fase`.
+2. `git fetch`, `git switch fase/a5-contrato-api`, `git pull`.
 3. **`npm run preparar`**: obrigatório. Se a migration do
    `investigacaoId` falhar (o banco de casa tem ações sem investigação),
    recriar o banco: `SETUP.md` §12, passos 6 e 7.
