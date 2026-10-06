@@ -5,7 +5,7 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-05 (fim do dia, no trabalho). A A4 ficou **pronta no código**: B19 e B7 corrigidos (nenhum bug aberto), sessão nova inteira e as cinco ferramentas do `CONSTRAINTS.md` instaladas. No fim, três revisões (código, segurança, documentos) deixaram **três decisões e um bug novo provável (B20)** para resolver antes do PR (§6). Saída do trabalho com push; Matthew continua em casa. O PC desligou no meio da sessão, sem perda.
+**Última atualização:** 2026-10-06 (`/retomar` no **trabalho**: a sessão em casa não aconteceu; foto do ambiente idêntica à de ontem, sem alertas, plugins em dia; `casa.txt` ainda não existe). Antes: 2026-10-05 (fim do dia, no trabalho). A A4 ficou **pronta no código**: B19 e B7 corrigidos (nenhum bug aberto), sessão nova inteira e as cinco ferramentas do `CONSTRAINTS.md` instaladas. No fim, três revisões (código, segurança, documentos) deixaram **três decisões e um bug novo provável (B20)** para resolver antes do PR (§6). Saída do trabalho com push; Matthew continua em casa. O PC desligou no meio da sessão, sem perda.
 
 ## 1. Objetivo
 
