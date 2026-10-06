@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
+import { erroSchema } from "../../../compartilhado/errors/erro.schema.js";
 import { decisaoSchema } from "../../../compartilhado/registro/decidir.schema.js";
 import { motivoSchema } from "../../../compartilhado/registro/motivo.schema.js";
 import { autenticar } from "../../../middlewares/autenticar.js";
@@ -118,7 +119,7 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
-            response: { 200: ncRespostaSchema },
+            response: { 200: ncRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.buscarPorIdNC,
     });

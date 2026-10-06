@@ -294,6 +294,28 @@ describe("GET /nc/:id", () => {
         expect(resposta).not.toHaveProperty("portaoAtual");
     });
 
+    it("responde 404 só com a mensagem quando a NC não existe", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/nc/${ID_INEXISTENTE}`, 404);
+
+        // Confere
+        expect(resposta).toEqual({ mensagem: "Item não encontrado." });
+    });
+
+    it("responde 400 com a lista do que está inválido quando o id não é UUID", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", "/api/nc/nao-e-uuid", 400);
+
+        // Confere
+        expect(resposta).toMatchObject({ mensagem: "Dados inválidos", error: expect.any(Array) });
+    });
+
     it("o visualizador lê a NC", async () => {
         // Prepara
         const { nc } = await ncPublicada();
