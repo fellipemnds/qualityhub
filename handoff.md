@@ -5,7 +5,7 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-06 (no **trabalho**; a sessão em casa não aconteceu). **A4 fechada** (PR #6, CI verde nos quatro jobs, merge `a66c11b`). Branch nova `chore/skills-de-fase`, para as skills de início e fim de fase antes da A5 (§6). No mesmo dia: B21 e B20 corrigidos por Matthew, checksum no CI, ajustes de documentos e três revisões.
+**Última atualização:** 2026-10-06 (no **trabalho**; a sessão em casa não aconteceu). **A4 fechada** (PR #6, merge `a66c11b`). Na branch `chore/skills-de-fase`, as skills de início e fim de fase estão escritas; falta o PR (§6). No mesmo dia: B21 e B20 corrigidos por Matthew, checksum no CI, ajustes de documentos e três revisões.
 
 ## 1. Objetivo
 
@@ -161,17 +161,15 @@ sem `autenticar` não apaga o cookie de sessão vencida (inofensivo); o
 `gitleaks detect` vira `gitleaks git` nas versões novas; testes do 413 e
 da mensagem padrão do `setErrorHandler`.
 
-1. **Skills de início e fim de fase** (branch `chore/skills-de-fase`,
-   combinado em 2026-10-06): o `/abrir-pr` §7 roda as três revisões
-   (`code-review-and-quality` no diff da fase, `security-and-hardening`
-   se mexeu em login, sessão, permissão ou entrada,
-   `documentation-and-adrs`) antes do "pronto quando"; skill nova
-   **`/comecar-fase`** (plano da fase, skills da tabela §2 da colinha,
-   `interview-me`/`doubt-driven-development`/`spec`+`plan` conforme a
-   entrega, os itens 🧑, PR em rascunho), chamada no fim do
-   `/fechar-fase`; o `/bug` aponta o `test-driven-development`; a
-   colinha §1 passa a apontar para as skills. Claude escreve, Matthew
-   revisa o texto antes do commit. Depois, PR e merge.
+1. **Skills de início e fim de fase**: escritas e commitadas na branch
+   `chore/skills-de-fase` (2026-10-06): `/comecar-fase` novo, as três
+   revisões no `/abrir-pr` §7, o `/fechar-fase` apontando o
+   `/comecar-fase` e revendo as skills **no fim de cada bloco** (A, B,
+   C, D), o `/bug` com o `test-driven-development`, a colinha e o
+   `CLAUDE.md`. Falta: push (Matthew, `git push -u origin
+   chore/skills-de-fase`), `/abrir-pr`, CI e merge. Depois do merge,
+   `/fechar-fase` (como não é fase, ele só volta para a `main`, abre a
+   branch seguinte e atualiza o handoff).
 2. **Passeio guiado pelo código** (combinado em 2026-10-05, antes da
    A5). **Inclui o último item do "pronto quando" da A4**, adiado no
    merge: Matthew explicar o B19 ("confere e depois age", o `UPDATE`
