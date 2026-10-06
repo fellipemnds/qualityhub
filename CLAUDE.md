@@ -54,8 +54,9 @@ dois em 2026-10-05, e o B21 (erro 4xx do Fastify respondia 500) e o B20
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
 o Docker Desktop fechado o comando `docker` some do WSL. O `gh` está
 instalado e autenticado neste computador (escopos `repo` e `workflow`);
-Claude pode abrir PRs e ler o CI com ele. O `git push` continua sendo
-de Matthew, salvo pedido explícito.
+Claude pode abrir PRs e ler o CI com ele, e o `git push` também
+funciona por ele (2026-10-06). O push continua sendo de Matthew, salvo
+pedido explícito.
 
 **Dois computadores:** Matthew alterna entre o do trabalho e o de casa
 (mesmo ambiente: Windows + WSL2 + Docker Desktop + nvm; `SETUP.md` §12).
@@ -99,7 +100,7 @@ A partir do plano de implementação:
 - Cada fase termina com o checklist "pronto quando" (plano §1.1).
 - **Pedir antes de cada commit**, inclusive dentro da branch da fase,
   mostrando o que entra (Matthew pode pedir o diff antes). Push, ele
-  faz (não há credencial do GitHub neste ambiente).
+  faz, salvo pedido explícito (ex.: longe do PC).
 - Commit de formatação automática sempre **separado** das mudanças de
   código, para o diff de lógica ficar legível.
 
