@@ -47,7 +47,7 @@ export async function ncPublicada() {
     const aprovador = await loginComo("aprovador");
     const qa = await loginComo("qa");
 
-    const nc = await chamar(editor, "POST", "/nc", 201, {
+    const nc = await chamar(editor, "POST", "/api/nc", 201, {
         titulo: "Vazamento de óleo na linha 2",
         descricao: "Identificado vazamento de óleo hidráulico durante inspeção de rotina na linha 2.",
         requisitoViolado: "Procedimento PO-07, item 4.3 - inspeção de recebimento",
@@ -56,14 +56,14 @@ export async function ncPublicada() {
         detectadoEm: "2026-09-10",
         origem: "OPERACAO",
     });
-    await chamar(editor, "PATCH", `/nc/${nc.id}`, 200, {
+    await chamar(editor, "PATCH", `/api/nc/${nc.id}`, 200, {
         descricao: "Identificado vazamento de óleo hidráulico na linha 2. Volume estimado: 2 litros.",
     });
-    expect(await chamar(editor, "POST", `/nc/${nc.id}/publicar`, 200)).toMatchObject({
+    expect(await chamar(editor, "POST", `/api/nc/${nc.id}/publicar`, 200)).toMatchObject({
         estado: "ABERTO",
         codigo: expect.stringMatching(/^NC-\d{4}-0001$/),
     });
-    await chamar(gerente, "PUT", `/registros/${nc.id}/aprovador`, 200, { usuarioId: aprovador.usuario.id });
+    await chamar(gerente, "PUT", `/api/registros/${nc.id}/aprovador`, 200, { usuarioId: aprovador.usuario.id });
 
     return { editor, gerente, aprovador, qa, nc };
 }
@@ -85,10 +85,10 @@ export async function investigacaoAberta() {
     const cenario = await ncPublicada();
     const { editor, gerente, aprovador, nc } = cenario;
 
-    const investigacao = await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
+    const investigacao = await chamar(editor, "POST", `/api/nc/${nc.id}/investigacoes`, 201, {
         realProblema: "Vedação da bomba hidráulica com desgaste prematuro, causando vazamento contínuo de óleo.",
     });
-    await chamar(editor, "PATCH", `/investigacoes/${investigacao.id}`, 200, {
+    await chamar(editor, "PATCH", `/api/investigacoes/${investigacao.id}`, 200, {
         metodo: "A3_SPS",
         conteudo: {
             percepcaoInicial: "Vazamento constante na linha 2",
@@ -96,13 +96,15 @@ export async function investigacaoAberta() {
             ishikawa: { metodo: "Troca de vedação fora do padrão" },
         },
     });
-    await chamar(editor, "POST", `/investigacoes/${investigacao.id}/publicar`, 200);
-    await chamar(gerente, "PUT", `/registros/${investigacao.id}/aprovador`, 200, { usuarioId: aprovador.usuario.id });
-    await chamar(editor, "PATCH", `/investigacoes/${investigacao.id}`, 200, {
+    await chamar(editor, "POST", `/api/investigacoes/${investigacao.id}/publicar`, 200);
+    await chamar(gerente, "PUT", `/api/registros/${investigacao.id}/aprovador`, 200, {
+        usuarioId: aprovador.usuario.id,
+    });
+    await chamar(editor, "PATCH", `/api/investigacoes/${investigacao.id}`, 200, {
         causaDireta: "Vedação de material incompatível com o fluido hidráulico utilizado na máquina.",
         causaRaiz: "Procedimento de manutenção não especifica o material correto de vedação para esta bomba.",
     });
-    expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
+    expect(await chamar(editor, "GET", `/api/investigacoes/${investigacao.id}`, 200)).toMatchObject({
         estado: "ABERTO",
     });
 
@@ -118,26 +120,26 @@ export async function ncProntaParaFechar() {
     const { editor, gerente, aprovador, nc, investigacao } = cenario;
 
     // Contenção: rascunho → publicação → aprovação
-    const contencao = await chamar(editor, "POST", `/nc/${nc.id}/contencoes`, 201, {
+    const contencao = await chamar(editor, "POST", `/api/nc/${nc.id}/contencoes`, 201, {
         descricao: "Retrabalho realizado na peça com defeito, substituindo a vedação danificada.",
     });
-    await chamar(editor, "PATCH", `/contencoes/${contencao.id}`, 200, {
+    await chamar(editor, "PATCH", `/api/contencoes/${contencao.id}`, 200, {
         executadaEm: "2026-09-15",
         disposicao: "CORRIGIDO",
     });
-    await chamar(editor, "POST", `/contencoes/${contencao.id}/publicar`, 200);
-    await chamar(gerente, "PUT", `/registros/${contencao.id}/aprovador`, 200, { usuarioId: aprovador.usuario.id });
-    await chamar(editor, "POST", `/contencoes/${contencao.id}/submeter`, 200);
-    await chamar(aprovador, "POST", `/contencoes/${contencao.id}/decidir`, 200, { decisao: "APROVADO" });
-    expect(await chamar(editor, "GET", `/contencoes/${contencao.id}`, 200)).toMatchObject({ estado: "FECHADO" });
+    await chamar(editor, "POST", `/api/contencoes/${contencao.id}/publicar`, 200);
+    await chamar(gerente, "PUT", `/api/registros/${contencao.id}/aprovador`, 200, { usuarioId: aprovador.usuario.id });
+    await chamar(editor, "POST", `/api/contencoes/${contencao.id}/submeter`, 200);
+    await chamar(aprovador, "POST", `/api/contencoes/${contencao.id}/decidir`, 200, { decisao: "APROVADO" });
+    expect(await chamar(editor, "GET", `/api/contencoes/${contencao.id}`, 200)).toMatchObject({ estado: "FECHADO" });
 
     await classificarNC(cenario);
 
     // Investigação: a ação corretiva tem o plano aprovado com ela ainda aberta, e só depois ela é enviada
     const acao = await aprovarPlano(cenario);
-    await chamar(editor, "POST", `/investigacoes/${investigacao.id}/submeter`, 200);
-    await chamar(aprovador, "POST", `/investigacoes/${investigacao.id}/decidir`, 200, { decisao: "APROVADO" });
-    expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
+    await chamar(editor, "POST", `/api/investigacoes/${investigacao.id}/submeter`, 200);
+    await chamar(aprovador, "POST", `/api/investigacoes/${investigacao.id}/decidir`, 200, { decisao: "APROVADO" });
+    expect(await chamar(editor, "GET", `/api/investigacoes/${investigacao.id}`, 200)).toMatchObject({
         estado: "FECHADO",
     });
 
@@ -148,15 +150,15 @@ export type CenarioProntoParaFechar = Awaited<ReturnType<typeof ncProntaParaFech
 
 // Classificação (RN-20: só APROVADOR/GERENTE), aprovada pelo aprovador designado — o QA, não quem criou
 export async function classificarNC({ gerente, aprovador, qa, nc }: Cenario) {
-    const classificacao = await chamar(aprovador, "POST", `/nc/${nc.id}/classificacoes`, 201, {
+    const classificacao = await chamar(aprovador, "POST", `/api/nc/${nc.id}/classificacoes`, 201, {
         valor: "MAIOR",
         justificativa: "Vazamento afeta a segurança operacional e a qualidade do produto entregue ao cliente.",
     });
-    await chamar(aprovador, "POST", `/classificacoes/${classificacao.id}/publicar`, 200);
-    await chamar(gerente, "PUT", `/registros/${classificacao.id}/aprovador`, 200, { usuarioId: qa.usuario.id });
-    await chamar(aprovador, "POST", `/classificacoes/${classificacao.id}/submeter`, 200);
-    await chamar(qa, "POST", `/classificacoes/${classificacao.id}/decidir`, 200, { decisao: "APROVADO" });
-    expect(await chamar(aprovador, "GET", `/classificacoes/${classificacao.id}`, 200)).toMatchObject({
+    await chamar(aprovador, "POST", `/api/classificacoes/${classificacao.id}/publicar`, 200);
+    await chamar(gerente, "PUT", `/api/registros/${classificacao.id}/aprovador`, 200, { usuarioId: qa.usuario.id });
+    await chamar(aprovador, "POST", `/api/classificacoes/${classificacao.id}/submeter`, 200);
+    await chamar(qa, "POST", `/api/classificacoes/${classificacao.id}/decidir`, 200, { decisao: "APROVADO" });
+    expect(await chamar(aprovador, "GET", `/api/classificacoes/${classificacao.id}`, 200)).toMatchObject({
         estado: "FECHADO",
     });
 
@@ -168,31 +170,31 @@ export async function fecharNC() {
     const cenario = await ncProntaParaFechar();
     const { editor, aprovador, nc } = cenario;
 
-    await chamar(editor, "PATCH", `/nc/${nc.id}`, 200, {
+    await chamar(editor, "PATCH", `/api/nc/${nc.id}`, 200, {
         riscosRevisados: "Risco de contaminação reavaliado, mitigado pela troca do material de vedação.",
         mudancasSGQ: "Procedimento PO-07 será atualizado para especificar o material de vedação compatível.",
     });
-    await chamar(editor, "POST", `/nc/${nc.id}/submeter`, 200);
-    await chamar(aprovador, "POST", `/nc/${nc.id}/decidir`, 200, { decisao: "APROVADO" });
+    await chamar(editor, "POST", `/api/nc/${nc.id}/submeter`, 200);
+    await chamar(aprovador, "POST", `/api/nc/${nc.id}/decidir`, 200, { decisao: "APROVADO" });
 
     return cenario;
 }
 
 // Ação corretiva com o plano aprovado: o portão PLANO devolve a ação a ABERTO — autoriza a execução, não fecha
 export async function aprovarPlano({ editor, gerente, aprovador, nc, investigacao }: CenarioComInvestigacao) {
-    const acao = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, {
+    const acao = await chamar(editor, "POST", `/api/nc/${nc.id}/acoes-corretivas`, 201, {
         investigacaoId: investigacao.id,
     });
-    await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/publicar`, 200);
-    await chamar(gerente, "PUT", `/registros/${acao.id}/aprovador`, 200, { usuarioId: aprovador.usuario.id });
-    await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
+    await chamar(editor, "POST", `/api/acoes-corretivas/${acao.id}/publicar`, 200);
+    await chamar(gerente, "PUT", `/api/registros/${acao.id}/aprovador`, 200, { usuarioId: aprovador.usuario.id });
+    await chamar(editor, "PATCH", `/api/acoes-corretivas/${acao.id}`, 200, {
         descricao: "Atualizar o procedimento de manutenção para especificar o material correto de vedação.",
         prazo: diaDaquiA(15),
         instrucoesVerificacao: "Após 30 dias de uso, inspecionar a vedação e confirmar ausência de vazamento.",
     });
-    await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/submeter`, 200);
+    await chamar(editor, "POST", `/api/acoes-corretivas/${acao.id}/submeter`, 200);
     expect(
-        await chamar(aprovador, "POST", `/acoes-corretivas/${acao.id}/decidir`, 200, { decisao: "APROVADO" }),
+        await chamar(aprovador, "POST", `/api/acoes-corretivas/${acao.id}/decidir`, 200, { decisao: "APROVADO" }),
     ).toMatchObject({ estado: "ABERTO" });
 
     return acao;
@@ -202,11 +204,11 @@ export async function aprovarPlano({ editor, gerente, aprovador, nc, investigaca
 export async function executarAcao(cenario: CenarioProntoParaFechar) {
     const { editor, acao } = cenario;
 
-    await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
+    await chamar(editor, "PATCH", `/api/acoes-corretivas/${acao.id}`, 200, {
         executadoEm: diaDaquiA(-1),
         evidencia: "Procedimento PO-07 revisado e publicado na intranet, versão 3.0, com o material correto.",
     });
-    const acaoFinalizada = await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/finalizar-execucao`, 200, {
+    const acaoFinalizada = await chamar(editor, "POST", `/api/acoes-corretivas/${acao.id}/finalizar-execucao`, 200, {
         diasParaVerificar: 30,
     });
     expect(acaoFinalizada).toMatchObject({
@@ -224,13 +226,13 @@ export async function concluirVerificacao(
     verificacaoId: string,
     resultado: Resultado,
 ) {
-    await chamar(gerente, "POST", `/registros/${verificacaoId}/colaboradores`, 200, {
+    await chamar(gerente, "POST", `/api/registros/${verificacaoId}/colaboradores`, 200, {
         colaboradores: [aprovador.usuario.id],
     });
-    await chamar(aprovador, "PATCH", `/verificacoes/${verificacaoId}`, 200, {
+    await chamar(aprovador, "PATCH", `/api/verificacoes/${verificacaoId}`, 200, {
         resultado,
         conclusao: "Verificação feita na linha 2 depois do prazo, conforme as instruções do plano.",
         verificadoEm: diaDaquiA(0),
     });
-    await chamar(aprovador, "POST", `/verificacoes/${verificacaoId}/concluir`, 200);
+    await chamar(aprovador, "POST", `/api/verificacoes/${verificacaoId}/concluir`, 200);
 }

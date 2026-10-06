@@ -17,8 +17,8 @@ describe("Sequência de códigos", () => {
             origem: "OPERACAO",
         };
 
-        const nc = await chamar(editor, "POST", "/nc", 201, corpo);
-        expect(await chamar(editor, "POST", `/nc/${nc.id}/publicar`, 200)).toMatchObject({
+        const nc = await chamar(editor, "POST", "/api/nc", 201, corpo);
+        expect(await chamar(editor, "POST", `/api/nc/${nc.id}/publicar`, 200)).toMatchObject({
             estado: "ABERTO",
             codigo: expect.stringMatching(/^NC-\d{4}-0001$/),
         });
@@ -27,13 +27,13 @@ describe("Sequência de códigos", () => {
         const esperado = [];
 
         for (let i = 0; i < 10; i++) {
-            const rascunho = await chamar(editor, "POST", "/nc", 201, corpo);
+            const rascunho = await chamar(editor, "POST", "/api/nc", 201, corpo);
             rascunhos.push(rascunho);
             esperado.push(`NC-${hojeEmSaoPaulo().slice(0, 4)}-${String(i + 2).padStart(4, "0")}`);
         }
 
         const publicados = await Promise.all(
-            rascunhos.map((rascunho) => chamar(editor, "POST", `/nc/${rascunho.id}/publicar`, 200)),
+            rascunhos.map((rascunho) => chamar(editor, "POST", `/api/nc/${rascunho.id}/publicar`, 200)),
         );
 
         const codigos = publicados.map((nc) => nc.codigo);
@@ -63,13 +63,13 @@ describe("Sequência de códigos", () => {
         const esperado = [];
 
         for (let i = 0; i < 10; i++) {
-            const rascunho = await chamar(editor, "POST", "/nc", 201, corpo);
+            const rascunho = await chamar(editor, "POST", "/api/nc", 201, corpo);
             rascunhos.push(rascunho);
             esperado.push(`NC-${hojeEmSaoPaulo().slice(0, 4)}-${String(i + 1).padStart(4, "0")}`);
         }
 
         const publicados = await Promise.all(
-            rascunhos.map((rascunho) => chamar(editor, "POST", `/nc/${rascunho.id}/publicar`, 200)),
+            rascunhos.map((rascunho) => chamar(editor, "POST", `/api/nc/${rascunho.id}/publicar`, 200)),
         );
 
         const codigos = publicados.map((nc) => nc.codigo);

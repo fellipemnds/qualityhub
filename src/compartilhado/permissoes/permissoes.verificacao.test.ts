@@ -13,15 +13,15 @@ type Quem = "editor" | "aprovador" | "qa" | "gerente" | "admin" | "visualizador"
 
 const acoes = {
     ver: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "GET", `/verificacoes/${contexto.verificacao.id}`, 403),
+        chamar(contexto[quem], "GET", `/api/verificacoes/${contexto.verificacao.id}`, 403),
     editar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "PATCH", `/verificacoes/${contexto.verificacao.id}`, 403, {
+        chamar(contexto[quem], "PATCH", `/api/verificacoes/${contexto.verificacao.id}`, 403, {
             conclusao: "Tentativa de editar a verificação sem permissão.",
         }),
     concluir: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/verificacoes/${contexto.verificacao.id}/concluir`, 403),
+        chamar(contexto[quem], "POST", `/api/verificacoes/${contexto.verificacao.id}/concluir`, 403),
     cancelar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/verificacoes/${contexto.verificacao.id}/cancelar`, 403, {
+        chamar(contexto[quem], "POST", `/api/verificacoes/${contexto.verificacao.id}/cancelar`, 403, {
             motivo: "Tentativa de cancelar sem permissão",
         }),
 };

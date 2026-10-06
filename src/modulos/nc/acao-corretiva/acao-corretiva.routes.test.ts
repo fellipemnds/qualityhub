@@ -21,10 +21,10 @@ type Quem = Awaited<ReturnType<typeof loginComo>>;
 
 // Uma investigação publicada na NC: a menor que aceita uma ação ligada (RN-49)
 async function investigacaoPublicada(editor: Quem, naoConformidadeId: string) {
-    const investigacao = await chamar(editor, "POST", `/nc/${naoConformidadeId}/investigacoes`, 201, {
+    const investigacao = await chamar(editor, "POST", `/api/nc/${naoConformidadeId}/investigacoes`, 201, {
         realProblema: "Vedação da bomba hidráulica com desgaste prematuro, causando vazamento contínuo de óleo.",
     });
-    await chamar(editor, "POST", `/investigacoes/${investigacao.id}/publicar`, 200);
+    await chamar(editor, "POST", `/api/investigacoes/${investigacao.id}/publicar`, 200);
     return investigacao;
 }
 
@@ -39,10 +39,10 @@ const INVESTIGACOES_INVALIDAS = [
         caso: "de outra NC",
         montar: async () => {
             const cenario = await ncPublicada();
-            const outraNC = await chamar(cenario.editor, "POST", "/nc", 201, {
+            const outraNC = await chamar(cenario.editor, "POST", "/api/nc", 201, {
                 titulo: "Outra NC, com a sua investigação",
             });
-            const investigacao = await chamar(cenario.editor, "POST", `/nc/${outraNC.id}/investigacoes`, 201, {
+            const investigacao = await chamar(cenario.editor, "POST", `/api/nc/${outraNC.id}/investigacoes`, 201, {
                 realProblema: "Ruído anormal no redutor da esteira, sem relação com o vazamento da linha 2.",
             });
             return { ...cenario, investigacaoId: investigacao.id };
@@ -88,7 +88,7 @@ describe("POST /nc/:naoConformidadeId/acoes-corretivas", () => {
         const editor = await loginComo("editor");
 
         // Chama (com uma investigação qualquer: sem ela, o corpo já seria recusado com 400)
-        const resposta = await chamar(editor, "POST", `/nc/${ID_INEXISTENTE}/acoes-corretivas`, 404, {
+        const resposta = await chamar(editor, "POST", `/api/nc/${ID_INEXISTENTE}/acoes-corretivas`, 404, {
             investigacaoId: ID_INEXISTENTE,
         });
 
@@ -101,11 +101,11 @@ describe("POST /nc/:naoConformidadeId/acoes-corretivas", () => {
         const { editor, nc } = await ncPublicada();
 
         // Chama
-        const resposta = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 400, {});
+        const resposta = await chamar(editor, "POST", `/api/nc/${nc.id}/acoes-corretivas`, 400, {});
 
         // Confere: nenhuma ação nasceu
         expect(resposta.error).toEqual([expect.objectContaining({ instancePath: "/investigacaoId" })]);
-        expect(await chamar(editor, "GET", `/acoes-corretivas?naoConformidadeId=${nc.id}`, 200)).toEqual([]);
+        expect(await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}`, 200)).toEqual([]);
     });
 
     it.each(INVESTIGACOES_INVALIDAS)("recusa a investigação $caso (B10, RN-49)", async ({ montar }) => {
@@ -113,11 +113,11 @@ describe("POST /nc/:naoConformidadeId/acoes-corretivas", () => {
         const { editor, nc, investigacaoId } = await montar();
 
         // Chama
-        const resposta = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 400, { investigacaoId });
+        const resposta = await chamar(editor, "POST", `/api/nc/${nc.id}/acoes-corretivas`, 400, { investigacaoId });
 
         // Confere: nenhuma ação nasceu
         expect(resposta.mensagem).toContain("investigação");
-        expect(await chamar(editor, "GET", `/acoes-corretivas?naoConformidadeId=${nc.id}`, 200)).toEqual([]);
+        expect(await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}`, 200)).toEqual([]);
     });
 });
 
@@ -128,7 +128,7 @@ describe("GET /acoes-corretivas/:id", () => {
         const { editor, acao } = await levarAcaoCorretivaAte("ABERTO");
 
         // Chama
-        const resposta = await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200);
+        const resposta = await chamar(editor, "GET", `/api/acoes-corretivas/${acao.id}`, 200);
 
         // Confere
         expect(resposta).toMatchObject({ estado: "ABERTO", planoAprovado: false });
@@ -137,10 +137,10 @@ describe("GET /acoes-corretivas/:id", () => {
     it("planoAprovado é true depois da aprovação do plano", async () => {
         // Prepara
         const { editor, aprovador, acao } = await levarAcaoCorretivaAte("EM_APROVACAO");
-        await chamar(aprovador, "POST", `/acoes-corretivas/${acao.id}/decidir`, 200, { decisao: "APROVADO" });
+        await chamar(aprovador, "POST", `/api/acoes-corretivas/${acao.id}/decidir`, 200, { decisao: "APROVADO" });
 
         // Chama
-        const resposta = await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200);
+        const resposta = await chamar(editor, "GET", `/api/acoes-corretivas/${acao.id}`, 200);
 
         // Confere (volta a ABERTO: só o planoAprovado distingue do plano nunca submetido)
         expect(resposta).toMatchObject({ estado: "ABERTO", planoAprovado: true });
@@ -149,13 +149,13 @@ describe("GET /acoes-corretivas/:id", () => {
     it("planoAprovado é false com o plano reprovado", async () => {
         // Prepara
         const { editor, aprovador, acao } = await levarAcaoCorretivaAte("EM_APROVACAO");
-        await chamar(aprovador, "POST", `/acoes-corretivas/${acao.id}/decidir`, 200, {
+        await chamar(aprovador, "POST", `/api/acoes-corretivas/${acao.id}/decidir`, 200, {
             decisao: "REPROVADO",
             motivo: "O prazo não é compatível com a próxima parada da linha.",
         });
 
         // Chama
-        const resposta = await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200);
+        const resposta = await chamar(editor, "GET", `/api/acoes-corretivas/${acao.id}`, 200);
 
         // Confere
         expect(resposta).toMatchObject({ estado: "ABERTO", planoAprovado: false });
@@ -164,15 +164,15 @@ describe("GET /acoes-corretivas/:id", () => {
     it("planoAprovado é true com o plano reprovado e depois aprovado", async () => {
         // Prepara
         const { editor, aprovador, acao } = await levarAcaoCorretivaAte("EM_APROVACAO");
-        await chamar(aprovador, "POST", `/acoes-corretivas/${acao.id}/decidir`, 200, {
+        await chamar(aprovador, "POST", `/api/acoes-corretivas/${acao.id}/decidir`, 200, {
             decisao: "REPROVADO",
             motivo: "O prazo não é compatível com a próxima parada da linha.",
         });
-        await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/submeter`, 200);
-        await chamar(aprovador, "POST", `/acoes-corretivas/${acao.id}/decidir`, 200, { decisao: "APROVADO" });
+        await chamar(editor, "POST", `/api/acoes-corretivas/${acao.id}/submeter`, 200);
+        await chamar(aprovador, "POST", `/api/acoes-corretivas/${acao.id}/decidir`, 200, { decisao: "APROVADO" });
 
         // Chama
-        const resposta = await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200);
+        const resposta = await chamar(editor, "GET", `/api/acoes-corretivas/${acao.id}`, 200);
 
         // Confere
         expect(resposta).toMatchObject({ estado: "ABERTO", planoAprovado: true });
@@ -190,16 +190,16 @@ describe("PATCH /acoes-corretivas/:id", () => {
     ])("recusa mudar o $campo do plano depois de aprovado (B2)", async ({ campo, valor }) => {
         // Prepara
         const { editor, acao, investigacao } = await levarAcaoCorretivaAte("PLANO_APROVADO");
-        const antes = await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200);
+        const antes = await chamar(editor, "GET", `/api/acoes-corretivas/${acao.id}`, 200);
 
         // Chama
-        const resposta = await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 409, {
+        const resposta = await chamar(editor, "PATCH", `/api/acoes-corretivas/${acao.id}`, 409, {
             [campo]: valor(investigacao.id),
         });
 
         // Confere
         expect(resposta.mensagem).toContain(campo);
-        expect(await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200)).toEqual(antes);
+        expect(await chamar(editor, "GET", `/api/acoes-corretivas/${acao.id}`, 200)).toEqual(antes);
     });
 
     it("com o plano aprovado, registra a execução (B2)", async () => {
@@ -207,7 +207,7 @@ describe("PATCH /acoes-corretivas/:id", () => {
         const { editor, acao } = await levarAcaoCorretivaAte("PLANO_APROVADO");
 
         // Chama
-        const resposta = await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
+        const resposta = await chamar(editor, "PATCH", `/api/acoes-corretivas/${acao.id}`, 200, {
             executadoEm: diaDaquiA(-1),
             evidencia: "Procedimento PO-07 revisado e publicado na intranet, versão 3.0, com o material correto.",
         });
@@ -220,28 +220,32 @@ describe("PATCH /acoes-corretivas/:id", () => {
         // Prepara: ação ligada a uma investigação que serve, na NC do cenário
         const { editor, nc, investigacaoId } = await montar();
         const valida = await investigacaoPublicada(editor, nc.id);
-        const acao = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, { investigacaoId: valida.id });
-        const antes = await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200);
+        const acao = await chamar(editor, "POST", `/api/nc/${nc.id}/acoes-corretivas`, 201, {
+            investigacaoId: valida.id,
+        });
+        const antes = await chamar(editor, "GET", `/api/acoes-corretivas/${acao.id}`, 200);
 
         // Chama
-        const resposta = await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 400, { investigacaoId });
+        const resposta = await chamar(editor, "PATCH", `/api/acoes-corretivas/${acao.id}`, 400, { investigacaoId });
 
         // Confere
         expect(resposta.mensagem).toContain("investigação");
-        expect(await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200)).toEqual(antes);
+        expect(await chamar(editor, "GET", `/api/acoes-corretivas/${acao.id}`, 200)).toEqual(antes);
     });
 
     it("recusa apagar a investigação (RN-49)", async () => {
         // Prepara
         const { editor, acao } = await levarAcaoCorretivaAte("ABERTO");
-        const antes = await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200);
+        const antes = await chamar(editor, "GET", `/api/acoes-corretivas/${acao.id}`, 200);
 
         // Chama
-        const resposta = await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 400, { investigacaoId: null });
+        const resposta = await chamar(editor, "PATCH", `/api/acoes-corretivas/${acao.id}`, 400, {
+            investigacaoId: null,
+        });
 
         // Confere
         expect(resposta.error).toEqual([expect.objectContaining({ instancePath: "/investigacaoId" })]);
-        expect(await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200)).toEqual(antes);
+        expect(await chamar(editor, "GET", `/api/acoes-corretivas/${acao.id}`, 200)).toEqual(antes);
     });
 
     // A ação do PARCIALMENTE_EFICAZ é a única ligada a uma investigação já fechada (RN-49): editar o plano mandando
@@ -252,10 +256,15 @@ describe("PATCH /acoes-corretivas/:id", () => {
         const { editor, nc, investigacao } = cenario;
         const { verificacao } = await executarAcao(cenario);
         await concluirVerificacao(cenario, verificacao.id, "PARCIALMENTE_EFICAZ");
-        const [nova] = await chamar(editor, "GET", `/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`, 200);
+        const [nova] = await chamar(
+            editor,
+            "GET",
+            `/api/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`,
+            200,
+        );
 
         // Chama
-        const resposta = await chamar(editor, "PATCH", `/acoes-corretivas/${nova.id}`, 200, {
+        const resposta = await chamar(editor, "PATCH", `/api/acoes-corretivas/${nova.id}`, 200, {
             investigacaoId: investigacao.id,
             descricao: "Trocar também a vedação da bomba reserva, que usa o mesmo material incompatível.",
         });
@@ -269,14 +278,14 @@ describe("POST /acoes-corretivas/:id/submeter", () => {
     it("recusa o plano sem descrição e instruções de verificação", async () => {
         // Prepara
         const { editor, gerente, aprovador, nc, investigacao } = await investigacaoAberta();
-        const acao = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, {
+        const acao = await chamar(editor, "POST", `/api/nc/${nc.id}/acoes-corretivas`, 201, {
             investigacaoId: investigacao.id,
         });
-        await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/publicar`, 200);
-        await chamar(gerente, "PUT", `/registros/${acao.id}/aprovador`, 200, { usuarioId: aprovador.usuario.id });
+        await chamar(editor, "POST", `/api/acoes-corretivas/${acao.id}/publicar`, 200);
+        await chamar(gerente, "PUT", `/api/registros/${acao.id}/aprovador`, 200, { usuarioId: aprovador.usuario.id });
 
         // Chama
-        const resposta = await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/submeter`, 400);
+        const resposta = await chamar(editor, "POST", `/api/acoes-corretivas/${acao.id}/submeter`, 400);
 
         // Confere (o prazo vazio também: B14)
         expect(resposta).toMatchObject({
@@ -307,7 +316,7 @@ describe("POST /acoes-corretivas/:id/finalizar-execucao", () => {
     it("recusa com a execução registrada, mas o plano nunca aprovado (B1)", async () => {
         // Prepara: plano escrito mas nunca submetido, execução preenchida — só falta a aprovação do plano
         const { editor, acao } = await levarAcaoCorretivaAte("ABERTO");
-        await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
+        await chamar(editor, "PATCH", `/api/acoes-corretivas/${acao.id}`, 200, {
             descricao: "Atualizar o procedimento de manutenção para especificar o material correto de vedação.",
             prazo: diaDaquiA(15),
             instrucoesVerificacao: "Após 30 dias de uso, inspecionar a vedação e confirmar ausência de vazamento.",
@@ -316,14 +325,16 @@ describe("POST /acoes-corretivas/:id/finalizar-execucao", () => {
         });
 
         // Chama
-        const resposta = await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/finalizar-execucao`, 409, {
+        const resposta = await chamar(editor, "POST", `/api/acoes-corretivas/${acao.id}/finalizar-execucao`, 409, {
             diasParaVerificar: 30,
         });
 
         // Confere: a ação continua aberta, e nenhuma verificação nasceu
         expect(resposta.mensagem).toContain("plano precisa estar aprovado");
-        expect(await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200)).toMatchObject({ estado: "ABERTO" });
-        expect(await chamar(editor, "GET", `/verificacoes?acaoCorretivaId=${acao.id}`, 200)).toEqual([]);
+        expect(await chamar(editor, "GET", `/api/acoes-corretivas/${acao.id}`, 200)).toMatchObject({
+            estado: "ABERTO",
+        });
+        expect(await chamar(editor, "GET", `/api/verificacoes?acaoCorretivaId=${acao.id}`, 200)).toEqual([]);
     });
 
     it("recusa sem a execução registrada (RN-25)", async () => {
@@ -331,7 +342,7 @@ describe("POST /acoes-corretivas/:id/finalizar-execucao", () => {
         const { editor, acao } = await ncProntaParaFechar();
 
         // Chama
-        const resposta = await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/finalizar-execucao`, 400, {
+        const resposta = await chamar(editor, "POST", `/api/acoes-corretivas/${acao.id}/finalizar-execucao`, 400, {
             diasParaVerificar: 30,
         });
 
@@ -377,7 +388,7 @@ describe("POST /acoes-corretivas/:id/finalizar-execucao", () => {
     it("duplo clique: duas finalizações ao mesmo tempo geram uma verificação só (B19)", async () => {
         // Prepara: plano aprovado e execução registrada
         const { editor, acao } = await ncProntaParaFechar();
-        await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
+        await chamar(editor, "PATCH", `/api/acoes-corretivas/${acao.id}`, 200, {
             executadoEm: diaDaquiA(-1),
             evidencia: "Procedimento PO-07 revisado e publicado na intranet.",
         });
@@ -386,7 +397,7 @@ describe("POST /acoes-corretivas/:id/finalizar-execucao", () => {
         const finalizar = () =>
             app.inject({
                 method: "POST",
-                url: `/acoes-corretivas/${acao.id}/finalizar-execucao`,
+                url: `/api/acoes-corretivas/${acao.id}/finalizar-execucao`,
                 headers: editor.autenticacao,
                 body: { diasParaVerificar: 30 },
             });
@@ -395,19 +406,19 @@ describe("POST /acoes-corretivas/:id/finalizar-execucao", () => {
 
         // Confere: uma passa, a outra é recusada, e nasce uma verificação só
         expect(respostas.map((r) => r.statusCode).sort()).toEqual([200, 409]);
-        expect(await chamar(editor, "GET", `/verificacoes?acaoCorretivaId=${acao.id}`, 200)).toHaveLength(1);
+        expect(await chamar(editor, "GET", `/api/verificacoes?acaoCorretivaId=${acao.id}`, 200)).toHaveLength(1);
     });
 
     it("recusa prazo de verificação negativo", async () => {
         // Prepara: plano aprovado e execução registrada — o único problema é o número de dias
         const { editor, acao } = await ncProntaParaFechar();
-        await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
+        await chamar(editor, "PATCH", `/api/acoes-corretivas/${acao.id}`, 200, {
             executadoEm: diaDaquiA(-1),
             evidencia: "Procedimento PO-07 revisado e publicado na intranet.",
         });
 
         // Chama
-        const resposta = await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/finalizar-execucao`, 400, {
+        const resposta = await chamar(editor, "POST", `/api/acoes-corretivas/${acao.id}/finalizar-execucao`, 400, {
             diasParaVerificar: -5,
         });
 
@@ -423,20 +434,20 @@ describe("GET /acoes-corretivas", () => {
     it("filtra por NC e por estado", async () => {
         // Prepara: dois itens na NC do cenário (um publicado) e um em outra NC
         const { editor, nc } = await ncPublicada();
-        const outraNC = await chamar(editor, "POST", "/nc", 201, { titulo: "Outra NC, com o seu item" });
+        const outraNC = await chamar(editor, "POST", "/api/nc", 201, { titulo: "Outra NC, com o seu item" });
         const daNCDoCenario = { investigacaoId: (await investigacaoPublicada(editor, nc.id)).id };
         const daOutraNC = { investigacaoId: (await investigacaoPublicada(editor, outraNC.id)).id };
-        const publicado = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, daNCDoCenario);
-        const rascunho = await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, daNCDoCenario);
-        await chamar(editor, "POST", `/nc/${outraNC.id}/acoes-corretivas`, 201, daOutraNC);
-        await chamar(editor, "POST", `/acoes-corretivas/${publicado.id}/publicar`, 200);
+        const publicado = await chamar(editor, "POST", `/api/nc/${nc.id}/acoes-corretivas`, 201, daNCDoCenario);
+        const rascunho = await chamar(editor, "POST", `/api/nc/${nc.id}/acoes-corretivas`, 201, daNCDoCenario);
+        await chamar(editor, "POST", `/api/nc/${outraNC.id}/acoes-corretivas`, 201, daOutraNC);
+        await chamar(editor, "POST", `/api/acoes-corretivas/${publicado.id}/publicar`, 200);
 
         // Chama
-        const daNC = await chamar(editor, "GET", `/acoes-corretivas?naoConformidadeId=${nc.id}`, 200);
+        const daNC = await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}`, 200);
         const abertosDaNC = await chamar(
             editor,
             "GET",
-            `/acoes-corretivas?naoConformidadeId=${nc.id}&estado=ABERTO`,
+            `/api/acoes-corretivas?naoConformidadeId=${nc.id}&estado=ABERTO`,
             200,
         );
 
@@ -453,10 +464,10 @@ describe("POST /acoes-corretivas/:id/retirar", () => {
         const { editor, acao } = await levarAcaoCorretivaAte("EM_APROVACAO");
 
         // Chama
-        await chamar(editor, "POST", `/acoes-corretivas/${acao.id}/retirar`, 200);
+        await chamar(editor, "POST", `/api/acoes-corretivas/${acao.id}/retirar`, 200);
 
         // Confere
-        expect(await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200)).toMatchObject({
+        expect(await chamar(editor, "GET", `/api/acoes-corretivas/${acao.id}`, 200)).toMatchObject({
             estado: "ABERTO",
             planoAprovado: false,
         });

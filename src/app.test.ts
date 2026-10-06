@@ -34,7 +34,7 @@ describe("Corpo da requisição (B20, B21)", () => {
         // Chama
         const resposta = await app.inject({
             method: "POST",
-            url: "/auth/login",
+            url: "/api/auth/login",
             headers: {
                 "content-type": "application/json",
             },
@@ -53,7 +53,7 @@ describe("Corpo da requisição (B20, B21)", () => {
         // Chama
         const resposta = await app.inject({
             method: "POST",
-            url: "/auth/sair-de-todos",
+            url: "/api/auth/sair-de-todos",
             headers: {
                 ...editor.autenticacao,
                 "content-type": "text/plain",

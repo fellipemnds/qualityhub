@@ -14,31 +14,31 @@ type Quem = "editor" | "aprovador" | "qa" | "gerente" | "admin" | "visualizador"
 
 const acoes = {
     ver: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "GET", `/investigacoes/${contexto.investigacao.id}`, 403),
+        chamar(contexto[quem], "GET", `/api/investigacoes/${contexto.investigacao.id}`, 403),
     criar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/nc/${contexto.nc.id}/investigacoes`, 403, {
+        chamar(contexto[quem], "POST", `/api/nc/${contexto.nc.id}/investigacoes`, 403, {
             realProblema: "Tentativa de criar uma investigação sem permissão.",
         }),
     editar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "PATCH", `/investigacoes/${contexto.investigacao.id}`, 403, {
+        chamar(contexto[quem], "PATCH", `/api/investigacoes/${contexto.investigacao.id}`, 403, {
             realProblema: "Tentativa de editar a investigação sem permissão.",
         }),
     excluir: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "DELETE", `/investigacoes/${contexto.investigacao.id}`, 403),
+        chamar(contexto[quem], "DELETE", `/api/investigacoes/${contexto.investigacao.id}`, 403),
     publicar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/investigacoes/${contexto.investigacao.id}/publicar`, 403),
+        chamar(contexto[quem], "POST", `/api/investigacoes/${contexto.investigacao.id}/publicar`, 403),
     submeter: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/investigacoes/${contexto.investigacao.id}/submeter`, 403),
+        chamar(contexto[quem], "POST", `/api/investigacoes/${contexto.investigacao.id}/submeter`, 403),
     decidir: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/investigacoes/${contexto.investigacao.id}/decidir`, 403, {
+        chamar(contexto[quem], "POST", `/api/investigacoes/${contexto.investigacao.id}/decidir`, 403, {
             decisao: "APROVADO",
         }),
     cancelar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/investigacoes/${contexto.investigacao.id}/cancelar`, 403, {
+        chamar(contexto[quem], "POST", `/api/investigacoes/${contexto.investigacao.id}/cancelar`, 403, {
             motivo: "Tentativa de cancelar sem permissão",
         }),
     retirar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/investigacoes/${contexto.investigacao.id}/retirar`, 403),
+        chamar(contexto[quem], "POST", `/api/investigacoes/${contexto.investigacao.id}/retirar`, 403),
 };
 
 type NomeAcao = keyof typeof acoes;

@@ -49,15 +49,21 @@ app.register(fastifyJwt, {
 app.get("/", async () => {
     return { status: "Servidor online" };
 });
-app.register(authRoutes);
-app.register(usuarioRoutes);
-app.register(ncRoutes);
-app.register(atribuicaoRoutes);
-app.register(contencaoRoutes);
-app.register(classificacaoRoutes);
-app.register(investigacaoRoutes);
-app.register(acaoCorretivaRoutes);
-app.register(verificacaoRoutes);
+// Toda rota da API sob /api (TRD §7.1): o nginx entrega o frontend em "/" e repassa "/api" ao backend
+app.register(
+    async (api) => {
+        api.register(authRoutes);
+        api.register(usuarioRoutes);
+        api.register(ncRoutes);
+        api.register(atribuicaoRoutes);
+        api.register(contencaoRoutes);
+        api.register(classificacaoRoutes);
+        api.register(investigacaoRoutes);
+        api.register(acaoCorretivaRoutes);
+        api.register(verificacaoRoutes);
+    },
+    { prefix: "/api" },
+);
 
 const MENSAGENS_ERRO_CLIENTE: Record<number, string> = {
     400: "Corpo da requisição inválido.",

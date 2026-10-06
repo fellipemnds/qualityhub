@@ -6,31 +6,31 @@ type Contexto = Awaited<ReturnType<typeof levarAcaoCorretivaAte>>;
 
 const acoes = {
     editar: ({ editor, acao }: Contexto) =>
-        chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 409, {
+        chamar(editor, "PATCH", `/api/acoes-corretivas/${acao.id}`, 409, {
             descricao: "Tentativa de editar a ação corretiva fora do estado permitido.",
         }),
-    publicar: ({ editor, acao }: Contexto) => chamar(editor, "POST", `/acoes-corretivas/${acao.id}/publicar`, 409),
-    excluir: ({ editor, acao }: Contexto) => chamar(editor, "DELETE", `/acoes-corretivas/${acao.id}`, 409),
-    submeter: ({ editor, acao }: Contexto) => chamar(editor, "POST", `/acoes-corretivas/${acao.id}/submeter`, 409),
+    publicar: ({ editor, acao }: Contexto) => chamar(editor, "POST", `/api/acoes-corretivas/${acao.id}/publicar`, 409),
+    excluir: ({ editor, acao }: Contexto) => chamar(editor, "DELETE", `/api/acoes-corretivas/${acao.id}`, 409),
+    submeter: ({ editor, acao }: Contexto) => chamar(editor, "POST", `/api/acoes-corretivas/${acao.id}/submeter`, 409),
     aprovar: ({ aprovador, acao }: Contexto) =>
-        chamar(aprovador, "POST", `/acoes-corretivas/${acao.id}/decidir`, 409, {
+        chamar(aprovador, "POST", `/api/acoes-corretivas/${acao.id}/decidir`, 409, {
             decisao: "APROVADO",
         }),
     reprovar: ({ aprovador, acao }: Contexto) =>
-        chamar(aprovador, "POST", `/acoes-corretivas/${acao.id}/decidir`, 409, {
+        chamar(aprovador, "POST", `/api/acoes-corretivas/${acao.id}/decidir`, 409, {
             decisao: "REPROVADO",
             motivo: "Tentativa de reprovar fora do estado permitido",
         }),
     cancelar: ({ aprovador, acao }: Contexto) =>
-        chamar(aprovador, "POST", `/acoes-corretivas/${acao.id}/cancelar`, 409, {
+        chamar(aprovador, "POST", `/api/acoes-corretivas/${acao.id}/cancelar`, 409, {
             motivo: "Tentativa de cancelar fora do estado permitido",
         }),
     finalizar: ({ editor, acao }: Contexto) =>
-        chamar(editor, "POST", `/acoes-corretivas/${acao.id}/finalizar-execucao`, 409, {
+        chamar(editor, "POST", `/api/acoes-corretivas/${acao.id}/finalizar-execucao`, 409, {
             diasParaVerificar: 30,
         }),
     // Retirar da aprovação (RN-48): só sai de EM_APROVACAO
-    retirar: ({ editor, acao }: Contexto) => chamar(editor, "POST", `/acoes-corretivas/${acao.id}/retirar`, 409),
+    retirar: ({ editor, acao }: Contexto) => chamar(editor, "POST", `/api/acoes-corretivas/${acao.id}/retirar`, 409),
 };
 
 type NomeAcao = keyof typeof acoes;

@@ -7,7 +7,7 @@ import { loginComo } from "../testes/fabricas.js";
 describe("autenticar", () => {
     it("responde 401 sem o cookie da sessão", async () => {
         // Chama
-        const resposta = await app.inject({ method: "GET", url: "/nc" });
+        const resposta = await app.inject({ method: "GET", url: "/api/nc" });
 
         // Confere
         expect(resposta.statusCode).toBe(401);
@@ -18,7 +18,7 @@ describe("autenticar", () => {
         // Chama
         const resposta = await app.inject({
             method: "GET",
-            url: "/nc",
+            url: "/api/nc",
             headers: { cookie: "qh_sessao=token.invalido.aqui" },
         });
 
@@ -33,7 +33,7 @@ describe("autenticar", () => {
         await prisma.usuarioPapel.deleteMany({ where: { usuarioId: admin.usuario.id } });
 
         // Chama
-        await chamar(admin, "POST", "/usuarios", 403, {
+        await chamar(admin, "POST", "/api/usuarios", 403, {
             nome: "Pessoa nova",
             email: "nova@teste.com",
             papeis: ["EDITOR"],
@@ -47,7 +47,7 @@ describe("autenticar", () => {
         await prisma.usuario.update({ where: { id: editor.usuario.id }, data: { desativadoEm: new Date() } });
 
         // Chama
-        await chamar(editor, "GET", "/nc", 401);
+        await chamar(editor, "GET", "/api/nc", 401);
     });
 
     it("sessão emitida antes do sessaoValidaDesde recebe 401 (sair de todos)", async () => {
@@ -59,7 +59,7 @@ describe("autenticar", () => {
         });
 
         // Chama
-        await chamar(editor, "GET", "/nc", 401);
+        await chamar(editor, "GET", "/api/nc", 401);
     });
 
     it("token válido no cabeçalho Authorization é recusado: só o cookie vale", async () => {
@@ -69,7 +69,7 @@ describe("autenticar", () => {
         // Chama
         const resposta = await app.inject({
             method: "GET",
-            url: "/nc",
+            url: "/api/nc",
             headers: { authorization: `Bearer ${editor.token}` },
         });
 

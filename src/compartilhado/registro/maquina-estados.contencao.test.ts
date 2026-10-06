@@ -7,27 +7,30 @@ type Contexto = Awaited<ReturnType<typeof levarContencaoAte>>;
 
 const acoes = {
     editar: ({ editor, contencao }: Contexto) =>
-        chamar(editor, "PATCH", `/contencoes/${contencao.id}`, 409, {
+        chamar(editor, "PATCH", `/api/contencoes/${contencao.id}`, 409, {
             descricao: "Tentativa de editar a contenção fora do estado permitido.",
         }),
-    publicar: ({ editor, contencao }: Contexto) => chamar(editor, "POST", `/contencoes/${contencao.id}/publicar`, 409),
-    excluir: ({ editor, contencao }: Contexto) => chamar(editor, "DELETE", `/contencoes/${contencao.id}`, 409),
-    submeter: ({ editor, contencao }: Contexto) => chamar(editor, "POST", `/contencoes/${contencao.id}/submeter`, 409),
+    publicar: ({ editor, contencao }: Contexto) =>
+        chamar(editor, "POST", `/api/contencoes/${contencao.id}/publicar`, 409),
+    excluir: ({ editor, contencao }: Contexto) => chamar(editor, "DELETE", `/api/contencoes/${contencao.id}`, 409),
+    submeter: ({ editor, contencao }: Contexto) =>
+        chamar(editor, "POST", `/api/contencoes/${contencao.id}/submeter`, 409),
     aprovar: ({ aprovador, contencao }: Contexto) =>
-        chamar(aprovador, "POST", `/contencoes/${contencao.id}/decidir`, 409, {
+        chamar(aprovador, "POST", `/api/contencoes/${contencao.id}/decidir`, 409, {
             decisao: "APROVADO",
         }),
     reprovar: ({ aprovador, contencao }: Contexto) =>
-        chamar(aprovador, "POST", `/contencoes/${contencao.id}/decidir`, 409, {
+        chamar(aprovador, "POST", `/api/contencoes/${contencao.id}/decidir`, 409, {
             decisao: "REPROVADO",
             motivo: "Tentativa de reprovar fora do estado permitido",
         }),
     cancelar: ({ aprovador, contencao }: Contexto) =>
-        chamar(aprovador, "POST", `/contencoes/${contencao.id}/cancelar`, 409, {
+        chamar(aprovador, "POST", `/api/contencoes/${contencao.id}/cancelar`, 409, {
             motivo: "Tentativa de cancelar fora do estado permitido",
         }),
     // Retirar da aprovação (RN-48): só sai de EM_APROVACAO
-    retirar: ({ editor, contencao }: Contexto) => chamar(editor, "POST", `/contencoes/${contencao.id}/retirar`, 409),
+    retirar: ({ editor, contencao }: Contexto) =>
+        chamar(editor, "POST", `/api/contencoes/${contencao.id}/retirar`, 409),
 };
 
 type NomeAcao = keyof typeof acoes;

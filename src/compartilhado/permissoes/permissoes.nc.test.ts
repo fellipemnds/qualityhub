@@ -12,31 +12,34 @@ type Contexto = Awaited<ReturnType<typeof preparar>>;
 type Quem = "editor" | "aprovador" | "qa" | "gerente" | "admin" | "visualizador" | "semPapel";
 
 const acoes = {
-    ver: (contexto: Contexto, quem: Quem) => chamar(contexto[quem], "GET", `/nc/${contexto.nc.id}`, 403),
+    ver: (contexto: Contexto, quem: Quem) => chamar(contexto[quem], "GET", `/api/nc/${contexto.nc.id}`, 403),
     criar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", "/nc", 403, {
+        chamar(contexto[quem], "POST", "/api/nc", 403, {
             titulo: "Tentativa de criar uma NC sem permissão",
         }),
     editar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "PATCH", `/nc/${contexto.nc.id}`, 403, {
+        chamar(contexto[quem], "PATCH", `/api/nc/${contexto.nc.id}`, 403, {
             descricao: "Tentativa de editar a não conformidade sem permissão.",
         }),
-    excluir: (contexto: Contexto, quem: Quem) => chamar(contexto[quem], "DELETE", `/nc/${contexto.nc.id}`, 403),
-    publicar: (contexto: Contexto, quem: Quem) => chamar(contexto[quem], "POST", `/nc/${contexto.nc.id}/publicar`, 403),
-    submeter: (contexto: Contexto, quem: Quem) => chamar(contexto[quem], "POST", `/nc/${contexto.nc.id}/submeter`, 403),
+    excluir: (contexto: Contexto, quem: Quem) => chamar(contexto[quem], "DELETE", `/api/nc/${contexto.nc.id}`, 403),
+    publicar: (contexto: Contexto, quem: Quem) =>
+        chamar(contexto[quem], "POST", `/api/nc/${contexto.nc.id}/publicar`, 403),
+    submeter: (contexto: Contexto, quem: Quem) =>
+        chamar(contexto[quem], "POST", `/api/nc/${contexto.nc.id}/submeter`, 403),
     decidir: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/nc/${contexto.nc.id}/decidir`, 403, {
+        chamar(contexto[quem], "POST", `/api/nc/${contexto.nc.id}/decidir`, 403, {
             decisao: "APROVADO",
         }),
     cancelar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/nc/${contexto.nc.id}/cancelar`, 403, {
+        chamar(contexto[quem], "POST", `/api/nc/${contexto.nc.id}/cancelar`, 403, {
             motivo: "Tentativa de cancelar sem permissão",
         }),
     reabrir: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/nc/${contexto.nc.id}/reabrir`, 403, {
+        chamar(contexto[quem], "POST", `/api/nc/${contexto.nc.id}/reabrir`, 403, {
             motivo: "Tentativa de reabrir sem permissão",
         }),
-    retirar: (contexto: Contexto, quem: Quem) => chamar(contexto[quem], "POST", `/nc/${contexto.nc.id}/retirar`, 403),
+    retirar: (contexto: Contexto, quem: Quem) =>
+        chamar(contexto[quem], "POST", `/api/nc/${contexto.nc.id}/retirar`, 403),
 };
 
 type NomeAcao = keyof typeof acoes;

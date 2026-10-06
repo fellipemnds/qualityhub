@@ -10,7 +10,7 @@ describe("Fluxo completo da NC", () => {
         const { editor, nc } = await fecharNC();
 
         // Confere
-        expect(await chamar(editor, "GET", `/nc/${nc.id}`, 200)).toMatchObject({ estado: "FECHADO" });
+        expect(await chamar(editor, "GET", `/api/nc/${nc.id}`, 200)).toMatchObject({ estado: "FECHADO" });
     });
 
     it("depois do fechamento, executa a ação corretiva e conclui a verificação como EFICAZ", async () => {
@@ -23,11 +23,13 @@ describe("Fluxo completo da NC", () => {
         await concluirVerificacao(cenario, verificacao.id, "EFICAZ");
 
         // Confere
-        expect(await chamar(editor, "GET", `/verificacoes/${verificacao.id}`, 200)).toMatchObject({
+        expect(await chamar(editor, "GET", `/api/verificacoes/${verificacao.id}`, 200)).toMatchObject({
             estado: "FECHADO",
             resultado: "EFICAZ",
         });
-        expect(await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200)).toMatchObject({ estado: "FECHADO" });
+        expect(await chamar(editor, "GET", `/api/acoes-corretivas/${acao.id}`, 200)).toMatchObject({
+            estado: "FECHADO",
+        });
     });
 
     it("PARCIALMENTE_EFICAZ cria sozinha uma nova ação corretiva em rascunho, na mesma investigação", async () => {
@@ -43,7 +45,7 @@ describe("Fluxo completo da NC", () => {
         const rascunhos = await chamar(
             editor,
             "GET",
-            `/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`,
+            `/api/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`,
             200,
         );
         expect(rascunhos).toEqual([
@@ -66,9 +68,9 @@ describe("Fluxo completo da NC", () => {
         await concluirVerificacao(cenario, verificacao.id, "NAO_EFICAZ");
 
         // Confere (o caso com as duas fechadas; com alguma não fechada, verificacao.routes.test.ts, B4)
-        expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
+        expect(await chamar(editor, "GET", `/api/investigacoes/${investigacao.id}`, 200)).toMatchObject({
             estado: "ABERTO",
         });
-        expect(await chamar(editor, "GET", `/nc/${nc.id}`, 200)).toMatchObject({ estado: "ABERTO" });
+        expect(await chamar(editor, "GET", `/api/nc/${nc.id}`, 200)).toMatchObject({ estado: "ABERTO" });
     });
 });

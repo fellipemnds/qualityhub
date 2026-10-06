@@ -18,7 +18,7 @@ describe("POST /auth/login", () => {
         } = await criarUsuario();
 
         // Chama
-        const resultado = await app.inject({ method: "POST", url: "/auth/login", payload: { email, senha } });
+        const resultado = await app.inject({ method: "POST", url: "/api/auth/login", payload: { email, senha } });
 
         const cookie = resultado.cookies.find((c) => c.name === "qh_sessao");
 
@@ -29,7 +29,7 @@ describe("POST /auth/login", () => {
             httpOnly: true,
             secure: true,
             sameSite: "Strict",
-            path: "/",
+            path: "/api",
         });
         expect(cookie?.maxAge).toBeUndefined();
         const { iat, exp } = app.jwt.verify<{ iat: number; exp: number }>(cookie?.value ?? "");
@@ -46,7 +46,7 @@ describe("POST /auth/login", () => {
         // Chama
         const resultado = await app.inject({
             method: "POST",
-            url: "/auth/login",
+            url: "/api/auth/login",
             payload: { email, senha, manterConectado: true },
         });
 
@@ -59,7 +59,7 @@ describe("POST /auth/login", () => {
             httpOnly: true,
             secure: true,
             sameSite: "Strict",
-            path: "/",
+            path: "/api",
         });
         expect(cookie?.maxAge).toBe(30 * 24 * 60 * 60);
         const { iat, exp } = app.jwt.verify<{ iat: number; exp: number }>(cookie?.value ?? "");
@@ -71,7 +71,7 @@ describe("POST /auth/login", () => {
         const { usuario, senha } = await criarUsuario({ email: "auditado@teste.com" });
 
         // Chama
-        await app.inject({ method: "POST", url: "/auth/login", payload: { email: usuario.email, senha } });
+        await app.inject({ method: "POST", url: "/api/auth/login", payload: { email: usuario.email, senha } });
 
         // Confere
         expect(await prisma.auditoria.findMany({ where: { entidadeId: usuario.id, acao: "LOGIN" } })).toMatchObject([
@@ -87,7 +87,7 @@ describe("POST /auth/login", () => {
         // Chama
         const resultado = await app.inject({
             method: "POST",
-            url: "/auth/login",
+            url: "/api/auth/login",
             payload: { email: usuario.email, senha },
         });
 
@@ -103,7 +103,7 @@ describe("POST /auth/login", () => {
         // Chama
         const resultado = await app.inject({
             method: "POST",
-            url: "/auth/login",
+            url: "/api/auth/login",
             payload: { email: "ninguem@teste.com", senha: "QualquerSenha123!" },
         });
 
@@ -117,7 +117,7 @@ describe("POST /auth/login", () => {
         const tentar = (email: string) =>
             app.inject({
                 method: "POST",
-                url: "/auth/login",
+                url: "/api/auth/login",
                 remoteAddress: "10.99.99.99",
                 payload: { email, senha: "SenhaErrada123!" },
             });
@@ -143,7 +143,7 @@ describe("POST /auth/login", () => {
         // Chama
         const resultado = await app.inject({
             method: "POST",
-            url: "/auth/login",
+            url: "/api/auth/login",
             payload: { email, senha: "testando-a-senha-errada" },
         });
 
@@ -161,7 +161,7 @@ describe("POST /auth/login", () => {
         // Chama
         const resultado = await app.inject({
             method: "POST",
-            url: "/auth/login",
+            url: "/api/auth/login",
             payload: { email, senha: "senha-qualquer" },
         });
 
@@ -176,7 +176,7 @@ describe("POST /auth/definir-senha", () => {
     async function convidar() {
         const { admin } = await perfisDeFora();
         const email = "convidada@teste.com";
-        const { tokenConvite } = await chamar(admin, "POST", "/usuarios", 201, {
+        const { tokenConvite } = await chamar(admin, "POST", "/api/usuarios", 201, {
             nome: "Pessoa Convidada",
             email,
             papeis: ["EDITOR"],
@@ -193,13 +193,13 @@ describe("POST /auth/definir-senha", () => {
         // Chama
         const resultado = await app.inject({
             method: "POST",
-            url: "/auth/definir-senha",
+            url: "/api/auth/definir-senha",
             payload: { token: tokenConvite, senha },
         });
 
         // Confere
         expect(resultado.statusCode).toBe(204);
-        const login = await app.inject({ method: "POST", url: "/auth/login", payload: { email, senha } });
+        const login = await app.inject({ method: "POST", url: "/api/auth/login", payload: { email, senha } });
         expect(login.statusCode).toBe(204);
     });
 
@@ -210,7 +210,7 @@ describe("POST /auth/definir-senha", () => {
         // Chama
         await app.inject({
             method: "POST",
-            url: "/auth/definir-senha",
+            url: "/api/auth/definir-senha",
             payload: { token: tokenConvite, senha: "SenhaDaConvidada123!" },
         });
 
@@ -223,10 +223,10 @@ describe("POST /auth/definir-senha", () => {
         // Prepara
         const { tokenConvite } = await convidar();
         const payload = { token: tokenConvite, senha: "SenhaDaConvidada123!" };
-        await app.inject({ method: "POST", url: "/auth/definir-senha", payload });
+        await app.inject({ method: "POST", url: "/api/auth/definir-senha", payload });
 
         // Chama
-        const resultado = await app.inject({ method: "POST", url: "/auth/definir-senha", payload });
+        const resultado = await app.inject({ method: "POST", url: "/api/auth/definir-senha", payload });
 
         // Confere
         expect(resultado.statusCode).toBe(400);
@@ -240,7 +240,7 @@ describe("POST /auth/definir-senha", () => {
 
         // Chama: as duas de uma vez, cada uma com uma senha
         const definir = (senha: string) =>
-            app.inject({ method: "POST", url: "/auth/definir-senha", payload: { token: tokenConvite, senha } });
+            app.inject({ method: "POST", url: "/api/auth/definir-senha", payload: { token: tokenConvite, senha } });
         await abrirDuasConexoes();
         const respostas = await Promise.all([definir("SenhaDaPrimeira123!"), definir("SenhaDaSegunda123!")]);
 
@@ -256,12 +256,12 @@ describe("POST /auth/logout", () => {
         const editor = await loginComo("editor");
 
         // Chama
-        const resultado = await app.inject({ method: "POST", url: "/auth/logout", headers: editor.autenticacao });
+        const resultado = await app.inject({ method: "POST", url: "/api/auth/logout", headers: editor.autenticacao });
 
         // Confere: o cookie volta vazio e já vencido, o que faz o navegador apagá-lo
         expect(resultado.statusCode).toBe(204);
         const cookie = resultado.cookies.find((c) => c.name === "qh_sessao");
-        expect(cookie).toMatchObject({ value: "", path: "/" });
+        expect(cookie).toMatchObject({ value: "", path: "/api" });
         expect(cookie?.expires?.getTime()).toBeLessThanOrEqual(Date.now());
     });
 });
@@ -278,17 +278,17 @@ describe("POST /auth/sair-de-todos", () => {
         vi.setSystemTime(Date.now() + 5000);
 
         // Chama
-        await chamar(editor, "POST", "/auth/sair-de-todos", 204);
+        await chamar(editor, "POST", "/api/auth/sair-de-todos", 204);
 
         // Confere: a sessão antiga cai, um login novo entra, e o pedido fica na auditoria
-        await chamar(editor, "GET", "/nc", 401);
+        await chamar(editor, "GET", "/api/nc", 401);
         const login = await app.inject({
             method: "POST",
-            url: "/auth/login",
+            url: "/api/auth/login",
             payload: { email: editor.usuario.email, senha: "SenhaDeTeste123!" },
         });
         const cookie = login.cookies.find((c) => c.name === "qh_sessao");
-        await chamar({ ...editor, autenticacao: { cookie: `qh_sessao=${cookie?.value}` } }, "GET", "/nc", 200);
+        await chamar({ ...editor, autenticacao: { cookie: `qh_sessao=${cookie?.value}` } }, "GET", "/api/nc", 200);
         expect(
             await prisma.auditoria.findMany({ where: { entidadeId: editor.usuario.id, acao: "SAIR_DE_TODOS" } }),
         ).toMatchObject([{ entidade: "USUARIO", usuarioId: editor.usuario.id }]);
@@ -301,7 +301,7 @@ describe("GET /auth/eu", () => {
         const gerente = await loginComo("gerente");
 
         // Chama
-        const eu = await chamar(gerente, "GET", "/auth/eu", 200);
+        const eu = await chamar(gerente, "GET", "/api/auth/eu", 200);
 
         // Confere
         expect(eu).toEqual({
@@ -322,11 +322,11 @@ describe("PATCH /auth/eu", () => {
         const gerente = await loginComo("gerente");
 
         // Chama e confere: a escolha vale, inclusive num GET depois
-        expect(await chamar(gerente, "PATCH", "/auth/eu", 200, { telaInicial: "RELATORIOS" })).toMatchObject({
+        expect(await chamar(gerente, "PATCH", "/api/auth/eu", 200, { telaInicial: "RELATORIOS" })).toMatchObject({
             telaInicial: "RELATORIOS",
         });
-        expect(await chamar(gerente, "GET", "/auth/eu", 200)).toMatchObject({ telaInicial: "RELATORIOS" });
-        expect(await chamar(gerente, "PATCH", "/auth/eu", 200, { telaInicial: null })).toMatchObject({
+        expect(await chamar(gerente, "GET", "/api/auth/eu", 200)).toMatchObject({ telaInicial: "RELATORIOS" });
+        expect(await chamar(gerente, "PATCH", "/api/auth/eu", 200, { telaInicial: null })).toMatchObject({
             telaInicial: "PENDENCIAS",
         });
     });
@@ -336,7 +336,7 @@ describe("PATCH /auth/eu", () => {
         const visualizador = await loginComo("visualizador");
 
         // Chama
-        const resposta = await chamar(visualizador, "PATCH", "/auth/eu", 400, { telaInicial: "USUARIOS" });
+        const resposta = await chamar(visualizador, "PATCH", "/api/auth/eu", 400, { telaInicial: "USUARIOS" });
 
         // Confere: nada gravado
         expect(resposta.mensagem).toContain("tela inicial");

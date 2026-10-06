@@ -7,13 +7,13 @@ type Contexto = Awaited<ReturnType<typeof levarVerificacaoAte>>;
 // Excluir não entra: verificação nunca é rascunho, e a rota DELETE /verificacoes/:id não existe (B8)
 const acoes = {
     editar: ({ aprovador, verificacao }: Contexto) =>
-        chamar(aprovador, "PATCH", `/verificacoes/${verificacao.id}`, 409, {
+        chamar(aprovador, "PATCH", `/api/verificacoes/${verificacao.id}`, 409, {
             conclusao: "Tentativa de editar a verificação fora do estado permitido.",
         }),
     concluir: ({ aprovador, verificacao }: Contexto) =>
-        chamar(aprovador, "POST", `/verificacoes/${verificacao.id}/concluir`, 409),
+        chamar(aprovador, "POST", `/api/verificacoes/${verificacao.id}/concluir`, 409),
     cancelar: ({ aprovador, verificacao }: Contexto) =>
-        chamar(aprovador, "POST", `/verificacoes/${verificacao.id}/cancelar`, 409, {
+        chamar(aprovador, "POST", `/api/verificacoes/${verificacao.id}/cancelar`, 409, {
             motivo: "Tentativa de cancelar fora do estado permitido",
         }),
 };
