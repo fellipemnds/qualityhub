@@ -100,7 +100,7 @@ export const ncService = {
                 depois: ncAtualizada,
             });
 
-            return ncAtualizada;
+            return { ...registro, ...ncAtualizada };
         });
     },
 

@@ -254,6 +254,21 @@ describe("PATCH /nc/:id", () => {
         // Confere
         expect(resposta).toMatchObject({ detectadoEm: null });
     });
+
+    it("devolve a NC inteira, com estado e código, como as outras rotas (D1)", async () => {
+        // Prepara
+        const { editor, nc } = await levarNCAte("ABERTO");
+
+        // Chama
+        const resposta = await chamar(editor, "PATCH", `/api/nc/${nc.id}`, 200, { titulo: "Título editado na A5" });
+
+        // Confere
+        expect(resposta).toMatchObject({
+            titulo: "Título editado na A5",
+            estado: "ABERTO",
+            codigo: expect.any(String),
+        });
+    });
 });
 
 describe("GET /nc", () => {

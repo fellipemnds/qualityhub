@@ -33,6 +33,7 @@ export async function ncRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ id: z.uuid() }),
             body: ncRascunhoSchema,
+            response: { 200: ncRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.atualizarNC,
     });
