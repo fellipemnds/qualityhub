@@ -105,12 +105,8 @@ export const investigacaoService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            const registroPublicado = await cicloVidaService.publicar(
-                tx,
-                registroId,
-                ator,
-                investigacao,
-                (dadosParaValidar) => investigacaoPublicacaoSchema.parse(dadosParaValidar),
+            const registroPublicado = await cicloVidaService.publicar(tx, registroId, ator, () =>
+                investigacaoPublicacaoSchema.parse(investigacao),
             );
 
             return { ...registroPublicado, ...investigacao };
@@ -143,21 +139,15 @@ export const investigacaoService = {
             }
             const faltando = avaliarSubmissaoInvestigacao({ acoes }).filter((item) => !item.atendido);
 
-            const registroSubmetido = await cicloVidaService.submeter(
-                tx,
-                registroId,
-                ator,
-                investigacao,
-                (dadosParaValidar) => {
-                    if (faltando.length > 0) {
-                        throw new TransicaoInvalidaError(
-                            "Ainda falta o que está na lista para submeter esta investigação.",
-                            faltando,
-                        );
-                    }
-                    return investigacaoFechamentoSchema.parse(dadosParaValidar);
-                },
-            );
+            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, () => {
+                if (faltando.length > 0) {
+                    throw new TransicaoInvalidaError(
+                        "Ainda falta o que está na lista para submeter esta investigação.",
+                        faltando,
+                    );
+                }
+                investigacaoFechamentoSchema.parse(investigacao);
+            });
 
             return { ...registroSubmetido, ...investigacao };
         });

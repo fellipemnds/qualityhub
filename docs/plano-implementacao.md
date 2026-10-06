@@ -202,9 +202,9 @@ regra deve morar num lugar só.
 
 | Entrega | Quem |
 |---|---|
-| **Antes do B19: simplificar o `ciclo-vida.service.ts`** (revisão de código de 2026-10-02), para o conserto do B19 cair num lugar só. Primeiro, os **testes de caracterização** (auditoria de cada transição e 404 das transições, em `ciclo-vida.service.test.ts`; o texto foi aprovado na conversa). Depois, um commit `refactor:` por item, com a suíte completa a cada um: (1) `aplicarTransicao`, o "atualizar + auditar" que hoje está copiado em 7 transições; (2) `buscarRegistroOuFalhar`, com a mensagem única "Item não encontrado." (muda o texto; a asserção entra antes, vermelha); (3) o validador no formato do `cancelar` (`() => void`), sem o parâmetro `dados: unknown`; (4) `estadoAposDecisao`, uma função pura, com `{ fecharAoAprovarUltimoPortao }` no lugar do booleano solto e sem o ramo de vários portões, que não roda desde que a Ação Corretiva voltou a ter um portão só | 🤖 os testes e os itens 1–3; 🧑 o item 4 (função pura) |
+| **Antes do B19: simplificar o `ciclo-vida.service.ts`** (revisão de código de 2026-10-02), para o conserto do B19 cair num lugar só. Primeiro, os **testes de caracterização** (auditoria de cada transição e 404 das transições, em `ciclo-vida.service.test.ts`; o texto foi aprovado na conversa). Depois, um commit `refactor:` por item, com a suíte completa a cada um: (1) `aplicarTransicao`, o "atualizar + auditar" que hoje está copiado em 7 transições; (2) `buscarRegistroOuFalhar`, com a mensagem única "Item não encontrado." (muda o texto; a asserção entra antes, vermelha); (3) o validador no formato do `cancelar` (`() => void`), sem o parâmetro `dados: unknown`; (4) `estadoAposDecisao`, uma função pura, com `{ fecharAoAprovar }` no lugar do booleano solto (o nome perdeu o "último portão" junto com o ramo) e sem o ramo de vários portões, que não roda desde que a Ação Corretiva voltou a ter um portão só | 🤖 os testes e os itens 1–3; o item 4 era de 🧑, e Matthew passou para 🤖 em 2026-10-05, acompanhando |
 | **B19**: transições sem trava sob concorrência (`esquema-backend.md` §7). Um teste de concorrência que falha por transição, depois o `UPDATE` condicionado ao estado esperado. Inclui o convite usado duas vezes no `definir-senha` | 🤖 o padrão do teste já é conhecido (A2) |
-| **Depois do B19:** simplificar o `finalizarExecucaoAcaoCorretiva` (100 linhas; extrair um `gerarVerificacao`) e corrigir os comentários de `acao-corretiva.service.ts:141-165` (sem acento; o do `decidir` está em cima do `retirar`) | 🤖 |
+| **Depois do B19:** simplificar o `finalizarExecucaoAcaoCorretiva` (100 linhas; extrair um `gerarVerificacao`) e corrigir os comentários de `acao-corretiva.service.ts:141-165` (sem acento; o do `decidir`, que estava em cima do `retirar`, já foi para o lugar no item 4 acima) | 🤖 |
 | Migration **M1**: `desativadoEm`, `sessaoValidaDesde`, `telaInicial` | 🧑 |
 | Login com cookie `HttpOnly`/`Secure`/`SameSite=Strict`; "manter conectado" (30 dias) ou cookie de sessão (teto 12 h) | 🧑 |
 | Middleware `autenticar`: busca usuário ativo, papéis atuais e `sessaoValidaDesde` a cada requisição | 🧑 |
@@ -213,7 +213,8 @@ regra deve morar num lugar só.
 | Login com o **mesmo tempo de resposta** para e-mail inexistente (comparar com um hash falso) — auditoria L1 | 🤖 |
 | `@fastify/helmet` (cabeçalhos de segurança) — auditoria R3. **Sem** `@fastify/cors`: front e back na mesma origem (TRD §2.1), e sem o plugin o navegador já recusa outras origens. O HTTPS fica na D1 | 🤖 |
 | Testes: papel revogado vale na hora; usuário inativo recebe 401; "sair de todos" derruba sessão antiga; cookie de sessão sem validade | 🧑 |
-| **Instalar as cinco ferramentas do `CONSTRAINTS.md`** (gitleaks, Semgrep, osv-scanner, dependency-cruiser, `@vitest/coverage-v8`) antes do fim da fase: o "só avisa" de SAST, dependências e cobertura vira bloqueio no fim da A4 | 🧑 (configuração) |
+| **Instalar as cinco ferramentas do `CONSTRAINTS.md`** (gitleaks, Semgrep, osv-scanner, as regras de arquitetura e `@vitest/coverage-v8`; a arquitetura ficou no Biome, porque o dependency-cruiser não lê o TypeScript 7) antes do fim da fase: o "só avisa" de SAST, dependências e cobertura vira bloqueio no fim da A4 | 🧑 (configuração) |
+| **B21** e depois **B20** (`esquema-backend.md` §7, revisão de segurança de 2026-10-05): erro 4xx do Fastify sai com o status dele; depois, corpo só em JSON (`text/plain` → 415). Um teste que falha por bug | 🧑 passo a passo |
 
 **Aprendizado:** cookie × token no cabeçalho; o que `HttpOnly`,
 `Secure` e `SameSite` protegem; por que papéis no token atrasam a
@@ -226,9 +227,9 @@ cliente (TRD §7, ADR-37).
 
 | Entrega | Quem |
 |---|---|
-| Prefixo `/api` em todas as rotas | 🤖 |
+| Prefixo `/api` em todas as rotas, e o `Path` do cookie `qh_sessao` de `/` para `/api` (TRD §4.1; na A4 ficou `/` porque as rotas ainda não tinham o prefixo) | 🤖 |
 | **Schema de resposta** em todas as rotas | 🧑 as de NC (o padrão); 🤖 as demais |
-| `@fastify/swagger`: OpenAPI em `/api/docs/json`; interface em `/api/docs` só em desenvolvimento | 🤖 com explicação |
+| `@fastify/swagger`: OpenAPI em `/api/docs/json`; interface em `/api/docs` só em desenvolvimento. O `Content-Security-Policy` do `helmet` (A4) pode bloquear os scripts da interface: se bloquear, afrouxar só nessa rota | 🤖 com explicação |
 | Catálogo de ações de auditoria tipado (pendência 1) | 🤖 |
 | `GET /saude` no lugar de `GET /` | 🤖 |
 | Último motivo de reprovação no detalhe de todo item (L7) | 🤖 |
@@ -249,7 +250,7 @@ RF-20).
 |---|---|
 | Migration **M2** (`Setor.desativadoEm`) | 🤖 |
 | **Trava da RN-43**: não inativar/revogar `APROVADOR` de quem é aprovador de item aberto, devolvendo a lista | 🧑 |
-| Rotas de usuários, setores e `GET /pessoas` (`esquema-backend.md` §6.2), incluindo reativar (E2); convite novo invalida os anteriores; definir senha recusa usuário inativo | 🤖 seguindo o padrão; 🧑 revisa |
+| Rotas de usuários, setores e `GET /pessoas` (`esquema-backend.md` §6.2), incluindo reativar (E2); convite novo invalida os anteriores; definir senha recusa usuário inativo e **atualiza o `sessaoValidaDesde`** (redefinir a senha derruba as sessões antigas, TRD §4.1; na A4 a senha só era definida no primeiro acesso, sem sessão a derrubar) | 🤖 seguindo o padrão; 🧑 revisa |
 | **Script do primeiro acesso** (`npm run criar-admin`): cria o primeiro setor e o primeiro `ADMIN` e mostra o link de convite. Sem ele, produção não tem como começar — criar usuário exige já ser `ADMIN`, e todo usuário exige um setor | 🧑 |
 | Testes das travas e das permissões de `ADMIN` | 🧑 |
 | Setor inexistente no `POST`/`PATCH` da NC responde 404, não 500 (auditoria L6 — confirmar antes com teste, como o B16) | 🤖 |
@@ -258,7 +259,7 @@ RF-20).
 
 Antes do Bloco C começar:
 - A0–A6 concluídas, CI verde na `main`.
-- Nenhum bug B1–B18 aberto.
+- Nenhum bug aberto no `esquema-backend.md` §7.
 - OpenAPI completo, gerando sem erro.
 
 ---
@@ -307,8 +308,8 @@ garantidos pelos testes de API do backend.
 
 | Fase | Entrega | Quem |
 |---|---|---|
-| **D0 · Decidir hospedagem** | Escolha entre as opções de `trd.md` §10.6, depois de perguntar à empresa se os dados podem ficar fora e qual o orçamento. Atualiza o TRD e o ADR-30 | 🧑 decide e propõe; 🤖 ajuda a comparar |
-| **D1 · Ambiente de produção** | Dockerfile do backend; Compose de produção (nginx, app, postgres, backup); HTTPS; backup diário **fora da máquina**; **primeiro teste de restauração**; monitor externo; manual de operação no `SETUP.md`; ambiente de homologação | 🧑 com orientação passo a passo (é conhecimento que Matthew vai precisar para operar sozinho); 🤖 gera os arquivos de configuração |
+| **D0 · Decidir hospedagem** | Escolha entre as opções de `trd.md` §10.6, depois de perguntar à empresa se os dados podem ficar fora e qual o orçamento. Atualiza o TRD e o ADR-30. **Junto:** para onde vai o log da aplicação e por quanto tempo fica guardado. As tentativas de login com falha (e o 429) só estão no log (esquema, E1); se a retenção for curta, ou se a analista disser que o auditor ISO pede essa evidência, elas passam a ir também para a auditoria quando há usuário identificado (senha errada, inativo), sem mudar o banco (decidido em 2026-10-05) | 🧑 decide e propõe; 🤖 ajuda a comparar |
+| **D1 · Ambiente de produção** | Dockerfile do backend; Compose de produção (nginx, app, postgres, backup); HTTPS; backup diário **fora da máquina**; **primeiro teste de restauração**; monitor externo; manual de operação no `SETUP.md`; ambiente de homologação; `trustProxy` no Fastify atrás do nginx (sem ele, o `request.ip` é o do nginx e o limite do login vira só por e-mail: qualquer um bloqueia o login de outro por 1 minuto) e o limite de tentativas, que fica em memória, conferido para um servidor só (revisão de segurança da A4, S2); **Fetch Metadata**: um hook que recusa `POST`/`PATCH`/`DELETE` com `Sec-Fetch-Site` diferente de `same-origin` (ou `none`), porque POST **sem** corpo não tem `content-type`, passa pela regra "só JSON" do B20 e só tem o `SameSite=Strict`, que não barra um subdomínio irmão (18 rotas, como `sair-de-todos` e o `publicar`/`submeter`/`retirar` dos seis tipos; revisão de segurança da A4, S5) | 🧑 com orientação passo a passo (é conhecimento que Matthew vai precisar para operar sozinho); 🤖 gera os arquivos de configuração |
 | **D2 · Piloto** | NCs reais registradas no sistema **em paralelo** com a planilha, por um período combinado com a analista | 🧑 + analista |
 | **D3 · Planilha aposentada** | Data de corte; NC **nova** só no sistema (métrica de sucesso 1 do PRD). **Nenhuma NC da planilha é migrada** (P1): as que estiverem abertas na data de corte terminam na planilha, que fica guardada como arquivo histórico | 🧑 + analista |
 
@@ -334,7 +335,7 @@ Onde cada item dos documentos anteriores é feito:
 |---|---|
 | B1–B6, B8–B18 · RN-06, RN-46, RN-47, RN-48 · RN-21 e RN-24 revistas, RN-49, RN-50 (PRD Q17, Q18) | A3 |
 | Primeiro `ADMIN` e primeiro setor em produção | A6 (script), D1 (uso) |
-| B7 (papéis no JWT) · RNF-09, RNF-10 | A4 |
+| B7 (papéis no JWT) · B19 (transições sem trava) · B20 (corpo `text/plain`) · B21 (4xx do Fastify vira 500) · RNF-09, RNF-10 | A4 |
 | Pendência 1 (ações de auditoria) · pendência 5 (`ignoreTrailingSlash`) | A5 · A0 |
 | Pendência 4 (login auditado) | A4 |
 | Pendência OpenAPI · RNF-04 (schema de resposta) · L7 (último motivo de reprovação) | A5 |
@@ -386,3 +387,6 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-02 | **A3 concluída** (branch `fase/a3-correcoes`, PR #4): B1–B6 e B8–B18, regra revista dos planos de ação (RN-21 e RN-24 revistas, RN-49, RN-50, PRD Q17/Q18), checklist de fechamento, RN-46 a RN-48. 250 testes. O B7 fica na A4 |
 | 2026-10-02 | v1.5 — coerência documental: o CORS sai da linha do R3 na A4 (TRD §2.1, mesma origem) |
 | 2026-10-02 | v1.4 — análise do repositório (branch `chore/analise-repositorio`, PR #5): na A4, a simplificação do `ciclo-vida` antes do B19, a do `finalizarExecucao` depois dele e a instalação das ferramentas do `CONSTRAINTS.md`; na A5, avaliar a duplicação dos services de entidade |
+| 2026-10-06 | v1.6 — B21 e B20 entram na A4 (nessa ordem), da revisão de segurança de 2026-10-05 |
+| 2026-10-06 | v1.7 — D1: `trustProxy` e o limite de tentativas em memória (revisão de segurança da A4, S2) |
+| 2026-10-06 | v1.8 — D1: *Fetch Metadata* para o POST sem corpo (revisão de segurança da A4, S5) |

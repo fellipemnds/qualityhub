@@ -23,7 +23,10 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "preset": "recommended"
+      "preset": "recommended",
+      "suspicious": {
+        "noImportCycles": "error"
+      }
     }
   },
   "javascript": {
@@ -38,5 +41,131 @@
         "organizeImports": "on"
       }
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": [
+        "src/**",
+        "!src/**/*.repository.ts",
+        "!src/**/*.service.ts",
+        "!src/**/*.test.ts",
+        "!src/testes/**",
+        "!src/compartilhado/prisma/**",
+        "!src/generated/**"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["**/generated/prisma/**"],
+                    "message": "Só os repositórios importam o Prisma gerado; enums vêm de compartilhado/entidades (CONSTRAINTS §2.1, regra 1)."
+                  },
+                  {
+                    "group": ["**/testes/**", "**/*.test.js"],
+                    "message": "Código de produção não importa testes (CONSTRAINTS §2.1, regra 3)."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/**/*.repository.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["**/*.service.js", "**/*.controller.js", "**/*.routes.js"],
+                    "message": "Repositório não importa service, controller nem routes: as camadas só dependem para baixo (CONSTRAINTS §2.1, regra 2)."
+                  },
+                  {
+                    "group": ["**/testes/**", "**/*.test.js"],
+                    "message": "Código de produção não importa testes (CONSTRAINTS §2.1, regra 3)."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/**/*.service.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["**/generated/prisma/**"],
+                    "message": "Só os repositórios importam o Prisma gerado; enums vêm de compartilhado/entidades (CONSTRAINTS §2.1, regra 1)."
+                  },
+                  {
+                    "group": ["**/*.controller.js", "**/*.routes.js"],
+                    "message": "Service não importa controller nem routes: as camadas só dependem para baixo (CONSTRAINTS §2.1, regra 2)."
+                  },
+                  {
+                    "group": ["**/testes/**", "**/*.test.js"],
+                    "message": "Código de produção não importa testes (CONSTRAINTS §2.1, regra 3)."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/**/*.test.ts", "src/testes/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["**/generated/prisma/**"],
+                    "message": "Só os repositórios importam o Prisma gerado; enums vêm de compartilhado/entidades (CONSTRAINTS §2.1, regra 1)."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/compartilhado/prisma/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["**/testes/**", "**/*.test.js"],
+                    "message": "Código de produção não importa testes (CONSTRAINTS §2.1, regra 3)."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

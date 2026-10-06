@@ -120,8 +120,8 @@ export const ncService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            const registroPublicado = await cicloVidaService.publicar(tx, registroId, ator, nc, (dadosParaValidar) =>
-                ncPublicacaoSchema.parse(dadosParaValidar),
+            const registroPublicado = await cicloVidaService.publicar(tx, registroId, ator, () =>
+                ncPublicacaoSchema.parse(nc),
             );
 
             return { ...registroPublicado, ...nc };
@@ -142,14 +142,14 @@ export const ncService = {
 
             // A guarda roda como validador, depois das checagens de estado, permissão e aprovador do ciclo de vida:
             // quem não pode submeter recebe 403, não a lista
-            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, nc, (dadosParaValidar) => {
+            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, () => {
                 if (faltando.length > 0) {
                     throw new TransicaoInvalidaError(
                         "Ainda falta o que está na lista para submeter esta Não Conformidade para fechamento.",
                         faltando,
                     );
                 }
-                return ncFechamentoSchema.parse(dadosParaValidar);
+                ncFechamentoSchema.parse(nc);
             });
 
             return { ...registroSubmetido, ...nc };

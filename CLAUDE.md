@@ -22,7 +22,7 @@ próprio, com aprovação de Matthew (`CONSTRAINTS.md` §6).
 | `docs/fluxo-app.md` | Telas, navegação, etapa calculada da NC, jornadas, ações por estado, "Minhas pendências" |
 | `docs/ui-ux.md` | Fundações visuais, componentes (shadcn/ui), wireframes em texto, textos da tela |
 | `docs/trd.md` | Stack, sessão, API, anexos, testes, infraestrutura, hospedagem, ADR-33 a ADR-38 |
-| `docs/esquema-backend.md` | Modelo de dados, mudanças M1–M5, valores calculados, contrato da API, correções B1–B19 |
+| `docs/esquema-backend.md` | Modelo de dados, mudanças M1–M5, valores calculados, contrato da API, correções B1–B21 |
 | `docs/plano-implementacao.md` | **Ordem de execução**: fases A0–A6 (fundação do backend), B (design), C0–C8 (frontend em fatias), D (produção) |
 | `docs/changelog-arquitetura.md` | Registro de toda decisão de arquitetura e divergência do documento original. **Leia antes de propor mudança estrutural** |
 | `docs/arquitetura.md` | Documento de design **original** (histórico). Onde diverge dos documentos acima, eles valem |
@@ -42,12 +42,13 @@ para os outros documentos em vez de repetir o que já está neles.
 Ainda pendente fora do código: hospedagem (TRD §10.6), identidade
 visual.
 
-**Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B19; os
+**Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B21; os
 corrigidos têm ✅). A A3 corrigiu B1–B6 e B8–B18, e a RN-48 entrou como
-regra nova (fase fechada em 2026-10-02, PR #4). Ficam abertos o **B7**
-(papéis no token) e o **B19** (transições sem trava sob concorrência,
-achado na auditoria de segurança), os dois na A4: o B19 primeiro,
-depois de simplificar o `ciclo-vida.service.ts`.
+regra nova (fase fechada em 2026-10-02, PR #4). A A4 corrigiu o B19
+(transições sem trava sob concorrência) e o B7 (papéis no token), os
+dois em 2026-10-05, e o B21 (erro 4xx do Fastify respondia 500) e o B20
+(a API aceitava corpo `text/plain`), em 2026-10-06. **Nenhum bug
+aberto.**
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
@@ -83,6 +84,13 @@ item de volta. **Ao propor
 mudanças, prefira explicar o raciocínio e perguntar antes de reescrever
 grandes blocos.**
 
+**Itens 🧑, passo a passo (combinado em 2026-10-05):** Matthew escreve,
+guiado em passos pequenos: antes, um passeio curto pelo código que o
+item toca; depois, um passo por vez (o conceito, qual arquivo, onde, o
+que escrever), e Claude revisa e roda os testes antes do próximo. Sem
+colar a solução inteira, salvo se ele pedir. Motivo: com muitos commits
+seguidos feitos por Claude, ele deixou de reconhecer o código.
+
 A partir do plano de implementação:
 - **Uma branch e um Pull Request por fase**; CI verde para entrar na `main`.
 - **Bug começa por um teste que falha.**
@@ -101,9 +109,10 @@ o banco. Frontend (planejado, não iniciado): React + Vite + **shadcn/ui**
 (não Mantine — ver changelog) + Tailwind.
 
 **Comandos:** `npm run dev` (servidor com recarga) · `npm test`
-(Vitest; Docker Desktop aberto) · `npm run typecheck`
+(Vitest; Docker Desktop aberto) · `npm run test:cobertura` (a suíte
+completa com a trava da cobertura, `CONSTRAINTS.md` §2; é o que o CI roda) · `npm run typecheck`
 (`tsc --noEmit`) · `npm run lint` (Biome: formatação + lint + ordem dos
-imports) · `npm run lint:fix` (corrige o que é automático) ·
+imports + regras de arquitetura) · `npm run lint:fix` (corrige o que é automático) ·
 `npm run preparar` (`npm ci` + `prisma generate` + `prisma migrate
 deploy` — deixa a máquina em dia depois de um `git pull`). O Biome
 (2.5.14, versão exata) usa 4 espaços e 120 colunas; JSON com 2 espaços.
@@ -122,12 +131,21 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   `reabrir`, `cancelar`, `excluirRascunho`, `concluir` — reaproveitado
   por todas as entidades. `submeter` e `cancelar` aceitam um validador
   (a guarda do tipo, depois de estado e permissão).
-  `decidir` aceita um parâmetro `fecharAoAprovarUltimoPortao` (default
-  `true`) para os casos onde aprovar o último portão não deve fechar o
-  item (ver `AcaoCorretiva` abaixo). `publicar`/`submeter`/
-  `excluirRascunho` aceitam a `Acao` de permissão como parâmetro
-  (default a ação genérica), porque `Classificacao` exige `CLASSIFICAR`
-  em vez de `PUBLICAR`/`SUBMETER`/`GERENCIAR_RASCUNHO`.
+  `decidir` aceita as opções `{ fecharAoAprovar }` (default `true`)
+  para os casos onde aprovar não deve fechar o item (ver `AcaoCorretiva`
+  abaixo); o estado depois da decisão sai da função pura
+  `estadoAposDecisao` (`compartilhado/registro/estado-apos-decisao.ts`).
+  `publicar`/`submeter`/`excluirRascunho` aceitam a `Acao` de
+  permissão como parâmetro (default a ação genérica), porque
+  `Classificacao` exige `CLASSIFICAR` em vez de
+  `PUBLICAR`/`SUBMETER`/`GERENCIAR_RASCUNHO`.
+- **Trava de concorrência (B19)**: toda gravação no `Registro` passa
+  pelo `registroRepository.atualizar`/`excluir`, que exigem o **estado
+  em que o item foi lido** e respondem 409 se ele mudou no meio (outra
+  requisição chegou antes). Transição nova passa por eles, de
+  preferência pelo `aplicarTransicao`. Teste de concorrência chama o
+  `abrirDuasConexoes()` antes do `Promise.all`, senão a corrida pode não
+  acontecer e o teste passa sem provar nada.
 - **Permissões em três camadas**: papel (`temPapel`) → estado do registro
   → atribuição (`Atribuicao`, com `funcao: COLABORADOR | APROVADOR`).
   `podeExecutar` combina as três; algumas transições usam checagem
@@ -153,6 +171,14 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   `{ id: string, papeis: Papel[] }`) — usado em toda função de
   service/controller que recebe quem está executando a ação, e também
   no tipo do `request.user` (`types/fastify-jwt.d.ts`).
+- **Sessão (B7, TRD §4.1)**: o login grava o cookie `qh_sessao`
+  (`HttpOnly`, `Secure`, `SameSite=Strict`) com um JWT que carrega **só
+  o `id`**. O middleware `autenticar` busca o usuário no banco **a cada
+  requisição** (existe? ativo? token posterior ao `sessaoValidaDesde`?)
+  e monta o `request.user` com os **papéis atuais**. O cabeçalho
+  `Authorization` não vale. Nos testes, o `loginComo` devolve o cookie
+  pronto em `autenticacao`; papel revogado direto no banco vale na
+  próxima requisição.
 
 ## Particularidades por entidade (as pegadinhas reais)
 
@@ -167,7 +193,7 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
 - **`AcaoCorretiva`**: só **um** portão (`PLANO`) — decisão de rollback
   em relação ao documento original, que tinha dois (`PLANO`+`EXECUCAO`).
   Aprovar o plano volta para `ABERTO` (não fecha, via
-  `fecharAoAprovarUltimoPortao: false`). A execução nunca é submetida
+  `{ fecharAoAprovar: false }`). A execução nunca é submetida
   para aprovação — `finalizarExecucaoAcaoCorretiva` fecha direto, sem
   aprovação, e **gera automaticamente uma `Verificacao`** já em
   `ABERTO` (pula rascunho), com prazo calculado a partir de dias

@@ -13,5 +13,17 @@ export default defineConfig({
 
         // Por que UTC: Para evitar um bug de fuso horário, já que a máquina de desenvolvimento está no fuso de São Paulo, o servidor e o CI estão em UTC.
         env: { TZ: "UTC" },
+
+        // Cobertura (CONSTRAINTS §2 e §3): só na suíte completa, pelo npm run test:cobertura. Mede o código de produção:
+        // fora o gerado pelo Prisma e os próprios testes
+        coverage: {
+            provider: "v8",
+            include: ["src/**/*.ts"],
+            exclude: ["src/generated/**", "src/testes/**", "src/**/*.test.ts"],
+            reporter: ["text-summary", "cobertura"],
+            // Medido em 2026-10-05: 95,16% das linhas. A trava é 0,5 abaixo (CONSTRAINTS §2): absorve a variação de
+            // um arquivo sem relação com a mudança. Quando a cobertura subir, sobe o número junto
+            thresholds: { lines: 94.66 },
+        },
     },
 });

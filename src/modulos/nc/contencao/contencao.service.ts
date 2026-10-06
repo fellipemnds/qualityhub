@@ -96,12 +96,8 @@ export const contencaoService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            const registroPublicado = await cicloVidaService.publicar(
-                tx,
-                registroId,
-                ator,
-                contencao,
-                (dadosParaValidar) => contencaoPublicacaoSchema.parse(dadosParaValidar),
+            const registroPublicado = await cicloVidaService.publicar(tx, registroId, ator, () =>
+                contencaoPublicacaoSchema.parse(contencao),
             );
 
             return { ...registroPublicado, ...contencao };
@@ -116,12 +112,8 @@ export const contencaoService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            const registroSubmetido = await cicloVidaService.submeter(
-                tx,
-                registroId,
-                ator,
-                contencao,
-                (dadosParaValidar) => contencaoFechamentoSchema.parse(dadosParaValidar),
+            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, () =>
+                contencaoFechamentoSchema.parse(contencao),
             );
 
             return { ...registroSubmetido, ...contencao };

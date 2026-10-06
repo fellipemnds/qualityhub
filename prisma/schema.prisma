@@ -135,6 +135,13 @@ model UsuarioPapel {
   @@id([usuarioId, papel])
 }
 
+enum TelaInicial {
+  PENDENCIAS
+  NCS
+  RELATORIOS
+  USUARIOS
+}
+
 model Usuario {
   id               String         @id @default(uuid(7))
   nome             String
@@ -146,8 +153,11 @@ model Usuario {
   setorId Int
   setor   Setor @relation(fields: [setorId], references: [id])
 
-  criadoEm     DateTime @default(now())
-  atualizadoEm DateTime @updatedAt
+  criadoEm          DateTime     @default(now())
+  atualizadoEm      DateTime     @updatedAt
+  desativadoEm      DateTime?
+  sessaoValidaDesde DateTime     @default(now())
+  telaInicial       TelaInicial?
 
   registros Registro[]
 

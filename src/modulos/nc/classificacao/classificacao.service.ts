@@ -104,8 +104,7 @@ export const classificacaoService = {
                 tx,
                 registroId,
                 ator,
-                classificacao,
-                (dadosParaValidar) => classificacaoPublicacaoSchema.parse(dadosParaValidar),
+                () => classificacaoPublicacaoSchema.parse(classificacao),
                 "CLASSIFICAR",
             );
 
@@ -125,8 +124,7 @@ export const classificacaoService = {
                 tx,
                 registroId,
                 ator,
-                classificacao,
-                (dadosParaValidar) => classificacaoFechamentoSchema.parse(dadosParaValidar),
+                () => classificacaoFechamentoSchema.parse(classificacao),
                 "CLASSIFICAR",
             );
 

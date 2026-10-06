@@ -1,10 +1,14 @@
+import fastifyCookie from "@fastify/cookie";
+import fastifyHelmet from "@fastify/helmet";
 import fastifyJwt from "@fastify/jwt";
+import fastifyRateLimit from "@fastify/rate-limit";
 import Fastify from "fastify";
-import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
+import { hasZodFastifySchemaValidationErrors, serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
 import { ZodError } from "zod";
 import { atribuicaoRoutes } from "./compartilhado/atribuicao/atribuicao.routes.js";
-import { AppError } from "./compartilhado/errors/errors.js";
+import { AppError, MuitasTentativasError } from "./compartilhado/errors/errors.js";
 import { authRoutes } from "./modulos/auth/auth.routes.js";
+import { COOKIE_SESSAO } from "./modulos/auth/cookie-sessao.js";
 import { acaoCorretivaRoutes } from "./modulos/nc/acao-corretiva/acao-corretiva.routes.js";
 import { classificacaoRoutes } from "./modulos/nc/classificacao/classificacao.routes.js";
 import { contencaoRoutes } from "./modulos/nc/contencao/contencao.routes.js";
@@ -22,6 +26,9 @@ const app = Fastify({
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
+// A API só aceita corpo JSON: um formulário de outro site manda text/plain sem o preflight do navegador (TRD §4.2, B20)
+app.removeContentTypeParser("text/plain");
+
 const jwtSecret = process.env.JWT_SECRET;
 
 // Segredo curto pode ser descoberto por força bruta, e com ele qualquer um forja um token (auditoria L8)
@@ -29,7 +36,16 @@ if (!jwtSecret || jwtSecret.length < 32) {
     throw new Error("JWT_SECRET precisa estar definida em .env, com pelo menos 32 caracteres");
 }
 
-app.register(fastifyJwt, { secret: jwtSecret });
+// Cabeçalhos de segurança em toda resposta (auditoria R3). O padrão do helmet serve para uma API que só devolve JSON
+app.register(fastifyHelmet);
+app.register(fastifyCookie);
+// Só nas rotas que pedem (config.rateLimit), hoje o login. O erro é o nosso, para a resposta sair no formato de sempre
+app.register(fastifyRateLimit, { global: false, errorResponseBuilder: () => new MuitasTentativasError() });
+app.register(fastifyJwt, {
+    secret: jwtSecret,
+    cookie: { cookieName: COOKIE_SESSAO, signed: false },
+    verify: { onlyCookie: true },
+});
 app.get("/", async () => {
     return { status: "Servidor online" };
 });
@@ -43,6 +59,12 @@ app.register(investigacaoRoutes);
 app.register(acaoCorretivaRoutes);
 app.register(verificacaoRoutes);
 
+const MENSAGENS_ERRO_CLIENTE: Record<number, string> = {
+    400: "Corpo da requisição inválido.",
+    413: "Corpo da requisição grande demais.",
+    415: "Formato não aceito: envie o corpo em JSON.",
+};
+
 app.setErrorHandler((erro, request, reply) => {
     if (erro instanceof ZodError) {
         return reply.status(400).send({
@@ -51,19 +73,22 @@ app.setErrorHandler((erro, request, reply) => {
         });
     }
 
-    if (erro instanceof Error && "code" in erro && erro.code === "FST_ERR_VALIDATION") {
-        const erroValidacao = erro as Error & { code: string; validation: unknown[] };
+    if (hasZodFastifySchemaValidationErrors(erro)) {
         return reply.status(400).send({
             mensagem: "Dados inválidos",
-            error: erroValidacao.validation,
+            error: erro.validation,
         });
     }
 
     if (erro instanceof AppError) {
-        if (erro.detalhes !== undefined) {
-            return reply.status(erro.statusCode).send({ mensagem: erro.message, error: erro.detalhes });
-        }
-        return reply.status(erro.statusCode).send({ mensagem: erro.message });
+        // Sem detalhes, o campo "error" sai "undefined" e o JSON omite ele.
+        return reply.status(erro.statusCode).send({ mensagem: erro.message, error: erro.detalhes });
+    }
+
+    if (erro instanceof Error && "statusCode" in erro && typeof erro.statusCode === "number" && erro.statusCode < 500) {
+        return reply
+            .status(erro.statusCode)
+            .send({ mensagem: MENSAGENS_ERRO_CLIENTE[erro.statusCode] ?? "Requisição inválida." });
     }
 
     request.log.error(erro);

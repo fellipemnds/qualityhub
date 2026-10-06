@@ -118,8 +118,9 @@ A API fica disponível em `http://localhost:3333`.
 | --- | --- |
 | `npm run dev` | Servidor com recarga automática |
 | `npm test` | Testes (Vitest + Testcontainers; precisa do Docker Desktop aberto) |
+| `npm run test:cobertura` | A suíte completa com a trava da cobertura (`CONSTRAINTS.md` §2); é o que o CI roda |
 | `npm run typecheck` | Confere os tipos sem compilar (`tsc --noEmit`) |
-| `npm run lint` | Biome: formatação, lint e ordem dos imports |
+| `npm run lint` | Biome: formatação, lint, ordem dos imports e regras de arquitetura |
 | `npm run lint:fix` | Corrige o que o Biome consegue sozinho |
 | `npm run preparar` | `npm ci` + `prisma generate` + `prisma migrate deploy` |
 | `npm run ambiente -- <trabalho\|casa\|comparar>` | Foto do ambiente da máquina, para comparar os dois PCs (`SETUP.md` §12.5) |

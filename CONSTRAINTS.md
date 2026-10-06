@@ -51,11 +51,12 @@ Hoje o código cumpre o piso inteiro: nenhuma supressão, `TODO` ou
 | Tipos | Zero erros | `npm run typecheck` (`tsc --noEmit`) | cada edição, CI | **bloqueia** | ✅ em uso |
 | Lint e formatação | Zero erros na nossa config (Biome `recommended`) | `npm run lint` (`biome check .`) | cada edição, CI | **bloqueia** | ✅ em uso |
 | Testes | Todos passando | `npm test` (Vitest + Testcontainers) | ao fechar um item (§4), CI | **bloqueia** | ✅ em uso |
-| Segredos | Nenhum segredo no código nem no histórico | `gitleaks detect --redact --no-banner` | CI | **bloqueia** | ⏳ a instalar |
-| Arquitetura | Zero violações das regras da §2.1 | `depcruise --validate src` (dependency-cruiser) | antes de cada commit, CI | **bloqueia** | ⏳ a instalar |
-| Segurança: código (SAST) | Nada de severidade alta ou acima | `semgrep scan --config p/default --config p/owasp-top-ten` | CI | avisa até o fim da A4, depois **bloqueia** | ⏳ a instalar |
-| Segurança: dependências | Nada de severidade alta ou acima, fora as exceções (§5) | `osv-scanner scan source -r .` | CI | avisa até o fim da A4, depois **bloqueia** | ⏳ a instalar |
-| Cobertura do projeto | Não cai mais de 0,5% abaixo do valor da §3 | `vitest run --coverage` (`@vitest/coverage-v8`) | ao fechar um item (§4), CI | avisa até o fim da A4, depois **bloqueia** | ⏳ a instalar |
+| Segredos | Nenhum segredo no código nem no histórico, fora as exceções (§5) | `gitleaks detect --redact --no-banner` (v8.30.1, job `segredos`; exceções no `.gitleaksignore`) | CI | **bloqueia** | ✅ em uso |
+| Arquitetura | Zero violações das regras da §2.1 | `npm run lint` (Biome: `noRestrictedImports` por grupo de arquivo e `noImportCycles`, no `biome.json`) | cada edição, CI | **bloqueia** | ✅ em uso |
+| Segurança: código (SAST) | Nada de severidade alta ou acima, fora as exceções (§5) | `semgrep scan --config p/default --config p/owasp-top-ten --severity ERROR --error --quiet` (1.179.0 pelo `pipx`, job `sast`; exceções no `.semgrepignore`) | CI | **bloqueia** | ✅ em uso |
+| Segurança: dependências | Nada de severidade alta ou acima, fora as exceções (§5) | `osv-scanner scan source -r .` (v2.6.0, job `dependencias`; exceções no `osv-scanner.toml`, com `ignoreUntil` na validade da §5) | CI | **bloqueia** | ✅ em uso |
+| Cobertura do projeto | Não cai mais de 0,5% abaixo do valor da §3 | `npm run test:cobertura` (`vitest run --coverage`, `@vitest/coverage-v8`; a trava é o `thresholds.lines` do `vitest.config.ts`) | ao fechar um item (§4), CI | **bloqueia** | ✅ em uso |
+| Cobertura das linhas novas | 100% das linhas de produção novas ou modificadas no PR são executadas por algum teste. Linha impossível de alcançar vira exceção na §5, nunca trava mais baixa | `pipx run diff-cover==10.6.0 coverage/cobertura-coverage.xml --compare-branch=origin/<destino> --fail-under=100` (lê o relatório do `npm run test:cobertura`) | CI (só em PR) | **bloqueia** | ✅ em uso |
 
 **Por que esses números:**
 - **Tipos, lint e testes em zero:** já são a regra hoje; o CI bloqueia o
@@ -66,10 +67,10 @@ Hoje o código cumpre o piso inteiro: nenhuma supressão, `TODO` ou
   o que a instalação achar de antigo vira exceção com prazo.
 - **"Alta ou acima" em SAST e dependências:** abaixo disso é quase só
   ruído; é o corte padrão das ferramentas.
-- **SAST, dependências e cobertura avisam até o fim da A4:** são
-  ferramentas novas no projeto; o período de aviso serve para ver o que
-  elas acusam no código de hoje (e os falsos positivos) antes de travar.
-  O prazo é a fase, não uma data, porque o plano não usa datas.
+- **SAST, dependências e cobertura avisaram só durante a A4:** eram
+  ferramentas novas no projeto; o período de aviso serviu para ver o que
+  elas acusavam no código (e os falsos positivos) antes de travar. Desde
+  o fim da A4, as três bloqueiam o PR.
 - **Tolerância de 0,5% na cobertura:** absorve a variação quando um
   arquivo sem relação com a mudança mexe no total.
 
@@ -94,13 +95,19 @@ comando rodar — cada instalação é configuração, escrita por Matthew.
   `osv-scanner.toml`), cada uma com o ID da §5 no comentário — nunca
   baixando o corte para todo mundo.
 - **"Avisa" no CI** é o passo com `continue-on-error: true`: aparece no
-  PR, não bloqueia. No fim da A4, essa linha sai e o check passa a
-  bloquear.
+  PR, não bloqueia. Hoje nenhum passo tem essa linha (a A4 a tirou de
+  todos); check novo que precise de período de aviso a usa, com prazo.
 
-### 2.1 Regras de arquitetura (o que o dependency-cruiser vai conferir)
+### 2.1 Regras de arquitetura (o que o Biome confere)
 
-Hoje só escritas no `CLAUDE.md`; o arquivo de regras as transforma em
-check:
+No `biome.json` (A4, 2026-10-05, escrito por Matthew): os `overrides`
+dividem `src/` em grupos que não se sobrepõem (repositórios, services,
+testes, `compartilhado/prisma/` e o resto), cada um com a lista
+completa do que não pode importar, e o `noImportCycles` vale para todos.
+O dependency-cruiser, escolhido antes, não lê o TypeScript 7 (analisava
+0 arquivos e passaria sempre verde); o Biome já estava instalado e
+confere a cada edição, não só antes do commit. A mensagem de cada
+proibição aponta para a regra abaixo.
 
 1. O client gerado do Prisma (`src/generated/prisma`) só é importado
    por arquivos `*.repository.ts` e por `src/compartilhado/prisma/`.
@@ -113,9 +120,8 @@ check:
    `*.test.ts`.
 4. Nenhum ciclo de importação.
 
-Hoje (2026-10-02) a regra 1 se cumpre: importam o client gerado só
-`compartilhado/prisma/` e três repositories. As outras são conferidas
-na instalação.
+Na instalação (2026-10-05), o código cumpria as quatro, sem nenhuma
+exceção; cada regra foi provada com arquivos de mentira que a violavam.
 
 ---
 
@@ -127,9 +133,9 @@ número; quando piora, é achado.
 
 | Métrica | Hoje | Direção | Quando vira regra |
 |---|---|---|---|
-| Cobertura do projeto (linhas) | *a medir na instalação do `@vitest/coverage-v8`* | não pode cair | já entra na §2 com o valor medido |
-| Cobertura das linhas novas ou modificadas no PR | *medida em cada PR da A4* | — | **fim da A4**: trava no valor que os PRs da fase de fato atingiram |
-| Tempo da suíte completa | ~140–160 s (+ ~15 s do Postgres) | não passar de ~5 min | se passar: um banco por worker (`handoff.md`), **nunca** cortar teste |
+| Cobertura do projeto (linhas) | **95,16%** (2026-10-05, na instalação; trava em 94,66%) | não pode cair | já na §2 |
+| Cobertura das linhas novas ou modificadas no PR | **100%** (A4 inteira: 141 linhas novas, nenhuma sem teste) | não pode cair | já na §2 |
+| Tempo da suíte completa | ~150–230 s (variou na A4; 225–228 s em 2026-10-06) | não passar de ~5 min | se passar: um banco por worker (`handoff.md`), **nunca** cortar teste |
 
 A cobertura das linhas novas é medida e reportada desde o primeiro PR:
 só a cobertura do projeto deixaria passar um arquivo pequeno sem teste
@@ -143,7 +149,7 @@ nenhum, porque ele quase não mexe no total.
 |---|---|---|
 | **Depois de cada edição de arquivo** | `npm run lint` + `npm run typecheck` + piso (§1) no diff | < 10 s (hoje: ~1,7 s + ~3,8 s) |
 | **Commit intermediário** (parte de um item ainda em andamento) | Tudo acima + os arquivos de teste do que mudou (`npx vitest run <arquivo>`) | ~20–40 s |
-| **Fechar um item do plano, ou mudança no compartilhado** | Tudo acima + `npm test` (suíte **completa**, com cobertura) + arquitetura | ~3 min, sem atalho |
+| **Fechar um item do plano, ou mudança no compartilhado** | Tudo acima + `npm run test:cobertura` (suíte **completa**, com a trava da cobertura) | ~3 min, sem atalho |
 | **No CI (todo PR)** | Tudo acima + gitleaks, Semgrep e osv-scanner | sem limite |
 
 **O que conta como "fechar um item":** o último commit de um item do
@@ -154,7 +160,7 @@ o push. **Mudança no compartilhado** é qualquer arquivo em
 tipos, e só a suíte completa pega isso. Commit só de documentação ou só
 de formatação não roda testes.
 
-Por que a suíte não roda a cada commit: com ~140–160 s ela passa da
+Por que a suíte não roda a cada commit: com ~150–230 s ela passa da
 meta de ~90 s de espera, e checagem que atrasa demais acaba sendo
 pulada. A régua não cai: o **CI roda a suíte completa em todo PR e
 bloqueia o merge** — o que muda é só onde um teste quebrado aparece
@@ -172,6 +178,9 @@ colidir com as decisões E1–E3 do `docs/esquema-backend.md` §9.
 | ID | Regra | Onde | Motivo | Dono | Vence |
 |---|---|---|---|---|---|
 | X1 | Dependências: nada alto ou acima | `deepmerge-ts` e `mysql2`, transitivas do Prisma 7 (4 vulnerabilidades altas no `npm audit`) | Risco prático baixo, aceito no `docs/trd.md` §13 (o porquê fica lá; aqui, o dono e o prazo): o `deepmerge-ts` só junta a config do Prisma, que é nossa; o `mysql2` só é usado com MySQL. A "correção" do `npm audit fix --force` rebaixa para o Prisma 6 e quebra o projeto — **nunca rodar**. Reavaliar a cada atualização do Prisma | Matthew | 2026-12-31 |
+| X2 | Segredos: nenhum no histórico | Dois tokens JWT de desenvolvimento em `.http` antigos (commits `e30f6f9` e `9226ebb`, de 16 e 17/09), no `.gitleaksignore` | Vencidos (5 h) e de um `JWT_SECRET` já trocado (L8). O repositório é público: o que entrou no histórico pode ter sido copiado, e reescrever o histórico não desfaz isso. Trocar o `JWT_SECRET` de todo ambiente que ainda use o antigo (o PC de casa) | Matthew | permanente (histórico); revisar se um token novo aparecer |
+| X3 | Segredos: nenhum no código | O `JWT_SECRET` dos testes em `src/testes/setup-ambiente.ts`, no `.gitleaksignore` | Só vale no Postgres descartável do Testcontainers; não abre nenhum ambiente real. Se o arquivo mudar e o gitleaks acusar de novo, renovar a impressão | Matthew | permanente, enquanto for só de teste |
+| X4 | SAST: nada alto ou acima | `testes/setup-usuarios-teste.sql` (hashes bcrypt dos 7 usuários de teste), no `.semgrepignore` | Seed do banco de desenvolvimento, com senhas de teste conhecidas. Nunca roda em produção | Matthew | permanente, enquanto for só de desenvolvimento |
 
 ---
 

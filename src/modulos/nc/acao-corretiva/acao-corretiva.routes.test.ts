@@ -1,5 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { app } from "../../../app.js";
+import { prisma } from "../../../compartilhado/prisma/cliente.js";
 import {
+    abrirDuasConexoes,
     chamar,
     concluirVerificacao,
     diaDaquiA,
@@ -340,6 +343,59 @@ describe("POST /acoes-corretivas/:id/finalizar-execucao", () => {
                 expect.objectContaining({ path: ["evidencia"] }),
             ]),
         });
+    });
+
+    it("audita a finalização na ação e o nascimento da verificação", async () => {
+        // Prepara e chama
+        const cenario = await ncProntaParaFechar();
+        const { acao, verificacao } = await executarAcao(cenario);
+
+        // Confere: na ação, o antes e o depois; na verificação, já ABERTA com o código, sem o antes
+        expect(
+            await prisma.auditoria.findMany({ where: { entidadeId: acao.id, acao: "FINALIZAR_EXECUCAO" } }),
+        ).toMatchObject([
+            {
+                entidade: "ACAO_CORRETIVA",
+                usuarioId: cenario.editor.usuario.id,
+                antes: { estado: "ABERTO" },
+                depois: { estado: "FECHADO" },
+            },
+        ]);
+        expect(
+            await prisma.auditoria.findMany({ where: { entidadeId: verificacao.id, acao: "GERAR_VERIFICACAO" } }),
+        ).toMatchObject([
+            {
+                entidade: "VERIFICACAO",
+                usuarioId: cenario.editor.usuario.id,
+                antes: null,
+                depois: { estado: "ABERTO", codigo: verificacao.codigo, acaoCorretivaId: acao.id },
+            },
+        ]);
+    });
+
+    // B19 (esquema-backend.md §7): as duas leem a ação ABERTA antes de qualquer uma gravar, e as duas passam
+    it("duplo clique: duas finalizações ao mesmo tempo geram uma verificação só (B19)", async () => {
+        // Prepara: plano aprovado e execução registrada
+        const { editor, acao } = await ncProntaParaFechar();
+        await chamar(editor, "PATCH", `/acoes-corretivas/${acao.id}`, 200, {
+            executadoEm: diaDaquiA(-1),
+            evidencia: "Procedimento PO-07 revisado e publicado na intranet.",
+        });
+
+        // Chama: as duas ao mesmo tempo. Sem o chamar, porque não dá para saber qual delas chega primeiro
+        const finalizar = () =>
+            app.inject({
+                method: "POST",
+                url: `/acoes-corretivas/${acao.id}/finalizar-execucao`,
+                headers: editor.autenticacao,
+                body: { diasParaVerificar: 30 },
+            });
+        await abrirDuasConexoes();
+        const respostas = await Promise.all([finalizar(), finalizar()]);
+
+        // Confere: uma passa, a outra é recusada, e nasce uma verificação só
+        expect(respostas.map((r) => r.statusCode).sort()).toEqual([200, 409]);
+        expect(await chamar(editor, "GET", `/verificacoes?acaoCorretivaId=${acao.id}`, 200)).toHaveLength(1);
     });
 
     it("recusa prazo de verificação negativo", async () => {

@@ -9,6 +9,92 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Fase A4 — sessão nova (branch `fase/a4-sessao`, em andamento)
+
+- **Trava de concorrência no repositório (B19):** o
+  `registroRepository.atualizar`/`excluir` exigem o estado em que o item
+  foi lido e **lançam o 409** se ele mudou. É a primeira vez que um
+  repositório lança erro de regra; escolhido (Matthew, 2026-10-05) porque
+  o erro é sempre o mesmo e assim nenhum chamador esquece a checagem. O
+  convite segue o mesmo desenho (`marcarComoUsado`, 400).
+- **Login com cookie:** responde **204** sem corpo (o token não vai mais
+  no JSON, senão o `HttpOnly` não protegeria nada) e grava `qh_sessao`
+  (`HttpOnly`, `Secure`, `SameSite=Strict`). `manterConectado` tem
+  default `false`: sem pedir, a sessão é a curta (cookie de sessão, JWT
+  de 12 h); pedindo, 30 dias. **Divergência temporária do TRD §4.1:**
+  `Path=/` em vez de `/api`, porque as rotas só ganham o prefixo na A5
+  (com `/api`, o navegador nunca mandaria o cookie). Troca na A5.
+- **`@fastify/cookie`** (dependência nova, plugin oficial do Fastify),
+  registrado antes do `@fastify/jwt`, que passa a ler o token do cookie.
+- **Middleware `autenticar` pergunta ao banco (B7):** o JWT carrega só o
+  `id` (o `payload` tipado no `fastify-jwt.d.ts` recusa outra coisa no
+  `jwtSign`); a cada requisição, o `usuarioRepository.buscarPorId`
+  (o que já existia, com os papéis) diz se o usuário existe, está ativo
+  e se o token não é anterior ao `sessaoValidaDesde`, e os papéis do
+  `request.user` são os de agora. **Só o cookie** vale
+  (`verify: { onlyCookie: true }` no registro do plugin): o cabeçalho
+  `Authorization` é ignorado. A comparação com o `sessaoValidaDesde` é em
+  segundos (o grão do `iat`); o preço é um token emitido no mesmo segundo
+  de um "sair de todos" sobreviver.
+- **Login endurecido** (TRD §4.3): `@fastify/rate-limit` (dependência
+  nova, plugin oficial) só no login, com chave IP + e-mail em minúsculas
+  e o 429 como `MuitasTentativasError` (um `AppError`, para a resposta
+  sair no formato de sempre). Nos testes, o `loginComo` usa um IP por
+  login: o limite fica ligado de verdade, e o teste do 429 usa um IP
+  próprio. O L1 compara com um hash falso de custo 12, fixo no código.
+- **`@fastify/helmet`** (dependência nova, plugin oficial; auditoria R3):
+  cabeçalhos de segurança em toda resposta, com o padrão do plugin
+  (`nosniff`, `frame-ancestors 'self'`, HSTS, CSP). Sem `@fastify/cors`:
+  front e back na mesma origem (TRD §2.1).
+- **Regras de arquitetura no Biome, não no dependency-cruiser** (Matthew,
+  2026-10-05): o dependency-cruiser só lê TypeScript até a versão 6; no
+  7 ele analisava 0 arquivos e passaria sempre verde. O Biome, já
+  instalado, faz as quatro regras do `CONSTRAINTS.md` §2.1
+  (`noRestrictedImports` em `overrides` por grupo de arquivo, sem
+  sobreposição, e `noImportCycles`) dentro do `npm run lint`: confere a
+  cada edição, no editor e no CI, sem dependência nem passo novo.
+- **Cobertura de testes** (Matthew, 2026-10-05): `@vitest/coverage-v8`
+  (com o Vitest junto, 5.0.2 → 5.0.3, porque as versões andam casadas).
+  Script próprio, `npm run test:cobertura`, porque a trava não faz
+  sentido rodando um arquivo só; é o que o CI roda. Projeto: 95,16% das
+  linhas, trava em 94,66% (`thresholds.lines`). Linhas novas do PR: o
+  `diff-cover` (Python, só no CI, pelo `pipx`, versão fixa) lê o
+  relatório no formato Cobertura e falha abaixo de **100%**, o valor que
+  a A4 atingiu (141 linhas, nenhuma sem teste).
+- **Checks de segurança no CI** (Matthew, 2026-10-05): gitleaks, Semgrep
+  e osv-scanner, cada um num job próprio (rodam em paralelo e aparecem
+  separados no PR), com versão fixa, e já **bloqueando**: o código
+  estava limpo no fim da A4, então o período de aviso não foi preciso.
+  Na instalação acharam: dois tokens de desenvolvimento no histórico e o
+  segredo dos testes (X2, X3), os hashes do seed de desenvolvimento (X4)
+  e a X1 de sempre; e dois problemas consertados no código, a injeção
+  pelo `${{ }}` dentro de um `run:` do CI (passou para `env:`) e o hash
+  falso do login escrito no código (passou a ser gerado na hora).
+- **Tela inicial calculada no backend** (Matthew, 2026-10-05): a regra do
+  `fluxo-app.md` §2.1 e §3 (que telas cada papel permite, qual é o
+  padrão, e a volta ao padrão de quem perdeu o papel da tela escolhida)
+  é uma função pura, `telaInicial` (`modulos/auth/tela-inicial.ts`).
+  O `GET /auth/eu` devolve a tela efetiva e a lista das permitidas; o
+  `PATCH /auth/eu` recusa com 400 uma tela fora da lista. **Pensado para
+  o MVP de NCs: rever quando o QualityHub ganhar outros módulos** (a
+  lista de telas cresce, e os papéis podem passar a valer por módulo).
+- **Erros 4xx do Fastify e corpo só em JSON** (Matthew, 2026-10-06; B21 e
+  B20, da revisão de segurança): o `setErrorHandler` responde com o
+  status do Fastify todo erro abaixo de 500 que não é dos ramos
+  conhecidos, com a mensagem de uma tabela em português
+  (`MENSAGENS_ERRO_CLIENTE`: 400, 413, 415; "Requisição inválida." para
+  os outros), em vez do texto em inglês do Fastify. O parser de
+  `text/plain` sai (`removeContentTypeParser`): corpo que não é JSON
+  para no 415, antes do handler. No mesmo passo, o ramo de validação
+  passou a usar o `hasZodFastifySchemaValidationErrors` da biblioteca, e
+  o do `AppError`, um `send` só. **Limite conhecido:** POST **sem** corpo
+  não tem `content-type` e continua passando; a proteção dele é o
+  `SameSite=Strict`, e o *Fetch Metadata* fica para a D1 (S5).
+- **Checksum dos binários no CI** (2026-10-06, revisão de segurança S3):
+  o gitleaks e o osv-scanner só rodam depois do `sha256sum -c` com o hash
+  fixo no `ci.yml`, tirado do arquivo de checksums da release. Trocar a
+  versão exige trocar o hash. As actions continuam por tag (`@v7`).
+
 ### Análise do repositório (branch `chore/analise-repositorio`, entre a A3 e a A4)
 
 Quatro análises com as skills do `agent-skills` (2026-10-02, Matthew):
