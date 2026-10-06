@@ -67,10 +67,10 @@ Hoje o código cumpre o piso inteiro: nenhuma supressão, `TODO` ou
   o que a instalação achar de antigo vira exceção com prazo.
 - **"Alta ou acima" em SAST e dependências:** abaixo disso é quase só
   ruído; é o corte padrão das ferramentas.
-- **SAST, dependências e cobertura avisam até o fim da A4:** são
-  ferramentas novas no projeto; o período de aviso serve para ver o que
-  elas acusam no código de hoje (e os falsos positivos) antes de travar.
-  O prazo é a fase, não uma data, porque o plano não usa datas.
+- **SAST, dependências e cobertura avisaram só durante a A4:** eram
+  ferramentas novas no projeto; o período de aviso serviu para ver o que
+  elas acusavam no código (e os falsos positivos) antes de travar. Desde
+  o fim da A4, as três bloqueiam o PR.
 - **Tolerância de 0,5% na cobertura:** absorve a variação quando um
   arquivo sem relação com a mudança mexe no total.
 
@@ -95,8 +95,8 @@ comando rodar — cada instalação é configuração, escrita por Matthew.
   `osv-scanner.toml`), cada uma com o ID da §5 no comentário — nunca
   baixando o corte para todo mundo.
 - **"Avisa" no CI** é o passo com `continue-on-error: true`: aparece no
-  PR, não bloqueia. No fim da A4, essa linha sai e o check passa a
-  bloquear.
+  PR, não bloqueia. Hoje nenhum passo tem essa linha (a A4 a tirou de
+  todos); check novo que precise de período de aviso a usa, com prazo.
 
 ### 2.1 Regras de arquitetura (o que o Biome confere)
 
@@ -135,7 +135,7 @@ número; quando piora, é achado.
 |---|---|---|---|
 | Cobertura do projeto (linhas) | **95,16%** (2026-10-05, na instalação; trava em 94,66%) | não pode cair | já na §2 |
 | Cobertura das linhas novas ou modificadas no PR | **100%** (A4 inteira: 141 linhas novas, nenhuma sem teste) | não pode cair | já na §2 |
-| Tempo da suíte completa | ~140–160 s (+ ~15 s do Postgres) | não passar de ~5 min | se passar: um banco por worker (`handoff.md`), **nunca** cortar teste |
+| Tempo da suíte completa | ~150–230 s (variou na A4; 225–228 s em 2026-10-06) | não passar de ~5 min | se passar: um banco por worker (`handoff.md`), **nunca** cortar teste |
 
 A cobertura das linhas novas é medida e reportada desde o primeiro PR:
 só a cobertura do projeto deixaria passar um arquivo pequeno sem teste
@@ -160,7 +160,7 @@ o push. **Mudança no compartilhado** é qualquer arquivo em
 tipos, e só a suíte completa pega isso. Commit só de documentação ou só
 de formatação não roda testes.
 
-Por que a suíte não roda a cada commit: com ~140–160 s ela passa da
+Por que a suíte não roda a cada commit: com ~150–230 s ela passa da
 meta de ~90 s de espera, e checagem que atrasa demais acaba sendo
 pulada. A régua não cai: o **CI roda a suíte completa em todo PR e
 bloqueia o merge** — o que muda é só onde um teste quebrado aparece

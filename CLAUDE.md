@@ -112,7 +112,7 @@ o banco. Frontend (planejado, não iniciado): React + Vite + **shadcn/ui**
 (Vitest; Docker Desktop aberto) · `npm run test:cobertura` (a suíte
 completa com a trava da cobertura, `CONSTRAINTS.md` §2; é o que o CI roda) · `npm run typecheck`
 (`tsc --noEmit`) · `npm run lint` (Biome: formatação + lint + ordem dos
-imports) · `npm run lint:fix` (corrige o que é automático) ·
+imports + regras de arquitetura) · `npm run lint:fix` (corrige o que é automático) ·
 `npm run preparar` (`npm ci` + `prisma generate` + `prisma migrate
 deploy` — deixa a máquina em dia depois de um `git pull`). O Biome
 (2.5.14, versão exata) usa 4 espaços e 120 colunas; JSON com 2 espaços.

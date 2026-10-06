@@ -116,7 +116,7 @@ e na A1.
 | `@fastify/swagger` + `@fastify/swagger-ui` | Gerar e exibir o OpenAPI (a interface visual só em desenvolvimento) | ADR-37 |
 | `@fastify/helmet` | Cabeçalhos de segurança (A4, auditoria R3) | `CONSTRAINTS.md`, changelog "Análise do repositório" |
 | **Dev:** contêiner do MinIO pelo Testcontainers | **Só se** os anexos forem para armazenamento de objetos | ADR-34, ADR-36 |
-| **Dev:** `@vitest/coverage-v8`, `dependency-cruiser`; **CI:** gitleaks, Semgrep, osv-scanner | Os checks do contrato de qualidade (cobertura, arquitetura, segredos, SAST, dependências), instalados por Matthew na A4 | `CONSTRAINTS.md` §2 |
+| **Dev:** `@vitest/coverage-v8`, regras de arquitetura no Biome (o `dependency-cruiser` não lê o TypeScript 7); **CI:** gitleaks, Semgrep, osv-scanner | Os checks do contrato de qualidade (cobertura, arquitetura, segredos, SAST, dependências), instalados por Matthew na A4 | `CONSTRAINTS.md` §2 |
 
 ### 3.3 Frontend
 
@@ -151,11 +151,12 @@ Docker Compose com **nginx**, **app**, **postgres** e **backup**, mais
 1. `POST /api/auth/login` com e-mail, senha e **"manter conectado"**
    (sim/não) → o backend confere e devolve um **cookie** `qh_sessao` com
    o JWT.
-2. O JWT carrega **só o `id`** do usuário e a data de emissão (hoje
-   carrega também os papéis — muda).
+2. O JWT carrega **só o `id`** do usuário e a data de emissão (os papéis
+   saíram do token na A4, B7).
 3. Cookie: `HttpOnly` (o JavaScript da página não lê), `Secure` (só via
    HTTPS), `SameSite=Strict` (o navegador não o envia em requisições
-   vindas de outros sites), `Path=/api`.
+   vindas de outros sites), `Path=/api` (até a A5, `Path=/`: as rotas
+   ainda não têm o prefixo `/api`).
 4. **Duração** (T2):
 
    | "Manter conectado" | Cookie | Validade do JWT | Efeito |
@@ -191,7 +192,8 @@ Docker Compose com **nginx**, **app**, **postgres** e **backup**, mais
 ### 4.2 Proteção contra requisição forjada (CSRF)
 
 `SameSite=Strict` + mesma origem + a API só aceita corpo
-`application/json` (exceto upload, que exige sessão válida) cobrem o
+`application/json` (exceto upload, que exige sessão válida; corpo de
+outro tipo → 415, B20) cobrem o
 caso de um site externo tentar agir em nome do usuário. Não é preciso
 token anti-CSRF adicional.
 
