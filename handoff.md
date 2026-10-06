@@ -5,7 +5,7 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-06 (no **trabalho**; a sessão em casa não aconteceu). **A4 fechada** (PR #6) e as skills de início e fim de fase mescladas (PR #7). **A5 começada** com o `/comecar-fase` na branch `fase/a5-contrato-api` (PR em rascunho); o passeio guiado fica para casa, sem bloquear a A5 (§6).
+**Última atualização:** 2026-10-06 (fim do dia, no **trabalho**; a sessão em casa não aconteceu). **A4 fechada** (PR #6) e as skills de início e fim de fase mescladas (PR #7). **A5 em andamento** (branch `fase/a5-contrato-api`, PR #8 em rascunho): item 1 (prefixo `/api`) feito; item 2 (schema de resposta) feito nas **12 rotas de NC**, escritas por Matthew; faltam as 55 das outras rotas, por Claude (§6). B22 aberto.
 
 ## 1. Objetivo
 
@@ -15,44 +15,43 @@ momento tranquilo em casa (§6), sem bloquear a fase.
 
 ## 2. Estado atual
 
-- **A4 fechada** em 2026-10-06 (PR #6, 41 commits,
-  `git log c10844c..a66c11b`). Por item do plano:
-  - simplificações do `ciclo-vida` (caracterização, `aplicarTransicao`,
-    `buscarRegistroOuFalhar`, validador `() => void`, `estadoAposDecisao`);
-  - **B19**: `registroRepository.atualizar`/`excluir` e o convite exigem
-    o estado lido (409/400); 9 testes de concorrência com o
-    `abrirDuasConexoes()`; skill **`/bug`** criada e usada para fechar;
-  - `gerarVerificacao` fora do `finalizarExecucao`;
-  - **escritos por Matthew, guiado passo a passo**: a M1, o login com
-    cookie e "manter conectado", o middleware `autenticar` (B7), os
-    testes da sessão, as regras de arquitetura no `biome.json`, a
-    cobertura e os jobs de segurança do CI;
-  - por Claude: `logout`, `sair-de-todos`, `GET`/`PATCH /auth/eu` (tela
-    inicial calculada no backend), login endurecido (limite, auditoria,
-    RN-38, L1), `helmet`;
-  - **2026-10-06**: B21 e B20 (escritos por Matthew), refactor do
-    `setErrorHandler`, checksum do gitleaks e do osv-scanner no CI.
-- Suíte: **304 passando**; cobertura **95,17%** das linhas (trava em
-  94,66%); as linhas novas da A4: **100%** (141, trava em 100% no CI).
-  Lint, typecheck, gitleaks, Semgrep e osv-scanner limpos (rodados à
-  mão; o CI ainda não rodou os jobs novos).
-- **Decisões do dia**, todas no `docs/changelog-arquitetura.md` (seção
-  "Fase A4"): repositório lança o 409 da trava; login 204 sem corpo;
-  `Path=/` do cookie até a A5; tela inicial no backend; falhas de login
-  só no log (E1); arquitetura no Biome (o dependency-cruiser não lê o
-  TypeScript 7); `diff-cover` no CI; exceções **X2, X3 e X4**
-  (`CONSTRAINTS.md` §5).
-- Tempo da suíte: variou de 150 s a 568 s com os mesmos testes (a
-  lentidão vem e vai; ~200 s no fim do dia). Se passar de ~5 min de
-  novo, olhar o Docker Desktop (Settings → Resources) e o `free -h`
-  **antes** de mexer nos testes.
-- O que Matthew aprendeu hoje: migration com default para linhas
-  antigas; cookie × token, `HttpOnly`/`Secure`/`SameSite`; por que
-  papéis no token atrasam a revogação; middleware que escreve no
-  `request`; TOCTOU e o `UPDATE` condicionado; prova de quebra (quebrar
-  o código testado, não o teste); objeto de opções no lugar de booleano;
-  `overrides` do Biome; cobertura e "medir e travar"; injeção por `${{ }}`
-  no CI.
+- **A5, item 1 (prefixo `/api`)**: feito. Rotas num plugin com `prefix`
+  no `app.ts`, cookie `Path=/api`, URLs dos testes por extenso com
+  `/api` (changelog "Fase A5").
+- **A5, item 2 (schema de resposta)**: contrato decidido (D1–D5,
+  changelog "Fase A5", a partir do levantamento das respostas reais) e
+  **as 12 rotas de NC prontas**, em 7 fatias, cada uma com teste
+  vermelho (ou de caracterização) e prova de quebra:
+  - `diaDeCalendario()` virou **codec** (entrada e saída
+    `"AAAA-MM-DD"`), em `compartilhado/datas/`;
+  - `ncRespostaSchema` (sem `portaoAtual`, D2) e
+    `checklistFechamentoRespostaSchema` em `nc.schema.ts`;
+  - `erroSchema` (`compartilhado/errors/erro.schema.ts`), declarado
+    como `"4xx"` (D4);
+  - `paginaSchema(itemSchema)`, genérico, em
+    `compartilhado/registro/paginacao-cursor.ts` (D3);
+  - o `PATCH` da NC devolve o formato completo (D1);
+  - `DELETE` com `204: z.null()`, que é **só documentação** (o Fastify
+    não serializa 204; a prova de quebra mostrou).
+- **B22 aberto** (dia de calendário saía com hora): consertado só nas
+  rotas de NC; fecha pelo `/bug` quando contenção, ação corretiva e
+  verificação também devolverem os dias sem hora.
+- Suíte: **312 passando** na última rodada completa (fatia 7); cobertura
+  ~95,2% (trava em 94,66%). Lint e typecheck limpos.
+- O que Matthew aprendeu na A5: `prefix` do Fastify e `Path` do
+  cookie; schema de resposta (filtra o que sai, vigia o código: tipo
+  errado vira 500); codec do Zod (`decode`/`encode`); *arrow function*
+  (o que vai antes e depois da seta); `Date()` sem `new` devolve texto;
+  `toEqual` × `toMatchObject` (exatidão); teste de caracterização; a
+  conferência negativa precisa de uma positiva junto; função genérica
+  (`<T extends z.ZodType>`); `.nullable()` × `.optional()`.
+- **A4** fechada em 2026-10-06 (PR #6, `git log c10844c..a66c11b`): o
+  resumo está no plano (histórico) e no changelog ("Fase A4").
+- Tempo da suíte: 216 s a 379 s hoje. A lentidão do meio da tarde era o
+  **Apple Music** na web com o player aberto (o gradiente animado das
+  letras consome a máquina): fechar antes de rodar a suíte. Se passar
+  de ~5 min sem isso, olhar o Docker Desktop (Settings → Resources) e o
+  `free -h` **antes** de mexer nos testes.
 
 ## 3. Arquivos no meio de uma mudança
 
@@ -60,11 +59,11 @@ Nenhum.
 
 ## 4. O que foi alterado nesta sessão
 
-Os 41 commits da A4 (`git log c10844c..a66c11b`). Dependências
-novas: `@fastify/cookie`, `@fastify/rate-limit`, `@fastify/helmet`
-(produção) e `@vitest/coverage-v8`, com o Vitest 5.0.2 → 5.0.3; o
-`fastify` foi para 5.12.5 e o `fast-uri` para 3.1.8/4.2.1 por avisos de
-segurança novos. Migration nova: `sessao_e_preferencia_do_usuario` (M1).
+Na A5 (`git log main..fase/a5-contrato-api`): prefixo `/api`, o
+contrato D1–D5, o B22 registrado e as 7 fatias das rotas de NC. Nenhuma
+dependência nova nem migration na A5. (A A4 trouxe `@fastify/cookie`,
+`@fastify/rate-limit`, `@fastify/helmet`, `@vitest/coverage-v8` e a
+migration M1; o `npm run preparar` cobre.)
 
 ## 5. Falhas (e o porquê)
 
@@ -88,6 +87,9 @@ segurança novos. Migration nova: `sessao_e_preferencia_do_usuario` (M1).
 | O PC desligou no meio da sessão | — | Nada se perdeu (commits e arquivos salvos); as ferramentas na pasta temporária somem, e o CI baixa as dele |
 | Uma rodada da suíte terminou em 1 min 16 s com **0% de cobertura** (2026-10-06) | Nenhum teste chegou a rodar; o filtro da saída escondeu a causa. A rodada seguinte, com o mesmo código, passou | Provável falha na subida do container. Claude: guardar a saída inteira da suíte num arquivo antes de filtrar |
 | Sonda com `tsx` reclamou de *top-level await* | Arquivo `.ts` fora do projeto vira CommonJS | Claude: sonda com extensão `.mts` |
+| Sonda `.mts` na pasta temporária não achou o `fastify` | Fora do projeto não há `node_modules` | Claude: cópia temporária na raiz do projeto, apagada logo depois (ou importar o `app.ts` pelo caminho absoluto) |
+| Teste do RN-17 estourou os 15 s (2026-10-06) | Máquina lenta: Apple Music aberto no navegador | Fechar o player antes da suíte; o teste passou na rodada seguinte |
+| Teste do B9 quebrou na fatia 5 | Ele esperava o `detectadoEm` com hora, o formato do bug B22 | Ajustado para o dia (o objetivo do teste não mudou). Ao replicar nas outras entidades, testes que esperem data com hora ou `portaoAtual` mudam junto (ex.: `contencao.routes.test.ts:226`) |
 
 **Pendências anotadas:**
 - **⚠️ Em casa, trocar o `JWT_SECRET` do `.env` (prioridade).** Tokens
@@ -97,6 +99,11 @@ segurança novos. Migration nova: `sessao_e_preferencia_do_usuario` (M1).
   com `openssl rand -base64 32` (o servidor também recusa subir com
   menos de 32 caracteres, auditoria L8). E recriar o container do banco
   (`docker compose up -d`) para a porta ficar só em `127.0.0.1` (L7).
+- **`atualizadoEm` não muda numa edição** (notado em 2026-10-06, fatia 7):
+  editar um item grava só na tabela da entidade, e o `atualizadoEm` do
+  `Registro` só muda nas transições. Uma tela de "última atualização"
+  mostraria a última transição, não a última edição. Vale para os seis
+  tipos; decidir se é bug (com a analista, se a tela usar).
 - **Tela inicial: rever quando o QualityHub ganhar outros módulos**
   (pedido de Matthew, 2026-10-05). A lista `TelaInicial` e a regra papel
   → tela (`modulos/auth/tela-inicial.ts`) são do MVP de NCs.
@@ -171,20 +178,37 @@ da mensagem padrão do `setErrorHandler`.
    `registroRepository.atualizar` → banco → auditoria → resposta), com
    Matthew dizendo o que cada parte faz antes de Claude explicar.
    Motivo: Matthew disse que não estava mais reconhecendo o código.
-3. **A5, pela ordem do plano** (`/comecar-fase` feito em 2026-10-06; a
-   tabela de entregas, com o que é novo para Matthew, está na conversa
-   e resumida aqui): (1) ~~prefixo `/api` e cookie `Path=/api`~~ feito (`af7b4fa`);
-   (2) **schema de resposta** em todas as rotas, as de NC por Matthew
-   (o conceito da fase; atenção: com schema também nas respostas de
-   erro, o `error: undefined` passa pelo serializer do Zod e não mais
-   pelo `JSON.stringify`); (3) `@fastify/swagger` com explicação (CSP do
-   `helmet` só nessa rota); (4) catálogo de auditoria; (5) `GET /saude`;
-   (6) L7; (8) L5, começando por teste; (9) avaliar as funções
+3. **A5, item 2: replicar o schema de resposta** (Claude escreve,
+   Matthew revisa; **um commit por arquivo**, cada um com teste vermelho
+   quando houver o que provar, e a suíte completa). O padrão é o das
+   rotas de NC: `<x>RespostaSchema` no `<x>.schema.ts` (campos do
+   `Registro` + os da entidade, sem `portaoAtual`, `.nullable()` no que
+   o banco permite nulo, dias de calendário com `diaDeCalendario()`),
+   `response: { 200|201: ..., "4xx": erroSchema }`, listas com
+   `paginaSchema(...)`, 204 com `z.null()`. Faltam **55 rotas em 8
+   arquivos**, nesta ordem:
+
+   | Arquivo | Rotas | Observação |
+   |---|---|---|
+   | Contenção | 10 | `executadaEm` (B22); o teste da linha 226 confere `portaoAtual: 0` e muda junto |
+   | Classificação | 9 | Sem dia de calendário |
+   | Investigação | 10 | Inclui as rotas de hipótese |
+   | Ação corretiva | 11 | `prazo` e `executadoEm` (B22) |
+   | Verificação | 5 | `prazo` e `verificadoEm` (B22). Depois dela, **fechar o B22** pelo `/bug` |
+   | Atribuição | 3 | `/registros/...` (colaboradores e aprovador) |
+   | Auth | 6 | Login 204, `eu`, `logout`... |
+   | Usuário | 1 | |
+
+   O `GET /` ganha schema no item 5 (vira `GET /api/saude`).
+4. **Resto da A5**, pela ordem do plano: (3) `@fastify/swagger` com
+   explicação (CSP do `helmet` só nessa rota; conferir como o 204
+   `z.null()` aparece no OpenAPI); (4) catálogo de auditoria; (5) `GET
+   /saude`; (6) L7; (8) L5, começando por teste; (9) avaliar as funções
    repetidas, decisão de Matthew com `idea-refine`, no changelog antes
    de mexer; (10) L4 com o teste do 413. A L3 já foi feita (B21). Nos
    itens 🧑: o **passo a passo** combinado (regra no `CLAUDE.md`).
 
-**Chegando em casa:** rodar o **`/retomar`**. Desde a última vez que a
+**Chegando em casa:** rodar o **`/retomar`**. Nada novo de ambiente desde a saída do trabalho (sem migration, dependência ou chave do `.env` na A5). Desde a última vez que a
 branch foi usada em casa (antes da A3): as migrations da A3 e a **M1**
 (`sessao_e_preferencia_do_usuario`), e **dependências novas** (cookie,
 rate-limit, helmet, cobertura, Vitest 5.0.3). O `npm run preparar`
@@ -203,4 +227,4 @@ parado há tempo):
 6. **Primeira foto de casa:** `npm run ambiente -- casa` e depois
    `npm run ambiente -- comparar` (`SETUP.md` §12.5). Commitar o
    `docs/ambiente/casa.txt`.
-7. `npm run test:cobertura`: **304 passando**, cobertura acima de 94,66%.
+7. `npm run test:cobertura`: **312 passando**, cobertura acima de 94,66% (com o Apple Music fechado, para a suíte não passar de ~5 min).

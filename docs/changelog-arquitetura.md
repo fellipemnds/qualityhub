@@ -20,7 +20,7 @@ documento de arquitetura.
   `chamar` não acrescenta o prefixo, para o teste mostrar a URL real.
 - **Contrato de resposta das rotas de NC** (Matthew, 2026-10-06; levantamento
   das respostas reais com o `api-and-interface-design`): **D1** um formato
-  só, o `ncSchema` (os campos do `Registro` e da NC lado a lado), em
+  só, o `ncRespostaSchema` (os campos do `Registro` e da NC lado a lado), em
   criar, detalhe, itens da lista e todas as transições; o `PATCH`, que
   devolvia só os campos da NC, passa a devolver o formato completo.
   **D2** o `portaoAtual` não sai (detalhe interno do ciclo de vida; o que
@@ -31,6 +31,19 @@ documento de arquitetura.
   formato certo depende da T-06, e acrescentar campo depois não quebra
   quem usa (anotado na C1); a exceção é o último motivo de reprovação
   (L7), que o plano põe nesta fase.
+- **Como o schema de resposta foi montado** (rotas de NC, Matthew,
+  2026-10-06): schema **próprio de resposta**, não o de entrada (o de
+  entrada tem regras, como mínimo de caracteres, e um rascunho
+  incompleto guardado viraria 500); `.nullable()` em tudo o que o banco
+  permite nulo. O `diaDeCalendario()` virou **codec** do Zod (`decode`
+  na entrada, `encode` na saída, os dois em `"AAAA-MM-DD"`), o que
+  conserta o B22 pela resposta. Os erros usam um `erroSchema`
+  compartilhado (`compartilhado/errors/erro.schema.ts`), com `error`
+  `unknown` e opcional; as listas, o `paginaSchema(itemSchema)` genérico,
+  ao lado do `paginar()`. O 204 sem corpo declara `z.null()`, que o
+  Fastify não serializa: é só documentação para o OpenAPI. Testes que
+  esperavam o formato antigo (data com hora) mudam junto, sem mudar o
+  objetivo deles.
 
 ### Fase A4 — sessão nova (branch `fase/a4-sessao`, PR #6)
 
