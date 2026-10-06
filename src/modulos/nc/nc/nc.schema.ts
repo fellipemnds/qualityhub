@@ -4,6 +4,7 @@ import { hojeEmSaoPaulo } from "../../../compartilhado/datas/hoje-em-sao-paulo.j
 import { ClassificacaoNC } from "../../../compartilhado/entidades/classificacao-nc.js";
 import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { OrigemNC } from "../../../compartilhado/entidades/origem-nc.js";
+import { TipoRegistro } from "../../../compartilhado/entidades/tipos-registro.js";
 import { paginacaoCursorSchema } from "../../../compartilhado/registro/paginacao-cursor.js";
 
 // Compara dias, não instantes (TRD §6, B11): o dia guardado é lido em UTC (meia-noite UTC do dia), e o "hoje" é o de São
@@ -53,3 +54,23 @@ export type NCRascunhoInput = z.infer<typeof ncRascunhoSchema>;
 export type NCPublicacaoInput = z.infer<typeof ncPublicacaoSchema>;
 export type NCFechamentoInput = z.infer<typeof ncFechamentoSchema>;
 export type NCFiltrosListagemInput = z.infer<typeof ncFiltrosListagemSchema>;
+
+export const ncRespostaSchema = z.object({
+    id: z.uuid(),
+    criadoPorId: z.uuid(),
+    tipo: z.enum(TipoRegistro),
+    estado: z.enum(EstadoRegistro),
+    codigo: z.string().nullable(),
+    criadoEm: z.date(),
+    atualizadoEm: z.date(),
+    titulo: z.string().nullable(),
+    descricao: z.string().nullable(),
+    requisitoViolado: z.string().nullable(),
+    processoAfetado: z.string().nullable(),
+    cliente: z.string().nullable(),
+    riscosRevisados: z.string().nullable(),
+    mudancasSGQ: z.string().nullable(),
+    setorId: z.number().int().nullable(),
+    origem: z.enum(OrigemNC).nullable(),
+    detectadoEm: diaDeCalendario().nullable(),
+});

@@ -271,6 +271,29 @@ describe("GET /nc", () => {
 });
 
 describe("GET /nc/:id", () => {
+    it("devolve a data de detecção como dia, sem hora (B22)", async () => {
+        // Prepara: o levarNCAte cria a NC com detectadoEm "2026-09-10"
+        const { editor, nc } = await levarNCAte("RASCUNHO");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/nc/${nc.id}`, 200);
+
+        // Confere
+        expect(resposta.detectadoEm).toBe("2026-09-10");
+    });
+
+    it("não expõe o portaoAtual, detalhe interno do ciclo de vida (D2)", async () => {
+        // Prepara
+        const { editor, nc } = await levarNCAte("RASCUNHO");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/nc/${nc.id}`, 200);
+
+        // Confere
+        expect(resposta.id).toBe(nc.id);
+        expect(resposta).not.toHaveProperty("portaoAtual");
+    });
+
     it("o visualizador lê a NC", async () => {
         // Prepara
         const { nc } = await ncPublicada();

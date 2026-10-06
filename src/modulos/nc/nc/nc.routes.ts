@@ -5,7 +5,7 @@ import { decisaoSchema } from "../../../compartilhado/registro/decidir.schema.js
 import { motivoSchema } from "../../../compartilhado/registro/motivo.schema.js";
 import { autenticar } from "../../../middlewares/autenticar.js";
 import { ncController } from "./nc.controller.js";
-import { ncFiltrosListagemSchema, ncRascunhoSchema } from "./nc.schema.js";
+import { ncFiltrosListagemSchema, ncRascunhoSchema, ncRespostaSchema } from "./nc.schema.js";
 
 export async function ncRoutes(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -118,6 +118,7 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: ncRespostaSchema },
         },
         handler: ncController.buscarPorIdNC,
     });
