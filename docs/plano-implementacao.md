@@ -233,10 +233,10 @@ cliente (TRD §7, ADR-37).
 | Catálogo de ações de auditoria tipado (pendência 1) | 🤖 |
 | `GET /saude` no lugar de `GET /` | 🤖 |
 | Último motivo de reprovação no detalhe de todo item (L7) | 🤖 |
-| Erros do próprio Fastify (JSON malformado, corpo grande demais) respondem com o status deles (400, 413), não 500 — auditoria L3; bug, começa por teste | 🤖 |
+| ~~Erros do próprio Fastify (JSON malformado, corpo grande demais) respondem com o status deles (400, 413), não 500 — auditoria L3~~ **Feito na A4, como B21** (2026-10-06); o teste do 413 entra com os tetos de entrada (L4), abaixo | — |
 | Permissão conferida **antes** de buscar o usuário-alvo no `definirAprovador` (quem não pode agir não aprende nada com a resposta) — auditoria L5 | 🤖 |
 | **Avaliar** as funções repetidas nos seis services de entidade (`retirarX`, `decidirX`, `cancelarX`, `buscarPorIdX`, `listarX`; revisão de código de 2026-10-02). Mudar o padrão de módulo é decisão de arquitetura: registrar no `changelog-arquitetura.md` antes de mexer | 🧑 decide; 🤖 propõe |
-| Tetos de entrada (auditoria L4): `.max()` nos textos, paginação nas listas dos filhos, avaliar `z.strictObject` (recusar campo extra com 400 em vez de descartar) | 🤖 |
+| Tetos de entrada (auditoria L4): `.max()` nos textos, paginação nas listas dos filhos, avaliar `z.strictObject` (recusar campo extra com 400 em vez de descartar), e o teste do 413 (corpo acima de 1 MB) | 🤖 |
 
 **Aprendizado:** o que é OpenAPI e por que o schema de **resposta**
 importa tanto quanto o de entrada.
@@ -391,3 +391,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-06 | v1.7 — D1: `trustProxy` e o limite de tentativas em memória (revisão de segurança da A4, S2) |
 | 2026-10-06 | v1.8 — D1: *Fetch Metadata* para o POST sem corpo (revisão de segurança da A4, S5) |
 | 2026-10-06 | **A4 concluída** (branch `fase/a4-sessao`, PR #6): sessão por cookie com papéis conferidos no banco a cada requisição (B7), trava de concorrência nas transições (B19), login endurecido, `helmet`, B20 e B21, e o contrato de qualidade bloqueando no CI (cobertura, arquitetura, gitleaks, Semgrep, osv-scanner). 304 testes. S2 e S5 ficam para a D1 |
+| 2026-10-06 | v1.9 — A5: a L3 sai (feita na A4 como B21); o teste do 413 vai para a entrega da L4 |

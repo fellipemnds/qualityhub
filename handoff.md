@@ -5,13 +5,13 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-06 (no **trabalho**; a sessão em casa não aconteceu). **A4 fechada** (PR #6) e as skills de início e fim de fase mescladas (PR #7, `/comecar-fase` novo). Branch nova **`fase/a5-contrato-api`**, ainda sem código: antes da A5, o passeio guiado pelo código; depois, o `/comecar-fase` (§6).
+**Última atualização:** 2026-10-06 (no **trabalho**; a sessão em casa não aconteceu). **A4 fechada** (PR #6) e as skills de início e fim de fase mescladas (PR #7). **A5 começada** com o `/comecar-fase` na branch `fase/a5-contrato-api` (PR em rascunho); o passeio guiado fica para casa, sem bloquear a A5 (§6).
 
 ## 1. Objetivo
 
-Começar a fase **A5 — Contrato da API** (`docs/plano-implementacao.md`),
-na branch `fase/a5-contrato-api`. Antes do primeiro item, o **passeio
-guiado pelo código** (§6).
+Fase **A5 — Contrato da API** (`docs/plano-implementacao.md`), na branch
+`fase/a5-contrato-api`. O passeio guiado pelo código fica para um
+momento tranquilo em casa (§6), sem bloquear a fase.
 
 ## 2. Estado atual
 
@@ -164,8 +164,8 @@ da mensagem padrão do `setErrorHandler`.
 1. ~~Skills de início e fim de fase~~: mescladas (PR #7, 2026-10-06).
    O ciclo agora: `/comecar-fase` → itens → `/abrir-pr` (revisões e
    "pronto quando") → merge → `/fechar-fase`.
-2. **Passeio guiado pelo código** (combinado em 2026-10-05, antes da
-   A5). **Inclui o último item do "pronto quando" da A4**, adiado no
+2. **Passeio guiado pelo código** (combinado em 2026-10-05; em casa,
+   num momento tranquilo, sem bloquear a A5, decidido em 2026-10-06). **Inclui o último item do "pronto quando" da A4**, adiado no
    merge: Matthew explicar o B19 ("confere e depois age", o `UPDATE`
    condicionado ao estado lido) e o que o `SameSite=Strict` bloqueia e
    o que não bloqueia. Roteiro: seguir uma requisição de ponta a ponta
@@ -173,9 +173,18 @@ da mensagem padrão do `setErrorHandler`.
    `registroRepository.atualizar` → banco → auditoria → resposta), com
    Matthew dizendo o que cada parte faz antes de Claude explicar.
    Motivo: Matthew disse que não estava mais reconhecendo o código.
-3. **`/comecar-fase`** da A5 (branch `fase/a5-contrato-api`, já criada). Nos itens 🧑 da A5 em
-   diante: o **passo a passo** combinado (regra no `CLAUDE.md`, "Como
-   trabalhamos").
+3. **A5, pela ordem do plano** (`/comecar-fase` feito em 2026-10-06; a
+   tabela de entregas, com o que é novo para Matthew, está na conversa
+   e resumida aqui): (1) prefixo `/api` e cookie `Path=/api` 🤖;
+   (2) **schema de resposta** em todas as rotas, as de NC por Matthew
+   (o conceito da fase; atenção: com schema também nas respostas de
+   erro, o `error: undefined` passa pelo serializer do Zod e não mais
+   pelo `JSON.stringify`); (3) `@fastify/swagger` com explicação (CSP do
+   `helmet` só nessa rota); (4) catálogo de auditoria; (5) `GET /saude`;
+   (6) L7; (8) L5, começando por teste; (9) avaliar as funções
+   repetidas, decisão de Matthew com `idea-refine`, no changelog antes
+   de mexer; (10) L4 com o teste do 413. A L3 já foi feita (B21). Nos
+   itens 🧑: o **passo a passo** combinado (regra no `CLAUDE.md`).
 
 **Chegando em casa:** rodar o **`/retomar`**. Desde a última vez que a
 branch foi usada em casa (antes da A3): as migrations da A3 e a **M1**
