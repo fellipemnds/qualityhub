@@ -59,7 +59,25 @@ Ache o PR da branch atual: `gh pr list --head <branch> --state all --json number
 Mostre os arquivos e a mensagem (`docs: <ID> concluída e abertura da <próxima>`, ou
 `docs: abertura da <próxima>`) e espere o ok para o commit.
 
-## 5. Retomar
+## 5. Rever as skills (fim de bloco)
 
-Pelo primeiro item da fase nova, na regra do `CLAUDE.md`: diga se é algo que Matthew já
-aprendeu (e o que tem de novo) e espere a confirmação antes de executar.
+Só quando a fase que fechou é a última do seu bloco do plano, isto é, a próxima começa com
+outra letra (A6 → B, B → C0, C8 → D0; e a última fase da D). Nas outras, pule este passo.
+
+Com Matthew, poucas perguntas sobre o bloco que fechou:
+
+- O que foi feito à mão mais de uma vez e podia virar passo de uma skill nossa
+  (`.claude/skills/`)?
+- Algum passo de skill foi pulado, deu errado ou ficou desatualizado?
+- As linhas das fases do próximo bloco na tabela §2 da `docs/colinha-agent-skills.md` ainda
+  servem?
+
+Mudança proposta: mostre o texto e espere o ok; entra num commit `chore:` próprio, separado
+do registro da fase. Nada a mudar: diga e siga.
+
+## 6. Retomar
+
+- Branch nova de fase: o próximo passo é o `/comecar-fase`. Pergunte se Matthew começa agora
+  ou depois (outro dia, outro PC); depois, o `handoff.md` já aponta para ele.
+- Outra branch: pelo primeiro item do "Próximo passo", na regra do `CLAUDE.md`: diga se é algo
+  que Matthew já aprendeu (e o que tem de novo) e espere a confirmação antes de executar.

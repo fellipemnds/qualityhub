@@ -47,15 +47,16 @@ corrigidos têm ✅). A A3 corrigiu B1–B6 e B8–B18, e a RN-48 entrou como
 regra nova (fase fechada em 2026-10-02, PR #4). A A4 corrigiu o B19
 (transições sem trava sob concorrência) e o B7 (papéis no token), os
 dois em 2026-10-05, e o B21 (erro 4xx do Fastify respondia 500) e o B20
-(a API aceitava corpo `text/plain`), em 2026-10-06. **Nenhum bug
-aberto.**
+(a API aceitava corpo `text/plain`), em 2026-10-06 (fase fechada em
+2026-10-06, PR #6). **Nenhum bug aberto.**
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
 o Docker Desktop fechado o comando `docker` some do WSL. O `gh` está
 instalado e autenticado neste computador (escopos `repo` e `workflow`);
-Claude pode abrir PRs e ler o CI com ele. O `git push` continua sendo
-de Matthew, salvo pedido explícito.
+Claude pode abrir PRs e ler o CI com ele, e o `git push` também
+funciona por ele (2026-10-06). O push continua sendo de Matthew, salvo
+pedido explícito.
 
 **Dois computadores:** Matthew alterna entre o do trabalho e o de casa
 (mesmo ambiente: Windows + WSL2 + Docker Desktop + nvm; `SETUP.md` §12).
@@ -93,11 +94,13 @@ seguidos feitos por Claude, ele deixou de reconhecer o código.
 
 A partir do plano de implementação:
 - **Uma branch e um Pull Request por fase**; CI verde para entrar na `main`.
+  Começo: `/comecar-fase` (o PR nasce em rascunho). Fim: `/abrir-pr`
+  (revisões da fase e "pronto quando") → merge → `/fechar-fase`.
 - **Bug começa por um teste que falha.**
 - Cada fase termina com o checklist "pronto quando" (plano §1.1).
 - **Pedir antes de cada commit**, inclusive dentro da branch da fase,
   mostrando o que entra (Matthew pode pedir o diff antes). Push, ele
-  faz (não há credencial do GitHub neste ambiente).
+  faz, salvo pedido explícito (ex.: longe do PC).
 - Commit de formatação automática sempre **separado** das mudanças de
   código, para o diff de lógica ficar legível.
 

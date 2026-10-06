@@ -6,7 +6,8 @@ description: Registra um bug novo ou fecha um bug corrigido nos documentos do pr
 # Bug (registrar ou fechar)
 
 Só documentos: o teste que falha e o conserto seguem a regra do `CLAUDE.md` ("bug começa por
-um teste que falha"). Copie o formato das linhas vizinhas; não invente um novo.
+um teste que falha"), com a skill `agent-skills:test-driven-development` (o padrão Prove-It).
+Copie o formato das linhas vizinhas; não invente um novo.
 Peça antes do commit.
 
 ## Registrar
