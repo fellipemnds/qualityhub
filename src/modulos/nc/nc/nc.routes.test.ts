@@ -127,7 +127,7 @@ describe("POST /nc", () => {
         const resposta = await chamar(editor, "POST", "/api/nc", 201, { titulo: "NC de testes", detectadoEm: ontem });
 
         // Confere
-        expect(resposta).toMatchObject({ estado: "RASCUNHO", detectadoEm: `${ontem}T00:00:00.000Z` });
+        expect(resposta).toMatchObject({ estado: "RASCUNHO", detectadoEm: ontem });
     });
 });
 
@@ -379,6 +379,17 @@ describe("DELETE /nc/:id", () => {
 });
 
 describe("POST /nc/:id/publicar", () => {
+    it("devolve a NC publicada com a data de detecção como dia, sem hora (B22)", async () => {
+        // Prepara: o levarNCAte cria o rascunho com detectadoEm "2026-09-10" e o aprovador já designado
+        const { editor, nc } = await levarNCAte("RASCUNHO");
+
+        // Chama
+        const resposta = await chamar(editor, "POST", `/api/nc/${nc.id}/publicar`, 200);
+
+        // Confere
+        expect(resposta).toMatchObject({ id: nc.id, estado: "ABERTO", detectadoEm: "2026-09-10" });
+    });
+
     it("recusa publicar sem data de detecção (B14)", async () => {
         // Prepara: todos os campos da publicação, menos a data
         const editor = await loginComo("editor");

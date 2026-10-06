@@ -16,6 +16,7 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             body: ncRascunhoSchema,
+            response: { 201: ncRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.criarRascunhoNC,
     });
@@ -47,6 +48,7 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: ncRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.publicarNC,
     });
@@ -57,6 +59,7 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: ncRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.submeterNC,
     });
@@ -67,6 +70,7 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: ncRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.retirarNC,
     });
@@ -88,6 +92,7 @@ export async function ncRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ id: z.uuid() }),
             body: decisaoSchema,
+            response: { 200: ncRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.decidirNC,
     });
@@ -99,6 +104,7 @@ export async function ncRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ id: z.uuid() }),
             body: motivoSchema,
+            response: { 200: ncRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.reabrirNC,
     });
@@ -110,6 +116,7 @@ export async function ncRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ id: z.uuid() }),
             body: motivoSchema,
+            response: { 200: ncRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.cancelarNC,
     });
