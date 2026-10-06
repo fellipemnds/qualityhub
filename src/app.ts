@@ -56,6 +56,12 @@ app.register(investigacaoRoutes);
 app.register(acaoCorretivaRoutes);
 app.register(verificacaoRoutes);
 
+const MENSAGENS_ERRO_CLIENTE: Record<number, string> = {
+    400: "Corpo da requisição inválido.",
+    413: "Corpo da requisição grande demais.",
+    415: "Formato não aceito: envie o corpo em JSON.",
+};
+
 app.setErrorHandler((erro, request, reply) => {
     if (erro instanceof ZodError) {
         return reply.status(400).send({
@@ -77,6 +83,12 @@ app.setErrorHandler((erro, request, reply) => {
             return reply.status(erro.statusCode).send({ mensagem: erro.message, error: erro.detalhes });
         }
         return reply.status(erro.statusCode).send({ mensagem: erro.message });
+    }
+
+    if (erro instanceof Error && "statusCode" in erro && typeof erro.statusCode === "number" && erro.statusCode < 500) {
+        return reply
+            .status(erro.statusCode)
+            .send({ mensagem: MENSAGENS_ERRO_CLIENTE[erro.statusCode] ?? "Requisição inválida." });
     }
 
     request.log.error(erro);

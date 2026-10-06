@@ -26,3 +26,21 @@ describe("Cabeçalhos de segurança (auditoria R3)", () => {
         });
     });
 });
+
+describe("Corpo da requisição (B20, B21)", () => {
+    it("JSON malformado responde 400, não 500 (B21)", async () => {
+        // Chama
+        const resposta = await app.inject({
+            method: "POST",
+            url: "/auth/login",
+            headers: {
+                "content-type": "application/json",
+            },
+            payload: "{quebrado",
+        });
+
+        // Confere
+        expect(resposta.statusCode).toBe(400);
+        expect(resposta.json()).toEqual({ mensagem: expect.any(String) });
+    });
+});
