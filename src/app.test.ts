@@ -112,6 +112,25 @@ describe("Documentação da API (OpenAPI)", () => {
         expect(doc.paths["/api/nc/{id}"]?.delete?.responses?.["204"]).toEqual({ description: expect.any(String) });
     });
 
+    it("os dias de calendário saem documentados como dia, sem hora, também nas respostas (B22)", async () => {
+        // Prepara: o schema do campo na resposta 200 de uma rota
+        const doc = await documento();
+        type Conteudo = { "application/json": { schema: { properties: Record<string, unknown> } } };
+        const campo = (caminho: string, metodo: string, nome: string) => {
+            const conteudo = doc.paths[caminho]?.[metodo]?.responses?.["200"]?.content as Conteudo | undefined;
+            return JSON.stringify(conteudo?.["application/json"].schema.properties[nome]);
+        };
+
+        // Confere: o que sai é "AAAA-MM-DD"; documentado como date-time, o cliente gerado recusaria a data
+        for (const documentado of [
+            campo("/api/nc/{id}", "get", "detectadoEm"),
+            campo("/api/acoes-corretivas/{id}", "get", "prazo"),
+        ]) {
+            expect(documentado).toContain('"format":"date"');
+            expect(documentado).not.toContain("date-time");
+        }
+    });
+
     it("não expõe o portaoAtual em resposta nenhuma (D2)", async () => {
         // Chama
         const doc = await documento();
