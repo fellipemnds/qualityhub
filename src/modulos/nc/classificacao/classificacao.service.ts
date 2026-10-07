@@ -109,6 +109,7 @@ export const classificacaoService = {
             const registroPublicado = await cicloVidaService.publicar(
                 tx,
                 registroId,
+                "CLASSIFICACAO",
                 ator,
                 () => classificacaoPublicacaoSchema.parse(classificacao),
                 "CLASSIFICAR",
@@ -129,6 +130,7 @@ export const classificacaoService = {
             const registroSubmetido = await cicloVidaService.submeter(
                 tx,
                 registroId,
+                "CLASSIFICACAO",
                 ator,
                 () => classificacaoFechamentoSchema.parse(classificacao),
                 "CLASSIFICAR",

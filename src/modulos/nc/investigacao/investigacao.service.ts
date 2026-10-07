@@ -105,7 +105,7 @@ export const investigacaoService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            const registroPublicado = await cicloVidaService.publicar(tx, registroId, ator, () =>
+            const registroPublicado = await cicloVidaService.publicar(tx, registroId, "INVESTIGACAO", ator, () =>
                 investigacaoPublicacaoSchema.parse(investigacao),
             );
 
@@ -139,7 +139,7 @@ export const investigacaoService = {
             }
             const faltando = avaliarSubmissaoInvestigacao({ acoes }).filter((item) => !item.atendido);
 
-            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, () => {
+            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, "INVESTIGACAO", ator, () => {
                 if (faltando.length > 0) {
                     throw new TransicaoInvalidaError(
                         "Ainda falta o que está na lista para submeter esta investigação.",

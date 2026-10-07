@@ -66,7 +66,7 @@ export const verificacaoService = {
             const verificacao = await verificacaoRepository.buscarPorId(tx, registroId);
             if (verificacao === null) throw new NaoEncontradoError("Item não encontrado.");
 
-            const registroConcluido = await cicloVidaService.concluir(tx, registroId, ator, () =>
+            const registroConcluido = await cicloVidaService.concluir(tx, registroId, "VERIFICACAO", ator, () =>
                 verificacaoConclusaoSchema.parse(verificacao),
             );
 

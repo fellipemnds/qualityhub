@@ -96,7 +96,7 @@ export const contencaoService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            const registroPublicado = await cicloVidaService.publicar(tx, registroId, ator, () =>
+            const registroPublicado = await cicloVidaService.publicar(tx, registroId, "CONTENCAO", ator, () =>
                 contencaoPublicacaoSchema.parse(contencao),
             );
 
@@ -112,7 +112,7 @@ export const contencaoService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, () =>
+            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, "CONTENCAO", ator, () =>
                 contencaoFechamentoSchema.parse(contencao),
             );
 

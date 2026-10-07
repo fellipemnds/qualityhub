@@ -21,17 +21,6 @@ import { registroRepository } from "./registro.repository.js";
 
 type Registro = NonNullable<Awaited<ReturnType<typeof registroRepository.buscarPorId>>>;
 
-// Toda transição começa pelo item, que tem de existir: uma resposta só para todas (eram três textos diferentes)
-async function buscarRegistroOuFalhar(tx: ClientePrisma, registroId: string): Promise<Registro> {
-    const registro = await registroRepository.buscarPorId(tx, registroId);
-
-    if (registro === null) {
-        throw new NaoEncontradoError("Item não encontrado.");
-    }
-
-    return registro;
-}
-
 // Os tipos dividem o Registro, e o id sozinho não diz o tipo: item de outro tipo responde como inexistente (B23)
 async function buscarRegistroDoTipoOuFalhar(
     tx: ClientePrisma,
@@ -86,8 +75,15 @@ export const cicloVidaService = {
         return registro;
     },
 
-    async publicar(tx: ClientePrisma, registroId: string, ator: Ator, validador: () => void, acao: Acao = "PUBLICAR") {
-        const registro = await buscarRegistroOuFalhar(tx, registroId);
+    async publicar(
+        tx: ClientePrisma,
+        registroId: string,
+        tipo: TipoRegistro,
+        ator: Ator,
+        validador: () => void,
+        acao: Acao = "PUBLICAR",
+    ) {
+        const registro = await buscarRegistroDoTipoOuFalhar(tx, registroId, tipo);
 
         if (registro.estado !== "RASCUNHO") {
             throw new TransicaoInvalidaError("Apenas itens em rascunho podem ser publicados!");
@@ -142,8 +138,15 @@ export const cicloVidaService = {
         return registro;
     },
 
-    async submeter(tx: ClientePrisma, registroId: string, ator: Ator, validador: () => void, acao: Acao = "SUBMETER") {
-        const registro = await buscarRegistroOuFalhar(tx, registroId);
+    async submeter(
+        tx: ClientePrisma,
+        registroId: string,
+        tipo: TipoRegistro,
+        ator: Ator,
+        validador: () => void,
+        acao: Acao = "SUBMETER",
+    ) {
+        const registro = await buscarRegistroDoTipoOuFalhar(tx, registroId, tipo);
 
         if (registro.estado !== "ABERTO" || portoesPorTipo[registro.tipo].length <= 0) {
             throw new TransicaoInvalidaError();
@@ -237,8 +240,8 @@ export const cicloVidaService = {
         return aplicarTransicao(tx, registro, { estado }, aprovacao.decisao, ator);
     },
 
-    async concluir(tx: ClientePrisma, registroId: string, ator: Ator, validador: () => void) {
-        const registro = await buscarRegistroOuFalhar(tx, registroId);
+    async concluir(tx: ClientePrisma, registroId: string, tipo: TipoRegistro, ator: Ator, validador: () => void) {
+        const registro = await buscarRegistroDoTipoOuFalhar(tx, registroId, tipo);
 
         if (registro.estado !== "ABERTO" || portoesPorTipo[registro.tipo].length !== 0) {
             throw new TransicaoInvalidaError(
