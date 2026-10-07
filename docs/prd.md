@@ -118,7 +118,10 @@ ele não é o aprovador designado.
 Notificações por e-mail (a fila "Minhas pendências" cobre o MVP) ·
 "esqueci minha senha" (o tipo de token já existe) · auditorias internas ·
 controle de documentos · treinamentos · fornecedores (SCAR) · ações
-preventivas autônomas · SSO.
+preventivas autônomas · SSO · **aprovação por auditores** (interno ou
+externo) das NCs da própria Garantia da Qualidade, talvez por link
+externo temporário — ideia de 2026-10-07, para refinar (`idea-refine`)
+antes de entrar em fase.
 
 ---
 
@@ -382,15 +385,16 @@ em 2026-09-24.
 | Q18 | O que acontece com as ações quando a investigação é cancelada? | **O cancelamento é recusado** enquanto houver ação ligada que não esteja cancelada ou fechada; a pessoa resolve uma a uma. Cancelar as ações junto, sozinho, faria algo que ninguém pediu → RN-50 |
 | Q17 | Quem confere os planos de ação: a NC ou a Investigação? | **A Investigação.** O QA não aprovaria a investigação, cujo A3 inclui as contramedidas, sem aprovar os planos que ela propõe. Ela só é submetida com os planos das suas ações aprovados, e pode fechar **sem nenhuma ação** ("pelo menos você investigou" — analista). A NC passa a exigir toda investigação não cancelada fechada. Para nenhuma ação escapar, ela nasce ligada a uma investigação aberta; a do `PARCIALMENTE_EFICAZ` é a exceção, e segue depois do fechamento como a execução e a verificação → RN-21, RN-24, RN-49. Substitui a Q1 |
 
-**Classificação e reincidência** (2026-10-07, Matthew, a partir de
-conversa com a analista). **Ainda não valem:** as RNs mudam quando a
+**Classificação, reincidência e segregação** (2026-10-07, Matthew, a
+partir de conversa com a analista). **Ainda não valem:** as RNs mudam quando a
 fase for implementada (plano §8); até lá, o código segue as atuais.
 
 | # | Pergunta | Decisão |
 |---|---|---|
 | Q19 | Com várias classificações, qual vale? | A **vigente** é a última aprovada; lista, filtro e relatório usam só ela. A anterior continua `FECHADA` no histórico, sem cancelar (RN-26, RN-42 seguem), e a Classificação continua sem `/cancelar`. Hoje o filtro da lista aceita qualquer classificação aprovada, e uma NC reclassificada aparece nos dois → RN-26 |
 | Q20 | A classificação muda o que a NC exige para fechar? | **Sim.** **Menor:** ≥1 Contenção `FECHADA` (que pode ser a própria correção); investigação opcional, e a que existir precisa fechar. **Maior:** ≥1 Contenção **e** ≥1 Investigação `FECHADAS`. Nos dois, a Ação Corretiva **não** é obrigatória (quem confere é a investigação, Q17); a tela pede confirmação ao enviar investigação sem nenhuma ação → RN-21, RN-22 |
-| Q21 | Como garantir que uma Menor é mesmo Menor, e pegar o problema que se repete? | **Abrangência**, obrigatória ao classificar como Menor: o QA vê **todas** as NCs dos últimos 12 meses (descrição e real problema), sem filtro por setor, e marca as relacionadas; a ligação fica registrada (inclusive "nenhuma"). Com **≥2 relacionadas** em 12 meses (a 3ª ocorrência), a Menor é **recusada** — *a confirmar com a analista*. Quem decide se é o mesmo problema é a pessoa, não o sistema por texto |
+| Q21 | Como garantir que uma Menor é mesmo Menor, e pegar o problema que se repete? | **Abrangência**, obrigatória ao classificar como Menor: o QA vê **todas** as NCs dos últimos 12 meses (descrição e real problema), sem filtro por setor, e marca as relacionadas; a ligação fica registrada (inclusive "nenhuma"). Com **≥2 relacionadas** em 12 meses (a 3ª ocorrência), a Menor só é aceita com uma **justificativa específica** de por que não é Maior (escolha da analista). Quem decide se é o mesmo problema é a pessoa, não o sistema por texto |
+| Q22 | Quem fez um item pode aprová-lo? | **Não.** Colaborador e aprovador são **excludentes por item**: o backend recusa definir como aprovador quem é colaborador, e incluir como colaborador quem é o aprovador (409, dizendo o que fazer); quem cria é colaborador, e só aprova se sair dos colaboradores. Sem exceção (nem em férias: esperar é melhor que aprovar o próprio trabalho). Com uma aprovadora só (a analista), a **Classificação perde o portão**: classificar já é o julgamento dela, e ela conclui direto, como na Verificação (a RN-21 segue, concluir leva a `FECHADA`). O filho **não herda** o aprovador da NC quando quem o cria é esse aprovador. Ficam de fora o gestor como segundo aprovador e a exceção de férias → RN-27 e RN-29 saem; RN-46 muda |
 
 Limite de tamanho e armazenamento dos anexos foram resolvidos no TRD (§8).
 
@@ -406,3 +410,4 @@ Limite de tamanho e armazenamento dos anexos foram resolvidos no TRD (§8).
 | 2026-10-01 | v1.3 — planos de ação conferidos pela Investigação, não pela NC: RN-21 e RN-24 revistas, RN-49 nova (Q17); RN-50, cancelar investigação com ações pendentes (Q18) |
 | 2026-10-02 | v1.4 — ajustes feitos na A3 passam para o §4.1; RF-07 e RF-08 prontos |
 | 2026-10-07 | v1.5 — classificação e reincidência: vigente, exigências por classificação e abrangência (Q19–Q21), ainda sem mudar as RNs |
+| 2026-10-07 | v1.6 — Q21 revista (3ª ocorrência aceita com justificativa); Q22, colaborador e aprovador excludentes e Classificação sem portão |

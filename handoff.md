@@ -93,9 +93,16 @@ migration M1; o `npm run preparar` cobre.)
 | Janela do VS Code no WSL não abria depois da atualização (2026-10-07) | O `npm run ambiente` chamou o `code` do WSL no meio da atualização: o servidor novo ficou descompactado numa pasta temporária, sem o último passo da instalação, e a versão antiga já tinha sido apagada | Resolvido: a pasta da versão em `~/.vscode-server/bin/` tirada do caminho, e o VS Code reinstalou ao reconectar. Claude: **não tirar a foto com o VS Code atualizando** |
 
 **Pendências anotadas:**
-- **Classificação e reincidência** (2026-10-07, com a analista): PRD
-  Q19–Q21, na C2 como proposta. Falta a analista confirmar a recusa da
-  Menor na 3ª ocorrência (plano §7).
+- **Classificação, reincidência e segregação** (2026-10-07, com a
+  analista): PRD Q19–Q22, na C2 como proposta (a 3ª ocorrência aceita a
+  Menor com justificativa; colaborador e aprovador excludentes por item;
+  Classificação sem portão).
+- **Ideia para refinar (`idea-refine`) depois do B23:** NCs da própria
+  Garantia da Qualidade aprovadas só por auditores (interno ou externo),
+  talvez por link externo temporário (PRD §4.3). Um link é uma
+  credencial: validade, uso único, um item só, auditoria; conversa com a
+  sessão (A4) e com a D0. A persona "auditor externo" (`VISUALIZADOR`)
+  já existe no PRD §3.1.
 - **⚠️ Em casa, trocar o `JWT_SECRET` do `.env` (prioridade).** Tokens
   de desenvolvimento antigos estão no histórico de um repositório
   público (exceção X2); se o segredo de casa ainda for o antigo e fraco,
@@ -103,11 +110,6 @@ migration M1; o `npm run preparar` cobre.)
   com `openssl rand -base64 32` (o servidor também recusa subir com
   menos de 32 caracteres, auditoria L8). E recriar o container do banco
   (`docker compose up -d`) para a porta ficar só em `127.0.0.1` (L7).
-- **`atualizadoEm` não muda numa edição** (notado em 2026-10-06, fatia 7):
-  editar um item grava só na tabela da entidade, e o `atualizadoEm` do
-  `Registro` só muda nas transições. Uma tela de "última atualização"
-  mostraria a última transição, não a última edição. Vale para os seis
-  tipos; decidir se é bug (com a analista, se a tela usar).
 - **Tela inicial: rever quando o QualityHub ganhar outros módulos**
   (pedido de Matthew, 2026-10-05). A lista `TelaInicial` e a regra papel
   → tela (`modulos/auth/tela-inicial.ts`) são do MVP de NCs.
@@ -130,7 +132,9 @@ migration M1; o `npm run preparar` cobre.)
   Os testes de função pura também sobem o Postgres (~15 s): um "projeto"
   do Vitest sem banco para eles é configuração (de Matthew, se quiser).
 - **Rever o `podeExecutar`** (colaborador **ou** aprovador designado × o
-  PRD §8, que pede colaborador): decidir com a analista se vira bug.
+  PRD §8, que pede colaborador): com a Q22 (colaborador e aprovador
+  excludentes), o aprovador não faz o que é do colaborador. Resolver na
+  C2, junto da Q22.
 - **Aprovador na lista das guardas: na C2** (decidido em 2026-10-01).
   Hoje o `cicloVidaService.submeter` confere o aprovador **antes** da
   guarda do tipo, então a NC sem aprovador recebe o 409 genérico, sem a
@@ -140,20 +144,10 @@ migration M1; o `npm run preparar` cobre.)
   e no esquema §4.3.
 - A **triagem** de filho publicado sem aprovador (parte da RN-46) fica
   para a C3 (pendências).
-- **Levar à analista: segregação de funções** (auditoria de segurança de
-  2026-10-02, seção 3). A RN-18 (qualquer `EDITOR` se inclui como
-  colaborador), o `DEFINIR_APROVADOR` (o `APROVADOR` pode indicar a si
-  mesmo) e a RN-27 (auto-aprovação permitida) juntos deixam uma QA
-  (`EDITOR` + `APROVADOR`) levar sozinha qualquer item da edição à
-  aprovação; o `GERENTE` pode trocar o aprovador para si em
-  `EM_APROVACAO` e decidir na hora. Tudo auditado — não é bug, mas é o
-  que um auditor ISO pergunta ("quem revisa quem?"), e a RN-29 (proibir
-  auto-aprovação) está prevista e não implementada. Perguntar se vale ao
-  menos impedir alguém de se indicar como aprovador. Junto: a revisão do
-  `podeExecutar` (item acima) e o `cicloVidaService.cancelar`, que
-  confere `GERENTE` direto, sem o catálogo de permissões (revisão de
-  código de 2026-10-02): as três perguntas são o mesmo assunto, quem pode
-  o quê.
+- **Segregação de funções** (auditoria de 2026-10-02, seção 3):
+  respondida pela analista em 2026-10-07 (PRD Q22). Fica técnica, para a
+  C2: o `cicloVidaService.cancelar` confere `GERENTE` direto, sem o
+  catálogo de permissões.
 - No trabalho, o Prettier ainda está instalado no lado Windows do VS
   Code (inofensivo; pode desinstalar — `SETUP.md` §12.4). O Copilot
   ficou desligado no projeto (`.vscode/settings.json`) e nas

@@ -229,9 +229,10 @@ cliente (TRD §7, ADR-37).
 |---|---|
 | Prefixo `/api` em todas as rotas, e o `Path` do cookie `qh_sessao` de `/` para `/api` (TRD §4.1; na A4 ficou `/` porque as rotas ainda não tinham o prefixo) | 🤖 |
 | **B23** (rotas aceitam o `id` de um item de outro tipo): o ciclo de vida confere o tipo e responde 404; começa por teste. **Antes** do schema de resposta da Contenção, que transformaria o `GET` com tipo errado em 500 | 🧑 o ciclo de vida e o primeiro tipo (passo a passo); 🤖 a repetição nos outros |
+| **B24** (editar não muda o `atualizadoEm`): a edição toca o `Registro` na mesma transação; começa por teste. Depois do B23 | 🤖 |
 | **Schema de resposta** em todas as rotas, com o contrato D1–D5 (changelog) e o **B22** (dia de calendário sai em `"AAAA-MM-DD"`, por um codec; começa por teste) | 🧑 as de NC (o padrão); 🤖 as demais |
 | `@fastify/swagger`: OpenAPI em `/api/docs/json`; interface em `/api/docs` só em desenvolvimento. O `Content-Security-Policy` do `helmet` (A4) pode bloquear os scripts da interface: se bloquear, afrouxar só nessa rota | 🤖 com explicação |
-| Catálogo de ações de auditoria tipado (pendência 1) | 🤖 |
+| Catálogo de ações de auditoria tipado (pendência 1). A edição grava `SALVAR_RASCUNHO` mesmo com o item `ABERTO`: o nome engana quem lê a trilha | 🤖 |
 | `GET /saude` no lugar de `GET /` | 🤖 |
 | Último motivo de reprovação no detalhe de todo item (L7) | 🤖 |
 | ~~Erros do próprio Fastify (JSON malformado, corpo grande demais) respondem com o status deles (400, 413), não 500 — auditoria L3~~ **Feito na A4, como B21** (2026-10-06); o teste do 413 entra com os tetos de entrada (L4), abaixo | — |
@@ -324,7 +325,6 @@ garantidos pelos testes de API do backend.
 | Identidade visual | Empresa | **B3** (mockups) |
 | 3 colegas disponíveis para o teste | Matthew | **B4** |
 | Período do piloto e data de corte | Matthew + analista | **D2**, **D3** |
-| 3ª ocorrência: recusar a Menor ou aceitar com justificativa (PRD Q21) | Matthew + analista | **C2** |
 | ~~NCs da planilha: migrar ou não~~ — decidido: **nenhuma** (P1) | — | — |
 
 ---
@@ -340,11 +340,11 @@ Onde cada item dos documentos anteriores é feito:
 | B7 (papéis no JWT) · B19 (transições sem trava) · B20 (corpo `text/plain`) · B21 (4xx do Fastify vira 500) · RNF-09, RNF-10 | A4 |
 | Pendência 1 (ações de auditoria) · pendência 5 (`ignoreTrailingSlash`) | A5 · A0 |
 | Pendência 4 (login auditado) | A4 |
-| Pendência OpenAPI · RNF-04 (schema de resposta) · L7 (último motivo de reprovação) · B22 (dia de calendário na resposta) · B23 (`id` de outro tipo) | A5 |
+| Pendência OpenAPI · RNF-04 (schema de resposta) · L7 (último motivo de reprovação) · B22 (dia de calendário na resposta) · B23 (`id` de outro tipo) · B24 (`atualizadoEm` na edição) | A5 |
 | RF-15 (usuários) · RF-20 (setores) · RN-43 · RN-44 | A6 (backend), C6 (telas) |
 | RF-01 (NC com colaboradores) · RF-16 (etapa) · L2, L5, L6 | C1 |
 | L1 (hipóteses) · L3 (plano aprovado) | C2 · A3 |
-| PRD Q19–Q21 (classificação vigente, exigências por classificação, abrangência) | C2 (proposta) |
+| PRD Q19–Q22 (classificação vigente, exigências por classificação, abrangência, colaborador e aprovador excludentes) | C2 (proposta) |
 | RF-17 (pendências) · L4 · L9 (tela inicial) | C3 · A4 |
 | RF-11 (Feed) · M4 | C4 |
 | RF-18 (anexos) · M3 · RN-45 · ADR-34 | C5 |
@@ -399,3 +399,5 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-06 | v1.11 — B22 entra na A5, no item do schema de resposta |
 | 2026-10-07 | v1.12 — B23 entra na A5, antes do schema de resposta da Contenção |
 | 2026-10-07 | v1.13 — PRD Q19–Q21 (classificação e reincidência) na C2, como proposta; a confirmação da analista sobre a 3ª ocorrência, no §7 |
+| 2026-10-07 | v1.14 — a analista respondeu (3ª ocorrência com justificativa): sai do §7; PRD Q22 entra na C2 |
+| 2026-10-07 | v1.15 — B24 entra na A5, depois do B23 |
