@@ -50,8 +50,8 @@ dois em 2026-10-05, e o B21 (erro 4xx do Fastify respondia 500) e o B20
 (a API aceitava corpo `text/plain`), em 2026-10-06 (fase fechada em
 2026-10-06, PR #6). A A5 corrigiu o B23 (as rotas aceitavam o `id` de
 um item de outro tipo) e o B24 (editar não mudava o `atualizadoEm`), em
-2026-10-07. **Aberto, na A5:** B22 (dia de calendário sai com hora na
-resposta), no item do schema de resposta.
+2026-10-07, e o B22 (dia de calendário saía com hora na resposta), no
+mesmo dia, com os schemas de resposta. **Nenhum bug aberto.**
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com

@@ -57,6 +57,18 @@ documento de arquitetura.
   outro tipo responde como inexistente (404, mesma mensagem), sem
   revelar que o `id` existe.
 
+- **Schema de resposta nos cinco filhos** (2026-10-07, Claude, no padrão
+  das rotas de NC): contenção, classificação, investigação, ação
+  corretiva e verificação seguem o D1–D5. As listas dos filhos continuam
+  um array simples (a paginação deles é a L4). O `PATCH` de cada um
+  devolve o formato completo, com o `Registro` que o B24 já toca. O
+  `planoAprovado` sai em **todas** as rotas da ação corretiva, não só no
+  detalhe (Matthew, 2026-10-07): depois de aprovar, a resposta já libera
+  a execução, sem outro `GET`; na lista, ele vem na mesma consulta (as
+  aprovações do `Registro` no `include`). O `finalizar-execucao` devolve
+  a ação com a `verificacaoGerada` no formato da Verificação, por isso a
+  Verificação veio antes da ação corretiva.
+
 ### Fase A4 — sessão nova (branch `fase/a4-sessao`, PR #6)
 
 - **Trava de concorrência no repositório (B19):** o

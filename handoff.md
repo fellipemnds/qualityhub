@@ -181,22 +181,15 @@ da mensagem padrão do `setErrorHandler`.
    a primeira por Matthew; o B24 deu de brinde a trava do B19 na
    edição).
 4. **A5, item 2: replicar o schema de resposta** (Claude escreve,
-   Matthew revisa; **um commit por arquivo**, cada um com teste vermelho
-   quando houver o que provar, e a suíte completa). O padrão é o das
-   rotas de NC: `<x>RespostaSchema` no `<x>.schema.ts` (campos do
-   `Registro` + os da entidade, sem `portaoAtual`, `.nullable()` no que
-   o banco permite nulo, dias de calendário com `diaDeCalendario()`),
-   `response: { 200|201: ..., "4xx": erroSchema }`, listas com
-   `paginaSchema(...)`, 204 com `z.null()`. Faltam **55 rotas em 8
-   arquivos**, nesta ordem:
+   Matthew revisa em lotes; um commit por arquivo, com teste vermelho e
+   prova de quebra). Feitos em 2026-10-07: contenção, classificação,
+   investigação (sem as hipóteses: não há rota delas, é a L1 na C2),
+   verificação e ação corretiva (com o `planoAprovado` em todas as rotas,
+   decisão de Matthew); o **B22 fechou**. Faltam **10 rotas em 3
+   arquivos**:
 
    | Arquivo | Rotas | Observação |
    |---|---|---|
-   | Contenção | 10 | `executadaEm` (B22); o teste da linha 226 confere `portaoAtual: 0` e muda junto |
-   | Classificação | 9 | Sem dia de calendário |
-   | Investigação | 10 | Inclui as rotas de hipótese |
-   | Ação corretiva | 11 | `prazo` e `executadoEm` (B22) |
-   | Verificação | 5 | `prazo` e `verificadoEm` (B22). Depois dela, **fechar o B22** pelo `/bug` |
    | Atribuição | 3 | `/registros/...` (colaboradores e aprovador) |
    | Auth | 6 | Login 204, `eu`, `logout`... |
    | Usuário | 1 | |
