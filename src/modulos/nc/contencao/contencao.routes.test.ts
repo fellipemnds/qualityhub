@@ -3,6 +3,7 @@ import { prisma } from "../../../compartilhado/prisma/cliente.js";
 import { chamar, diaDaquiA, ncPublicada } from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
 import { levarAcaoCorretivaAte } from "../../../testes/levar-ate/acao-corretiva.js";
+import { levarClassificacaoAte } from "../../../testes/levar-ate/classificacao.js";
 import { levarContencaoAte } from "../../../testes/levar-ate/contencao.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
@@ -242,6 +243,24 @@ describe("POST /contencoes/:id/cancelar", () => {
     });
 });
 
+describe("DELETE /contencoes/:id", () => {
+    it("recusa com 404 o id de uma classificação, que continua existindo (B23, RN-20)", async () => {
+        // Prepara (o editor se inclui como colaborador, RN-18; pela rota dela, excluir exige CLASSIFICAR, que ele não tem)
+        const { editor, aprovador, classificacao } = await levarClassificacaoAte("RASCUNHO");
+        await chamar(editor, "POST", `/api/registros/${classificacao.id}/colaboradores`, 200, {
+            colaboradores: [editor.usuario.id],
+        });
+
+        // Chama
+        await chamar(editor, "DELETE", `/api/contencoes/${classificacao.id}`, 404);
+
+        // Confere
+        expect(await chamar(aprovador, "GET", `/api/classificacoes/${classificacao.id}`, 200)).toMatchObject({
+            estado: "RASCUNHO",
+        });
+    });
+});
+
 // Retirar da aprovação (RN-48): o colaborador desiste do envio. O ciclo de vida genérico é testado aqui, pela contenção
 describe("POST /contencoes/:id/retirar", () => {
     it("volta a ABERTO sem registrar decisão, fica na auditoria e pode ser enviada de novo (RN-48)", async () => {
@@ -258,5 +277,23 @@ describe("POST /contencoes/:id/retirar", () => {
             await prisma.auditoria.findMany({ where: { entidadeId: contencao.id, acao: "RETIRAR_DA_APROVACAO" } }),
         ).toMatchObject([{ usuarioId: editor.usuario.id }]);
         await chamar(editor, "POST", `/api/contencoes/${contencao.id}/submeter`, 200);
+    });
+
+    it("recusa com 404 o id de uma classificação, que continua em aprovação (B23, RN-20)", async () => {
+        // Prepara (o editor entra como colaborador com a classificação aberta, RN-47; pela rota dela, retirar exige
+        // CLASSIFICAR, que ele não tem)
+        const { editor, aprovador, classificacao } = await levarClassificacaoAte("ABERTO");
+        await chamar(editor, "POST", `/api/registros/${classificacao.id}/colaboradores`, 200, {
+            colaboradores: [editor.usuario.id],
+        });
+        await chamar(aprovador, "POST", `/api/classificacoes/${classificacao.id}/submeter`, 200);
+
+        // Chama
+        await chamar(editor, "POST", `/api/contencoes/${classificacao.id}/retirar`, 404);
+
+        // Confere
+        expect(await chamar(aprovador, "GET", `/api/classificacoes/${classificacao.id}`, 200)).toMatchObject({
+            estado: "EM_APROVACAO",
+        });
     });
 });

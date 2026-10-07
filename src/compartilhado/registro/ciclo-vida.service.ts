@@ -109,8 +109,14 @@ export const cicloVidaService = {
         return aplicarTransicao(tx, registro, { estado: "ABERTO", codigo }, "PUBLICAR", ator);
     },
 
-    async excluirRascunho(tx: ClientePrisma, registroId: string, ator: Ator, acao: Acao = "GERENCIAR_RASCUNHO") {
-        const registro = await buscarRegistroOuFalhar(tx, registroId);
+    async excluirRascunho(
+        tx: ClientePrisma,
+        registroId: string,
+        tipo: TipoRegistro,
+        ator: Ator,
+        acao: Acao = "GERENCIAR_RASCUNHO",
+    ) {
+        const registro = await buscarRegistroDoTipoOuFalhar(tx, registroId, tipo);
 
         if (registro.estado !== "RASCUNHO") {
             throw new TransicaoInvalidaError("Apenas itens em rascunho podem ser deletados!");
@@ -164,8 +170,8 @@ export const cicloVidaService = {
 
     // Retirar da aprovação (RN-48): o colaborador desiste do envio. Volta a ABERTO no mesmo portão, sem registro em
     // Aprovacao (não é reprovação), e fica na auditoria. Quem pode submeter pode retirar: a ação é a mesma do submeter
-    async retirar(tx: ClientePrisma, registroId: string, ator: Ator, acao: Acao = "SUBMETER") {
-        const registro = await buscarRegistroOuFalhar(tx, registroId);
+    async retirar(tx: ClientePrisma, registroId: string, tipo: TipoRegistro, ator: Ator, acao: Acao = "SUBMETER") {
+        const registro = await buscarRegistroDoTipoOuFalhar(tx, registroId, tipo);
 
         if (registro.estado !== "EM_APROVACAO") {
             throw new TransicaoInvalidaError("Só um item em aprovação pode ser retirado da aprovação.");

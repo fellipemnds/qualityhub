@@ -106,7 +106,7 @@ export const ncService = {
 
     async excluirRascunhoNC(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
-            const registroExcluido = await cicloVidaService.excluirRascunho(tx, registroId, ator);
+            const registroExcluido = await cicloVidaService.excluirRascunho(tx, registroId, "NAO_CONFORMIDADE", ator);
 
             return registroExcluido;
         });
@@ -174,7 +174,7 @@ export const ncService = {
     // O colaborador desiste do envio: volta a ABERTO, sem decisão registrada (RN-48)
     async retirarNC(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
-            const registroRetirado = await cicloVidaService.retirar(tx, registroId, ator);
+            const registroRetirado = await cicloVidaService.retirar(tx, registroId, "NAO_CONFORMIDADE", ator);
             const nc = await ncRepository.buscarPorId(tx, registroId);
 
             return { ...registroRetirado, ...nc };

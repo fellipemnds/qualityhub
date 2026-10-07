@@ -86,7 +86,13 @@ export const classificacaoService = {
 
     async excluirRascunhoClassificacao(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
-            const registroExcluido = await cicloVidaService.excluirRascunho(tx, registroId, ator, "CLASSIFICAR");
+            const registroExcluido = await cicloVidaService.excluirRascunho(
+                tx,
+                registroId,
+                "CLASSIFICACAO",
+                ator,
+                "CLASSIFICAR",
+            );
 
             return registroExcluido;
         });
@@ -135,7 +141,13 @@ export const classificacaoService = {
     // Quem classificou desiste do envio: volta a ABERTO, sem decisão registrada (RN-48, RN-20: a ação é CLASSIFICAR)
     async retirarClassificacao(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
-            const registroRetirado = await cicloVidaService.retirar(tx, registroId, ator, "CLASSIFICAR");
+            const registroRetirado = await cicloVidaService.retirar(
+                tx,
+                registroId,
+                "CLASSIFICACAO",
+                ator,
+                "CLASSIFICAR",
+            );
             const classificacao = await classificacaoRepository.buscarPorId(tx, registroId);
 
             return { ...registroRetirado, ...classificacao };

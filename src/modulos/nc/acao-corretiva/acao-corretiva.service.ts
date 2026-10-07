@@ -165,7 +165,7 @@ export const acaoCorretivaService = {
 
     async excluirRascunhoAcaoCorretiva(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
-            return cicloVidaService.excluirRascunho(tx, registroId, ator);
+            return cicloVidaService.excluirRascunho(tx, registroId, "ACAO_CORRETIVA", ator);
         });
     },
 
@@ -203,7 +203,7 @@ export const acaoCorretivaService = {
     // O colaborador desiste do envio: volta a ABERTO, sem decisão registrada (RN-48)
     async retirarAcaoCorretiva(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
-            const registroRetirado = await cicloVidaService.retirar(tx, registroId, ator);
+            const registroRetirado = await cicloVidaService.retirar(tx, registroId, "ACAO_CORRETIVA", ator);
             const acaoCorretiva = await acaoCorretivaRepository.buscarPorId(tx, registroId);
 
             return { ...registroRetirado, ...acaoCorretiva };
