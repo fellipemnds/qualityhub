@@ -96,6 +96,20 @@ documento de arquitetura.
 - **`GET /api/saude`** (2026-10-07, A5 item 5) no lugar do `GET /`,
   sem login, com schema de resposta; testar o banco fica para a D1.
 
+- **Lote de auditoria e permissões** (2026-10-07, planejado com Matthew):
+  **L5**, o `definirAprovador` confere permissão, item e estado antes
+  de buscar o usuário escolhido (quem não podia agir sabia, pela
+  resposta, se o usuário existia e se era aprovador). **Catálogo
+  `AcaoAuditada`**, ao lado do `EntidadeAuditada` em
+  `compartilhado/auditoria/` (o TRD dizia `compartilhado/entidades/`;
+  ficou junto do irmão, e o TRD foi corrigido): o `registrar` e o
+  `aplicarTransicao` só aceitam o que está nele. Renomeadas antes de
+  existir produção: `SALVAR_RASCUNHO` → `EDITAR` e `REMOVER_COLABORADOR`
+  → `REMOVER_COLABORADORES`; registros antigos com os nomes velhos só
+  existem nos bancos de desenvolvimento. **L7**, o
+  `ultimoMotivoReprovacao` no detalhe dos cinco tipos com portão (a
+  última decisão vale; aprovada depois, `null`).
+
 ### Fase A4 — sessão nova (branch `fase/a4-sessao`, PR #6)
 
 - **Trava de concorrência no repositório (B19):** o

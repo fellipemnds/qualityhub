@@ -245,8 +245,9 @@ backend.
 - **Auditoria:** append-only, gravada na mesma transação (ADR-18). O
   repository não expõe update nem delete.
 - **Catálogo de ações de auditoria tipado** (pendência 1 do changelog):
-  as strings soltas (`"PUBLICAR"`, `"SALVAR_RASCUNHO"`...) viram um enum
-  `as const` em `compartilhado/entidades/`, como os demais.
+  as strings soltas viram o `AcaoAuditada` (`as const`), em
+  `compartilhado/auditoria/acoes-auditadas.ts`, ao lado do
+  `EntidadeAuditada` (A5). A coluna continua texto.
 - **Retenção:** o que é evidência nunca é apagado; rascunho, comentário
   e atribuição substituída podem ser (ADR-19, `arquitetura.md` §7.4).
 - **Datas e fuso:** data e hora de eventos (`criadoEm`, `decididoEm`...)

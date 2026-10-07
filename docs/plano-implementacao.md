@@ -232,11 +232,11 @@ cliente (TRD §7, ADR-37).
 | **B24** (editar não muda o `atualizadoEm`): a edição toca o `Registro` na mesma transação; começa por teste. Depois do B23. **Feito** (2026-10-07) | 🤖 |
 | **Schema de resposta** em todas as rotas, com o contrato D1–D5 (changelog) e o **B22** (dia de calendário sai em `"AAAA-MM-DD"`, por um codec; começa por teste) | 🧑 as de NC (o padrão); 🤖 as demais |
 | `@fastify/swagger`: OpenAPI em `/api/docs/json`; interface em `/api/docs` só em desenvolvimento. O `Content-Security-Policy` do `helmet` (A4) pode bloquear os scripts da interface: se bloquear, afrouxar só nessa rota. **Feito** (2026-10-07): OpenAPI 3.1, JSON também só em desenvolvimento, e o CSP não bloqueou (conferido no navegador) | 🤖 com explicação |
-| Catálogo de ações de auditoria tipado (pendência 1). A edição grava `SALVAR_RASCUNHO` mesmo com o item `ABERTO`: o nome engana quem lê a trilha | 🤖 |
+| Catálogo de ações de auditoria tipado (pendência 1). A edição grava `SALVAR_RASCUNHO` mesmo com o item `ABERTO`: o nome engana quem lê a trilha. **Feito** (2026-10-07): `AcaoAuditada`, com `EDITAR` e `REMOVER_COLABORADORES` | 🤖 |
 | `GET /saude` no lugar de `GET /`. **Feito** (2026-10-07): `GET /api/saude`, sem testar o banco (fica para a D1) | 🤖 |
-| Último motivo de reprovação no detalhe de todo item (L7) | 🤖 |
+| Último motivo de reprovação no detalhe de todo item (L7). **Feito** (2026-10-07): `ultimoMotivoReprovacao` no detalhe dos cinco tipos com portão | 🤖 |
 | ~~Erros do próprio Fastify (JSON malformado, corpo grande demais) respondem com o status deles (400, 413), não 500 — auditoria L3~~ **Feito na A4, como B21** (2026-10-06); o teste do 413 entra com os tetos de entrada (L4), abaixo | — |
-| Permissão conferida **antes** de buscar o usuário-alvo no `definirAprovador` (quem não pode agir não aprende nada com a resposta) — auditoria L5 | 🤖 |
+| Permissão conferida **antes** de buscar o usuário-alvo no `definirAprovador` (quem não pode agir não aprende nada com a resposta) — auditoria L5. **Feito** (2026-10-07): permissão, item, estado e só então o usuário escolhido | 🤖 |
 | **Avaliar** as funções repetidas nos seis services de entidade (`retirarX`, `decidirX`, `cancelarX`, `buscarPorIdX`, `listarX`; revisão de código de 2026-10-02). Mudar o padrão de módulo é decisão de arquitetura: registrar no `changelog-arquitetura.md` antes de mexer | 🧑 decide; 🤖 propõe |
 | Tetos de entrada (auditoria L4): `.max()` nos textos, paginação nas listas dos filhos, avaliar `z.strictObject` (recusar campo extra com 400 em vez de descartar), e o teste do 413 (corpo acima de 1 MB) | 🤖 |
 

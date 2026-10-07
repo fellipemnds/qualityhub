@@ -195,8 +195,8 @@ da mensagem padrão do `setErrorHandler`.
 5. **Resto da A5**, pela ordem do plano. Feitos em 2026-10-07: (3) o
    OpenAPI (3.1; `/api/docs` e o JSON só em desenvolvimento; o CSP não
    bloqueou) e (5) o `GET /api/saude`. Faltam, nos lotes combinados:
-   **lote 3**, (4) catálogo de auditoria (e o nome `SALVAR_RASCUNHO`
-   em item aberto), (6) L7 e (8) L5, começando por teste; **lote 4**,
+   ~~**lote 3**~~ (feito em 2026-10-07: L5, catálogo `AcaoAuditada`
+   e L7); **lote 4**,
    (10) L4 com o teste do 413, a paginação das listas dos filhos e a
    decisão de Matthew sobre recusar campo desconhecido; **lote 5**,
    (9) avaliar as funções repetidas, decisão de Matthew com
