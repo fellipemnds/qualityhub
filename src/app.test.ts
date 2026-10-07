@@ -3,21 +3,29 @@ import { app } from "./app.js";
 import { prisma } from "./compartilhado/prisma/cliente.js";
 import { loginComo } from "./testes/fabricas.js";
 
-describe("GET /", () => {
-    it("responde que o servidor está online", async () => {
+describe("GET /api/saude", () => {
+    it("responde que o servidor está de pé, sem login", async () => {
+        // Chama
+        const resposta = await app.inject({ method: "GET", url: "/api/saude" });
+
+        // Confere
+        expect(resposta.statusCode).toBe(200);
+        expect(resposta.json()).toEqual({ status: "ok" });
+    });
+
+    it("o GET / não existe mais: em produção, o / é do frontend (TRD §7.1)", async () => {
         // Chama
         const resposta = await app.inject({ method: "GET", url: "/" });
 
         // Confere
-        expect(resposta.statusCode).toBe(200);
-        expect(resposta.json()).toEqual({ status: "Servidor online" });
+        expect(resposta.statusCode).toBe(404);
     });
 });
 
 describe("Cabeçalhos de segurança (auditoria R3)", () => {
     it("toda resposta sai com os cabeçalhos do helmet", async () => {
         // Chama
-        const resposta = await app.inject({ method: "GET", url: "/" });
+        const resposta = await app.inject({ method: "GET", url: "/api/saude" });
 
         // Confere: os que mais importam para a API e para os anexos que vêm no C5
         expect(resposta.headers).toMatchObject({

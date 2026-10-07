@@ -9,8 +9,9 @@ import {
     jsonSchemaTransform,
     serializerCompiler,
     validatorCompiler,
+    type ZodTypeProvider,
 } from "fastify-type-provider-zod";
-import { ZodError } from "zod";
+import { ZodError, z } from "zod";
 import { atribuicaoRoutes } from "./compartilhado/atribuicao/atribuicao.routes.js";
 import { AppError, MuitasTentativasError } from "./compartilhado/errors/errors.js";
 import { interfaceDaDocumentacao } from "./interface-documentacao.js";
@@ -62,12 +63,15 @@ app.register(fastifySwagger, {
     transform: jsonSchemaTransform,
 });
 app.register(interfaceDaDocumentacao, { ligada: process.env.NODE_ENV === "development" });
-app.get("/", async () => {
-    return { status: "Servidor online" };
-});
 // Toda rota da API sob /api (TRD §7.1): o nginx entrega o frontend em "/" e repassa "/api" ao backend
 app.register(
     async (api) => {
+        // Para saber se o servidor está de pé, sem login. Testar o banco também fica para a D1, quando houver quem pergunte
+        api.withTypeProvider<ZodTypeProvider>().get(
+            "/saude",
+            { schema: { response: { 200: z.object({ status: z.literal("ok") }) } } },
+            async () => ({ status: "ok" as const }),
+        );
         api.register(authRoutes);
         api.register(usuarioRoutes);
         api.register(ncRoutes);
