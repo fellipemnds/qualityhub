@@ -213,7 +213,7 @@ export const acaoCorretivaService = {
     // Aprovar o plano não fecha a ação: ela volta a ABERTO, autorizando a execução
     async decidirAcaoCorretiva(registroId: string, ator: Ator, dados: DecisaoInput) {
         return prisma.$transaction(async (tx) => {
-            const registroDecidido = await cicloVidaService.decidir(tx, registroId, ator, dados, {
+            const registroDecidido = await cicloVidaService.decidir(tx, registroId, "ACAO_CORRETIVA", ator, dados, {
                 fecharAoAprovar: false,
             });
             const acaoCorretiva = await acaoCorretivaRepository.buscarPorId(tx, registroId);

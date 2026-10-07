@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
 import { chamar, diaDaquiA, ncPublicada } from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
+import { levarAcaoCorretivaAte } from "../../../testes/levar-ate/acao-corretiva.js";
 import { levarContencaoAte } from "../../../testes/levar-ate/contencao.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
@@ -143,6 +144,19 @@ describe("POST /contencoes/:id/submeter", () => {
 });
 
 describe("POST /contencoes/:id/decidir", () => {
+    it("recusa com 404 o id de uma ação corretiva, que continua em aprovação (B23)", async () => {
+        // Prepara
+        const { editor, aprovador, acao } = await levarAcaoCorretivaAte("EM_APROVACAO");
+
+        // Chama
+        await chamar(aprovador, "POST", `/api/contencoes/${acao.id}/decidir`, 404, { decisao: "APROVADO" });
+
+        // Confere
+        expect(await chamar(editor, "GET", `/api/acoes-corretivas/${acao.id}`, 200)).toMatchObject({
+            estado: "EM_APROVACAO",
+        });
+    });
+
     it("recusa reprovar sem motivo (RN-04)", async () => {
         // Prepara
         const { editor, aprovador, contencao } = await levarContencaoAte("EM_APROVACAO");

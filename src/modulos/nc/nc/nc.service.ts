@@ -183,7 +183,7 @@ export const ncService = {
 
     async decidirNC(registroId: string, ator: Ator, dados: DecisaoInput) {
         return prisma.$transaction(async (tx) => {
-            const registroDecidido = await cicloVidaService.decidir(tx, registroId, ator, dados);
+            const registroDecidido = await cicloVidaService.decidir(tx, registroId, "NAO_CONFORMIDADE", ator, dados);
             const nc = await ncRepository.buscarPorId(tx, registroId);
 
             return { ...registroDecidido, ...nc };

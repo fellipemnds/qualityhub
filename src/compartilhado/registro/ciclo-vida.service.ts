@@ -32,6 +32,21 @@ async function buscarRegistroOuFalhar(tx: ClientePrisma, registroId: string): Pr
     return registro;
 }
 
+// Os tipos dividem o Registro, e o id sozinho não diz o tipo: item de outro tipo responde como inexistente (B23)
+async function buscarRegistroDoTipoOuFalhar(
+    tx: ClientePrisma,
+    registroId: string,
+    tipo: TipoRegistro,
+): Promise<Registro> {
+    const registro = await registroRepository.buscarPorId(tx, registroId);
+
+    if (registro === null || registro.tipo !== tipo) {
+        throw new NaoEncontradoError("Item não encontrado.");
+    }
+
+    return registro;
+}
+
 // O fim de toda transição: grava a mudança no Registro e a auditoria com o antes e o depois, na mesma transação. Num
 // lugar só, para a trava do B19 (o UPDATE condicionado ao estado esperado) entrar uma vez, valendo para todas
 async function aplicarTransicao(
@@ -170,11 +185,12 @@ export const cicloVidaService = {
     async decidir(
         tx: ClientePrisma,
         registroId: string,
+        tipo: TipoRegistro,
         ator: Ator,
         dados: { decisao: Decisao; motivo?: string },
         opcoes: { fecharAoAprovar: boolean } = { fecharAoAprovar: true },
     ) {
-        const registro = await buscarRegistroOuFalhar(tx, registroId);
+        const registro = await buscarRegistroDoTipoOuFalhar(tx, registroId, tipo);
 
         if (registro.estado !== "EM_APROVACAO") {
             throw new TransicaoInvalidaError("O item não está em aprovação!");

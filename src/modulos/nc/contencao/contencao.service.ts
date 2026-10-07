@@ -132,7 +132,7 @@ export const contencaoService = {
 
     async decidirContencao(registroId: string, ator: Ator, dados: DecisaoInput) {
         return prisma.$transaction(async (tx) => {
-            const registroDecidido = await cicloVidaService.decidir(tx, registroId, ator, dados);
+            const registroDecidido = await cicloVidaService.decidir(tx, registroId, "CONTENCAO", ator, dados);
             const contencao = await contencaoRepository.buscarPorId(tx, registroId);
 
             return { ...registroDecidido, ...contencao };

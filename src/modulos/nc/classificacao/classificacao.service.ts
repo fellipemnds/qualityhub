@@ -144,7 +144,7 @@ export const classificacaoService = {
 
     async decidirClassificacao(registroId: string, ator: Ator, dados: DecisaoInput) {
         return prisma.$transaction(async (tx) => {
-            const registroDecidido = await cicloVidaService.decidir(tx, registroId, ator, dados);
+            const registroDecidido = await cicloVidaService.decidir(tx, registroId, "CLASSIFICACAO", ator, dados);
             const classificacao = await classificacaoRepository.buscarPorId(tx, registroId);
 
             return { ...registroDecidido, ...classificacao };
