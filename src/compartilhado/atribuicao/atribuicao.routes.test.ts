@@ -75,6 +75,37 @@ describe("PUT /registros/:id/aprovador", () => {
         expect(await aprovadoresDe(nc.id)).toEqual([aprovador.usuario.id]);
     });
 
+    // Quem não pode definir aprovador não aprende nada com a resposta: nem se o usuário escolhido existe, nem se ele é
+    // aprovador (auditoria L5). A permissão vem antes de qualquer busca
+    it.each([
+        { caso: "que não existe", usuarioId: () => ID_INEXISTENTE },
+        { caso: "sem o papel APROVADOR", usuarioId: (editor: { usuario: { id: string } }) => editor.usuario.id },
+    ])("sem permissão, escolher um usuário $caso também responde 403 (L5)", async ({ usuarioId }) => {
+        // Prepara
+        const { editor, nc } = await ncPublicada();
+
+        // Chama
+        const resposta = await chamar(editor, "PUT", `/api/registros/${nc.id}/aprovador`, 403, {
+            usuarioId: usuarioId(editor),
+        });
+
+        // Confere
+        expect(resposta).toEqual({ mensagem: "Você não tem permissões suficientes para gerenciar aprovadores." });
+    });
+
+    it("com o item em aprovação, quem não é gerente recebe 403 antes de saber se o usuário existe (L5, RN-47)", async () => {
+        // Prepara (o aprovador é APROVADOR, mas não GERENTE: em aprovação, não pode trocar)
+        const { aprovador, contencao } = await levarContencaoAte("EM_APROVACAO");
+
+        // Chama
+        const resposta = await chamar(aprovador, "PUT", `/api/registros/${contencao.id}/aprovador`, 403, {
+            usuarioId: ID_INEXISTENTE,
+        });
+
+        // Confere
+        expect(resposta).toEqual({ mensagem: "Com o item em aprovação, só o gerente troca o aprovador." });
+    });
+
     it("recusa escolher quem não tem papel APROVADOR (RN-18)", async () => {
         // Prepara
         const { editor, gerente, aprovador, nc } = await ncPublicada();

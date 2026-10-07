@@ -134,10 +134,27 @@ export const atribuicaoService = {
 
     async definirAprovador(registroId: string, aprovadorId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
+            // A permissão vem antes de qualquer busca: quem não pode definir aprovador não aprende nada com a resposta, nem se
+            // o usuário escolhido existe, nem se ele é aprovador (auditoria L5)
+            const papelAtor = temPapel(ator, "DEFINIR_APROVADOR");
+
+            if (!papelAtor) {
+                throw new SemPermissaoError("Você não tem permissões suficientes para gerenciar aprovadores.");
+            }
+
             const registro = await registroRepository.buscarPorId(tx, registroId);
 
             if (registro === null) {
                 throw new NaoEncontradoError("Item não encontrado.");
+            }
+
+            // Em aprovação, só o GERENTE troca (férias, saída da empresa): a troca fica na auditoria como as outras
+            if (registro.estado === "EM_APROVACAO") {
+                if (!temPapel(ator, "TROCAR_APROVADOR_EM_APROVACAO")) {
+                    throw new SemPermissaoError("Com o item em aprovação, só o gerente troca o aprovador.");
+                }
+            } else {
+                conferirEstadoDasAtribuicoes(registro.estado);
             }
 
             const dadosAprovador = await usuarioRepository.buscarPorId(tx, aprovadorId);
@@ -152,21 +169,6 @@ export const atribuicaoService = {
 
             if (!temPapelAprovador) {
                 throw new ValidacaoError('Este usuário não pode ser atribuído pois não tem o papel "APROVADOR".');
-            }
-
-            const papelAtor = temPapel(ator, "DEFINIR_APROVADOR");
-
-            if (!papelAtor) {
-                throw new SemPermissaoError("Você não tem permissões suficientes para gerenciar aprovadores.");
-            }
-
-            // Em aprovação, só o GERENTE troca (férias, saída da empresa): a troca fica na auditoria como as outras
-            if (registro.estado === "EM_APROVACAO") {
-                if (!temPapel(ator, "TROCAR_APROVADOR_EM_APROVACAO")) {
-                    throw new SemPermissaoError("Com o item em aprovação, só o gerente troca o aprovador.");
-                }
-            } else {
-                conferirEstadoDasAtribuicoes(registro.estado);
             }
 
             const aprovadorAtual = await atribuicaoRepository.buscarAprovador(tx, registroId);
