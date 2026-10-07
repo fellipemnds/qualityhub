@@ -67,3 +67,56 @@ describe("Corpo da requisição (B20, B21)", () => {
         expect(await prisma.auditoria.findMany({ where: { acao: "SAIR_DE_TODOS" } })).toEqual([]);
     });
 });
+
+// O contrato com o frontend (TRD §7.2, ADR-37): o OpenAPI sai dos schemas das rotas, e o Orval gera o cliente a partir dele
+describe("Documentação da API (OpenAPI)", () => {
+    type Resposta = { description: string; content?: unknown };
+    type Operacao = { responses?: Record<string, Resposta> };
+    const documento = async () => {
+        await app.ready();
+        return app.swagger() as { openapi: string; paths: Record<string, Record<string, Operacao>> };
+    };
+
+    it("monta o OpenAPI com as rotas da API", async () => {
+        // Chama
+        const doc = await documento();
+
+        // Confere
+        expect(doc.openapi).toMatch(/^3\./);
+        expect(Object.keys(doc.paths)).toEqual(expect.arrayContaining(["/api/nc/{id}", "/api/auth/eu"]));
+    });
+
+    it("toda rota da API declara a resposta de sucesso: sem ela, o cliente gerado não sabe o que volta", async () => {
+        // Chama
+        const doc = await documento();
+
+        // Confere: rota sem schema de resposta ganha um 200 "Default Response" sem corpo; o 204 é o único sem corpo de
+        // propósito
+        const declarada = ([status, resposta]: [string, Resposta]) =>
+            status === "204" || (status.startsWith("2") && resposta.content !== undefined);
+        const semResposta = Object.entries(doc.paths)
+            .filter(([caminho]) => caminho.startsWith("/api/"))
+            .flatMap(([caminho, operacoes]) =>
+                Object.entries(operacoes)
+                    .filter(([, operacao]) => !Object.entries(operacao.responses ?? {}).some(declarada))
+                    .map(([metodo]) => `${metodo.toUpperCase()} ${caminho}`),
+            );
+        expect(semResposta).toEqual([]);
+    });
+
+    it("o 204 sai documentado sem corpo", async () => {
+        // Chama
+        const doc = await documento();
+
+        // Confere
+        expect(doc.paths["/api/nc/{id}"]?.delete?.responses?.["204"]).toEqual({ description: expect.any(String) });
+    });
+
+    it("não expõe o portaoAtual em resposta nenhuma (D2)", async () => {
+        // Chama
+        const doc = await documento();
+
+        // Confere
+        expect(JSON.stringify(doc)).not.toContain("portaoAtual");
+    });
+});

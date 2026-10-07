@@ -2,8 +2,14 @@ import fastifyCookie from "@fastify/cookie";
 import fastifyHelmet from "@fastify/helmet";
 import fastifyJwt from "@fastify/jwt";
 import fastifyRateLimit from "@fastify/rate-limit";
+import fastifySwagger from "@fastify/swagger";
 import Fastify from "fastify";
-import { hasZodFastifySchemaValidationErrors, serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
+import {
+    hasZodFastifySchemaValidationErrors,
+    jsonSchemaTransform,
+    serializerCompiler,
+    validatorCompiler,
+} from "fastify-type-provider-zod";
 import { ZodError } from "zod";
 import { atribuicaoRoutes } from "./compartilhado/atribuicao/atribuicao.routes.js";
 import { AppError, MuitasTentativasError } from "./compartilhado/errors/errors.js";
@@ -45,6 +51,14 @@ app.register(fastifyJwt, {
     secret: jwtSecret,
     cookie: { cookieName: COOKIE_SESSAO, signed: false },
     verify: { onlyCookie: true },
+});
+// O OpenAPI montado a partir dos schemas das rotas, de entrada e de resposta (TRD §7.2, ADR-37): é dele que o Orval gera o
+// cliente do frontend. Registrado antes das rotas, para enxergar todas. Só monta o documento (app.swagger()); quem o
+// publica em /api/docs é a interface, só em desenvolvimento. OpenAPI 3.1, e não 3.0: no 3.0 não existe o tipo null, e o 204
+// sairia documentado com corpo (o Orval também converte tudo para 3.1 ao ler: github.com/orval-labs/orval/pull/3981)
+app.register(fastifySwagger, {
+    openapi: { openapi: "3.1.0", info: { title: "QualityHub API", version: "1.0.0" } },
+    transform: jsonSchemaTransform,
 });
 app.get("/", async () => {
     return { status: "Servidor online" };
