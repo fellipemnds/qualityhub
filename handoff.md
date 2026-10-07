@@ -91,6 +91,7 @@ migration M1; o `npm run preparar` cobre.)
 | Teste do RN-17 estourou os 15 s (2026-10-06) | Máquina lenta: Apple Music aberto no navegador | Fechar o player antes da suíte; o teste passou na rodada seguinte |
 | Teste do B9 quebrou na fatia 5 | Ele esperava o `detectadoEm` com hora, o formato do bug B22 | Ajustado para o dia (o objetivo do teste não mudou). Ao replicar nas outras entidades, testes que esperem data com hora ou `portaoAtual` mudam junto (ex.: `contencao.routes.test.ts:226`) |
 | Janela do VS Code no WSL não abria depois da atualização (2026-10-07) | O `npm run ambiente` chamou o `code` do WSL no meio da atualização: o servidor novo ficou descompactado numa pasta temporária, sem o último passo da instalação, e a versão antiga já tinha sido apagada | Resolvido: a pasta da versão em `~/.vscode-server/bin/` tirada do caminho, e o VS Code reinstalou ao reconectar. Claude: **não tirar a foto com o VS Code atualizando** |
+| Commit da fatia 7 do B23 entrou com a suíte vermelha (2026-10-07) | O comando lia o resultado da suíte e commitava em seguida, sem conferir o código de saída; e o `Confere` do teste novo comparava com o objeto do cenário, que já tinha sido editado (o vermelho parou no 500 antes de chegar nele) | Corrigido antes do push (`--amend`, local). Claude: o commit só roda **depois de conferir** o código de saída da suíte (`if [ $r -eq 0 ]`); e a conferência de "não mudou" compara com uma leitura feita **antes** da chamada, nunca com o objeto do cenário |
 
 **Pendências anotadas:**
 - **Classificação, reincidência e segregação** (2026-10-07, com a
@@ -176,11 +177,9 @@ da mensagem padrão do `setErrorHandler`.
    `registroRepository.atualizar` → banco → auditoria → resposta), com
    Matthew dizendo o que cada parte faz antes de Claude explicar.
    Motivo: Matthew disse que não estava mais reconhecendo o código.
-3. **B23 primeiro** (registrado em 2026-10-07, `esquema-backend.md` §7):
-   as rotas aceitam o `id` de um item de outro tipo. Matthew escreve,
-   passo a passo: o teste vermelho (`decidir` de uma ação corretiva pela
-   rota da Contenção) e a conferência do tipo no ciclo de vida; Claude
-   repete nos outros tipos. Só depois, a Contenção abaixo.
+3. ~~**B23**~~: corrigido em 2026-10-07 (7 fatias; a primeira por
+   Matthew). Falta o **B24** (editar não muda o `atualizadoEm`), antes
+   da Contenção abaixo.
 4. **A5, item 2: replicar o schema de resposta** (Claude escreve,
    Matthew revisa; **um commit por arquivo**, cada um com teste vermelho
    quando houver o que provar, e a suíte completa). O padrão é o das

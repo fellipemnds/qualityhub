@@ -48,10 +48,10 @@ regra nova (fase fechada em 2026-10-02, PR #4). A A4 corrigiu o B19
 (transições sem trava sob concorrência) e o B7 (papéis no token), os
 dois em 2026-10-05, e o B21 (erro 4xx do Fastify respondia 500) e o B20
 (a API aceitava corpo `text/plain`), em 2026-10-06 (fase fechada em
-2026-10-06, PR #6). **Abertos, na A5:** B22 (dia de calendário sai com
-hora na resposta), no item do schema de resposta, e B23 (rotas aceitam
-o `id` de um item de outro tipo), antes do schema da Contenção, e B24
-(editar não muda o `atualizadoEm`), depois do B23.
+2026-10-06, PR #6). A A5 corrigiu o B23 (as rotas aceitavam o `id` de
+um item de outro tipo), em 2026-10-07. **Abertos, na A5:** B22 (dia de
+calendário sai com hora na resposta), no item do schema de resposta, e
+B24 (editar não muda o `atualizadoEm`).
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
@@ -145,6 +145,13 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   permissão como parâmetro (default a ação genérica), porque
   `Classificacao` exige `CLASSIFICAR` em vez de
   `PUBLICAR`/`SUBMETER`/`GERENCIAR_RASCUNHO`.
+- **Tipo conferido (B23)**: os tipos dividem o `Registro`, e o `id`
+  sozinho não diz o tipo. Toda transição do ciclo de vida recebe o
+  `tipo` esperado (obrigatório, logo depois do `registroId`), e os
+  `GET`/`PATCH` dos services buscam pela `buscarRegistroDoTipoOuFalhar`
+  (`compartilhado/registro/buscar-registro-do-tipo.ts`): item de outro
+  tipo responde 404, como inexistente. Rota nova que recebe um `id`
+  busca por ela.
 - **Trava de concorrência (B19)**: toda gravação no `Registro` passa
   pelo `registroRepository.atualizar`/`excluir`, que exigem o **estado
   em que o item foi lido** e respondem 409 se ele mudou no meio (outra

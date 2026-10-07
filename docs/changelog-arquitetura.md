@@ -45,6 +45,18 @@ documento de arquitetura.
   esperavam o formato antigo (data com hora) mudam junto, sem mudar o
   objetivo deles.
 
+- **Busca com tipo (B23)** (2026-10-07, Matthew escreveu a busca e o
+  `decidir`; Claude repetiu): toda transição do `cicloVidaService` passa
+  a receber o `tipo` esperado, **obrigatório**, logo depois do
+  `registroId` (`decidir(tx, id, "CONTENCAO", ator, dados)`); os `GET` e
+  `PATCH` dos services usam a mesma `buscarRegistroDoTipoOuFalhar`, em
+  arquivo próprio. Obrigatório pelo mesmo motivo da trava do B19: o
+  compilador aponta a chamada que esquecer. Feito em "expandir e
+  contrair": a busca nova ao lado da antiga, as transições migradas uma
+  por fatia, e a antiga apagada quando ninguém mais a usava. Item de
+  outro tipo responde como inexistente (404, mesma mensagem), sem
+  revelar que o `id` existe.
+
 ### Fase A4 — sessão nova (branch `fase/a4-sessao`, PR #6)
 
 - **Trava de concorrência no repositório (B19):** o
