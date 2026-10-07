@@ -12,6 +12,7 @@ import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.ser
 import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
 import { LIMITE_PADRAO_PAGINACAO, paginar } from "../../../compartilhado/registro/paginacao-cursor.js";
+import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
 import { classificacaoRepository } from "../classificacao/classificacao.repository.js";
 import { contencaoRepository } from "../contencao/contencao.repository.js";
 import { investigacaoRepository } from "../investigacao/investigacao.repository.js";
@@ -86,6 +87,9 @@ export const ncService = {
 
             const ncAntes = await ncRepository.buscarPorId(tx, registroId);
             const ncAtualizada = await ncRepository.atualizar(tx, registroId, dados);
+            // A edição também é gravação no Registro: o atualizadoEm muda (B24), e a trava do B19 recusa editar um item
+            // que mudou de estado no meio
+            const registroTocado = await registroRepository.atualizar(tx, registroId, registro.estado, {});
 
             await auditoriaRepository.registrar(tx, {
                 entidade: EntidadeAuditada[registro.tipo],
@@ -96,7 +100,7 @@ export const ncService = {
                 depois: ncAtualizada,
             });
 
-            return { ...registro, ...ncAtualizada };
+            return { ...registroTocado, ...ncAtualizada };
         });
     },
 

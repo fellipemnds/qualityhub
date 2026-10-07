@@ -56,6 +56,19 @@ describe("PATCH /contencoes/:id", () => {
         // Confere (comparado com a leitura de antes: o cenário já edita a descrição depois de criar)
         expect(await chamar(editor, "GET", `/api/nc/${nc.id}`, 200)).toMatchObject({ descricao: antes.descricao });
     });
+
+    it("a edição atualiza o atualizadoEm (B24)", async () => {
+        // Prepara
+        const { editor, contencao } = await levarContencaoAte("ABERTO");
+        const antes = await chamar(editor, "GET", `/api/contencoes/${contencao.id}`, 200);
+
+        // Chama
+        await chamar(editor, "PATCH", `/api/contencoes/${contencao.id}`, 200, { disposicao: "ANULADO" });
+
+        // Confere
+        const depois = await chamar(editor, "GET", `/api/contencoes/${contencao.id}`, 200);
+        expect(new Date(depois.atualizadoEm).getTime()).toBeGreaterThan(new Date(antes.atualizadoEm).getTime());
+    });
 });
 
 describe("PATCH /contencoes/:id", () => {

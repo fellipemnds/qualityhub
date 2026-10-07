@@ -31,6 +31,9 @@ export const verificacaoService = {
 
             const antes = await verificacaoRepository.buscarPorId(tx, registroId);
             const atualizada = await verificacaoRepository.atualizar(tx, registroId, dados);
+            // A edição também é gravação no Registro: o atualizadoEm muda (B24), e a trava do B19 recusa editar um item
+            // que mudou de estado no meio
+            await registroRepository.atualizar(tx, registroId, registro.estado, {});
 
             await auditoriaRepository.registrar(tx, {
                 entidade: EntidadeAuditada[registro.tipo],

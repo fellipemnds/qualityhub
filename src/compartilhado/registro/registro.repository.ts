@@ -41,9 +41,11 @@ export const registroRepository = {
             portaoAtual?: number;
         },
     ) {
+        // O atualizadoEm vai explícito: o @updatedAt do Prisma não é preenchido com os dados vazios, e a edição grava assim,
+        // só para tocar o Registro (B24)
         const [registro] = await tx.registro.updateManyAndReturn({
             where: { id, estado: estadoEsperado },
-            data: dados,
+            data: { ...dados, atualizadoEm: new Date() },
         });
 
         if (registro === undefined) {

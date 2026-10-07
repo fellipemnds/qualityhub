@@ -11,6 +11,7 @@ import { buscarRegistroDoTipoOuFalhar } from "../../../compartilhado/registro/bu
 import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
 import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
+import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
 import { ncRepository } from "../nc/nc.repository.js";
 import { classificacaoRepository } from "./classificacao.repository.js";
 import {
@@ -66,6 +67,9 @@ export const classificacaoService = {
 
             const classificacaoAntes = await classificacaoRepository.buscarPorId(tx, registroId);
             const classificacaoAtualizada = await classificacaoRepository.atualizar(tx, registroId, dados);
+            // A edição também é gravação no Registro: o atualizadoEm muda (B24), e a trava do B19 recusa editar um item
+            // que mudou de estado no meio
+            await registroRepository.atualizar(tx, registroId, registro.estado, {});
 
             await auditoriaRepository.registrar(tx, {
                 entidade: EntidadeAuditada[registro.tipo],
