@@ -177,9 +177,9 @@ da mensagem padrão do `setErrorHandler`.
    `registroRepository.atualizar` → banco → auditoria → resposta), com
    Matthew dizendo o que cada parte faz antes de Claude explicar.
    Motivo: Matthew disse que não estava mais reconhecendo o código.
-3. ~~**B23**~~: corrigido em 2026-10-07 (7 fatias; a primeira por
-   Matthew). Falta o **B24** (editar não muda o `atualizadoEm`), antes
-   da Contenção abaixo.
+3. ~~**B23** e **B24**~~: corrigidos em 2026-10-07 (o B23 em 7 fatias,
+   a primeira por Matthew; o B24 deu de brinde a trava do B19 na
+   edição).
 4. **A5, item 2: replicar o schema de resposta** (Claude escreve,
    Matthew revisa; **um commit por arquivo**, cada um com teste vermelho
    quando houver o que provar, e a suíte completa). O padrão é o das

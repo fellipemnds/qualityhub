@@ -49,9 +49,9 @@ regra nova (fase fechada em 2026-10-02, PR #4). A A4 corrigiu o B19
 dois em 2026-10-05, e o B21 (erro 4xx do Fastify respondia 500) e o B20
 (a API aceitava corpo `text/plain`), em 2026-10-06 (fase fechada em
 2026-10-06, PR #6). A A5 corrigiu o B23 (as rotas aceitavam o `id` de
-um item de outro tipo), em 2026-10-07. **Abertos, na A5:** B22 (dia de
-calendário sai com hora na resposta), no item do schema de resposta, e
-B24 (editar não muda o `atualizadoEm`).
+um item de outro tipo) e o B24 (editar não mudava o `atualizadoEm`), em
+2026-10-07. **Aberto, na A5:** B22 (dia de calendário sai com hora na
+resposta), no item do schema de resposta.
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
@@ -155,7 +155,8 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
 - **Trava de concorrência (B19)**: toda gravação no `Registro` passa
   pelo `registroRepository.atualizar`/`excluir`, que exigem o **estado
   em que o item foi lido** e respondem 409 se ele mudou no meio (outra
-  requisição chegou antes). Transição nova passa por eles, de
+  requisição chegou antes). A edição também passa por ele, com os dados
+  vazios, só para tocar o `atualizadoEm` (B24). Transição nova passa por eles, de
   preferência pelo `aplicarTransicao`. Teste de concorrência chama o
   `abrirDuasConexoes()` antes do `Promise.all`, senão a corrida pode não
   acontecer e o teste passa sem provar nada.
