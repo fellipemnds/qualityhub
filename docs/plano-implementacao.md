@@ -324,6 +324,7 @@ garantidos pelos testes de API do backend.
 | Identidade visual | Empresa | **B3** (mockups) |
 | 3 colegas disponíveis para o teste | Matthew | **B4** |
 | Período do piloto e data de corte | Matthew + analista | **D2**, **D3** |
+| 3ª ocorrência: recusar a Menor ou aceitar com justificativa (PRD Q21) | Matthew + analista | **C2** |
 | ~~NCs da planilha: migrar ou não~~ — decidido: **nenhuma** (P1) | — | — |
 
 ---
@@ -343,6 +344,7 @@ Onde cada item dos documentos anteriores é feito:
 | RF-15 (usuários) · RF-20 (setores) · RN-43 · RN-44 | A6 (backend), C6 (telas) |
 | RF-01 (NC com colaboradores) · RF-16 (etapa) · L2, L5, L6 | C1 |
 | L1 (hipóteses) · L3 (plano aprovado) | C2 · A3 |
+| PRD Q19–Q21 (classificação vigente, exigências por classificação, abrangência) | C2 (proposta) |
 | RF-17 (pendências) · L4 · L9 (tela inicial) | C3 · A4 |
 | RF-11 (Feed) · M4 | C4 |
 | RF-18 (anexos) · M3 · RN-45 · ADR-34 | C5 |
@@ -396,3 +398,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-06 | v1.10 — C1: o que a T-06 pedir no `GET /nc/:id` entra lá, só acrescentando ao contrato da A5 (D5) |
 | 2026-10-06 | v1.11 — B22 entra na A5, no item do schema de resposta |
 | 2026-10-07 | v1.12 — B23 entra na A5, antes do schema de resposta da Contenção |
+| 2026-10-07 | v1.13 — PRD Q19–Q21 (classificação e reincidência) na C2, como proposta; a confirmação da analista sobre a 3ª ocorrência, no §7 |

@@ -92,6 +92,9 @@ migration M1; o `npm run preparar` cobre.)
 | Teste do B9 quebrou na fatia 5 | Ele esperava o `detectadoEm` com hora, o formato do bug B22 | Ajustado para o dia (o objetivo do teste não mudou). Ao replicar nas outras entidades, testes que esperem data com hora ou `portaoAtual` mudam junto (ex.: `contencao.routes.test.ts:226`) |
 
 **Pendências anotadas:**
+- **Classificação e reincidência** (2026-10-07, com a analista): PRD
+  Q19–Q21, na C2 como proposta. Falta a analista confirmar a recusa da
+  Menor na 3ª ocorrência (plano §7).
 - **⚠️ Em casa, trocar o `JWT_SECRET` do `.env` (prioridade).** Tokens
   de desenvolvimento antigos estão no histórico de um repositório
   público (exceção X2); se o segredo de casa ainda for o antigo e fraco,
