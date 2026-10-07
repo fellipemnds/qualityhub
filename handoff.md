@@ -5,7 +5,7 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-06 (fim do dia, no **trabalho**; a sessão em casa não aconteceu). **A4 fechada** (PR #6) e as skills de início e fim de fase mescladas (PR #7). **A5 em andamento** (branch `fase/a5-contrato-api`, PR #8 em rascunho): item 1 (prefixo `/api`) feito; item 2 (schema de resposta) feito nas **12 rotas de NC**, escritas por Matthew; faltam as 55 das outras rotas, por Claude (§6). B22 aberto.
+**Última atualização:** 2026-10-07 (manhã, no **trabalho**; `/retomar`). Ambiente em dia: Docker Desktop atualizado (motor 29.8.2), extensões do Claude Code (2.1.292) e do GitHub PR (0.168.0) atualizadas; suíte **312 passando**, cobertura 95,2%. Na sessão: **B23 registrado** (rotas aceitam o `id` de um item de outro tipo; entra antes da Contenção, por Matthew) e a conversa com a analista sobre classificação e reincidência (PRD Q19–Q21). O PC de casa continua sem foto (`casa.txt`).
 
 ## 1. Objetivo
 
@@ -90,6 +90,7 @@ migration M1; o `npm run preparar` cobre.)
 | Sonda `.mts` na pasta temporária não achou o `fastify` | Fora do projeto não há `node_modules` | Claude: cópia temporária na raiz do projeto, apagada logo depois (ou importar o `app.ts` pelo caminho absoluto) |
 | Teste do RN-17 estourou os 15 s (2026-10-06) | Máquina lenta: Apple Music aberto no navegador | Fechar o player antes da suíte; o teste passou na rodada seguinte |
 | Teste do B9 quebrou na fatia 5 | Ele esperava o `detectadoEm` com hora, o formato do bug B22 | Ajustado para o dia (o objetivo do teste não mudou). Ao replicar nas outras entidades, testes que esperem data com hora ou `portaoAtual` mudam junto (ex.: `contencao.routes.test.ts:226`) |
+| Janela do VS Code no WSL não abria depois da atualização (2026-10-07) | O `npm run ambiente` chamou o `code` do WSL no meio da atualização: o servidor novo ficou descompactado numa pasta temporária, sem o último passo da instalação, e a versão antiga já tinha sido apagada | Resolvido: a pasta da versão em `~/.vscode-server/bin/` tirada do caminho, e o VS Code reinstalou ao reconectar. Claude: **não tirar a foto com o VS Code atualizando** |
 
 **Pendências anotadas:**
 - **Classificação e reincidência** (2026-10-07, com a analista): PRD
