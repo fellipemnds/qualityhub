@@ -20,6 +20,25 @@ describe("PUT /registros/:id/aprovador", () => {
         expect(await aprovadoresDe(nc.id)).toEqual([aprovador.usuario.id]);
     });
 
+    it("devolve a atribuição gravada, e só ela", async () => {
+        // Prepara
+        const { gerente, qa, nc } = await ncPublicada();
+
+        // Chama
+        const resposta = await chamar(gerente, "PUT", `/api/registros/${nc.id}/aprovador`, 200, {
+            usuarioId: qa.usuario.id,
+        });
+
+        // Confere
+        expect(resposta).toEqual({
+            registroId: nc.id,
+            usuarioId: qa.usuario.id,
+            funcao: "APROVADOR",
+            atribuidoPorId: gerente.usuario.id,
+            atribuidoEm: expect.any(String),
+        });
+    });
+
     it("um APROVADOR que não é gerente também define (RN-18)", async () => {
         // Prepara
         const { aprovador, qa, nc } = await ncPublicada();
