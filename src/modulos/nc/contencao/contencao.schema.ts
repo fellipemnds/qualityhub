@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { diaDeCalendario } from "../../../compartilhado/datas/dia-de-calendario.js";
 import { Disposicao } from "../../../compartilhado/entidades/disposicao.js";
+import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import { TipoRegistro } from "../../../compartilhado/entidades/tipos-registro.js";
 
 // A base é a forma guardada no banco (datas já como Date); o rascunho é a entrada da API, com os dias em "AAAA-MM-DD"
 export const contencaoBaseSchema = z.object({
@@ -22,3 +24,19 @@ export type ContencaoBaseInput = z.infer<typeof contencaoBaseSchema>;
 export type ContencaoRascunhoInput = z.infer<typeof contencaoRascunhoSchema>;
 export type ContencaoPublicacaoInput = z.infer<typeof contencaoPublicacaoSchema>;
 export type ContencaoFechamentoInput = z.infer<typeof contencaoFechamentoSchema>;
+
+// O formato de saída, o mesmo em criar, detalhe, lista, edição e transições (D1): os campos do Registro, sem o
+// portaoAtual (D2), e os da contenção, nulos onde o rascunho permite
+export const contencaoRespostaSchema = z.object({
+    id: z.uuid(),
+    criadoPorId: z.uuid(),
+    tipo: z.enum(TipoRegistro),
+    estado: z.enum(EstadoRegistro),
+    codigo: z.string().nullable(),
+    criadoEm: z.date(),
+    atualizadoEm: z.date(),
+    naoConformidadeId: z.uuid(),
+    descricao: z.string().nullable(),
+    executadaEm: diaDeCalendario().nullable(),
+    disposicao: z.enum(Disposicao).nullable(),
+});

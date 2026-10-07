@@ -2,11 +2,12 @@ import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import { erroSchema } from "../../../compartilhado/errors/erro.schema.js";
 import { decisaoSchema } from "../../../compartilhado/registro/decidir.schema.js";
 import { motivoSchema } from "../../../compartilhado/registro/motivo.schema.js";
 import { autenticar } from "../../../middlewares/autenticar.js";
 import { contencaoController } from "./contencao.controller.js";
-import { contencaoRascunhoSchema } from "./contencao.schema.js";
+import { contencaoRascunhoSchema, contencaoRespostaSchema } from "./contencao.schema.js";
 
 export async function contencaoRoutes(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -16,6 +17,7 @@ export async function contencaoRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ naoConformidadeId: z.uuid() }),
             body: contencaoRascunhoSchema,
+            response: { 201: contencaoRespostaSchema, "4xx": erroSchema },
         },
         handler: contencaoController.criarRascunhoContencao,
     });
@@ -27,6 +29,7 @@ export async function contencaoRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ id: z.uuid() }),
             body: contencaoRascunhoSchema,
+            response: { 200: contencaoRespostaSchema, "4xx": erroSchema },
         },
         handler: contencaoController.atualizarContencao,
     });
@@ -37,6 +40,7 @@ export async function contencaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 204: z.null(), "4xx": erroSchema },
         },
         handler: contencaoController.excluirRascunhoContencao,
     });
@@ -47,6 +51,7 @@ export async function contencaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: contencaoRespostaSchema, "4xx": erroSchema },
         },
         handler: contencaoController.publicarContencao,
     });
@@ -57,6 +62,7 @@ export async function contencaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: contencaoRespostaSchema, "4xx": erroSchema },
         },
         handler: contencaoController.submeterContencao,
     });
@@ -67,6 +73,7 @@ export async function contencaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: contencaoRespostaSchema, "4xx": erroSchema },
         },
         handler: contencaoController.retirarContencao,
     });
@@ -78,6 +85,7 @@ export async function contencaoRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ id: z.uuid() }),
             body: decisaoSchema,
+            response: { 200: contencaoRespostaSchema, "4xx": erroSchema },
         },
         handler: contencaoController.decidirContencao,
     });
@@ -89,6 +97,7 @@ export async function contencaoRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ id: z.uuid() }),
             body: motivoSchema,
+            response: { 200: contencaoRespostaSchema, "4xx": erroSchema },
         },
         handler: contencaoController.cancelarContencao,
     });
@@ -99,6 +108,7 @@ export async function contencaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: contencaoRespostaSchema, "4xx": erroSchema },
         },
         handler: contencaoController.buscarPorIdContencao,
     });
@@ -112,6 +122,7 @@ export async function contencaoRoutes(app: FastifyInstance) {
                 naoConformidadeId: z.string().min(1).optional(),
                 estado: z.enum(EstadoRegistro).optional(),
             }),
+            response: { 200: z.array(contencaoRespostaSchema), "4xx": erroSchema },
         },
         handler: contencaoController.listarContencoes,
     });

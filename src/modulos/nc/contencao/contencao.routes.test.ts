@@ -69,9 +69,7 @@ describe("PATCH /contencoes/:id", () => {
         const depois = await chamar(editor, "GET", `/api/contencoes/${contencao.id}`, 200);
         expect(new Date(depois.atualizadoEm).getTime()).toBeGreaterThan(new Date(antes.atualizadoEm).getTime());
     });
-});
 
-describe("PATCH /contencoes/:id", () => {
     it("recusa número como data: 0 viraria 01/01/1970 (B14)", async () => {
         // Prepara
         const { editor, nc } = await ncPublicada();
@@ -87,6 +85,19 @@ describe("PATCH /contencoes/:id", () => {
             mensagem: "Dados inválidos",
             error: expect.arrayContaining([expect.objectContaining({ instancePath: "/executadaEm" })]),
         });
+    });
+
+    it("devolve a contenção inteira, com estado e código, como as outras rotas (D1)", async () => {
+        // Prepara
+        const { editor, contencao } = await levarContencaoAte("ABERTO");
+
+        // Chama
+        const resposta = await chamar(editor, "PATCH", `/api/contencoes/${contencao.id}`, 200, {
+            disposicao: "ANULADO",
+        });
+
+        // Confere
+        expect(resposta).toMatchObject({ disposicao: "ANULADO", estado: "ABERTO", codigo: expect.any(String) });
     });
 });
 
@@ -121,6 +132,21 @@ describe("GET /contencoes", () => {
         expect(ids(abertasDaNC)).toEqual([publicada.id]);
     });
 
+    it("os itens da lista trazem a data de execução como dia, sem hora (B22)", async () => {
+        // Prepara
+        const { editor, nc } = await ncPublicada();
+        await chamar(editor, "POST", `/api/nc/${nc.id}/contencoes`, 201, {
+            descricao: "Retrabalho realizado na peça com defeito.",
+            executadaEm: "2026-09-10",
+        });
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/contencoes?naoConformidadeId=${nc.id}`, 200);
+
+        // Confere
+        expect(resposta[0].executadaEm).toBe("2026-09-10");
+    });
+
     it("recusa filtro de estado fora da lista", async () => {
         // Prepara
         const editor = await loginComo("editor");
@@ -137,6 +163,44 @@ describe("GET /contencoes", () => {
 });
 
 describe("GET /contencoes/:id", () => {
+    it("devolve a data de execução como dia, sem hora (B22)", async () => {
+        // Prepara
+        const { editor, nc } = await ncPublicada();
+        const contencao = await chamar(editor, "POST", `/api/nc/${nc.id}/contencoes`, 201, {
+            descricao: "Retrabalho realizado na peça com defeito.",
+            executadaEm: "2026-09-10",
+        });
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/contencoes/${contencao.id}`, 200);
+
+        // Confere
+        expect(resposta.executadaEm).toBe("2026-09-10");
+    });
+
+    it("não expõe o portaoAtual, detalhe interno do ciclo de vida (D2)", async () => {
+        // Prepara
+        const { editor, contencao } = await levarContencaoAte("RASCUNHO");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/contencoes/${contencao.id}`, 200);
+
+        // Confere
+        expect(resposta.id).toBe(contencao.id);
+        expect(resposta).not.toHaveProperty("portaoAtual");
+    });
+
+    it("responde 404 só com a mensagem quando a contenção não existe", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/contencoes/${ID_INEXISTENTE}`, 404);
+
+        // Confere
+        expect(resposta).toEqual({ mensagem: "Item não encontrado." });
+    });
+
     it("recusa com 404 o id de uma NC (B23)", async () => {
         // Prepara
         const { editor, nc } = await ncPublicada();
@@ -308,7 +372,8 @@ describe("POST /contencoes/:id/retirar", () => {
         const resposta = await chamar(editor, "POST", `/api/contencoes/${contencao.id}/retirar`, 200);
 
         // Confere: no mesmo portão, sem Aprovacao (não é reprovação), auditado, e o envio volta a ser possível
-        expect(resposta).toMatchObject({ estado: "ABERTO", portaoAtual: 0 });
+        expect(resposta).toMatchObject({ estado: "ABERTO" });
+        expect(await prisma.registro.findUnique({ where: { id: contencao.id } })).toMatchObject({ portaoAtual: 0 });
         expect(await prisma.aprovacao.findMany({ where: { registroId: contencao.id } })).toEqual([]);
         expect(
             await prisma.auditoria.findMany({ where: { entidadeId: contencao.id, acao: "RETIRAR_DA_APROVACAO" } }),
