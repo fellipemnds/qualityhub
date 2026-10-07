@@ -69,6 +69,16 @@ documento de arquitetura.
   a ação com a `verificacaoGerada` no formato da Verificação, por isso a
   Verificação veio antes da ação corretiva.
 
+- **Schema de resposta na sessão, nos usuários e nas atribuições**
+  (2026-10-07, Claude; planejado antes com Matthew, por tocar o login):
+  só a declaração do que sai, sem mudar o login, o cookie, o JWT nem o
+  limite de tentativas. No `/auth/eu` e no `POST /usuarios`, o schema é
+  a **lista do que pode sair**, a segunda trava depois do `select`: a
+  prova de quebra pôs `senhaHash` na consulta e no controller, e sem o
+  schema o hash saía na resposta. O convite (`tokenConvite`) é uma
+  credencial e sai só na criação, para o `ADMIN`. As atribuições
+  devolvem o registro gravado, como já faziam (o resto, na C1, pelo D5).
+
 ### Fase A4 — sessão nova (branch `fase/a4-sessao`, PR #6)
 
 - **Trava de concorrência no repositório (B19):** o

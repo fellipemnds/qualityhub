@@ -35,8 +35,8 @@ momento tranquilo em casa (§6), sem bloquear a fase.
     não serializa 204; a prova de quebra mostrou).
 - **B22, B23 e B24 corrigidos** em 2026-10-07; nenhum bug aberto. Os
   cinco filhos ganharam o schema de resposta no mesmo dia (§6).
-- Suíte: **341 passando** na última rodada completa (ação corretiva);
-  cobertura ~96,2% (trava em 94,66%). Lint e typecheck limpos.
+- Suíte: **342 passando** na última rodada completa (atribuição);
+  cobertura ~96,3% (trava em 94,66%). Lint e typecheck limpos.
 - O que Matthew aprendeu na A5: `prefix` do Fastify e `Path` do
   cookie; schema de resposta (filtra o que sai, vigia o código: tipo
   errado vira 500); codec do Zod (`decode`/`encode`); *arrow function*
@@ -184,14 +184,12 @@ da mensagem padrão do `setErrorHandler`.
    prova de quebra). Feitos em 2026-10-07: contenção, classificação,
    investigação (sem as hipóteses: não há rota delas, é a L1 na C2),
    verificação e ação corretiva (com o `planoAprovado` em todas as rotas,
-   decisão de Matthew); o **B22 fechou**. Faltam **10 rotas em 3
-   arquivos**:
-
-   | Arquivo | Rotas | Observação |
-   |---|---|---|
-   | Atribuição | 3 | `/registros/...` (colaboradores e aprovador) |
-   | Auth | 6 | Login 204, `eu`, `logout`... |
-   | Usuário | 1 | |
+   decisão de Matthew); o **B22 fechou**. Depois, no mesmo dia, o lote
+   da sessão e dos usuários (planejado antes, por ser sensível):
+   login, senha, logout e sair-de-todos (204), `/auth/eu` e `POST
+   /usuarios` com o schema como **lista do que pode sair** (a prova de
+   quebra mostrou o hash da senha vazando sem ele), e as 3 rotas de
+   atribuição. **Item 2 completo.**
 
    O `GET /` ganha schema no item 5 (vira `GET /api/saude`).
 5. **Resto da A5**, pela ordem do plano: (3) `@fastify/swagger` com
