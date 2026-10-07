@@ -298,6 +298,52 @@ describe("GET /nc", () => {
 });
 
 describe("GET /nc/:id", () => {
+    it("o último motivo de reprovação é null quando a NC nunca foi decidida (L7)", async () => {
+        // Prepara
+        const { editor, nc } = await levarNCAte("EM_APROVACAO");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/nc/${nc.id}`, 200);
+
+        // Confere
+        expect(resposta).toMatchObject({ ultimoMotivoReprovacao: null });
+    });
+
+    it("traz o motivo da última reprovação, para o colaborador saber o que corrigir (L7)", async () => {
+        // Prepara
+        const { editor, aprovador, nc } = await levarNCAte("EM_APROVACAO");
+        await chamar(aprovador, "POST", `/api/nc/${nc.id}/decidir`, 200, {
+            decisao: "REPROVADO",
+            motivo: "Faltou revisar os riscos da linha 3.",
+        });
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/nc/${nc.id}`, 200);
+
+        // Confere
+        expect(resposta).toMatchObject({
+            estado: "ABERTO",
+            ultimoMotivoReprovacao: "Faltou revisar os riscos da linha 3.",
+        });
+    });
+
+    it("depois de reprovada e aprovada, o motivo volta a null: a última decisão é a que vale (L7)", async () => {
+        // Prepara
+        const { editor, aprovador, nc } = await levarNCAte("EM_APROVACAO");
+        await chamar(aprovador, "POST", `/api/nc/${nc.id}/decidir`, 200, {
+            decisao: "REPROVADO",
+            motivo: "Faltou revisar os riscos da linha 3.",
+        });
+        await chamar(editor, "POST", `/api/nc/${nc.id}/submeter`, 200);
+        await chamar(aprovador, "POST", `/api/nc/${nc.id}/decidir`, 200, { decisao: "APROVADO" });
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/nc/${nc.id}`, 200);
+
+        // Confere
+        expect(resposta).toMatchObject({ estado: "FECHADO", ultimoMotivoReprovacao: null });
+    });
+
     it("devolve a data de detecção como dia, sem hora (B22)", async () => {
         // Prepara: o levarNCAte cria a NC com detectadoEm "2026-09-10"
         const { editor, nc } = await levarNCAte("RASCUNHO");

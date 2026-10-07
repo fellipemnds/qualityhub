@@ -76,6 +76,11 @@ export const ncRespostaSchema = z.object({
     detectadoEm: diaDeCalendario().nullable(),
 });
 
+// O detalhe traz também o motivo da última reprovação (L7); o resto do que a tela pedir entra na C1 (D5)
+export const ncDetalheRespostaSchema = ncRespostaSchema.extend({
+    ultimoMotivoReprovacao: z.string().nullable(),
+});
+
 // A lista da guarda de fechamento (RN-21), um item por requisito, atendido ou não, na ordem do avaliarFechamentoNC
 export const checklistFechamentoRespostaSchema = z.array(
     z.object({

@@ -9,6 +9,7 @@ import { autenticar } from "../../../middlewares/autenticar.js";
 import { ncController } from "./nc.controller.js";
 import {
     checklistFechamentoRespostaSchema,
+    ncDetalheRespostaSchema,
     ncFiltrosListagemSchema,
     ncRascunhoSchema,
     ncRespostaSchema,
@@ -135,7 +136,7 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
-            response: { 200: ncRespostaSchema, "4xx": erroSchema },
+            response: { 200: ncDetalheRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.buscarPorIdNC,
     });

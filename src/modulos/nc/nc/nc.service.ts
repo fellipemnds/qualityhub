@@ -1,3 +1,4 @@
+import { aprovacaoRepository } from "../../../compartilhado/aprovacao/aprovacao.repository.js";
 import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
@@ -219,7 +220,9 @@ export const ncService = {
             throw new SemPermissaoError("Você não tem permissões suficientes para visualizar.");
         }
 
-        return { ...registro, ...nc };
+        const ultimoMotivoReprovacao = await aprovacaoRepository.ultimoMotivoReprovacao(prisma, registroId);
+
+        return { ...registro, ...nc, ultimoMotivoReprovacao };
     },
 
     async listarNC(ator: Ator, filtros: NCFiltrosListagemInput) {
