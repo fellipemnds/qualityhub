@@ -2,17 +2,18 @@ import z from "zod";
 import { ClassificacaoNC } from "../../../compartilhado/entidades/classificacao-nc.js";
 import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { TipoRegistro } from "../../../compartilhado/entidades/tipos-registro.js";
+import { TEXTO_LONGO } from "../../../compartilhado/validacao/tetos.js";
 
 export const classificacaoBaseSchema = z.object({
     valor: z.enum(ClassificacaoNC).nullish(),
-    justificativa: z.string().min(20).nullish(),
+    justificativa: z.string().min(20).max(TEXTO_LONGO).nullish(),
 });
 
 export const classificacaoRascunhoSchema = classificacaoBaseSchema.partial();
 export const classificacaoPublicacaoSchema = classificacaoBaseSchema;
 export const classificacaoFechamentoSchema = classificacaoBaseSchema.extend({
     valor: z.enum(ClassificacaoNC),
-    justificativa: z.string().min(20),
+    justificativa: z.string().min(20).max(TEXTO_LONGO),
 });
 
 export type ClassificacaoBaseInput = z.infer<typeof classificacaoBaseSchema>;

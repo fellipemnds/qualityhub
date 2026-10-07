@@ -205,6 +205,23 @@ describe("Criação de um filho da NC", () => {
 });
 
 describe("POST /registros/:id/colaboradores", () => {
+    it("recusa mais de 50 colaboradores numa requisição, antes de consultar o banco (L4)", async () => {
+        // Prepara
+        const { editor, nc } = await ncPublicada();
+        const ids = Array.from({ length: 51 }, (_, i) => `00000000-0000-7000-8000-${String(i).padStart(12, "0")}`);
+
+        // Chama
+        const resposta = await chamar(editor, "POST", `/api/registros/${nc.id}/colaboradores`, 400, {
+            colaboradores: ids,
+        });
+
+        // Confere: erro de campo; com 50, a validação passaria e o service responderia que os usuários não existem
+        expect(resposta).toMatchObject({
+            error: expect.arrayContaining([expect.objectContaining({ instancePath: "/colaboradores" })]),
+        });
+        await chamar(editor, "POST", `/api/registros/${nc.id}/colaboradores`, 404, { colaboradores: ids.slice(0, 50) });
+    });
+
     it("um EDITOR que não está no item adiciona colaborador (RN-18, auto-organização)", async () => {
         // Prepara (o qa não é colaborador nem aprovador da NC)
         const { gerente, qa, nc } = await ncPublicada();

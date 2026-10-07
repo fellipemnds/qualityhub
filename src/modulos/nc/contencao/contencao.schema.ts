@@ -3,10 +3,11 @@ import { diaDeCalendario } from "../../../compartilhado/datas/dia-de-calendario.
 import { Disposicao } from "../../../compartilhado/entidades/disposicao.js";
 import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { TipoRegistro } from "../../../compartilhado/entidades/tipos-registro.js";
+import { TEXTO_LONGO } from "../../../compartilhado/validacao/tetos.js";
 
 // A base é a forma guardada no banco (datas já como Date); o rascunho é a entrada da API, com os dias em "AAAA-MM-DD"
 export const contencaoBaseSchema = z.object({
-    descricao: z.string().min(20),
+    descricao: z.string().min(20).max(TEXTO_LONGO),
     executadaEm: z.date().nullish(),
     disposicao: z.enum(Disposicao).nullish(),
 });

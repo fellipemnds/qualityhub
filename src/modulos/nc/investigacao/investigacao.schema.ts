@@ -2,13 +2,14 @@ import z from "zod";
 import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { MetodoInvestigacao } from "../../../compartilhado/entidades/metodo-investigacao.js";
 import { TipoRegistro } from "../../../compartilhado/entidades/tipos-registro.js";
+import { TEXTO_LONGO } from "../../../compartilhado/validacao/tetos.js";
 
 export const investigacaoBaseSchema = z.object({
-    realProblema: z.string().min(20),
+    realProblema: z.string().min(20).max(TEXTO_LONGO),
     metodo: z.enum(MetodoInvestigacao).nullish(),
     conteudo: z.json().nullish(),
-    causaDireta: z.string().min(20).nullish(),
-    causaRaiz: z.string().min(20).nullish(),
+    causaDireta: z.string().min(20).max(TEXTO_LONGO).nullish(),
+    causaRaiz: z.string().min(20).max(TEXTO_LONGO).nullish(),
 });
 
 export const investigacaoRascunhoSchema = investigacaoBaseSchema.partial();
@@ -16,8 +17,8 @@ export const investigacaoPublicacaoSchema = investigacaoBaseSchema;
 export const investigacaoFechamentoSchema = investigacaoBaseSchema.extend({
     metodo: z.enum(MetodoInvestigacao),
     conteudo: z.json(),
-    causaDireta: z.string().min(20),
-    causaRaiz: z.string().min(20),
+    causaDireta: z.string().min(20).max(TEXTO_LONGO),
+    causaRaiz: z.string().min(20).max(TEXTO_LONGO),
 });
 
 export type InvestigacaoBaseInput = z.infer<typeof investigacaoBaseSchema>;

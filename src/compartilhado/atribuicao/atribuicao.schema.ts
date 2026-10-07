@@ -6,7 +6,8 @@ export const definirAprovadorSchema = z.object({
 });
 
 export const colaboradoresSchema = z.object({
-    colaboradores: z.array(z.uuid()).min(1),
+    // Cada id custa consultas ao banco: sem teto, uma requisição com milhares deles vira milhares de consultas (L4)
+    colaboradores: z.array(z.uuid()).min(1).max(50),
 });
 
 // A atribuição gravada, como está (o que a tela precisar, como o nome da pessoa, entra na C1, acrescentando: D5)

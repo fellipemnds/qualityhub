@@ -3,13 +3,14 @@ import { diaDeCalendario } from "../../../compartilhado/datas/dia-de-calendario.
 import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { ResultadoVerificacao } from "../../../compartilhado/entidades/resultado-verificacao.js";
 import { TipoRegistro } from "../../../compartilhado/entidades/tipos-registro.js";
+import { TEXTO_LONGO } from "../../../compartilhado/validacao/tetos.js";
 
 // A base é a forma guardada no banco (datas já como Date); o rascunho é a entrada da API, com os dias em "AAAA-MM-DD"
 export const verificacaoBaseSchema = z.object({
-    instrucoesVerificacao: z.string().nullish(),
+    instrucoesVerificacao: z.string().max(TEXTO_LONGO).nullish(),
     prazo: z.date().nullish(),
     resultado: z.enum(ResultadoVerificacao).nullish(),
-    conclusao: z.string().min(1).nullish(),
+    conclusao: z.string().min(1).max(TEXTO_LONGO).nullish(),
     verificadoEm: z.date().nullish(),
 });
 
@@ -20,7 +21,7 @@ export const verificacaoRascunhoSchema = verificacaoBaseSchema.partial().extend(
 
 export const verificacaoConclusaoSchema = verificacaoBaseSchema.extend({
     resultado: z.enum(ResultadoVerificacao),
-    conclusao: z.string().min(1),
+    conclusao: z.string().min(1).max(TEXTO_LONGO),
     // Validado no banco, onde a data já é Date: z.date() sem coerce, para o null ser recusado (B14)
     verificadoEm: z.date(),
 });

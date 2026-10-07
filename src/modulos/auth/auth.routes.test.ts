@@ -172,6 +172,25 @@ describe("POST /auth/login", () => {
 });
 
 describe("POST /auth/definir-senha", () => {
+    // O bcrypt só usa os primeiros 72 bytes, e letra com acento ocupa 2: 36 "á" cabem, 37 não, mesmo tendo menos de 72
+    // caracteres. Sem o teto, duas senhas que começam igual valeriam a mesma
+    it("teto da senha em bytes: 37 letras com acento (74 bytes) são recusadas, 36 (72 bytes) passam (L4)", async () => {
+        // Prepara (o convite não existe: quem passa da validação da senha recebe o erro do convite)
+        const definir = (senha: string) =>
+            app.inject({ method: "POST", url: "/api/auth/definir-senha", payload: { token: "f".repeat(64), senha } });
+
+        // Chama
+        const longaDemais = await definir("á".repeat(37));
+        const noTeto = await definir("á".repeat(36));
+
+        // Confere: a de 74 bytes para no campo senha; a de 72 passa e para no convite
+        expect(longaDemais.json()).toMatchObject({
+            mensagem: "Dados inválidos",
+            error: expect.arrayContaining([expect.objectContaining({ instancePath: "/senha" })]),
+        });
+        expect(noTeto.json()).toEqual({ mensagem: "Não foi possível processar a solicitação." });
+    });
+
     // O admin cria a pessoa pela API e devolve o convite
     async function convidar() {
         const { admin } = await perfisDeFora();

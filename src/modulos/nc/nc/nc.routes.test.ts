@@ -244,6 +244,18 @@ describe("GET /nc/:id/checklist-fechamento", () => {
 });
 
 describe("PATCH /nc/:id", () => {
+    it("aceita a descrição no teto, 5.000 caracteres, e recusa um a mais (L4)", async () => {
+        // Prepara
+        const { editor, nc } = await levarNCAte("ABERTO");
+
+        // Chama e confere: no teto passa, um a mais é erro de campo
+        await chamar(editor, "PATCH", `/api/nc/${nc.id}`, 200, { descricao: "a".repeat(5000) });
+        const resposta = await chamar(editor, "PATCH", `/api/nc/${nc.id}`, 400, { descricao: "a".repeat(5001) });
+        expect(resposta).toMatchObject({
+            error: expect.arrayContaining([expect.objectContaining({ instancePath: "/descricao" })]),
+        });
+    });
+
     it("null apaga a data de detecção, e não grava 01/01/1970 (B14)", async () => {
         // Prepara
         const editor = await loginComo("editor");

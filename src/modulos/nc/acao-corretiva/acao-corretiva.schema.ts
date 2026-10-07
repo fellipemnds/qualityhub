@@ -2,6 +2,7 @@ import z from "zod";
 import { diaDeCalendario } from "../../../compartilhado/datas/dia-de-calendario.js";
 import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { TipoRegistro } from "../../../compartilhado/entidades/tipos-registro.js";
+import { TEXTO_LONGO } from "../../../compartilhado/validacao/tetos.js";
 import { verificacaoRespostaSchema } from "../verificacao/verificacao.schema.js";
 
 // A base é a forma guardada no banco (datas já como Date); o rascunho é a entrada da API, com os dias em "AAAA-MM-DD"
@@ -9,11 +10,11 @@ export const acaoCorretivaBaseSchema = z.object({
     // A investigação que a Verificação NAO_EFICAZ reabre e que confere o plano (B10, RN-24): a ação nasce com ela e
     // o vínculo não se apaga (RN-49)
     investigacaoId: z.uuid(),
-    descricao: z.string().min(20).nullish(),
+    descricao: z.string().min(20).max(TEXTO_LONGO).nullish(),
     prazo: z.date().nullish(),
     executadoEm: z.date().nullish(),
-    evidencia: z.string().min(1).nullish(),
-    instrucoesVerificacao: z.string().min(1).nullish(),
+    evidencia: z.string().min(1).max(TEXTO_LONGO).nullish(),
+    instrucoesVerificacao: z.string().min(1).max(TEXTO_LONGO).nullish(),
 });
 
 export const acaoCorretivaRascunhoSchema = acaoCorretivaBaseSchema.partial().extend({
@@ -28,15 +29,15 @@ export const acaoCorretivaPublicacaoSchema = acaoCorretivaBaseSchema;
 export const CAMPOS_DO_PLANO = ["investigacaoId", "descricao", "prazo", "instrucoesVerificacao"] as const;
 
 export const acaoCorretivaPlanoSchema = acaoCorretivaBaseSchema.extend({
-    descricao: z.string().min(20),
+    descricao: z.string().min(20).max(TEXTO_LONGO),
     // Validado no banco, onde a data já é Date: z.date() sem coerce, para o null ser recusado (B14)
     prazo: z.date(),
-    instrucoesVerificacao: z.string().min(1),
+    instrucoesVerificacao: z.string().min(1).max(TEXTO_LONGO),
 });
 
 export const acaoCorretivaExecucaoSchema = acaoCorretivaPlanoSchema.extend({
     executadoEm: z.date(),
-    evidencia: z.string().min(1),
+    evidencia: z.string().min(1).max(TEXTO_LONGO),
 });
 
 export const finalizarExecucaoSchema = z.object({

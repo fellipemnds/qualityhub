@@ -4,14 +4,20 @@ import { TelaInicial } from "../../compartilhado/entidades/tela-inicial.js";
 
 // Schema usado para definir a senha
 export const definirSenhaSchema = z.object({
-    token: z.string().min(32),
-    senha: z.string().min(12),
+    token: z.string().min(32).max(128),
+    // O bcrypt só usa os primeiros 72 bytes: duas senhas que começam igual valeriam a mesma. Em bytes, não em caracteres
+    // (letra com acento ocupa 2); o .max(72) é o que o OpenAPI mostra
+    senha: z
+        .string()
+        .min(12)
+        .max(72)
+        .refine((senha) => Buffer.byteLength(senha) <= 72, "A senha pode ter no máximo 72 bytes."),
 });
 
 // Schema usado para definir os inputs do Login
 export const loginSchema = z.object({
     email: z.email(),
-    senha: z.string().min(1),
+    senha: z.string().min(1).max(128),
     manterConectado: z.boolean().default(false),
 });
 

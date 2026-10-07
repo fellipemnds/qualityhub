@@ -156,6 +156,41 @@ describe("Documentação da API (OpenAPI)", () => {
         }
     });
 
+    it("todo texto e toda lista de entrada têm teto: o limite de 1 MB do corpo não basta (L4)", async () => {
+        // Prepara: percorre o schema de todo corpo de entrada, inclusive os campos aninhados e os que aceitam null
+        const doc = await documento();
+        type No = {
+            type?: string;
+            format?: string;
+            enum?: unknown[];
+            pattern?: string;
+            maxLength?: number;
+            maxItems?: number;
+            properties?: Record<string, No>;
+            anyOf?: No[];
+            items?: No;
+        };
+        const semTeto: string[] = [];
+        const percorrer = (no: No | undefined, onde: string) => {
+            if (no === undefined) return;
+            const livre = no.format === undefined && no.enum === undefined && no.pattern === undefined;
+            if (no.type === "string" && livre && no.maxLength === undefined) semTeto.push(onde);
+            if (no.type === "array" && no.maxItems === undefined) semTeto.push(`${onde}[]`);
+            for (const [campo, filho] of Object.entries(no.properties ?? {})) percorrer(filho, `${onde}.${campo}`);
+            for (const filho of no.anyOf ?? []) percorrer(filho, onde);
+            percorrer(no.items, `${onde}[]`);
+        };
+        for (const [caminho, operacoes] of Object.entries(doc.paths)) {
+            for (const [metodo, operacao] of Object.entries(operacoes)) {
+                const corpo = (operacao as { requestBody?: { content: Record<string, { schema: No }> } }).requestBody;
+                percorrer(corpo?.content["application/json"]?.schema, `${metodo.toUpperCase()} ${caminho}`);
+            }
+        }
+
+        // Confere
+        expect([...new Set(semTeto)]).toEqual([]);
+    });
+
     it("não expõe o portaoAtual em resposta nenhuma (D2)", async () => {
         // Chama
         const doc = await documento();
