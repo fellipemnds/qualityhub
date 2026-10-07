@@ -15,6 +15,7 @@ import {
 import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
 import type { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
+import { buscarRegistroDoTipoOuFalhar } from "../../../compartilhado/registro/buscar-registro-do-tipo.js";
 import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
 import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
@@ -293,8 +294,7 @@ export const acaoCorretivaService = {
     },
 
     async buscarPorIdAcaoCorretiva(registroId: string, ator: Ator) {
-        const registro = await registroRepository.buscarPorId(prisma, registroId);
-        if (registro === null) throw new NaoEncontradoError("Item não encontrado.");
+        const registro = await buscarRegistroDoTipoOuFalhar(prisma, registroId, "ACAO_CORRETIVA");
 
         const papel = temPapel(ator, "VISUALIZAR");
         if (!papel) throw new SemPermissaoError("Você não tem permissões suficientes para visualizar.");

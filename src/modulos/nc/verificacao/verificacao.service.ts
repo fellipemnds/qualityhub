@@ -7,6 +7,7 @@ import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js
 import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js";
 import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
+import { buscarRegistroDoTipoOuFalhar } from "../../../compartilhado/registro/buscar-registro-do-tipo.js";
 import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
 import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
@@ -130,8 +131,7 @@ export const verificacaoService = {
     },
 
     async buscarPorIdVerificacao(registroId: string, ator: Ator) {
-        const registro = await registroRepository.buscarPorId(prisma, registroId);
-        if (registro === null) throw new NaoEncontradoError("Item não encontrado.");
+        const registro = await buscarRegistroDoTipoOuFalhar(prisma, registroId, "VERIFICACAO");
 
         const papel = temPapel(ator, "VISUALIZAR");
         if (!papel) throw new SemPermissaoError("Você não tem permissões suficientes para visualizar.");

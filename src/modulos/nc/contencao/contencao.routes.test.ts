@@ -109,6 +109,16 @@ describe("GET /contencoes", () => {
     });
 });
 
+describe("GET /contencoes/:id", () => {
+    it("recusa com 404 o id de uma NC (B23)", async () => {
+        // Prepara
+        const { editor, nc } = await ncPublicada();
+
+        // Chama e confere
+        await chamar(editor, "GET", `/api/contencoes/${nc.id}`, 404);
+    });
+});
+
 describe("POST /contencoes/:id/submeter", () => {
     it("recusa sem a data de execução (B14)", async () => {
         // Prepara: a disposição preenchida, a data não
