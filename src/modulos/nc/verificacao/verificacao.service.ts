@@ -104,10 +104,15 @@ export const verificacaoService = {
                 const motivoAutomatico = `Verificação ${registroConcluido.codigo} foi concluída com resultado Não Eficaz.`;
 
                 // Reabre só o que estiver fechado; aberto, em aprovação ou cancelado fica como está (B4, PRD Q2)
-                for (const id of [acaoCorretiva.investigacaoId, acaoCorretiva.naoConformidadeId]) {
+                const reabriveis = [
+                    { id: acaoCorretiva.investigacaoId, tipo: "INVESTIGACAO" },
+                    { id: acaoCorretiva.naoConformidadeId, tipo: "NAO_CONFORMIDADE" },
+                ] as const;
+
+                for (const { id, tipo } of reabriveis) {
                     const registro = await registroRepository.buscarPorId(tx, id);
                     if (registro?.estado === "FECHADO") {
-                        await cicloVidaService.reabrir(tx, id, ator, motivoAutomatico);
+                        await cicloVidaService.reabrir(tx, id, tipo, ator, motivoAutomatico);
                     }
                 }
             }

@@ -255,8 +255,8 @@ export const cicloVidaService = {
         return aplicarTransicao(tx, registro, { estado: "FECHADO" }, "CONCLUIR_VERIFICACAO", ator);
     },
 
-    async reabrir(tx: ClientePrisma, registroId: string, ator: Ator, motivo: string) {
-        const registro = await buscarRegistroOuFalhar(tx, registroId);
+    async reabrir(tx: ClientePrisma, registroId: string, tipo: TipoRegistro, ator: Ator, motivo: string) {
+        const registro = await buscarRegistroDoTipoOuFalhar(tx, registroId, tipo);
 
         // O motivo em branco já é recusado no schema (400, B18): aqui, só o estado
         if (registro.estado !== "FECHADO") {

@@ -12,6 +12,7 @@ import {
 import { loginComo } from "../../../testes/fabricas.js";
 import { levarInvestigacaoAte } from "../../../testes/levar-ate/investigacao.js";
 import { levarNCAte } from "../../../testes/levar-ate/nc.js";
+import { levarVerificacaoAte } from "../../../testes/levar-ate/verificacao.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
 
@@ -471,6 +472,21 @@ describe("POST /nc/:id/reabrir", () => {
 
         // Confere
         expect(await chamar(editor, "GET", `/api/nc/${nc.id}`, 200)).toMatchObject({ estado: "FECHADO" });
+    });
+
+    it("recusa com 404 o id de uma verificação, que continua fechada (B23)", async () => {
+        // Prepara (o qa tem o papel APROVADOR e não está na verificação: a RN-17 não pede atribuição)
+        const { editor, qa, verificacao } = await levarVerificacaoAte("FECHADO");
+
+        // Chama
+        await chamar(qa, "POST", `/api/nc/${verificacao.id}/reabrir`, 404, {
+            motivo: "Tentativa de reabrir a verificação pela rota da NC.",
+        });
+
+        // Confere
+        expect(await chamar(editor, "GET", `/api/verificacoes/${verificacao.id}`, 200)).toMatchObject({
+            estado: "FECHADO",
+        });
     });
 });
 

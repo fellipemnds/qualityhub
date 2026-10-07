@@ -192,7 +192,7 @@ export const ncService = {
 
     async reabrirNC(registroId: string, ator: Ator, motivo: string) {
         return prisma.$transaction(async (tx) => {
-            const registroReaberto = await cicloVidaService.reabrir(tx, registroId, ator, motivo);
+            const registroReaberto = await cicloVidaService.reabrir(tx, registroId, "NAO_CONFORMIDADE", ator, motivo);
             const nc = await ncRepository.buscarPorId(tx, registroId);
 
             return { ...registroReaberto, ...nc };
