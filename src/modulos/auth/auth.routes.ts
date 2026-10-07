@@ -1,5 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import z from "zod";
+import { erroSchema } from "../../compartilhado/errors/erro.schema.js";
 import { autenticar } from "../../middlewares/autenticar.js";
 import { authController } from "./auth.controller.js";
 import { alterarEuSchema, definirSenhaSchema, type LoginInput, loginSchema } from "./auth.schema.js";
@@ -10,6 +12,7 @@ export async function authRoutes(app: FastifyInstance) {
         url: "/auth/definir-senha",
         schema: {
             body: definirSenhaSchema,
+            response: { 204: z.null(), "4xx": erroSchema },
         },
         handler: authController.definirSenha,
     });
@@ -28,8 +31,10 @@ export async function authRoutes(app: FastifyInstance) {
                 onExceeded: (request, chave) => request.log.warn({ chave }, "Limite de tentativas de login atingido"),
             },
         },
+        // O token vai só no cookie (HttpOnly), nunca no corpo: o 204 não tem corpo
         schema: {
             body: loginSchema,
+            response: { 204: z.null(), "4xx": erroSchema },
         },
         handler: authController.login,
     });
@@ -52,12 +57,14 @@ export async function authRoutes(app: FastifyInstance) {
         method: "POST",
         url: "/auth/logout",
         onRequest: [autenticar],
+        schema: { response: { 204: z.null(), "4xx": erroSchema } },
         handler: authController.logout,
     });
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
         url: "/auth/sair-de-todos",
         onRequest: [autenticar],
+        schema: { response: { 204: z.null(), "4xx": erroSchema } },
         handler: authController.sairDeTodos,
     });
 }
