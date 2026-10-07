@@ -25,6 +25,8 @@ export const classificacaoRepository = {
         filtros: {
             naoConformidadeId?: string;
             estado?: EstadoRegistro;
+            cursor?: string;
+            limit?: number;
         },
     ) {
         return tx.classificacao.findMany({
@@ -33,8 +35,12 @@ export const classificacaoRepository = {
                 registro: {
                     estado: filtros.estado,
                 },
+                id: { gt: filtros.cursor },
             },
             include: { registro: true },
+            orderBy: { id: "asc" },
+            // Sem limit, todas (a guarda de fechamento da NC usa assim); com limit, uma página com um item a mais
+            take: filtros.limit === undefined ? undefined : filtros.limit + 1,
         });
     },
 };

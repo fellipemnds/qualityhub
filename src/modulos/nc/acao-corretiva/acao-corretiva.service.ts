@@ -6,7 +6,6 @@ import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-aud
 import { meiaNoiteUtc } from "../../../compartilhado/datas/dia-de-calendario.js";
 import { hojeEmSaoPaulo } from "../../../compartilhado/datas/hoje-em-sao-paulo.js";
 import type { Ator } from "../../../compartilhado/entidades/ator.js";
-import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import {
     NaoEncontradoError,
     SemPermissaoError,
@@ -20,6 +19,7 @@ import { buscarRegistroDoTipoOuFalhar } from "../../../compartilhado/registro/bu
 import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
 import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
+import { LIMITE_PADRAO_PAGINACAO, paginar } from "../../../compartilhado/registro/paginacao-cursor.js";
 import { prefixoPorTipo } from "../../../compartilhado/registro/prefixos.js";
 import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
 import { sequenciaService } from "../../../compartilhado/sequencia/sequencia.service.js";
@@ -27,6 +27,7 @@ import { investigacaoRepository } from "../investigacao/investigacao.repository.
 import { ncRepository } from "../nc/nc.repository.js";
 import { verificacaoRepository } from "../verificacao/verificacao.repository.js";
 import { acaoCorretivaRepository } from "./acao-corretiva.repository.js";
+import type { AcaoCorretivaFiltrosListagemInput } from "./acao-corretiva.schema.js";
 import {
     type AcaoCorretivaCriacaoInput,
     type AcaoCorretivaRascunhoInput,
@@ -319,17 +320,21 @@ export const acaoCorretivaService = {
         return { ...registro, ...acaoCorretiva, planoAprovado, ultimoMotivoReprovacao };
     },
 
-    async listarAcoesCorretivas(ator: Ator, filtros: { naoConformidadeId?: string; estado?: EstadoRegistro }) {
+    async listarAcoesCorretivas(ator: Ator, filtros: AcaoCorretivaFiltrosListagemInput) {
         const papel = temPapel(ator, "VISUALIZAR");
         if (!papel) throw new SemPermissaoError("Você não tem permissões suficientes para visualizar.");
 
-        const registros = await acaoCorretivaRepository.listar(prisma, filtros);
-        return registros.map((item) => {
+        // O limit vai sempre explícito: sem ele, o repositório traz todas
+        const limit = filtros.limit ?? LIMITE_PADRAO_PAGINACAO;
+
+        const registros = await acaoCorretivaRepository.listar(prisma, { ...filtros, limit });
+        const itens = registros.map((item) => {
             const {
                 registro: { aprovacoes, ...registro },
                 ...resto
             } = item;
             return { ...registro, ...resto, planoAprovado: aprovacoes.length > 0 };
         });
+        return paginar(itens, limit);
     },
 };

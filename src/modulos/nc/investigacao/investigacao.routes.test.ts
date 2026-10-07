@@ -258,7 +258,7 @@ describe("GET /investigacoes", () => {
         );
 
         // Confere
-        const ids = (lista: { id: string }[]) => lista.map((item) => item.id).sort();
+        const ids = (pagina: { itensDaPagina: { id: string }[] }) => pagina.itensDaPagina.map((item) => item.id).sort();
         expect(ids(daNC)).toEqual([publicado.id, rascunho.id].sort());
         expect(ids(abertosDaNC)).toEqual([publicado.id]);
     });

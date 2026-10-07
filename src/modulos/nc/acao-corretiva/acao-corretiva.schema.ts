@@ -2,6 +2,7 @@ import z from "zod";
 import { diaDeCalendario } from "../../../compartilhado/datas/dia-de-calendario.js";
 import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { TipoRegistro } from "../../../compartilhado/entidades/tipos-registro.js";
+import { paginacaoCursorSchema } from "../../../compartilhado/registro/paginacao-cursor.js";
 import { TEXTO_LONGO } from "../../../compartilhado/validacao/tetos.js";
 import { verificacaoRespostaSchema } from "../verificacao/verificacao.schema.js";
 
@@ -85,3 +86,13 @@ export const finalizarExecucaoRespostaSchema = acaoCorretivaRespostaSchema.exten
 export const acaoCorretivaDetalheRespostaSchema = acaoCorretivaRespostaSchema.extend({
     ultimoMotivoReprovacao: z.string().nullable(),
 });
+
+// Os filtros da lista, com a paginação por cursor (L4): a mesma da lista de NCs
+export const acaoCorretivaFiltrosListagemSchema = z
+    .object({
+        naoConformidadeId: z.uuid().optional(),
+        estado: z.enum(EstadoRegistro).optional(),
+    })
+    .extend(paginacaoCursorSchema.shape);
+
+export type AcaoCorretivaFiltrosListagemInput = z.infer<typeof acaoCorretivaFiltrosListagemSchema>;

@@ -3,16 +3,17 @@ import { herdarAprovadorDaNC } from "../../../compartilhado/atribuicao/herdar-ap
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
 import type { Ator } from "../../../compartilhado/entidades/ator.js";
-import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js";
 import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
 import { buscarRegistroDoTipoOuFalhar } from "../../../compartilhado/registro/buscar-registro-do-tipo.js";
 import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
+import { LIMITE_PADRAO_PAGINACAO, paginar } from "../../../compartilhado/registro/paginacao-cursor.js";
 import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
 import { acaoCorretivaRepository } from "../acao-corretiva/acao-corretiva.repository.js";
 import { verificacaoRepository } from "./verificacao.repository.js";
+import type { VerificacaoFiltrosListagemInput } from "./verificacao.schema.js";
 import { type VerificacaoRascunhoInput, verificacaoConclusaoSchema } from "./verificacao.schema.js";
 
 export const verificacaoService = {
@@ -142,14 +143,18 @@ export const verificacaoService = {
         return { ...registro, ...verificacao };
     },
 
-    async listarVerificacoes(ator: Ator, filtros: { acaoCorretivaId?: string; estado?: EstadoRegistro }) {
+    async listarVerificacoes(ator: Ator, filtros: VerificacaoFiltrosListagemInput) {
         const papel = temPapel(ator, "VISUALIZAR");
         if (!papel) throw new SemPermissaoError("Você não tem permissões suficientes para visualizar.");
 
-        const registros = await verificacaoRepository.listar(prisma, filtros);
-        return registros.map((item) => {
+        // O limit vai sempre explícito: sem ele, o repositório traz todas
+        const limit = filtros.limit ?? LIMITE_PADRAO_PAGINACAO;
+
+        const registros = await verificacaoRepository.listar(prisma, { ...filtros, limit });
+        const itens = registros.map((item) => {
             const { registro, ...resto } = item;
             return { ...registro, ...resto };
         });
+        return paginar(itens, limit);
     },
 };

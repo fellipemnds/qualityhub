@@ -42,12 +42,9 @@ describe("Fluxo completo da NC", () => {
         await concluirVerificacao(cenario, verificacao.id, "PARCIALMENTE_EFICAZ");
 
         // Confere (o autor e os colaboradores da ação nova: verificacao.routes.test.ts, B3 e B6)
-        const rascunhos = await chamar(
-            editor,
-            "GET",
-            `/api/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`,
-            200,
-        );
+        const rascunhos = (
+            await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`, 200)
+        ).itensDaPagina;
         expect(rascunhos).toEqual([
             expect.objectContaining({
                 tipo: "ACAO_CORRETIVA",

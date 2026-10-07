@@ -213,6 +213,26 @@ describe("Documentação da API (OpenAPI)", () => {
         expect(aceitaQualquerCampo).toEqual([]);
     });
 
+    it("toda lista é paginada, menos o checklist, que tem tamanho fixo (L4)", async () => {
+        // Chama
+        const doc = await documento();
+
+        // Confere: lista sem paginação devolve um array solto na resposta 200
+        type Corpo = { content?: { "application/json"?: { schema?: { type?: string } } } };
+        const listasSoltas = Object.entries(doc.paths)
+            .filter(([caminho]) => caminho !== "/api/nc/{id}/checklist-fechamento")
+            .flatMap(([caminho, operacoes]) =>
+                Object.entries(operacoes)
+                    .filter(
+                        ([, operacao]) =>
+                            (operacao.responses?.["200"] as Corpo | undefined)?.content?.["application/json"]?.schema
+                                ?.type === "array",
+                    )
+                    .map(([metodo]) => `${metodo.toUpperCase()} ${caminho}`),
+            );
+        expect(listasSoltas).toEqual([]);
+    });
+
     it("não expõe o portaoAtual em resposta nenhuma (D2)", async () => {
         // Chama
         const doc = await documento();

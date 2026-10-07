@@ -105,7 +105,9 @@ describe("POST /nc/:naoConformidadeId/acoes-corretivas", () => {
 
         // Confere: nenhuma ação nasceu
         expect(resposta.error).toEqual([expect.objectContaining({ instancePath: "/investigacaoId" })]);
-        expect(await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}`, 200)).toEqual([]);
+        expect(
+            (await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}`, 200)).itensDaPagina,
+        ).toEqual([]);
     });
 
     it.each(INVESTIGACOES_INVALIDAS)("recusa a investigação $caso (B10, RN-49)", async ({ montar }) => {
@@ -117,7 +119,9 @@ describe("POST /nc/:naoConformidadeId/acoes-corretivas", () => {
 
         // Confere: nenhuma ação nasceu
         expect(resposta.mensagem).toContain("investigação");
-        expect(await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}`, 200)).toEqual([]);
+        expect(
+            (await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}`, 200)).itensDaPagina,
+        ).toEqual([]);
     });
 });
 
@@ -307,12 +311,9 @@ describe("PATCH /acoes-corretivas/:id", () => {
         const { editor, nc, investigacao } = cenario;
         const { verificacao } = await executarAcao(cenario);
         await concluirVerificacao(cenario, verificacao.id, "PARCIALMENTE_EFICAZ");
-        const [nova] = await chamar(
-            editor,
-            "GET",
-            `/api/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`,
-            200,
-        );
+        const [nova] = (
+            await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`, 200)
+        ).itensDaPagina;
 
         // Chama
         const resposta = await chamar(editor, "PATCH", `/api/acoes-corretivas/${nova.id}`, 200, {
@@ -400,7 +401,9 @@ describe("POST /acoes-corretivas/:id/finalizar-execucao", () => {
         expect(await chamar(editor, "GET", `/api/acoes-corretivas/${acao.id}`, 200)).toMatchObject({
             estado: "ABERTO",
         });
-        expect(await chamar(editor, "GET", `/api/verificacoes?acaoCorretivaId=${acao.id}`, 200)).toEqual([]);
+        expect(
+            (await chamar(editor, "GET", `/api/verificacoes?acaoCorretivaId=${acao.id}`, 200)).itensDaPagina,
+        ).toEqual([]);
     });
 
     it("recusa sem a execução registrada (RN-25)", async () => {
@@ -472,7 +475,9 @@ describe("POST /acoes-corretivas/:id/finalizar-execucao", () => {
 
         // Confere: uma passa, a outra é recusada, e nasce uma verificação só
         expect(respostas.map((r) => r.statusCode).sort()).toEqual([200, 409]);
-        expect(await chamar(editor, "GET", `/api/verificacoes?acaoCorretivaId=${acao.id}`, 200)).toHaveLength(1);
+        expect(
+            (await chamar(editor, "GET", `/api/verificacoes?acaoCorretivaId=${acao.id}`, 200)).itensDaPagina,
+        ).toHaveLength(1);
     });
 
     it("recusa prazo de verificação negativo", async () => {
@@ -518,7 +523,7 @@ describe("GET /acoes-corretivas", () => {
         );
 
         // Confere
-        const ids = (lista: { id: string }[]) => lista.map((item) => item.id).sort();
+        const ids = (pagina: { itensDaPagina: { id: string }[] }) => pagina.itensDaPagina.map((item) => item.id).sort();
         expect(ids(daNC)).toEqual([publicado.id, rascunho.id].sort());
         expect(ids(abertosDaNC)).toEqual([publicado.id]);
     });
@@ -531,7 +536,7 @@ describe("GET /acoes-corretivas", () => {
         const resposta = await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}`, 200);
 
         // Confere
-        expect(resposta).toMatchObject([{ planoAprovado: true, prazo: diaDaquiA(15) }]);
+        expect(resposta.itensDaPagina).toMatchObject([{ planoAprovado: true, prazo: diaDaquiA(15) }]);
     });
 });
 

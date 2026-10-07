@@ -202,7 +202,9 @@ describe("POST /nc/:id/submeter", () => {
 
         // Confere
         expect(await chamar(editor, "GET", `/api/nc/${nc.id}`, 200)).toMatchObject({ estado: "FECHADO" });
-        expect(await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}`, 200)).toEqual([]);
+        expect(
+            (await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}`, 200)).itensDaPagina,
+        ).toEqual([]);
     });
 });
 

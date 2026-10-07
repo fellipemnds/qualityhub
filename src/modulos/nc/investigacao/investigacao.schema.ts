@@ -2,6 +2,7 @@ import z from "zod";
 import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { MetodoInvestigacao } from "../../../compartilhado/entidades/metodo-investigacao.js";
 import { TipoRegistro } from "../../../compartilhado/entidades/tipos-registro.js";
+import { paginacaoCursorSchema } from "../../../compartilhado/registro/paginacao-cursor.js";
 import { TEXTO_LONGO } from "../../../compartilhado/validacao/tetos.js";
 
 export const investigacaoBaseSchema = z.object({
@@ -48,3 +49,13 @@ export const investigacaoRespostaSchema = z.object({
 export const investigacaoDetalheRespostaSchema = investigacaoRespostaSchema.extend({
     ultimoMotivoReprovacao: z.string().nullable(),
 });
+
+// Os filtros da lista, com a paginação por cursor (L4): a mesma da lista de NCs
+export const investigacaoFiltrosListagemSchema = z
+    .object({
+        naoConformidadeId: z.uuid().optional(),
+        estado: z.enum(EstadoRegistro).optional(),
+    })
+    .extend(paginacaoCursorSchema.shape);
+
+export type InvestigacaoFiltrosListagemInput = z.infer<typeof investigacaoFiltrosListagemSchema>;

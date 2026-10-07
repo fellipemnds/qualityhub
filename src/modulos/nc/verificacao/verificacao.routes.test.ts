@@ -109,9 +109,9 @@ describe("GET /verificacoes", () => {
         );
 
         // Confere
-        expect(daAcao.map((item: { id: string }) => item.id)).toEqual([verificacao.id]);
-        expect(deOutraAcao).toEqual([]);
-        expect(fechadas).toEqual([]);
+        expect(daAcao.itensDaPagina.map((item: { id: string }) => item.id)).toEqual([verificacao.id]);
+        expect(deOutraAcao.itensDaPagina).toEqual([]);
+        expect(fechadas.itensDaPagina).toEqual([]);
     });
 
     it("os itens da lista trazem o prazo como dia, sem hora (B22)", async () => {
@@ -123,7 +123,7 @@ describe("GET /verificacoes", () => {
         const resposta = await chamar(cenario.editor, "GET", `/api/verificacoes?acaoCorretivaId=${acao.id}`, 200);
 
         // Confere
-        expect(resposta[0].prazo).toBe(diaDaquiA(30));
+        expect(resposta.itensDaPagina[0].prazo).toBe(diaDaquiA(30));
     });
 });
 
@@ -244,12 +244,9 @@ describe("POST /verificacoes/:id/concluir com PARCIALMENTE_EFICAZ", () => {
         await concluirVerificacao(cenario, verificacao.id, "PARCIALMENTE_EFICAZ");
 
         // Confere
-        const [nova] = await chamar(
-            editor,
-            "GET",
-            `/api/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`,
-            200,
-        );
+        const [nova] = (
+            await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`, 200)
+        ).itensDaPagina;
         expect(await colaboradoresDe(nova.id)).toEqual([editor.usuario.id, gerente.usuario.id].sort());
     });
 
@@ -263,12 +260,9 @@ describe("POST /verificacoes/:id/concluir com PARCIALMENTE_EFICAZ", () => {
         await concluirVerificacao(cenario, verificacao.id, "PARCIALMENTE_EFICAZ");
 
         // Confere
-        const [nova] = await chamar(
-            editor,
-            "GET",
-            `/api/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`,
-            200,
-        );
+        const [nova] = (
+            await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`, 200)
+        ).itensDaPagina;
         const aprovadores = await prisma.atribuicao.findMany({ where: { registroId: nova.id, funcao: "APROVADOR" } });
         expect(aprovadores.map((atribuicao) => atribuicao.usuarioId)).toEqual([aprovador.usuario.id]);
     });
@@ -284,12 +278,9 @@ describe("POST /verificacoes/:id/concluir com PARCIALMENTE_EFICAZ", () => {
         await concluirVerificacao(cenario, verificacao.id, "PARCIALMENTE_EFICAZ");
 
         // Confere: no registro e na auditoria
-        const [nova] = await chamar(
-            editor,
-            "GET",
-            `/api/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`,
-            200,
-        );
+        const [nova] = (
+            await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`, 200)
+        ).itensDaPagina;
         expect(nova).toMatchObject({ criadoPorId: aprovador.usuario.id });
         expect(
             await prisma.auditoria.findMany({ where: { entidadeId: nova.id, acao: "CRIAR_RASCUNHO" } }),

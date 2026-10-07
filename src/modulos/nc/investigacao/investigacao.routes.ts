@@ -1,14 +1,15 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
-import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { erroSchema } from "../../../compartilhado/errors/erro.schema.js";
 import { decisaoSchema } from "../../../compartilhado/registro/decidir.schema.js";
 import { motivoSchema } from "../../../compartilhado/registro/motivo.schema.js";
+import { paginaSchema } from "../../../compartilhado/registro/paginacao-cursor.js";
 import { autenticar } from "../../../middlewares/autenticar.js";
 import { investigacaoController } from "./investigacao.controller.js";
 import {
     investigacaoDetalheRespostaSchema,
+    investigacaoFiltrosListagemSchema,
     investigacaoRascunhoSchema,
     investigacaoRespostaSchema,
 } from "./investigacao.schema.js";
@@ -122,11 +123,8 @@ export async function investigacaoRoutes(app: FastifyInstance) {
         url: "/investigacoes",
         onRequest: [autenticar],
         schema: {
-            querystring: z.object({
-                naoConformidadeId: z.string().min(1).optional(),
-                estado: z.enum(EstadoRegistro).optional(),
-            }),
-            response: { 200: z.array(investigacaoRespostaSchema), "4xx": erroSchema },
+            querystring: investigacaoFiltrosListagemSchema,
+            response: { 200: paginaSchema(investigacaoRespostaSchema), "4xx": erroSchema },
         },
         handler: investigacaoController.listarInvestigacoes,
     });

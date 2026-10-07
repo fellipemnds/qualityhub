@@ -4,7 +4,6 @@ import { herdarAprovadorDaNC } from "../../../compartilhado/atribuicao/herdar-ap
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
 import type { Ator } from "../../../compartilhado/entidades/ator.js";
-import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js";
 import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
@@ -12,9 +11,11 @@ import { buscarRegistroDoTipoOuFalhar } from "../../../compartilhado/registro/bu
 import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
 import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
+import { LIMITE_PADRAO_PAGINACAO, paginar } from "../../../compartilhado/registro/paginacao-cursor.js";
 import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
 import { ncRepository } from "../nc/nc.repository.js";
 import { classificacaoRepository } from "./classificacao.repository.js";
+import type { ClassificacaoFiltrosListagemInput } from "./classificacao.schema.js";
 import {
     type ClassificacaoRascunhoInput,
     classificacaoFechamentoSchema,
@@ -180,26 +181,23 @@ export const classificacaoService = {
         return { ...registro, ...classificacao, ultimoMotivoReprovacao };
     },
 
-    async listarClassificacoes(
-        ator: Ator,
-        filtros: {
-            naoConformidadeId?: string;
-            estado?: EstadoRegistro;
-        },
-    ) {
+    async listarClassificacoes(ator: Ator, filtros: ClassificacaoFiltrosListagemInput) {
         const papel = temPapel(ator, "VISUALIZAR");
 
         if (!papel) {
             throw new SemPermissaoError("Você não tem permissões suficientes para visualizar.");
         }
 
-        const registros = await classificacaoRepository.listarClassificacoes(prisma, filtros);
+        // O limit vai sempre explícito: sem ele, o repositório traz todas
+        const limit = filtros.limit ?? LIMITE_PADRAO_PAGINACAO;
+
+        const registros = await classificacaoRepository.listarClassificacoes(prisma, { ...filtros, limit });
 
         const classificacaoCompleta = registros.map((item) => {
             const { registro, ...resto } = item;
             return { ...registro, ...resto };
         });
 
-        return classificacaoCompleta;
+        return paginar(classificacaoCompleta, limit);
     },
 };

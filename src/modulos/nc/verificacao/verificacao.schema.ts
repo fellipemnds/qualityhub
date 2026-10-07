@@ -3,6 +3,7 @@ import { diaDeCalendario } from "../../../compartilhado/datas/dia-de-calendario.
 import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { ResultadoVerificacao } from "../../../compartilhado/entidades/resultado-verificacao.js";
 import { TipoRegistro } from "../../../compartilhado/entidades/tipos-registro.js";
+import { paginacaoCursorSchema } from "../../../compartilhado/registro/paginacao-cursor.js";
 import { TEXTO_LONGO } from "../../../compartilhado/validacao/tetos.js";
 
 // A base é a forma guardada no banco (datas já como Date); o rascunho é a entrada da API, com os dias em "AAAA-MM-DD"
@@ -50,3 +51,13 @@ export const verificacaoRespostaSchema = z.object({
     conclusao: z.string().nullable(),
     verificadoEm: diaDeCalendario().nullable(),
 });
+
+// Os filtros da lista, com a paginação por cursor (L4): a mesma da lista de NCs
+export const verificacaoFiltrosListagemSchema = z
+    .object({
+        acaoCorretivaId: z.uuid().optional(),
+        estado: z.enum(EstadoRegistro).optional(),
+    })
+    .extend(paginacaoCursorSchema.shape);
+
+export type VerificacaoFiltrosListagemInput = z.infer<typeof verificacaoFiltrosListagemSchema>;

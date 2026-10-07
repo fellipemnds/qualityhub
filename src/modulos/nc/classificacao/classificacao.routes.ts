@@ -1,13 +1,14 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
-import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { erroSchema } from "../../../compartilhado/errors/erro.schema.js";
 import { decisaoSchema } from "../../../compartilhado/registro/decidir.schema.js";
+import { paginaSchema } from "../../../compartilhado/registro/paginacao-cursor.js";
 import { autenticar } from "../../../middlewares/autenticar.js";
 import { classificacaoController } from "./classificacao.controller.js";
 import {
     classificacaoDetalheRespostaSchema,
+    classificacaoFiltrosListagemSchema,
     classificacaoRascunhoSchema,
     classificacaoRespostaSchema,
 } from "./classificacao.schema.js";
@@ -109,11 +110,8 @@ export async function classificacaoRoutes(app: FastifyInstance) {
         url: "/classificacoes",
         onRequest: [autenticar],
         schema: {
-            querystring: z.object({
-                naoConformidadeId: z.string().min(1).optional(),
-                estado: z.enum(EstadoRegistro).optional(),
-            }),
-            response: { 200: z.array(classificacaoRespostaSchema), "4xx": erroSchema },
+            querystring: classificacaoFiltrosListagemSchema,
+            response: { 200: paginaSchema(classificacaoRespostaSchema), "4xx": erroSchema },
         },
         handler: classificacaoController.listarClassificacoes,
     });
