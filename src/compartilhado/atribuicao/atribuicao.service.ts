@@ -122,7 +122,7 @@ export const atribuicaoService = {
             await auditoriaRepository.registrar(tx, {
                 entidade: EntidadeAuditada[registro.tipo],
                 entidadeId: registro.id,
-                acao: "REMOVER_COLABORADOR",
+                acao: "REMOVER_COLABORADORES",
                 usuarioId: ator.id,
                 antes: colaboradoresRemovidos,
                 depois: undefined,

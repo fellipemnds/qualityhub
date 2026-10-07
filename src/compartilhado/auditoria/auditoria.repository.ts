@@ -1,5 +1,6 @@
 import type { Prisma } from "../../generated/prisma/client.js";
 import type { ClientePrisma } from "../prisma/tipos.js";
+import type { AcaoAuditada } from "./acoes-auditadas.js";
 
 export const auditoriaRepository = {
     async registrar(
@@ -7,7 +8,7 @@ export const auditoriaRepository = {
         dados: {
             entidade: string;
             entidadeId: string;
-            acao: string;
+            acao: AcaoAuditada;
             usuarioId: string;
             antes?: unknown;
             depois?: unknown;

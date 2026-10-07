@@ -74,7 +74,7 @@ export const classificacaoService = {
             await auditoriaRepository.registrar(tx, {
                 entidade: EntidadeAuditada[registro.tipo],
                 entidadeId: registro.id,
-                acao: "SALVAR_RASCUNHO",
+                acao: "EDITAR",
                 usuarioId: ator.id,
                 antes: classificacaoAntes,
                 depois: classificacaoAtualizada,

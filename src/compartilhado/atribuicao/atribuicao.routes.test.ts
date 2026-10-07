@@ -291,6 +291,22 @@ describe("POST /registros/:id/colaboradores", () => {
 });
 
 describe("DELETE /registros/:id/colaboradores", () => {
+    it("a remoção fica na auditoria como REMOVER_COLABORADORES, o par do ADICIONAR_COLABORADORES", async () => {
+        // Prepara
+        const { editor, qa, nc } = await ncPublicada();
+        await chamar(editor, "POST", `/api/registros/${nc.id}/colaboradores`, 200, { colaboradores: [qa.usuario.id] });
+
+        // Chama
+        await chamar(editor, "DELETE", `/api/registros/${nc.id}/colaboradores`, 200, {
+            colaboradores: [qa.usuario.id],
+        });
+
+        // Confere
+        expect(
+            await prisma.auditoria.findMany({ where: { entidadeId: nc.id, acao: "REMOVER_COLABORADORES" } }),
+        ).toMatchObject([{ usuarioId: editor.usuario.id }]);
+    });
+
     it("remove um colaborador quando sobra outro", async () => {
         // Prepara
         const { editor, qa, nc } = await ncPublicada();

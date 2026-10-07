@@ -57,6 +57,19 @@ describe("PATCH /contencoes/:id", () => {
         expect(await chamar(editor, "GET", `/api/nc/${nc.id}`, 200)).toMatchObject({ descricao: antes.descricao });
     });
 
+    it("a edição de um item aberto fica na auditoria como EDITAR, não como rascunho", async () => {
+        // Prepara
+        const { editor, contencao } = await levarContencaoAte("ABERTO");
+
+        // Chama
+        await chamar(editor, "PATCH", `/api/contencoes/${contencao.id}`, 200, { disposicao: "ANULADO" });
+
+        // Confere
+        expect(await prisma.auditoria.findMany({ where: { entidadeId: contencao.id, acao: "EDITAR" } })).toMatchObject([
+            { usuarioId: editor.usuario.id },
+        ]);
+    });
+
     it("a edição atualiza o atualizadoEm (B24)", async () => {
         // Prepara
         const { editor, contencao } = await levarContencaoAte("ABERTO");

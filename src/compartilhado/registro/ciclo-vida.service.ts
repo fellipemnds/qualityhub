@@ -1,5 +1,6 @@
 import { aprovacaoRepository } from "../aprovacao/aprovacao.repository.js";
 import { atribuicaoRepository } from "../atribuicao/atribuicao.repository.js";
+import type { AcaoAuditada } from "../auditoria/acoes-auditadas.js";
 import { auditoriaRepository } from "../auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../auditoria/entidades-auditadas.js";
 import { cancelamentoRepository } from "../cancelamento/cancelamento.repository.js";
@@ -28,7 +29,7 @@ async function aplicarTransicao(
     tx: ClientePrisma,
     registro: Registro,
     mudanca: { estado: EstadoRegistro; codigo?: string; portaoAtual?: number },
-    acao: string,
+    acao: AcaoAuditada,
     ator: Ator,
 ) {
     const registroAtualizado = await registroRepository.atualizar(tx, registro.id, registro.estado, mudanca);
