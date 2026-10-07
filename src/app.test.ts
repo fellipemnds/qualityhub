@@ -38,6 +38,23 @@ describe("Cabeçalhos de segurança (auditoria R3)", () => {
 });
 
 describe("Corpo da requisição (B20, B21)", () => {
+    it("corpo acima de 1 MB responde 413 com a mensagem em português, antes de chegar à rota (L4)", async () => {
+        // Prepara: um JSON válido de pouco mais de 1 MB (o limite padrão do Fastify)
+        const grande = JSON.stringify({ email: "a@teste.com", senha: "x".repeat(1024 * 1024) });
+
+        // Chama
+        const resposta = await app.inject({
+            method: "POST",
+            url: "/api/auth/login",
+            headers: { "content-type": "application/json" },
+            payload: grande,
+        });
+
+        // Confere
+        expect(resposta.statusCode).toBe(413);
+        expect(resposta.json()).toEqual({ mensagem: "Corpo da requisição grande demais." });
+    });
+
     it("JSON malformado responde 400, não 500 (B21)", async () => {
         // Chama
         const resposta = await app.inject({
