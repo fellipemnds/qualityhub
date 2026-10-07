@@ -4,7 +4,7 @@ import z from "zod";
 import { erroSchema } from "../../compartilhado/errors/erro.schema.js";
 import { autenticar } from "../../middlewares/autenticar.js";
 import { authController } from "./auth.controller.js";
-import { alterarEuSchema, definirSenhaSchema, type LoginInput, loginSchema } from "./auth.schema.js";
+import { alterarEuSchema, definirSenhaSchema, euRespostaSchema, type LoginInput, loginSchema } from "./auth.schema.js";
 
 export async function authRoutes(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -42,6 +42,7 @@ export async function authRoutes(app: FastifyInstance) {
         method: "GET",
         url: "/auth/eu",
         onRequest: [autenticar],
+        schema: { response: { 200: euRespostaSchema, "4xx": erroSchema } },
         handler: authController.eu,
     });
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -50,6 +51,7 @@ export async function authRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             body: alterarEuSchema,
+            response: { 200: euRespostaSchema, "4xx": erroSchema },
         },
         handler: authController.alterarEu,
     });
