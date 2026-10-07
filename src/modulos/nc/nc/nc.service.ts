@@ -12,7 +12,6 @@ import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.ser
 import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
 import { LIMITE_PADRAO_PAGINACAO, paginar } from "../../../compartilhado/registro/paginacao-cursor.js";
-import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
 import { classificacaoRepository } from "../classificacao/classificacao.repository.js";
 import { contencaoRepository } from "../contencao/contencao.repository.js";
 import { investigacaoRepository } from "../investigacao/investigacao.repository.js";
@@ -72,11 +71,7 @@ export const ncService = {
 
     async atualizarNC(registroId: string, ator: Ator, dados: NCRascunhoInput) {
         return prisma.$transaction(async (tx) => {
-            const registro = await registroRepository.buscarPorId(tx, registroId);
-
-            if (registro === null) {
-                throw new NaoEncontradoError("Item não encontrado.");
-            }
+            const registro = await buscarRegistroDoTipoOuFalhar(tx, registroId, "NAO_CONFORMIDADE");
 
             if (!ESTADOS_EDITAVEIS.includes(registro.estado)) {
                 throw new TransicaoInvalidaError('O item precisa estar no status "Rascunho" ou "Aberto".');

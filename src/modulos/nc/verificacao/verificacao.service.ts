@@ -18,8 +18,7 @@ import { type VerificacaoRascunhoInput, verificacaoConclusaoSchema } from "./ver
 export const verificacaoService = {
     async atualizarVerificacao(registroId: string, ator: Ator, dados: VerificacaoRascunhoInput) {
         return prisma.$transaction(async (tx) => {
-            const registro = await registroRepository.buscarPorId(tx, registroId);
-            if (registro === null) throw new NaoEncontradoError("Item não encontrado.");
+            const registro = await buscarRegistroDoTipoOuFalhar(tx, registroId, "VERIFICACAO");
             if (!ESTADOS_EDITAVEIS.includes(registro.estado)) {
                 throw new TransicaoInvalidaError("Este item não pode mais ser editado neste estado.");
             }

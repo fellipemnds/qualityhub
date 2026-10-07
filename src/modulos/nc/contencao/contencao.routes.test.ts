@@ -42,6 +42,20 @@ describe("PATCH /contencoes/:id", () => {
             error: expect.arrayContaining([expect.objectContaining({ instancePath: "/disposicao" })]),
         });
     });
+
+    it("recusa com 404 o id de uma NC, que não muda (B23)", async () => {
+        // Prepara (o editor é colaborador da NC, e ela está aberta: passa pelo estado e pela permissão)
+        const { editor, nc } = await ncPublicada();
+        const antes = await chamar(editor, "GET", `/api/nc/${nc.id}`, 200);
+
+        // Chama
+        await chamar(editor, "PATCH", `/api/contencoes/${nc.id}`, 404, {
+            descricao: "Tentativa de editar a NC pela rota da contenção.",
+        });
+
+        // Confere (comparado com a leitura de antes: o cenário já edita a descrição depois de criar)
+        expect(await chamar(editor, "GET", `/api/nc/${nc.id}`, 200)).toMatchObject({ descricao: antes.descricao });
+    });
 });
 
 describe("PATCH /contencoes/:id", () => {
