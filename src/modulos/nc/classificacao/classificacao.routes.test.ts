@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { chamar, ncPublicada } from "../../../testes/cenarios.js";
+import { loginComo } from "../../../testes/fabricas.js";
 import { levarClassificacaoAte } from "../../../testes/levar-ate/classificacao.js";
+
+const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
 
 describe("POST /nc/:naoConformidadeId/classificacoes", () => {
     it("recusa justificativa com menos de 20 caracteres", async () => {
@@ -41,6 +44,19 @@ describe("PATCH /classificacoes/:id", () => {
             error: expect.arrayContaining([expect.objectContaining({ instancePath: "/valor" })]),
         });
     });
+
+    it("devolve a classificação inteira, com estado e código, como as outras rotas (D1)", async () => {
+        // Prepara
+        const { aprovador, classificacao } = await levarClassificacaoAte("ABERTO");
+
+        // Chama
+        const resposta = await chamar(aprovador, "PATCH", `/api/classificacoes/${classificacao.id}`, 200, {
+            valor: "MENOR",
+        });
+
+        // Confere
+        expect(resposta).toMatchObject({ valor: "MENOR", estado: "ABERTO", codigo: expect.any(String) });
+    });
 });
 
 describe("GET /classificacoes", () => {
@@ -75,6 +91,31 @@ describe("GET /classificacoes", () => {
         const ids = (lista: { id: string }[]) => lista.map((item) => item.id).sort();
         expect(ids(daNC)).toEqual([publicado.id, rascunho.id].sort());
         expect(ids(abertosDaNC)).toEqual([publicado.id]);
+    });
+});
+
+describe("GET /classificacoes/:id", () => {
+    it("não expõe o portaoAtual, detalhe interno do ciclo de vida (D2)", async () => {
+        // Prepara
+        const { aprovador, classificacao } = await levarClassificacaoAte("RASCUNHO");
+
+        // Chama
+        const resposta = await chamar(aprovador, "GET", `/api/classificacoes/${classificacao.id}`, 200);
+
+        // Confere
+        expect(resposta.id).toBe(classificacao.id);
+        expect(resposta).not.toHaveProperty("portaoAtual");
+    });
+
+    it("responde 404 só com a mensagem quando a classificação não existe", async () => {
+        // Prepara
+        const aprovador = await loginComo("aprovador");
+
+        // Chama
+        const resposta = await chamar(aprovador, "GET", `/api/classificacoes/${ID_INEXISTENTE}`, 404);
+
+        // Confere
+        expect(resposta).toEqual({ mensagem: "Item não encontrado." });
     });
 });
 
