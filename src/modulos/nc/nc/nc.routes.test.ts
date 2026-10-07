@@ -208,6 +208,24 @@ describe("POST /nc/:id/submeter", () => {
 
 // A mesma guarda do submeter, só para ler: a tela mostra o checklist sem tentar submeter (TRD §5, lacuna L6)
 describe("GET /nc/:id/checklist-fechamento", () => {
+    it("a guarda vê todas as contenções, não só uma página da lista (L4)", async () => {
+        // Prepara: mais contenções pendentes (em rascunho) do que cabem numa página da lista (20)
+        const { editor, nc } = await ncPublicada();
+        for (let n = 1; n <= 25; n++) {
+            await chamar(editor, "POST", `/api/nc/${nc.id}/contencoes`, 201, {
+                descricao: `Contenção pendente número ${n}.`,
+            });
+        }
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/nc/${nc.id}/checklist-fechamento`, 200);
+
+        // Confere: as 25 aparecem como pendentes; paginada, a guarda deixaria a 21ª em diante escapar
+        const contencoes = resposta.find((item: { requisito: string }) => item.requisito === "CONTENCOES_RESOLVIDAS");
+        expect(contencoes).toMatchObject({ atendido: false });
+        expect(contencoes.pendentes).toHaveLength(25);
+    });
+
     it("devolve os seis requisitos, atendidos ou não, na ordem", async () => {
         // Prepara: só a NC publicada, com aprovador
         const { nc } = await ncPublicada();

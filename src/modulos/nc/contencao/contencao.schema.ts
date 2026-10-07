@@ -3,6 +3,7 @@ import { diaDeCalendario } from "../../../compartilhado/datas/dia-de-calendario.
 import { Disposicao } from "../../../compartilhado/entidades/disposicao.js";
 import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { TipoRegistro } from "../../../compartilhado/entidades/tipos-registro.js";
+import { paginacaoCursorSchema } from "../../../compartilhado/registro/paginacao-cursor.js";
 import { TEXTO_LONGO } from "../../../compartilhado/validacao/tetos.js";
 
 // A base é a forma guardada no banco (datas já como Date); o rascunho é a entrada da API, com os dias em "AAAA-MM-DD"
@@ -47,3 +48,13 @@ export const contencaoRespostaSchema = z.object({
 export const contencaoDetalheRespostaSchema = contencaoRespostaSchema.extend({
     ultimoMotivoReprovacao: z.string().nullable(),
 });
+
+// Os filtros da lista, com a paginação por cursor (L4): a mesma da lista de NCs
+export const contencaoFiltrosListagemSchema = z
+    .object({
+        naoConformidadeId: z.uuid().optional(),
+        estado: z.enum(EstadoRegistro).optional(),
+    })
+    .extend(paginacaoCursorSchema.shape);
+
+export type ContencaoFiltrosListagemInput = z.infer<typeof contencaoFiltrosListagemSchema>;

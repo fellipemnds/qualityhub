@@ -140,7 +140,7 @@ describe("GET /contencoes", () => {
         );
 
         // Confere
-        const ids = (lista: { id: string }[]) => lista.map((item) => item.id).sort();
+        const ids = (pagina: { itensDaPagina: { id: string }[] }) => pagina.itensDaPagina.map((item) => item.id).sort();
         expect(ids(daNC)).toEqual([publicada.id, rascunho.id].sort());
         expect(ids(abertasDaNC)).toEqual([publicada.id]);
     });
@@ -157,7 +157,46 @@ describe("GET /contencoes", () => {
         const resposta = await chamar(editor, "GET", `/api/contencoes?naoConformidadeId=${nc.id}`, 200);
 
         // Confere
-        expect(resposta[0].executadaEm).toBe("2026-09-10");
+        expect(resposta.itensDaPagina[0].executadaEm).toBe("2026-09-10");
+    });
+
+    it("pagina por cursor: o limit corta a página, e o cursor traz a próxima (L4)", async () => {
+        // Prepara: três contenções na mesma NC
+        const { editor, nc } = await ncPublicada();
+        for (const n of [1, 2, 3]) {
+            await chamar(editor, "POST", `/api/nc/${nc.id}/contencoes`, 201, {
+                descricao: `Contenção número ${n} da NC.`,
+            });
+        }
+
+        // Chama
+        const primeira = await chamar(editor, "GET", `/api/contencoes?naoConformidadeId=${nc.id}&limit=2`, 200);
+        const segunda = await chamar(
+            editor,
+            "GET",
+            `/api/contencoes?naoConformidadeId=${nc.id}&limit=2&cursor=${primeira.proximoCursor}`,
+            200,
+        );
+
+        // Confere: 2 + 1, sem repetir nenhuma, e a última página sem cursor
+        expect(primeira.itensDaPagina).toHaveLength(2);
+        expect(primeira.proximoCursor).toBe(primeira.itensDaPagina[1].id);
+        expect(segunda.itensDaPagina).toHaveLength(1);
+        expect(segunda.proximoCursor).toBeNull();
+        expect(new Set([...primeira.itensDaPagina, ...segunda.itensDaPagina].map((item) => item.id)).size).toBe(3);
+    });
+
+    it("recusa filtro de NC que não é UUID (L4)", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", "/api/contencoes?naoConformidadeId=nao-e-uuid", 400);
+
+        // Confere
+        expect(resposta).toMatchObject({
+            error: expect.arrayContaining([expect.objectContaining({ instancePath: "/naoConformidadeId" })]),
+        });
     });
 
     it("recusa filtro de estado fora da lista", async () => {

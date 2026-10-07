@@ -1,7 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
-import type { ContencaoRascunhoInput } from "./contencao.schema.js";
+import type { ContencaoFiltrosListagemInput, ContencaoRascunhoInput } from "./contencao.schema.js";
 import { contencaoService } from "./contencao.service.js";
 
 export const contencaoController = {
@@ -100,7 +99,7 @@ export const contencaoController = {
     },
 
     async listarContencoes(
-        request: FastifyRequest<{ Querystring: { naoConformidadeId?: string; estado?: EstadoRegistro } }>,
+        request: FastifyRequest<{ Querystring: ContencaoFiltrosListagemInput }>,
         reply: FastifyReply,
     ) {
         const ator = request.user;
