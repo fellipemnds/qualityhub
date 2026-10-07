@@ -33,11 +33,10 @@ momento tranquilo em casa (§6), sem bloquear a fase.
   - o `PATCH` da NC devolve o formato completo (D1);
   - `DELETE` com `204: z.null()`, que é **só documentação** (o Fastify
     não serializa 204; a prova de quebra mostrou).
-- **B22 aberto** (dia de calendário saía com hora): consertado só nas
-  rotas de NC; fecha pelo `/bug` quando contenção, ação corretiva e
-  verificação também devolverem os dias sem hora.
-- Suíte: **312 passando** na última rodada completa (fatia 7); cobertura
-  ~95,2% (trava em 94,66%). Lint e typecheck limpos.
+- **B22, B23 e B24 corrigidos** em 2026-10-07; nenhum bug aberto. Os
+  cinco filhos ganharam o schema de resposta no mesmo dia (§6).
+- Suíte: **341 passando** na última rodada completa (ação corretiva);
+  cobertura ~96,2% (trava em 94,66%). Lint e typecheck limpos.
 - O que Matthew aprendeu na A5: `prefix` do Fastify e `Path` do
   cookie; schema de resposta (filtra o que sai, vigia o código: tipo
   errado vira 500); codec do Zod (`decode`/`encode`); *arrow function*
