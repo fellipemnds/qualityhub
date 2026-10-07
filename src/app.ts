@@ -13,6 +13,7 @@ import {
 import { ZodError } from "zod";
 import { atribuicaoRoutes } from "./compartilhado/atribuicao/atribuicao.routes.js";
 import { AppError, MuitasTentativasError } from "./compartilhado/errors/errors.js";
+import { interfaceDaDocumentacao } from "./interface-documentacao.js";
 import { authRoutes } from "./modulos/auth/auth.routes.js";
 import { COOKIE_SESSAO } from "./modulos/auth/cookie-sessao.js";
 import { acaoCorretivaRoutes } from "./modulos/nc/acao-corretiva/acao-corretiva.routes.js";
@@ -60,6 +61,7 @@ app.register(fastifySwagger, {
     openapi: { openapi: "3.1.0", info: { title: "QualityHub API", version: "1.0.0" } },
     transform: jsonSchemaTransform,
 });
+app.register(interfaceDaDocumentacao, { ligada: process.env.NODE_ENV === "development" });
 app.get("/", async () => {
     return { status: "Servidor online" };
 });
