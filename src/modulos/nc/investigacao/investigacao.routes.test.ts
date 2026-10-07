@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { chamar, investigacaoAberta, ncPublicada } from "../../../testes/cenarios.js";
+import { loginComo } from "../../../testes/fabricas.js";
 import { type DegrauAcaoCorretiva, levarAcaoCorretivaAte } from "../../../testes/levar-ate/acao-corretiva.js";
 import { levarInvestigacaoAte } from "../../../testes/levar-ate/investigacao.js";
+
+const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
 
 describe("PATCH /investigacoes/:id", () => {
     it("recusa método fora da lista (só A3_SPS)", async () => {
@@ -21,6 +24,57 @@ describe("PATCH /investigacoes/:id", () => {
             mensagem: "Dados inválidos",
             error: expect.arrayContaining([expect.objectContaining({ instancePath: "/metodo" })]),
         });
+    });
+
+    it("devolve a investigação inteira, com estado e código, como as outras rotas (D1)", async () => {
+        // Prepara
+        const { editor, investigacao } = await levarInvestigacaoAte("ABERTO");
+
+        // Chama
+        const resposta = await chamar(editor, "PATCH", `/api/investigacoes/${investigacao.id}`, 200, {
+            metodo: "A3_SPS",
+        });
+
+        // Confere
+        expect(resposta).toMatchObject({ metodo: "A3_SPS", estado: "ABERTO", codigo: expect.any(String) });
+    });
+
+    it("devolve o conteúdo do A3 do jeito que foi gravado", async () => {
+        // Prepara: o conteúdo é JSON livre, com objetos, listas, números e nulos aninhados
+        const { editor, investigacao } = await levarInvestigacaoAte("RASCUNHO");
+        const conteudo = { contramedidas: [{ ordem: 1, texto: "Trocar a vedação", prazo: null }], versao: 2 };
+
+        // Chama
+        await chamar(editor, "PATCH", `/api/investigacoes/${investigacao.id}`, 200, { conteudo });
+
+        // Confere
+        const resposta = await chamar(editor, "GET", `/api/investigacoes/${investigacao.id}`, 200);
+        expect(resposta.conteudo).toEqual(conteudo);
+    });
+});
+
+describe("GET /investigacoes/:id", () => {
+    it("não expõe o portaoAtual, detalhe interno do ciclo de vida (D2)", async () => {
+        // Prepara
+        const { editor, investigacao } = await levarInvestigacaoAte("RASCUNHO");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/investigacoes/${investigacao.id}`, 200);
+
+        // Confere
+        expect(resposta.id).toBe(investigacao.id);
+        expect(resposta).not.toHaveProperty("portaoAtual");
+    });
+
+    it("responde 404 só com a mensagem quando a investigação não existe", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/investigacoes/${ID_INEXISTENTE}`, 404);
+
+        // Confere
+        expect(resposta).toEqual({ mensagem: "Item não encontrado." });
     });
 });
 

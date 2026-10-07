@@ -1,5 +1,7 @@
 import z from "zod";
+import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { MetodoInvestigacao } from "../../../compartilhado/entidades/metodo-investigacao.js";
+import { TipoRegistro } from "../../../compartilhado/entidades/tipos-registro.js";
 
 export const investigacaoBaseSchema = z.object({
     realProblema: z.string().min(20),
@@ -22,3 +24,21 @@ export type InvestigacaoBaseInput = z.infer<typeof investigacaoBaseSchema>;
 export type InvestigacaoRascunhoInput = z.infer<typeof investigacaoRascunhoSchema>;
 export type InvestigacaoPublicacaoInput = z.infer<typeof investigacaoPublicacaoSchema>;
 export type InvestigacaoFechamentoInput = z.infer<typeof investigacaoFechamentoSchema>;
+
+// O formato de saída, o mesmo em criar, detalhe, lista, edição e transições (D1): os campos do Registro, sem o
+// portaoAtual (D2), e os da investigação, nulos onde o rascunho permite. As hipóteses não saem aqui (L1, na C2)
+export const investigacaoRespostaSchema = z.object({
+    id: z.uuid(),
+    criadoPorId: z.uuid(),
+    tipo: z.enum(TipoRegistro),
+    estado: z.enum(EstadoRegistro),
+    codigo: z.string().nullable(),
+    criadoEm: z.date(),
+    atualizadoEm: z.date(),
+    naoConformidadeId: z.uuid(),
+    realProblema: z.string().nullable(),
+    metodo: z.enum(MetodoInvestigacao).nullable(),
+    conteudo: z.json().nullable(),
+    causaDireta: z.string().nullable(),
+    causaRaiz: z.string().nullable(),
+});
