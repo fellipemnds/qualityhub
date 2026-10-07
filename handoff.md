@@ -178,7 +178,12 @@ da mensagem padrão do `setErrorHandler`.
    `registroRepository.atualizar` → banco → auditoria → resposta), com
    Matthew dizendo o que cada parte faz antes de Claude explicar.
    Motivo: Matthew disse que não estava mais reconhecendo o código.
-3. **A5, item 2: replicar o schema de resposta** (Claude escreve,
+3. **B23 primeiro** (registrado em 2026-10-07, `esquema-backend.md` §7):
+   as rotas aceitam o `id` de um item de outro tipo. Matthew escreve,
+   passo a passo: o teste vermelho (`decidir` de uma ação corretiva pela
+   rota da Contenção) e a conferência do tipo no ciclo de vida; Claude
+   repete nos outros tipos. Só depois, a Contenção abaixo.
+4. **A5, item 2: replicar o schema de resposta** (Claude escreve,
    Matthew revisa; **um commit por arquivo**, cada um com teste vermelho
    quando houver o que provar, e a suíte completa). O padrão é o das
    rotas de NC: `<x>RespostaSchema` no `<x>.schema.ts` (campos do
@@ -200,7 +205,7 @@ da mensagem padrão do `setErrorHandler`.
    | Usuário | 1 | |
 
    O `GET /` ganha schema no item 5 (vira `GET /api/saude`).
-4. **Resto da A5**, pela ordem do plano: (3) `@fastify/swagger` com
+5. **Resto da A5**, pela ordem do plano: (3) `@fastify/swagger` com
    explicação (CSP do `helmet` só nessa rota; conferir como o 204
    `z.null()` aparece no OpenAPI); (4) catálogo de auditoria; (5) `GET
    /saude`; (6) L7; (8) L5, começando por teste; (9) avaliar as funções
