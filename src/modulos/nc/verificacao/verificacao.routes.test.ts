@@ -4,11 +4,13 @@ import {
     aprovarPlano,
     chamar,
     concluirVerificacao,
+    diaDaquiA,
     executarAcao,
     investigacaoAberta,
     ncProntaParaFechar,
 } from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
+import { levarVerificacaoAte } from "../../../testes/levar-ate/verificacao.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
 
@@ -28,6 +30,46 @@ describe("GET /verificacoes/:id", () => {
 
         // Confere
         expect(resposta).toEqual({ mensagem: "Item não encontrado." });
+    });
+
+    it("devolve o prazo como dia, sem hora (B22)", async () => {
+        // Prepara: a verificação nasce com o prazo de hoje + diasParaVerificar (30, no executarAcao)
+        const cenario = await ncProntaParaFechar();
+        const { verificacao } = await executarAcao(cenario);
+
+        // Chama
+        const resposta = await chamar(cenario.editor, "GET", `/api/verificacoes/${verificacao.id}`, 200);
+
+        // Confere
+        expect(resposta.prazo).toBe(diaDaquiA(30));
+    });
+
+    it("não expõe o portaoAtual, detalhe interno do ciclo de vida (D2)", async () => {
+        // Prepara
+        const cenario = await ncProntaParaFechar();
+        const { verificacao } = await executarAcao(cenario);
+
+        // Chama
+        const resposta = await chamar(cenario.editor, "GET", `/api/verificacoes/${verificacao.id}`, 200);
+
+        // Confere
+        expect(resposta.id).toBe(verificacao.id);
+        expect(resposta).not.toHaveProperty("portaoAtual");
+    });
+});
+
+describe("PATCH /verificacoes/:id", () => {
+    it("devolve a verificação inteira, com estado, código e o dia sem hora (D1, B22)", async () => {
+        // Prepara
+        const { aprovador, verificacao } = await levarVerificacaoAte("ABERTO");
+
+        // Chama
+        const resposta = await chamar(aprovador, "PATCH", `/api/verificacoes/${verificacao.id}`, 200, {
+            verificadoEm: diaDaquiA(0),
+        });
+
+        // Confere
+        expect(resposta).toMatchObject({ verificadoEm: diaDaquiA(0), estado: "ABERTO", codigo: expect.any(String) });
     });
 });
 
@@ -70,6 +112,18 @@ describe("GET /verificacoes", () => {
         expect(daAcao.map((item: { id: string }) => item.id)).toEqual([verificacao.id]);
         expect(deOutraAcao).toEqual([]);
         expect(fechadas).toEqual([]);
+    });
+
+    it("os itens da lista trazem o prazo como dia, sem hora (B22)", async () => {
+        // Prepara
+        const cenario = await ncProntaParaFechar();
+        const { acao } = await executarAcao(cenario);
+
+        // Chama
+        const resposta = await chamar(cenario.editor, "GET", `/api/verificacoes?acaoCorretivaId=${acao.id}`, 200);
+
+        // Confere
+        expect(resposta[0].prazo).toBe(diaDaquiA(30));
     });
 });
 
