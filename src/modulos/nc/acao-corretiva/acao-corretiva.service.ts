@@ -1,3 +1,4 @@
+import { aprovacaoRepository } from "../../../compartilhado/aprovacao/aprovacao.repository.js";
 import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
 import { herdarAprovadorDaNC } from "../../../compartilhado/atribuicao/herdar-aprovador.js";
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
@@ -314,7 +315,8 @@ export const acaoCorretivaService = {
 
         const acaoCorretiva = await acaoCorretivaRepository.buscarPorId(prisma, registroId);
         const planoAprovado = await acaoCorretivaRepository.planoAprovado(prisma, registroId);
-        return { ...registro, ...acaoCorretiva, planoAprovado };
+        const ultimoMotivoReprovacao = await aprovacaoRepository.ultimoMotivoReprovacao(prisma, registroId);
+        return { ...registro, ...acaoCorretiva, planoAprovado, ultimoMotivoReprovacao };
     },
 
     async listarAcoesCorretivas(ator: Ator, filtros: { naoConformidadeId?: string; estado?: EstadoRegistro }) {

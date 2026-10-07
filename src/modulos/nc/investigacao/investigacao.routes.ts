@@ -7,7 +7,11 @@ import { decisaoSchema } from "../../../compartilhado/registro/decidir.schema.js
 import { motivoSchema } from "../../../compartilhado/registro/motivo.schema.js";
 import { autenticar } from "../../../middlewares/autenticar.js";
 import { investigacaoController } from "./investigacao.controller.js";
-import { investigacaoRascunhoSchema, investigacaoRespostaSchema } from "./investigacao.schema.js";
+import {
+    investigacaoDetalheRespostaSchema,
+    investigacaoRascunhoSchema,
+    investigacaoRespostaSchema,
+} from "./investigacao.schema.js";
 
 export async function investigacaoRoutes(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -108,7 +112,7 @@ export async function investigacaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
-            response: { 200: investigacaoRespostaSchema, "4xx": erroSchema },
+            response: { 200: investigacaoDetalheRespostaSchema, "4xx": erroSchema },
         },
         handler: investigacaoController.buscarPorIdInvestigacao,
     });

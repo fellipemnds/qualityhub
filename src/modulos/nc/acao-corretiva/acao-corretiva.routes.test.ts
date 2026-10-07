@@ -123,6 +123,21 @@ describe("POST /nc/:naoConformidadeId/acoes-corretivas", () => {
 
 // "Plano aprovado" é derivado das decisões registradas em Aprovacao, não do portaoAtual (esquema §4.2)
 describe("GET /acoes-corretivas/:id", () => {
+    it("traz o motivo da última reprovação, para o colaborador saber o que corrigir (L7)", async () => {
+        // Prepara
+        const { editor, aprovador, acao } = await levarAcaoCorretivaAte("EM_APROVACAO");
+        await chamar(aprovador, "POST", `/api/acoes-corretivas/${acao.id}/decidir`, 200, {
+            decisao: "REPROVADO",
+            motivo: "Faltou detalhar o que foi feito.",
+        });
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/acoes-corretivas/${acao.id}`, 200);
+
+        // Confere
+        expect(resposta).toMatchObject({ ultimoMotivoReprovacao: "Faltou detalhar o que foi feito." });
+    });
+
     it("planoAprovado é false com o plano nunca submetido", async () => {
         // Prepara
         const { editor, acao } = await levarAcaoCorretivaAte("ABERTO");

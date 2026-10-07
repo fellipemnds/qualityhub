@@ -40,3 +40,8 @@ export const contencaoRespostaSchema = z.object({
     executadaEm: diaDeCalendario().nullable(),
     disposicao: z.enum(Disposicao).nullable(),
 });
+
+// O detalhe traz também o motivo da última reprovação (L7, D5)
+export const contencaoDetalheRespostaSchema = contencaoRespostaSchema.extend({
+    ultimoMotivoReprovacao: z.string().nullable(),
+});

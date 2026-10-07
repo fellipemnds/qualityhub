@@ -54,6 +54,21 @@ describe("PATCH /investigacoes/:id", () => {
 });
 
 describe("GET /investigacoes/:id", () => {
+    it("traz o motivo da última reprovação, para o colaborador saber o que corrigir (L7)", async () => {
+        // Prepara
+        const { editor, aprovador, investigacao } = await levarInvestigacaoAte("EM_APROVACAO");
+        await chamar(aprovador, "POST", `/api/investigacoes/${investigacao.id}/decidir`, 200, {
+            decisao: "REPROVADO",
+            motivo: "Faltou detalhar o que foi feito.",
+        });
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/investigacoes/${investigacao.id}`, 200);
+
+        // Confere
+        expect(resposta).toMatchObject({ ultimoMotivoReprovacao: "Faltou detalhar o que foi feito." });
+    });
+
     it("não expõe o portaoAtual, detalhe interno do ciclo de vida (D2)", async () => {
         // Prepara
         const { editor, investigacao } = await levarInvestigacaoAte("RASCUNHO");

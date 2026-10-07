@@ -9,6 +9,7 @@ import { autenticar } from "../../../middlewares/autenticar.js";
 import { acaoCorretivaController } from "./acao-corretiva.controller.js";
 import {
     acaoCorretivaCriacaoSchema,
+    acaoCorretivaDetalheRespostaSchema,
     acaoCorretivaRascunhoSchema,
     acaoCorretivaRespostaSchema,
     finalizarExecucaoRespostaSchema,
@@ -123,7 +124,7 @@ export async function acaoCorretivaRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
-            response: { 200: acaoCorretivaRespostaSchema, "4xx": erroSchema },
+            response: { 200: acaoCorretivaDetalheRespostaSchema, "4xx": erroSchema },
         },
         handler: acaoCorretivaController.buscarPorIdAcaoCorretiva,
     });

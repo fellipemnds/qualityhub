@@ -176,6 +176,21 @@ describe("GET /contencoes", () => {
 });
 
 describe("GET /contencoes/:id", () => {
+    it("traz o motivo da última reprovação, para o colaborador saber o que corrigir (L7)", async () => {
+        // Prepara
+        const { editor, aprovador, contencao } = await levarContencaoAte("EM_APROVACAO");
+        await chamar(aprovador, "POST", `/api/contencoes/${contencao.id}/decidir`, 200, {
+            decisao: "REPROVADO",
+            motivo: "Faltou detalhar o que foi feito.",
+        });
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/contencoes/${contencao.id}`, 200);
+
+        // Confere
+        expect(resposta).toMatchObject({ ultimoMotivoReprovacao: "Faltou detalhar o que foi feito." });
+    });
+
     it("devolve a data de execução como dia, sem hora (B22)", async () => {
         // Prepara
         const { editor, nc } = await ncPublicada();

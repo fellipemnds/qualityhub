@@ -6,7 +6,11 @@ import { erroSchema } from "../../../compartilhado/errors/erro.schema.js";
 import { decisaoSchema } from "../../../compartilhado/registro/decidir.schema.js";
 import { autenticar } from "../../../middlewares/autenticar.js";
 import { classificacaoController } from "./classificacao.controller.js";
-import { classificacaoRascunhoSchema, classificacaoRespostaSchema } from "./classificacao.schema.js";
+import {
+    classificacaoDetalheRespostaSchema,
+    classificacaoRascunhoSchema,
+    classificacaoRespostaSchema,
+} from "./classificacao.schema.js";
 
 export async function classificacaoRoutes(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -95,7 +99,7 @@ export async function classificacaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
-            response: { 200: classificacaoRespostaSchema, "4xx": erroSchema },
+            response: { 200: classificacaoDetalheRespostaSchema, "4xx": erroSchema },
         },
         handler: classificacaoController.buscarPorIdClassificacao,
     });

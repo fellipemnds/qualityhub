@@ -95,6 +95,21 @@ describe("GET /classificacoes", () => {
 });
 
 describe("GET /classificacoes/:id", () => {
+    it("traz o motivo da última reprovação, para o colaborador saber o que corrigir (L7)", async () => {
+        // Prepara
+        const { aprovador, qa, classificacao } = await levarClassificacaoAte("EM_APROVACAO");
+        await chamar(qa, "POST", `/api/classificacoes/${classificacao.id}/decidir`, 200, {
+            decisao: "REPROVADO",
+            motivo: "Faltou detalhar o que foi feito.",
+        });
+
+        // Chama
+        const resposta = await chamar(aprovador, "GET", `/api/classificacoes/${classificacao.id}`, 200);
+
+        // Confere
+        expect(resposta).toMatchObject({ ultimoMotivoReprovacao: "Faltou detalhar o que foi feito." });
+    });
+
     it("não expõe o portaoAtual, detalhe interno do ciclo de vida (D2)", async () => {
         // Prepara
         const { aprovador, classificacao } = await levarClassificacaoAte("RASCUNHO");

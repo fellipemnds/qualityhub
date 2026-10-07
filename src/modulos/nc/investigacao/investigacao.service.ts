@@ -1,3 +1,4 @@
+import { aprovacaoRepository } from "../../../compartilhado/aprovacao/aprovacao.repository.js";
 import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
 import { herdarAprovadorDaNC } from "../../../compartilhado/atribuicao/herdar-aprovador.js";
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
@@ -214,7 +215,8 @@ export const investigacaoService = {
 
         const investigacao = await investigacaoRepository.buscarPorId(prisma, registroId);
 
-        return { ...registro, ...investigacao };
+        const ultimoMotivoReprovacao = await aprovacaoRepository.ultimoMotivoReprovacao(prisma, registroId);
+        return { ...registro, ...investigacao, ultimoMotivoReprovacao };
     },
 
     async listarInvestigacoes(

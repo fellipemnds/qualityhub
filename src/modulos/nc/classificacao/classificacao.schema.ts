@@ -34,3 +34,8 @@ export const classificacaoRespostaSchema = z.object({
     valor: z.enum(ClassificacaoNC).nullable(),
     justificativa: z.string().nullable(),
 });
+
+// O detalhe traz também o motivo da última reprovação (L7, D5)
+export const classificacaoDetalheRespostaSchema = classificacaoRespostaSchema.extend({
+    ultimoMotivoReprovacao: z.string().nullable(),
+});

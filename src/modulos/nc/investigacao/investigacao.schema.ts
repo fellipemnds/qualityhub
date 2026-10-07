@@ -42,3 +42,8 @@ export const investigacaoRespostaSchema = z.object({
     causaDireta: z.string().nullable(),
     causaRaiz: z.string().nullable(),
 });
+
+// O detalhe traz também o motivo da última reprovação (L7, D5)
+export const investigacaoDetalheRespostaSchema = investigacaoRespostaSchema.extend({
+    ultimoMotivoReprovacao: z.string().nullable(),
+});
