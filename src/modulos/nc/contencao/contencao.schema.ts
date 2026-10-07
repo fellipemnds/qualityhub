@@ -13,7 +13,8 @@ export const contencaoBaseSchema = z.object({
 });
 export const contencaoRascunhoSchema = contencaoBaseSchema
     .partial()
-    .extend({ executadaEm: diaDeCalendario().nullish() });
+    .extend({ executadaEm: diaDeCalendario().nullish() })
+    .strict();
 export const contencaoPublicacaoSchema = contencaoBaseSchema;
 export const contencaoFechamentoSchema = contencaoBaseSchema.extend({
     // Validado no banco, onde a data já é Date: z.date() sem coerce, para o null ser recusado (B14)

@@ -244,6 +244,20 @@ describe("GET /nc/:id/checklist-fechamento", () => {
 });
 
 describe("PATCH /nc/:id", () => {
+    it("recusa um campo desconhecido, em vez de responder 200 sem mudar nada (L4)", async () => {
+        // Prepara
+        const { editor, nc } = await levarNCAte("ABERTO");
+
+        // Chama: "titlo" no lugar de "titulo"
+        const resposta = await chamar(editor, "PATCH", `/api/nc/${nc.id}`, 400, {
+            titlo: "Título com erro de digitação",
+        });
+
+        // Confere
+        expect(resposta).toMatchObject({ mensagem: "Dados inválidos" });
+        expect(await chamar(editor, "GET", `/api/nc/${nc.id}`, 200)).toMatchObject({ titulo: nc.titulo });
+    });
+
     it("aceita a descrição no teto, 5.000 caracteres, e recusa um a mais (L4)", async () => {
         // Prepara
         const { editor, nc } = await levarNCAte("ABERTO");

@@ -2,12 +2,14 @@ import { z } from "zod";
 import { Papel } from "../../compartilhado/entidades/papeis.js";
 import { TEXTO_CURTO } from "../../compartilhado/validacao/tetos.js";
 
-export const criarUsuarioSchema = z.object({
-    nome: z.string().min(1).max(TEXTO_CURTO),
-    email: z.email(),
-    papeis: z.array(z.enum(Papel)).min(1).max(Object.keys(Papel).length),
-    setorId: z.number().int().positive(),
-});
+export const criarUsuarioSchema = z
+    .object({
+        nome: z.string().min(1).max(TEXTO_CURTO),
+        email: z.email(),
+        papeis: z.array(z.enum(Papel)).min(1).max(Object.keys(Papel).length),
+        setorId: z.number().int().positive(),
+    })
+    .strict();
 
 export const buscarUsuarioIdSchema = z.object({
     id: z.uuid(),

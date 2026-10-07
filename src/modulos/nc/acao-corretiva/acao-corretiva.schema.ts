@@ -17,10 +17,13 @@ export const acaoCorretivaBaseSchema = z.object({
     instrucoesVerificacao: z.string().min(1).max(TEXTO_LONGO).nullish(),
 });
 
-export const acaoCorretivaRascunhoSchema = acaoCorretivaBaseSchema.partial().extend({
-    prazo: diaDeCalendario().nullish(),
-    executadoEm: diaDeCalendario().nullish(),
-});
+export const acaoCorretivaRascunhoSchema = acaoCorretivaBaseSchema
+    .partial()
+    .extend({
+        prazo: diaDeCalendario().nullish(),
+        executadoEm: diaDeCalendario().nullish(),
+    })
+    .strict();
 // Criar exige a investigação; editar pode omiti-la (o partial já recusa o null: não se apaga)
 export const acaoCorretivaCriacaoSchema = acaoCorretivaRascunhoSchema.required({ investigacaoId: true });
 export const acaoCorretivaPublicacaoSchema = acaoCorretivaBaseSchema;
@@ -40,9 +43,11 @@ export const acaoCorretivaExecucaoSchema = acaoCorretivaPlanoSchema.extend({
     evidencia: z.string().min(1).max(TEXTO_LONGO),
 });
 
-export const finalizarExecucaoSchema = z.object({
-    diasParaVerificar: z.number().int().positive(),
-});
+export const finalizarExecucaoSchema = z
+    .object({
+        diasParaVerificar: z.number().int().positive(),
+    })
+    .strict();
 
 export type AcaoCorretivaBaseInput = z.infer<typeof acaoCorretivaBaseSchema>;
 export type AcaoCorretivaRascunhoInput = z.infer<typeof acaoCorretivaRascunhoSchema>;

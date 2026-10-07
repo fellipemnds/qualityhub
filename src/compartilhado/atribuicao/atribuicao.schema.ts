@@ -1,14 +1,18 @@
 import z from "zod";
 import { FuncaoAtribuicao } from "../entidades/funcoes-atribuicao.js";
 
-export const definirAprovadorSchema = z.object({
-    usuarioId: z.uuid(),
-});
+export const definirAprovadorSchema = z
+    .object({
+        usuarioId: z.uuid(),
+    })
+    .strict();
 
-export const colaboradoresSchema = z.object({
-    // Cada id custa consultas ao banco: sem teto, uma requisição com milhares deles vira milhares de consultas (L4)
-    colaboradores: z.array(z.uuid()).min(1).max(50),
-});
+export const colaboradoresSchema = z
+    .object({
+        // Cada id custa consultas ao banco: sem teto, uma requisição com milhares deles vira milhares de consultas (L4)
+        colaboradores: z.array(z.uuid()).min(1).max(50),
+    })
+    .strict();
 
 // A atribuição gravada, como está (o que a tela precisar, como o nome da pessoa, entra na C1, acrescentando: D5)
 export const atribuicaoRespostaSchema = z.object({

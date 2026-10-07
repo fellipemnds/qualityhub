@@ -14,10 +14,13 @@ export const verificacaoBaseSchema = z.object({
     verificadoEm: z.date().nullish(),
 });
 
-export const verificacaoRascunhoSchema = verificacaoBaseSchema.partial().extend({
-    prazo: diaDeCalendario().nullish(),
-    verificadoEm: diaDeCalendario().nullish(),
-});
+export const verificacaoRascunhoSchema = verificacaoBaseSchema
+    .partial()
+    .extend({
+        prazo: diaDeCalendario().nullish(),
+        verificadoEm: diaDeCalendario().nullish(),
+    })
+    .strict();
 
 export const verificacaoConclusaoSchema = verificacaoBaseSchema.extend({
     resultado: z.enum(ResultadoVerificacao),

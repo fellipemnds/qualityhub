@@ -191,6 +191,28 @@ describe("Documentação da API (OpenAPI)", () => {
         expect([...new Set(semTeto)]).toEqual([]);
     });
 
+    it("todo corpo de entrada recusa campo desconhecido: um erro de digitação não some em silêncio (L4)", async () => {
+        // Chama
+        const doc = await documento();
+
+        // Confere: z.strictObject aparece no OpenAPI como additionalProperties: false
+        const aceitaQualquerCampo = Object.entries(doc.paths).flatMap(([caminho, operacoes]) =>
+            Object.entries(operacoes)
+                .filter(([, operacao]) => {
+                    const corpo = (
+                        operacao as {
+                            requestBody?: { content: Record<string, { schema: { additionalProperties?: unknown } }> };
+                        }
+                    ).requestBody;
+                    return (
+                        corpo !== undefined && corpo.content["application/json"]?.schema.additionalProperties !== false
+                    );
+                })
+                .map(([metodo]) => `${metodo.toUpperCase()} ${caminho}`),
+        );
+        expect(aceitaQualquerCampo).toEqual([]);
+    });
+
     it("não expõe o portaoAtual em resposta nenhuma (D2)", async () => {
         // Chama
         const doc = await documento();

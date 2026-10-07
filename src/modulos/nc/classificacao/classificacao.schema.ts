@@ -9,7 +9,7 @@ export const classificacaoBaseSchema = z.object({
     justificativa: z.string().min(20).max(TEXTO_LONGO).nullish(),
 });
 
-export const classificacaoRascunhoSchema = classificacaoBaseSchema.partial();
+export const classificacaoRascunhoSchema = classificacaoBaseSchema.partial().strict();
 export const classificacaoPublicacaoSchema = classificacaoBaseSchema;
 export const classificacaoFechamentoSchema = classificacaoBaseSchema.extend({
     valor: z.enum(ClassificacaoNC),

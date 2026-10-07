@@ -28,9 +28,12 @@ export const ncBaseSchema = z.object({
     mudancasSGQ: z.string().min(1).max(TEXTO_LONGO).nullish(),
 });
 
-export const ncRascunhoSchema = ncBaseSchema.partial().extend({
-    detectadoEm: diaDeCalendario().refine(naoNoFuturo, MENSAGEM_FUTURO).nullish(),
-});
+export const ncRascunhoSchema = ncBaseSchema
+    .partial()
+    .extend({
+        detectadoEm: diaDeCalendario().refine(naoNoFuturo, MENSAGEM_FUTURO).nullish(),
+    })
+    .strict();
 // Na publicação e no fechamento a data é obrigatória: z.date() sem coerce recusa o null (B14)
 export const ncPublicacaoSchema = ncBaseSchema.extend({
     detectadoEm: z.date().refine(naoNoFuturo, MENSAGEM_FUTURO),

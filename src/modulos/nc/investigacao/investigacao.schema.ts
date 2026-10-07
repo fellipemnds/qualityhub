@@ -12,7 +12,7 @@ export const investigacaoBaseSchema = z.object({
     causaRaiz: z.string().min(20).max(TEXTO_LONGO).nullish(),
 });
 
-export const investigacaoRascunhoSchema = investigacaoBaseSchema.partial();
+export const investigacaoRascunhoSchema = investigacaoBaseSchema.partial().strict();
 export const investigacaoPublicacaoSchema = investigacaoBaseSchema;
 export const investigacaoFechamentoSchema = investigacaoBaseSchema.extend({
     metodo: z.enum(MetodoInvestigacao),
