@@ -238,7 +238,7 @@ cliente (TRD §7, ADR-37).
 | ~~Erros do próprio Fastify (JSON malformado, corpo grande demais) respondem com o status deles (400, 413), não 500 — auditoria L3~~ **Feito na A4, como B21** (2026-10-06); o teste do 413 entra com os tetos de entrada (L4), abaixo | — |
 | Permissão conferida **antes** de buscar o usuário-alvo no `definirAprovador` (quem não pode agir não aprende nada com a resposta) — auditoria L5. **Feito** (2026-10-07): permissão, item, estado e só então o usuário escolhido | 🤖 |
 | **Avaliar** as funções repetidas nos seis services de entidade (`retirarX`, `decidirX`, `cancelarX`, `buscarPorIdX`, `listarX`; revisão de código de 2026-10-02). Mudar o padrão de módulo é decisão de arquitetura: registrar no `changelog-arquitetura.md` antes de mexer | 🧑 decide; 🤖 propõe |
-| Tetos de entrada (auditoria L4): `.max()` nos textos, paginação nas listas dos filhos, avaliar `z.strictObject` (recusar campo extra com 400 em vez de descartar), e o teste do 413 (corpo acima de 1 MB) | 🤖 |
+| Tetos de entrada (auditoria L4): `.max()` nos textos, paginação nas listas dos filhos, avaliar `z.strictObject` (recusar campo extra com 400 em vez de descartar), e o teste do 413 (corpo acima de 1 MB). **Feito** (2026-10-07): tetos `TEXTO_CURTO`/`TEXTO_LONGO`, senha até 72 bytes, corpo estrito, as cinco listas dos filhos paginadas, o 413 testado | 🤖 |
 
 **Aprendizado:** o que é OpenAPI e por que o schema de **resposta**
 importa tanto quanto o de entrada.
@@ -342,7 +342,7 @@ Onde cada item dos documentos anteriores é feito:
 | Pendência 4 (login auditado) | A4 |
 | Pendência OpenAPI · RNF-04 (schema de resposta) · L7 (último motivo de reprovação) · B22 (dia de calendário na resposta) · B23 (`id` de outro tipo) · B24 (`atualizadoEm` na edição) | A5 |
 | RF-15 (usuários) · RF-20 (setores) · RN-43 · RN-44 | A6 (backend), C6 (telas) |
-| RF-01 (NC com colaboradores) · RF-16 (etapa) · L2, L5, L6 | C1 |
+| RF-01 (NC com colaboradores) · RF-16 (etapa) · L2, L5, L6 · R7 (código de erro para máquina) e R8 (`DELETE` com corpo), da revisão de design da A5 | C1 |
 | L1 (hipóteses) · L3 (plano aprovado) | C2 · A3 |
 | PRD Q19–Q22 (classificação vigente, exigências por classificação, abrangência, colaborador e aprovador excludentes) | C2 (proposta) |
 | RF-17 (pendências) · L4 · L9 (tela inicial) | C3 · A4 |
@@ -402,3 +402,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-07 | v1.14 — a analista respondeu (3ª ocorrência com justificativa): sai do §7; PRD Q22 entra na C2 |
 | 2026-10-07 | v1.15 — B24 entra na A5, depois do B23 |
 | 2026-10-07 | v1.16 — D1: o `GET /api/saude` testa o banco (na A5, ele só diz que o servidor está de pé) |
+| 2026-10-07 | v1.17 — C1: R7 e R8, da revisão de design das APIs na A5; C4: texto formatado como JSON validado |

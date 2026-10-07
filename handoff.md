@@ -5,52 +5,44 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-07 (manhã, no **trabalho**; `/retomar`). Ambiente em dia: Docker Desktop atualizado (motor 29.8.2), extensões do Claude Code (2.1.292) e do GitHub PR (0.168.0) atualizadas; suíte **312 passando**, cobertura 95,2%. Na sessão: **B23 registrado** (rotas aceitam o `id` de um item de outro tipo; entra antes da Contenção, por Matthew) e a conversa com a analista sobre classificação e reincidência (PRD Q19–Q21). O PC de casa continua sem foto (`casa.txt`).
+**Última atualização:** 2026-10-07 (fim do dia, no **trabalho**). A A5 avançou quase toda: B22, B23 e B24 corrigidos (nenhum bug aberto), schema de resposta em todas as rotas, OpenAPI 3.1 com `/api/docs` só em desenvolvimento, `GET /api/saude`, catálogo de auditoria, L5, L7 e o lote 4 (L4: tetos, corpo estrito, paginação dos filhos). Falta o **lote 5** (§6). Decisões de produto com a analista no PRD (Q19–Q22). O PC de casa continua sem foto (`casa.txt`).
 
 ## 1. Objetivo
 
 Fase **A5 — Contrato da API** (`docs/plano-implementacao.md`), na branch
-`fase/a5-contrato-api`. O passeio guiado pelo código fica para um
-momento tranquilo em casa (§6), sem bloquear a fase.
+`fase/a5-contrato-api` (PR #8, em rascunho). Falta só o lote 5 e o
+fechamento da fase (§6). O passeio guiado pelo código fica para um
+momento tranquilo em casa, sem bloquear a fase.
 
 ## 2. Estado atual
 
-- **A5, item 1 (prefixo `/api`)**: feito. Rotas num plugin com `prefix`
-  no `app.ts`, cookie `Path=/api`, URLs dos testes por extenso com
-  `/api` (changelog "Fase A5").
-- **A5, item 2 (schema de resposta)**: contrato decidido (D1–D5,
-  changelog "Fase A5", a partir do levantamento das respostas reais) e
-  **as 12 rotas de NC prontas**, em 7 fatias, cada uma com teste
-  vermelho (ou de caracterização) e prova de quebra:
-  - `diaDeCalendario()` virou **codec** (entrada e saída
-    `"AAAA-MM-DD"`), em `compartilhado/datas/`;
-  - `ncRespostaSchema` (sem `portaoAtual`, D2) e
-    `checklistFechamentoRespostaSchema` em `nc.schema.ts`;
-  - `erroSchema` (`compartilhado/errors/erro.schema.ts`), declarado
-    como `"4xx"` (D4);
-  - `paginaSchema(itemSchema)`, genérico, em
-    `compartilhado/registro/paginacao-cursor.ts` (D3);
-  - o `PATCH` da NC devolve o formato completo (D1);
-  - `DELETE` com `204: z.null()`, que é **só documentação** (o Fastify
-    não serializa 204; a prova de quebra mostrou).
-- **B22, B23 e B24 corrigidos** em 2026-10-07; nenhum bug aberto. Os
-  cinco filhos ganharam o schema de resposta no mesmo dia (§6).
-- Suíte: **342 passando** na última rodada completa (atribuição);
-  cobertura ~96,3% (trava em 94,66%). Lint e typecheck limpos.
+- **A5, feito em 2026-10-06 e 2026-10-07** (o detalhe de cada decisão
+  está no changelog, "Fase A5"): prefixo `/api`; schema de resposta em
+  **todas** as rotas (D1–D5; o `planoAprovado` em todas as rotas da ação
+  corretiva; o schema como lista do que pode sair no `/auth/eu` e no
+  `POST /usuarios`); OpenAPI 3.1 (`/api/docs` e o JSON só com
+  `NODE_ENV=development`); `GET /api/saude`; catálogo `AcaoAuditada`
+  (só tipo); L5; L7 (`ultimoMotivoReprovacao` no detalhe); L4 (tetos
+  `TEXTO_CURTO`/`TEXTO_LONGO`, senha até 72 bytes, corpo estrito, as
+  cinco listas dos filhos paginadas). Quatro **travas no documento**, no
+  `app.test.ts`: toda rota declara a resposta, todo texto e toda lista
+  de entrada têm teto, todo corpo recusa campo desconhecido, toda lista
+  é paginada (menos o checklist).
+- **B22, B23 e B24 corrigidos**; nenhum bug aberto.
+- Suíte: **373 passando**; cobertura 96,44% (trava em 94,66%); o
+  `diff-cover` local em 100% antes de todo push. Lint e typecheck limpos.
 - O que Matthew aprendeu na A5: `prefix` do Fastify e `Path` do
   cookie; schema de resposta (filtra o que sai, vigia o código: tipo
-  errado vira 500); codec do Zod (`decode`/`encode`); *arrow function*
-  (o que vai antes e depois da seta); `Date()` sem `new` devolve texto;
-  `toEqual` × `toMatchObject` (exatidão); teste de caracterização; a
-  conferência negativa precisa de uma positiva junto; função genérica
-  (`<T extends z.ZodType>`); `.nullable()` × `.optional()`.
-- **A4** fechada em 2026-10-06 (PR #6, `git log c10844c..a66c11b`): o
-  resumo está no plano (histórico) e no changelog ("Fase A4").
-- Tempo da suíte: 216 s a 379 s hoje. A lentidão do meio da tarde era o
-  **Apple Music** na web com o player aberto (o gradiente animado das
-  letras consome a máquina): fechar antes de rodar a suíte. Se passar
-  de ~5 min sem isso, olhar o Docker Desktop (Settings → Resources) e o
-  `free -h` **antes** de mexer nos testes.
+  errado vira 500); codec do Zod (`decode`/`encode`); *arrow function*;
+  `Date()` sem `new` devolve texto; `toEqual` × `toMatchObject`; teste
+  de caracterização; a conferência negativa precisa de uma positiva
+  junto; função genérica (`<T extends z.ZodType>`); `.nullable()` ×
+  `.optional()`; supertipo e o `id` que não diz o tipo (B23, a busca
+  com tipo escrita por ele); "expandir e contrair"; o que é OpenAPI.
+- **A4** fechada em 2026-10-06 (PR #6).
+- Tempo da suíte: 240 s a 330 s. Fechar o **Apple Music** na web antes
+  de rodar (o player consome a máquina). Se passar de ~5 min sem isso,
+  olhar o Docker Desktop e o `free -h` antes de mexer nos testes.
 
 ## 3. Arquivos no meio de uma mudança
 
@@ -58,11 +50,12 @@ Nenhum.
 
 ## 4. O que foi alterado nesta sessão
 
-Na A5 (`git log main..fase/a5-contrato-api`): prefixo `/api`, o
-contrato D1–D5, o B22 registrado e as 7 fatias das rotas de NC. Nenhuma
-dependência nova nem migration na A5. (A A4 trouxe `@fastify/cookie`,
-`@fastify/rate-limit`, `@fastify/helmet`, `@vitest/coverage-v8` e a
-migration M1; o `npm run preparar` cobre.)
+`git log fc33c06~22..HEAD` na branch: B23 (7 fatias), B24, os schemas de
+resposta dos filhos, da sessão, dos usuários e das atribuições, o
+OpenAPI, a saúde, o catálogo de auditoria, L5, L7 e L4. **Duas
+dependências novas** (`@fastify/swagger`, declarado, e
+`@fastify/swagger-ui`, de desenvolvimento): em casa, `npm run preparar`.
+Nenhuma migration nem chave nova no `.env`.
 
 ## 5. Falhas (e o porquê)
 
@@ -156,54 +149,36 @@ migration M1; o `npm run preparar` cobre.)
 
 ## 6. Próximo passo
 
-**As revisões de 2026-10-05 e de 2026-10-06 estão resolvidas.** O que
-ficou para depois foi registrado: S2 e S5 na D1 do plano (`trustProxy`,
-limite em memória, *Fetch Metadata*); o S4 (log de login) já estava na
-D0. Sugestões sem prazo da revisão de código de 2026-10-05: o `logout`
-sem `autenticar` não apaga o cookie de sessão vencida (inofensivo); o
-`include` de papéis no `usuarioRepository.buscarPorEmail` sobrou; o
-`gitleaks detect` vira `gitleaks git` nas versões novas; testes do 413 e
-da mensagem padrão do `setErrorHandler`.
-
-1. ~~Skills de início e fim de fase~~: mescladas (PR #7, 2026-10-06).
-   O ciclo agora: `/comecar-fase` → itens → `/abrir-pr` (revisões e
-   "pronto quando") → merge → `/fechar-fase`.
-2. **Passeio guiado pelo código** (combinado em 2026-10-05; em casa,
-   num momento tranquilo, sem bloquear a A5, decidido em 2026-10-06). **Inclui o último item do "pronto quando" da A4**, adiado no
-   merge: Matthew explicar o B19 ("confere e depois age", o `UPDATE`
+1. **Lote 5 da A5: as funções repetidas dos services** (`retirarX`,
+   `decidirX`, `cancelarX`, `buscarPorIdX`, `listarX`, quase iguais nos
+   seis tipos). **Decisão de Matthew**, com o `idea-refine`: juntar
+   agora ou deixar. Mudar o padrão de módulo vai para o changelog antes
+   de mexer. Hoje o B23, o L7 e a paginação repetiram o mesmo padrão em
+   cinco ou seis arquivos: é o insumo da conversa.
+2. **Fechar a A5:** `/abrir-pr` (revisões da fase e o "pronto quando",
+   que inclui Matthew explicar o que é OpenAPI e por que o schema de
+   resposta importa tanto quanto o de entrada) → merge → `/fechar-fase`.
+3. **Passeio guiado pelo código** (em casa, num momento tranquilo).
+   **Inclui o último item do "pronto quando" da A4**, adiado no merge:
+   Matthew explicar o B19 ("confere e depois age", o `UPDATE`
    condicionado ao estado lido) e o que o `SameSite=Strict` bloqueia e
-   o que não bloqueia. Roteiro: seguir uma requisição de ponta a ponta
-   (rota → controller → service → `cicloVidaService` → `aplicarTransicao` →
-   `registroRepository.atualizar` → banco → auditoria → resposta), com
-   Matthew dizendo o que cada parte faz antes de Claude explicar.
-   Motivo: Matthew disse que não estava mais reconhecendo o código.
-3. ~~**B23** e **B24**~~: corrigidos em 2026-10-07 (o B23 em 7 fatias,
-   a primeira por Matthew; o B24 deu de brinde a trava do B19 na
-   edição).
-4. **A5, item 2: replicar o schema de resposta** (Claude escreve,
-   Matthew revisa em lotes; um commit por arquivo, com teste vermelho e
-   prova de quebra). Feitos em 2026-10-07: contenção, classificação,
-   investigação (sem as hipóteses: não há rota delas, é a L1 na C2),
-   verificação e ação corretiva (com o `planoAprovado` em todas as rotas,
-   decisão de Matthew); o **B22 fechou**. Depois, no mesmo dia, o lote
-   da sessão e dos usuários (planejado antes, por ser sensível):
-   login, senha, logout e sair-de-todos (204), `/auth/eu` e `POST
-   /usuarios` com o schema como **lista do que pode sair** (a prova de
-   quebra mostrou o hash da senha vazando sem ele), e as 3 rotas de
-   atribuição. **Item 2 completo.**
+   o que não bloqueia. Roteiro: uma requisição de ponta a ponta (rota →
+   controller → service → `cicloVidaService` → `buscarRegistroDoTipoOuFalhar`
+   → `aplicarTransicao` → `registroRepository.atualizar` → banco →
+   auditoria → resposta), com Matthew dizendo o que cada parte faz antes
+   de Claude explicar. Ajuda também a reconhecer o código depois do B23.
+4. **Depois, a A6** (usuários e setores): os itens de Matthew, no passo
+   a passo, são a trava da RN-43, o script do primeiro acesso e os
+   testes das permissões de `ADMIN`.
 
-   O `GET /` ganha schema no item 5 (vira `GET /api/saude`).
-5. **Resto da A5**, pela ordem do plano. Feitos em 2026-10-07: (3) o
-   OpenAPI (3.1; `/api/docs` e o JSON só em desenvolvimento; o CSP não
-   bloqueou) e (5) o `GET /api/saude`. Faltam, nos lotes combinados:
-   ~~**lote 3**~~ (feito em 2026-10-07: L5, catálogo `AcaoAuditada`
-   e L7); **lote 4**,
-   (10) L4 com o teste do 413, a paginação das listas dos filhos e a
-   decisão de Matthew sobre recusar campo desconhecido; **lote 5**,
-   (9) avaliar as funções repetidas, decisão de Matthew com
-   `idea-refine`, no changelog antes de mexer. A L3 já foi feita
-   (B21). Nos itens 🧑: o **passo a passo** combinado (regra no
-   `CLAUDE.md`).
+Da revisão de design das APIs (2026-10-07), anotados para a C1/C2:
+**R7**, o erro sem código para máquina (os 409 diferentes só se
+distinguem pelo texto; acrescentar um `codigo` é aditivo) e **R8**, o
+`DELETE /registros/:id/colaboradores` com corpo (decidir com a tela;
+ainda barato de mudar). Sugestões antigas sem prazo: o `logout` sem
+`autenticar` não apaga o cookie de sessão vencida; o `include` de papéis
+no `buscarPorEmail` sobrou; o `gitleaks detect` vira `gitleaks git` nas
+versões novas.
 
 **Chegando em casa:** rodar o **`/retomar`**. A A5 trouxe **duas dependências** (`@fastify/swagger`, declarado, e `@fastify/swagger-ui`, de desenvolvimento): o `npm run preparar` resolve. Sem migration nem chave nova no `.env`. Desde a última vez que a
 branch foi usada em casa (antes da A3): as migrations da A3 e a **M1**
@@ -224,4 +199,4 @@ parado há tempo):
 6. **Primeira foto de casa:** `npm run ambiente -- casa` e depois
    `npm run ambiente -- comparar` (`SETUP.md` §12.5). Commitar o
    `docs/ambiente/casa.txt`.
-7. `npm run test:cobertura`: **312 passando**, cobertura acima de 94,66% (com o Apple Music fechado, para a suíte não passar de ~5 min).
+7. `npm run test:cobertura`: **373 passando**, cobertura acima de 94,66% (com o Apple Music fechado, para a suíte não passar de ~5 min).

@@ -110,6 +110,23 @@ documento de arquitetura.
   `ultimoMotivoReprovacao` no detalhe dos cinco tipos com portão (a
   última decisão vale; aprovada depois, `null`).
 
+- **Tetos de entrada e listas paginadas** (2026-10-07, lote 4, L4;
+  planejado com Matthew, com a revisão de design das APIs): os tetos
+  `TEXTO_CURTO` (200) e `TEXTO_LONGO` (5.000) em
+  `compartilhado/validacao/tetos.ts`; a senha até **72 bytes** (o bcrypt
+  só usa os primeiros 72; em bytes, porque acento ocupa 2); até 50
+  colaboradores por requisição. Os **schemas de corpo** ficam estritos
+  (`.strict()`): campo desconhecido responde 400. Os schemas base não,
+  porque também conferem linhas do banco, e os de resposta também não,
+  porque descartar o que sobra é a trava do que pode sair. As cinco
+  listas dos filhos passam ao envelope paginado da lista de NCs, com o
+  filtro exigindo UUID; nos repositórios, **sem `limit` vêm todas**,
+  porque a guarda de fechamento da NC usa as mesmas funções. Três
+  travas novas no OpenAPI (teto, corpo estrito, lista paginada), como a
+  de "toda rota declara a resposta". Anotados para a C1 (revisão de
+  design): R7, o erro sem código para máquina, e R8, o `DELETE` com
+  corpo.
+
 ### Fase A4 — sessão nova (branch `fase/a4-sessao`, PR #6)
 
 - **Trava de concorrência no repositório (B19):** o
