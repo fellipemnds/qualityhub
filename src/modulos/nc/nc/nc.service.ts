@@ -201,7 +201,7 @@ export const ncService = {
 
     async cancelarNC(registroId: string, ator: Ator, motivo: string) {
         return prisma.$transaction(async (tx) => {
-            const registroCancelado = await cicloVidaService.cancelar(tx, registroId, ator, motivo);
+            const registroCancelado = await cicloVidaService.cancelar(tx, registroId, "NAO_CONFORMIDADE", ator, motivo);
             const nc = await ncRepository.buscarPorId(tx, registroId);
 
             return { ...registroCancelado, ...nc };

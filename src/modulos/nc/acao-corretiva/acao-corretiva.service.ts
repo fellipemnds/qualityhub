@@ -286,7 +286,7 @@ export const acaoCorretivaService = {
 
     async cancelarAcaoCorretiva(registroId: string, ator: Ator, motivo: string) {
         return prisma.$transaction(async (tx) => {
-            const registroCancelado = await cicloVidaService.cancelar(tx, registroId, ator, motivo);
+            const registroCancelado = await cicloVidaService.cancelar(tx, registroId, "ACAO_CORRETIVA", ator, motivo);
             const acaoCorretiva = await acaoCorretivaRepository.buscarPorId(tx, registroId);
             return { ...registroCancelado, ...acaoCorretiva };
         });

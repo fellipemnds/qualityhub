@@ -123,7 +123,7 @@ export const verificacaoService = {
 
     async cancelarVerificacao(registroId: string, ator: Ator, motivo: string) {
         return prisma.$transaction(async (tx) => {
-            const registroCancelado = await cicloVidaService.cancelar(tx, registroId, ator, motivo);
+            const registroCancelado = await cicloVidaService.cancelar(tx, registroId, "VERIFICACAO", ator, motivo);
             const verificacao = await verificacaoRepository.buscarPorId(tx, registroId);
             return { ...registroCancelado, ...verificacao };
         });

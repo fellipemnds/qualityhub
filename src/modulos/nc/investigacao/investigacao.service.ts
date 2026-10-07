@@ -182,14 +182,21 @@ export const investigacaoService = {
             }));
             const faltando = avaliarCancelamentoInvestigacao({ acoes }).filter((item) => !item.atendido);
 
-            const registroCancelado = await cicloVidaService.cancelar(tx, registroId, ator, motivo, () => {
-                if (faltando.length > 0) {
-                    throw new TransicaoInvalidaError(
-                        "Ainda falta o que está na lista para cancelar esta investigação.",
-                        faltando,
-                    );
-                }
-            });
+            const registroCancelado = await cicloVidaService.cancelar(
+                tx,
+                registroId,
+                "INVESTIGACAO",
+                ator,
+                motivo,
+                () => {
+                    if (faltando.length > 0) {
+                        throw new TransicaoInvalidaError(
+                            "Ainda falta o que está na lista para cancelar esta investigação.",
+                            faltando,
+                        );
+                    }
+                },
+            );
             const investigacao = await investigacaoRepository.buscarPorId(tx, registroId);
 
             return { ...registroCancelado, ...investigacao };

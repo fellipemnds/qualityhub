@@ -281,11 +281,12 @@ export const cicloVidaService = {
     async cancelar(
         tx: ClientePrisma,
         registroId: string,
+        tipo: TipoRegistro,
         ator: Ator,
         motivo: string,
         validador: () => void = () => {},
     ) {
-        const registro = await buscarRegistroOuFalhar(tx, registroId);
+        const registro = await buscarRegistroDoTipoOuFalhar(tx, registroId, tipo);
 
         // Rascunho só se exclui, não se cancela: cancelado, ele ficaria para sempre, sem código (B12, RN-06)
         if (registro.estado === "RASCUNHO") {

@@ -225,6 +225,21 @@ describe("POST /contencoes/:id/cancelar", () => {
         // Confere
         expect(await chamar(editor, "GET", `/api/contencoes/${contencao.id}`, 200)).toMatchObject({ estado: "ABERTO" });
     });
+
+    it("recusa com 404 o id de uma investigação com ação aberta, que continua aberta (B23, RN-50)", async () => {
+        // Prepara (pela rota dela, a RN-50 recusaria: a ação ligada ainda está aberta)
+        const { editor, gerente, investigacao } = await levarAcaoCorretivaAte("ABERTO");
+
+        // Chama
+        await chamar(gerente, "POST", `/api/contencoes/${investigacao.id}/cancelar`, 404, {
+            motivo: "Tentativa de cancelar a investigação pela rota da contenção.",
+        });
+
+        // Confere
+        expect(await chamar(editor, "GET", `/api/investigacoes/${investigacao.id}`, 200)).toMatchObject({
+            estado: "ABERTO",
+        });
+    });
 });
 
 // Retirar da aprovação (RN-48): o colaborador desiste do envio. O ciclo de vida genérico é testado aqui, pela contenção
