@@ -9,32 +9,18 @@ import type { Ator } from "../entidades/ator.js";
 import type { Decisao } from "../entidades/decisao.js";
 import type { EstadoRegistro } from "../entidades/estados.js";
 import type { TipoRegistro } from "../entidades/tipos-registro.js";
-import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError, ValidacaoError } from "../errors/errors.js";
+import { SemPermissaoError, TransicaoInvalidaError, ValidacaoError } from "../errors/errors.js";
 import { podeExecutar, temPapel } from "../permissoes/pode-executar.js";
 import type { ClientePrisma } from "../prisma/tipos.js";
 import { reaberturaRepository } from "../reabertura/reabertura.repository.js";
 import { sequenciaService } from "../sequencia/sequencia.service.js";
+import { buscarRegistroDoTipoOuFalhar } from "./buscar-registro-do-tipo.js";
 import { estadoAposDecisao } from "./estado-apos-decisao.js";
 import { portoesPorTipo } from "./portoes.js";
 import { prefixoPorTipo } from "./prefixos.js";
 import { registroRepository } from "./registro.repository.js";
 
 type Registro = NonNullable<Awaited<ReturnType<typeof registroRepository.buscarPorId>>>;
-
-// Os tipos dividem o Registro, e o id sozinho não diz o tipo: item de outro tipo responde como inexistente (B23)
-async function buscarRegistroDoTipoOuFalhar(
-    tx: ClientePrisma,
-    registroId: string,
-    tipo: TipoRegistro,
-): Promise<Registro> {
-    const registro = await registroRepository.buscarPorId(tx, registroId);
-
-    if (registro === null || registro.tipo !== tipo) {
-        throw new NaoEncontradoError("Item não encontrado.");
-    }
-
-    return registro;
-}
 
 // O fim de toda transição: grava a mudança no Registro e a auditoria com o antes e o depois, na mesma transação. Num
 // lugar só, para a trava do B19 (o UPDATE condicionado ao estado esperado) entrar uma vez, valendo para todas
