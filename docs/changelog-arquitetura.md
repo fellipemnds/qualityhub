@@ -79,6 +79,23 @@ documento de arquitetura.
   credencial e sai só na criação, para o `ADMIN`. As atribuições
   devolvem o registro gravado, como já faziam (o resto, na C1, pelo D5).
 
+- **OpenAPI** (2026-10-07, A5 item 3; planejado com Matthew, com as
+  fontes): o `@fastify/swagger` (o 9.8.1 que já vinha com o provider,
+  agora declarado) monta o documento com o `jsonSchemaTransform`, antes
+  das rotas. **OpenAPI 3.1**, e não 3.0: sem o tipo `null`, o 204 saía
+  com corpo (o Orval converte tudo para 3.1 ao ler). O
+  `diaDeCalendario()` ganhou `.meta({ type: "string", format: "date" })`:
+  nas respostas, o provider documenta o lado de saída do codec (o
+  `Date`) como `date-time`, e o cliente gerado recusaria o
+  `"AAAA-MM-DD"`. A interface (`@fastify/swagger-ui`, dependência de
+  desenvolvimento, carregada com `import()`) publica `/api/docs` e
+  `/api/docs/json` **só com `NODE_ENV=development`** (Matthew): produção
+  não publica o mapa da API. O CSP do `helmet` não bloqueou a página.
+  Uma trava nova no `app.test.ts`: toda rota da API declara a resposta
+  de sucesso.
+- **`GET /api/saude`** (2026-10-07, A5 item 5) no lugar do `GET /`,
+  sem login, com schema de resposta; testar o banco fica para a D1.
+
 ### Fase A4 — sessão nova (branch `fase/a4-sessao`, PR #6)
 
 - **Trava de concorrência no repositório (B19):** o

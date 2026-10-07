@@ -192,15 +192,19 @@ da mensagem padrão do `setErrorHandler`.
    atribuição. **Item 2 completo.**
 
    O `GET /` ganha schema no item 5 (vira `GET /api/saude`).
-5. **Resto da A5**, pela ordem do plano: (3) `@fastify/swagger` com
-   explicação (CSP do `helmet` só nessa rota; conferir como o 204
-   `z.null()` aparece no OpenAPI); (4) catálogo de auditoria; (5) `GET
-   /saude`; (6) L7; (8) L5, começando por teste; (9) avaliar as funções
-   repetidas, decisão de Matthew com `idea-refine`, no changelog antes
-   de mexer; (10) L4 com o teste do 413. A L3 já foi feita (B21). Nos
-   itens 🧑: o **passo a passo** combinado (regra no `CLAUDE.md`).
+5. **Resto da A5**, pela ordem do plano. Feitos em 2026-10-07: (3) o
+   OpenAPI (3.1; `/api/docs` e o JSON só em desenvolvimento; o CSP não
+   bloqueou) e (5) o `GET /api/saude`. Faltam, nos lotes combinados:
+   **lote 3**, (4) catálogo de auditoria (e o nome `SALVAR_RASCUNHO`
+   em item aberto), (6) L7 e (8) L5, começando por teste; **lote 4**,
+   (10) L4 com o teste do 413, a paginação das listas dos filhos e a
+   decisão de Matthew sobre recusar campo desconhecido; **lote 5**,
+   (9) avaliar as funções repetidas, decisão de Matthew com
+   `idea-refine`, no changelog antes de mexer. A L3 já foi feita
+   (B21). Nos itens 🧑: o **passo a passo** combinado (regra no
+   `CLAUDE.md`).
 
-**Chegando em casa:** rodar o **`/retomar`**. Nada novo de ambiente desde a saída do trabalho (sem migration, dependência ou chave do `.env` na A5). Desde a última vez que a
+**Chegando em casa:** rodar o **`/retomar`**. A A5 trouxe **duas dependências** (`@fastify/swagger`, declarado, e `@fastify/swagger-ui`, de desenvolvimento): o `npm run preparar` resolve. Sem migration nem chave nova no `.env`. Desde a última vez que a
 branch foi usada em casa (antes da A3): as migrations da A3 e a **M1**
 (`sessao_e_preferencia_do_usuario`), e **dependências novas** (cookie,
 rate-limit, helmet, cobertura, Vitest 5.0.3). O `npm run preparar`

@@ -113,7 +113,7 @@ e na A1.
 | `@fastify/rate-limit` | Limitar tentativas de login | §4.3 |
 | `@fastify/multipart` | Receber upload de anexos | ADR-34 |
 | Cliente S3 (`minio` ou equivalente) | **Só se** os anexos forem para armazenamento de objetos; em disco, usa o `fs` do próprio Node | ADR-34, §8.1 |
-| `@fastify/swagger` + `@fastify/swagger-ui` | Gerar e exibir o OpenAPI (a interface visual só em desenvolvimento) | ADR-37 |
+| `@fastify/swagger` + `@fastify/swagger-ui` | Gerar e exibir o OpenAPI. A interface (e o JSON que ela publica) só em desenvolvimento: o `swagger-ui` é dependência de desenvolvimento, carregado com `import()` | ADR-37, §7.2 |
 | `@fastify/helmet` | Cabeçalhos de segurança (A4, auditoria R3) | `CONSTRAINTS.md`, changelog "Análise do repositório" |
 | **Dev:** contêiner do MinIO pelo Testcontainers | **Só se** os anexos forem para armazenamento de objetos | ADR-34, ADR-36 |
 | **Dev:** `@vitest/coverage-v8`, regras de arquitetura no Biome (o `dependency-cruiser` não lê o TypeScript 7); **CI:** gitleaks, Semgrep, osv-scanner | Os checks do contrato de qualidade (cobertura, arquitetura, segredos, SAST, dependências), instalados por Matthew na A4 | `CONSTRAINTS.md` §2 |
@@ -310,8 +310,13 @@ necessárias) fica no **Esquema Backend**.
 ### 7.2 Contrato com o frontend (ADR-37)
 
 1. O `fastify-type-provider-zod` transforma os schemas Zod das rotas em
-   **OpenAPI** (`@fastify/swagger`), disponível em `/api/docs/json`.
-2. Em desenvolvimento, a documentação navegável fica em `/api/docs`.
+   **OpenAPI 3.1** (`@fastify/swagger`). No 3.0 não existe o tipo `null`,
+   e o 204 sairia documentado com corpo; o Orval converte tudo para 3.1
+   ao ler.
+2. **Só em desenvolvimento** (`NODE_ENV=development`, que o `npm run
+   dev` define), a documentação navegável fica em `/api/docs` e o JSON
+   em `/api/docs/json`: o Orval roda contra o servidor local, e
+   produção não publica o mapa da API (decidido na A5).
 3. No frontend, o **Orval** lê esse OpenAPI e gera: tipos TypeScript,
    hooks do TanStack Query para cada rota e schemas Zod para os
    formulários.
