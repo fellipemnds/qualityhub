@@ -114,7 +114,8 @@ export const acaoCorretivaService = {
             await atribuicaoRepository.inserirAtribuicao(tx, registro.id, ator.id, ator.id, "COLABORADOR");
             await herdarAprovadorDaNC(tx, naoConformidadeId, registro.id, ator.id);
 
-            return { ...registro, ...acaoCorretiva };
+            // Recém-criada, a ação não tem decisão nenhuma: o plano não foi aprovado
+            return { ...registro, ...acaoCorretiva, planoAprovado: false };
         });
     },
 
@@ -154,7 +155,7 @@ export const acaoCorretivaService = {
 
             // que mudou de estado no meio
 
-            await registroRepository.atualizar(tx, registroId, registro.estado, {});
+            const registroTocado = await registroRepository.atualizar(tx, registroId, registro.estado, {});
 
             await auditoriaRepository.registrar(tx, {
                 entidade: EntidadeAuditada[registro.tipo],
@@ -165,7 +166,8 @@ export const acaoCorretivaService = {
                 depois: atualizada,
             });
 
-            return atualizada;
+            const planoAprovado = await acaoCorretivaRepository.planoAprovado(tx, registroId);
+            return { ...registroTocado, ...atualizada, planoAprovado };
         });
     },
 
@@ -183,7 +185,8 @@ export const acaoCorretivaService = {
             const registroPublicado = await cicloVidaService.publicar(tx, registroId, "ACAO_CORRETIVA", ator, () =>
                 acaoCorretivaPublicacaoSchema.parse(acaoCorretiva),
             );
-            return { ...registroPublicado, ...acaoCorretiva };
+            const planoAprovado = await acaoCorretivaRepository.planoAprovado(tx, registroId);
+            return { ...registroPublicado, ...acaoCorretiva, planoAprovado };
         });
     },
 
@@ -202,7 +205,8 @@ export const acaoCorretivaService = {
             const registroSubmetido = await cicloVidaService.submeter(tx, registroId, "ACAO_CORRETIVA", ator, () =>
                 acaoCorretivaPlanoSchema.parse(acaoCorretiva),
             );
-            return { ...registroSubmetido, ...acaoCorretiva };
+            const planoAprovado = await acaoCorretivaRepository.planoAprovado(tx, registroId);
+            return { ...registroSubmetido, ...acaoCorretiva, planoAprovado };
         });
     },
 
@@ -212,7 +216,8 @@ export const acaoCorretivaService = {
             const registroRetirado = await cicloVidaService.retirar(tx, registroId, "ACAO_CORRETIVA", ator);
             const acaoCorretiva = await acaoCorretivaRepository.buscarPorId(tx, registroId);
 
-            return { ...registroRetirado, ...acaoCorretiva };
+            const planoAprovado = await acaoCorretivaRepository.planoAprovado(tx, registroId);
+            return { ...registroRetirado, ...acaoCorretiva, planoAprovado };
         });
     },
 
@@ -223,7 +228,8 @@ export const acaoCorretivaService = {
                 fecharAoAprovar: false,
             });
             const acaoCorretiva = await acaoCorretivaRepository.buscarPorId(tx, registroId);
-            return { ...registroDecidido, ...acaoCorretiva };
+            const planoAprovado = await acaoCorretivaRepository.planoAprovado(tx, registroId);
+            return { ...registroDecidido, ...acaoCorretiva, planoAprovado };
         });
     },
 
@@ -286,7 +292,8 @@ export const acaoCorretivaService = {
                 diasParaVerificar,
             );
 
-            return { ...registroAtualizado, ...acaoCorretiva, verificacaoGerada };
+            // A guarda do começo exige o plano aprovado: chegando aqui, ele está
+            return { ...registroAtualizado, ...acaoCorretiva, planoAprovado: true, verificacaoGerada };
         });
     },
 
@@ -294,7 +301,8 @@ export const acaoCorretivaService = {
         return prisma.$transaction(async (tx) => {
             const registroCancelado = await cicloVidaService.cancelar(tx, registroId, "ACAO_CORRETIVA", ator, motivo);
             const acaoCorretiva = await acaoCorretivaRepository.buscarPorId(tx, registroId);
-            return { ...registroCancelado, ...acaoCorretiva };
+            const planoAprovado = await acaoCorretivaRepository.planoAprovado(tx, registroId);
+            return { ...registroCancelado, ...acaoCorretiva, planoAprovado };
         });
     },
 
@@ -315,8 +323,11 @@ export const acaoCorretivaService = {
 
         const registros = await acaoCorretivaRepository.listar(prisma, filtros);
         return registros.map((item) => {
-            const { registro, ...resto } = item;
-            return { ...registro, ...resto };
+            const {
+                registro: { aprovacoes, ...registro },
+                ...resto
+            } = item;
+            return { ...registro, ...resto, planoAprovado: aprovacoes.length > 0 };
         });
     },
 };

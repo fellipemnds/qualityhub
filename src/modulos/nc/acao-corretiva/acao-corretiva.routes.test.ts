@@ -177,9 +177,45 @@ describe("GET /acoes-corretivas/:id", () => {
         // Confere
         expect(resposta).toMatchObject({ estado: "ABERTO", planoAprovado: true });
     });
+
+    it("devolve o prazo como dia, sem hora (B22)", async () => {
+        // Prepara: o levarAcaoCorretivaAte preenche o plano com o prazo de daqui a 15 dias
+        const { editor, acao } = await levarAcaoCorretivaAte("EM_APROVACAO");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/acoes-corretivas/${acao.id}`, 200);
+
+        // Confere
+        expect(resposta.prazo).toBe(diaDaquiA(15));
+    });
+
+    it("não expõe o portaoAtual, detalhe interno do ciclo de vida (D2)", async () => {
+        // Prepara
+        const { editor, acao } = await levarAcaoCorretivaAte("RASCUNHO");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/acoes-corretivas/${acao.id}`, 200);
+
+        // Confere
+        expect(resposta.id).toBe(acao.id);
+        expect(resposta).not.toHaveProperty("portaoAtual");
+    });
 });
 
 describe("PATCH /acoes-corretivas/:id", () => {
+    it("devolve a ação inteira, com estado, código e planoAprovado, como as outras rotas (D1)", async () => {
+        // Prepara
+        const { editor, acao } = await levarAcaoCorretivaAte("ABERTO");
+
+        // Chama
+        const resposta = await chamar(editor, "PATCH", `/api/acoes-corretivas/${acao.id}`, 200, {
+            descricao: "Atualizar o procedimento de manutenção com o material correto de vedação.",
+        });
+
+        // Confere
+        expect(resposta).toMatchObject({ estado: "ABERTO", codigo: expect.any(String), planoAprovado: false });
+    });
+
     // Com o plano aprovado, o PATCH só aceita a execução: o que o QA aprovou não muda (B2). Recusa se o campo vier,
     // mesmo com o mesmo valor (o investigacaoId vai igual)
     it.each([
@@ -213,7 +249,7 @@ describe("PATCH /acoes-corretivas/:id", () => {
         });
 
         // Confere
-        expect(resposta).toMatchObject({ executadoEm: `${diaDaquiA(-1)}T00:00:00.000Z` });
+        expect(resposta).toMatchObject({ executadoEm: diaDaquiA(-1) });
     });
 
     it.each(INVESTIGACOES_INVALIDAS)("recusa apontar para a investigação $caso (B10, RN-49)", async ({ montar }) => {
@@ -274,6 +310,21 @@ describe("PATCH /acoes-corretivas/:id", () => {
     });
 });
 
+describe("POST /acoes-corretivas/:id/decidir", () => {
+    it("aprovar o plano já devolve planoAprovado true, sem outro GET", async () => {
+        // Prepara
+        const { aprovador, acao } = await levarAcaoCorretivaAte("EM_APROVACAO");
+
+        // Chama
+        const resposta = await chamar(aprovador, "POST", `/api/acoes-corretivas/${acao.id}/decidir`, 200, {
+            decisao: "APROVADO",
+        });
+
+        // Confere
+        expect(resposta).toMatchObject({ estado: "ABERTO", planoAprovado: true });
+    });
+});
+
 describe("POST /acoes-corretivas/:id/submeter", () => {
     it("recusa o plano sem descrição e instruções de verificação", async () => {
         // Prepara
@@ -309,8 +360,8 @@ describe("POST /acoes-corretivas/:id/finalizar-execucao", () => {
         // Chama (o executarAcao finaliza com 30 dias para verificar)
         const { verificacao } = await executarAcao(cenario);
 
-        // Confere: 31/12/2026 + 30 dias = 30/01/2027, guardado como meia-noite UTC do dia
-        expect(verificacao).toMatchObject({ codigo: "VE-2026-0001", prazo: "2027-01-30T00:00:00.000Z" });
+        // Confere: 31/12/2026 + 30 dias = 30/01/2027, um dia de calendário (sem hora, B22)
+        expect(verificacao).toMatchObject({ codigo: "VE-2026-0001", prazo: "2027-01-30" });
     });
 
     it("recusa com a execução registrada, mas o plano nunca aprovado (B1)", async () => {
@@ -455,6 +506,17 @@ describe("GET /acoes-corretivas", () => {
         const ids = (lista: { id: string }[]) => lista.map((item) => item.id).sort();
         expect(ids(daNC)).toEqual([publicado.id, rascunho.id].sort());
         expect(ids(abertosDaNC)).toEqual([publicado.id]);
+    });
+
+    it("os itens da lista trazem o planoAprovado e o prazo como dia, sem hora (B22)", async () => {
+        // Prepara: uma ação com o plano aprovado (prazo daqui a 15 dias)
+        const { editor, nc } = await levarAcaoCorretivaAte("PLANO_APROVADO");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}`, 200);
+
+        // Confere
+        expect(resposta).toMatchObject([{ planoAprovado: true, prazo: diaDaquiA(15) }]);
     });
 });
 

@@ -36,7 +36,10 @@ export const acaoCorretivaRepository = {
                 naoConformidadeId: filtros.naoConformidadeId,
                 registro: { estado: filtros.estado },
             },
-            include: { registro: true },
+            // A aprovação do plano vem junto, para o planoAprovado de cada item sair da mesma consulta
+            include: {
+                registro: { include: { aprovacoes: { where: { portao: "PLANO", decisao: "APROVADO" }, take: 1 } } },
+            },
         });
     },
 };

@@ -1,5 +1,8 @@
 import z from "zod";
 import { diaDeCalendario } from "../../../compartilhado/datas/dia-de-calendario.js";
+import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import { TipoRegistro } from "../../../compartilhado/entidades/tipos-registro.js";
+import { verificacaoRespostaSchema } from "../verificacao/verificacao.schema.js";
 
 // A base é a forma guardada no banco (datas já como Date); o rascunho é a entrada da API, com os dias em "AAAA-MM-DD"
 export const acaoCorretivaBaseSchema = z.object({
@@ -45,3 +48,29 @@ export type AcaoCorretivaRascunhoInput = z.infer<typeof acaoCorretivaRascunhoSch
 export type AcaoCorretivaCriacaoInput = z.infer<typeof acaoCorretivaCriacaoSchema>;
 export type AcaoCorretivaPublicacaoInput = z.infer<typeof acaoCorretivaPublicacaoSchema>;
 export type FinalizarExecucaoInput = z.infer<typeof finalizarExecucaoSchema>;
+
+// O formato de saída, o mesmo em criar, detalhe, lista, edição e transições (D1): os campos do Registro, sem o
+// portaoAtual (D2), os da ação, com os dias sem hora (B22), e o planoAprovado em todas as rotas (Matthew, 2026-10-07):
+// depois de aprovar, a própria resposta já diz que a execução está liberada, sem outro GET
+export const acaoCorretivaRespostaSchema = z.object({
+    id: z.uuid(),
+    criadoPorId: z.uuid(),
+    tipo: z.enum(TipoRegistro),
+    estado: z.enum(EstadoRegistro),
+    codigo: z.string().nullable(),
+    criadoEm: z.date(),
+    atualizadoEm: z.date(),
+    naoConformidadeId: z.uuid(),
+    investigacaoId: z.uuid(),
+    descricao: z.string().nullable(),
+    prazo: diaDeCalendario().nullable(),
+    executadoEm: diaDeCalendario().nullable(),
+    evidencia: z.string().nullable(),
+    instrucoesVerificacao: z.string().nullable(),
+    planoAprovado: z.boolean(),
+});
+
+// O finalizar-execucao devolve também a verificação que ele gerou
+export const finalizarExecucaoRespostaSchema = acaoCorretivaRespostaSchema.extend({
+    verificacaoGerada: verificacaoRespostaSchema,
+});
