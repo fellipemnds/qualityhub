@@ -18,7 +18,8 @@ export const usuarioController = {
 
         const contrato = { id: registro.usuario.id, tokenConvite: registro.token };
 
-        return reply.status(201).send(contrato);
+        // O token do convite é uma credencial: nada no caminho (navegador, proxy) guarda a resposta
+        return reply.header("Cache-Control", "no-store").status(201).send(contrato);
     },
 
     async listar(request: FastifyRequest<{ Querystring: UsuarioFiltrosListagemInput }>, reply: FastifyReply) {
@@ -43,6 +44,12 @@ export const usuarioController = {
         const usuario = await usuarioService.editarUsuario(request.user, request.params.id, request.body);
 
         return reply.status(200).send(usuario);
+    },
+
+    async gerarConvite(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
+        const convite = await usuarioService.gerarConvite(request.user, request.params.id);
+
+        return reply.header("Cache-Control", "no-store").status(200).send(convite);
     },
 
     async inativar(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {

@@ -29,6 +29,11 @@ export const authService = {
                 throw new ValidacaoError("Não foi possível processar a solicitação.");
             }
 
+            // Revogado por um convite novo ou pela inativação (F5); a mensagem única de todo link que não vale é da F5c
+            if (tokenAcesso.revogadoEm !== null) {
+                throw new ValidacaoError("Este link não vale mais. Peça um novo ao administrador.");
+            }
+
             if (tokenAcesso.usadoEm !== null) {
                 throw new ValidacaoError("Este token já foi utilizado");
             }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { app } from "../../app.js";
 import { prisma } from "../../compartilhado/prisma/cliente.js";
-import { chamar, ncPublicada, perfisDeFora } from "../../testes/cenarios.js";
+import { abrirDuasConexoes, chamar, ncPublicada, perfisDeFora } from "../../testes/cenarios.js";
 import { loginComo } from "../../testes/fabricas.js";
 
 function novoUsuario(setorId: number, papeis: string[] = ["EDITOR"]) {
@@ -570,6 +570,25 @@ describe("POST /usuarios/:id/inativar", () => {
         ).toMatchObject([{ entidade: "USUARIO", usuarioId: admin.usuario.id }]);
     });
 
+    it("dois inativar ao mesmo tempo gravam uma vez só, e os dois respondem a mesma data (F5)", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        const url = `/api/usuarios/${visualizador.usuario.id}/inativar`;
+
+        // Chama
+        await abrirDuasConexoes();
+        const [primeira, segunda] = await Promise.all([
+            chamar(admin, "POST", url, 200),
+            chamar(admin, "POST", url, 200),
+        ]);
+
+        // Confere: o segundo esperou a trava do primeiro e encontrou a pessoa já inativa
+        expect(segunda.desativadoEm).toBe(primeira.desativadoEm);
+        expect(
+            await prisma.auditoria.count({ where: { entidadeId: visualizador.usuario.id, acao: "INATIVAR_USUARIO" } }),
+        ).toBe(1);
+    });
+
     it("recusa inativar quem é aprovador de item aberto, com a lista, e a pessoa continua ativa (RN-43)", async () => {
         // Prepara
         const { editor, aprovador, nc } = await ncPublicada();
@@ -655,5 +674,130 @@ describe("POST /usuarios/:id/reativar", () => {
 
         // Chama e confere
         await chamar(gerente, "POST", `/api/usuarios/${visualizador.usuario.id}/reativar`, 403);
+    });
+});
+
+describe("POST /usuarios/:id/convite", () => {
+    const definirSenha = (token: string) =>
+        app.inject({
+            method: "POST",
+            url: "/api/auth/definir-senha",
+            payload: { token, senha: "SenhaNovaDoTeste123!" },
+        });
+
+    it("gera um convite novo, e o anterior para de valer (F5)", async () => {
+        // Prepara: o primeiro convite nasce com o usuário
+        const { admin } = await perfisDeFora();
+        const criado = await chamar(admin, "POST", "/api/usuarios", 201, novoUsuario(admin.usuario.setorId));
+
+        // Chama
+        const resposta = await chamar(admin, "POST", `/api/usuarios/${criado.id}/convite`, 200);
+
+        // Confere: o link antigo não define a senha; o novo, sim
+        expect(resposta).toEqual({ tokenConvite: expect.any(String), expiraEm: expect.any(String) });
+        expect((await definirSenha(criado.tokenConvite)).statusCode).toBe(400);
+        expect((await definirSenha(resposta.tokenConvite)).statusCode).toBe(204);
+    });
+
+    it("derruba as sessões da pessoa: se o link vazou e alguém entrou, sai (F5)", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        await chamar(visualizador, "GET", "/api/auth/eu", 200);
+
+        // Chama
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/convite`, 200);
+
+        // Confere
+        await chamar(visualizador, "GET", "/api/auth/eu", 401);
+    });
+
+    it("um convite pendente não volta a valer depois de inativar e reativar a pessoa (F5)", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+        const criado = await chamar(admin, "POST", "/api/usuarios", 201, novoUsuario(admin.usuario.setorId));
+        await chamar(admin, "POST", `/api/usuarios/${criado.id}/inativar`, 200);
+        await chamar(admin, "POST", `/api/usuarios/${criado.id}/reativar`, 200);
+
+        // Chama
+        const resposta = await definirSenha(criado.tokenConvite);
+
+        // Confere
+        expect(resposta.statusCode).toBe(400);
+    });
+
+    it("não gera convite para quem está inativo (409)", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/inativar`, 200);
+
+        // Chama e confere
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/convite`, 409);
+    });
+
+    it("registra na auditoria quem gerou, sem o token; e a resposta não fica em cache", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+
+        // Chama
+        const resposta = await app.inject({
+            method: "POST",
+            url: `/api/usuarios/${visualizador.usuario.id}/convite`,
+            headers: admin.autenticacao,
+        });
+
+        // Confere
+        const { tokenConvite } = resposta.json();
+        expect(resposta.headers["cache-control"]).toBe("no-store");
+        const linhas = await prisma.auditoria.findMany({
+            where: { entidadeId: visualizador.usuario.id, acao: "GERAR_CONVITE" },
+        });
+        expect(linhas).toMatchObject([{ entidade: "USUARIO", usuarioId: admin.usuario.id }]);
+        expect(JSON.stringify(linhas)).not.toContain(tokenConvite);
+    });
+
+    it("o criar usuário também registra o convite e não fica em cache", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+
+        // Chama
+        const resposta = await app.inject({
+            method: "POST",
+            url: "/api/usuarios",
+            headers: admin.autenticacao,
+            payload: novoUsuario(admin.usuario.setorId),
+        });
+
+        // Confere
+        const { id, tokenConvite } = resposta.json();
+        expect(resposta.headers["cache-control"]).toBe("no-store");
+        const linhas = await prisma.auditoria.findMany({ where: { entidadeId: id, acao: "GERAR_CONVITE" } });
+        expect(linhas).toHaveLength(1);
+        expect(JSON.stringify(linhas)).not.toContain(tokenConvite);
+    });
+
+    it("dois convites ao mesmo tempo deixam um só link valendo (F5)", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+        const criado = await chamar(admin, "POST", "/api/usuarios", 201, novoUsuario(admin.usuario.setorId));
+        const url = `/api/usuarios/${criado.id}/convite`;
+
+        // Chama
+        await abrirDuasConexoes();
+        await Promise.all([chamar(admin, "POST", url, 200), chamar(admin, "POST", url, 200)]);
+
+        // Confere: dos três convites (o do criar e os dois de agora), só um continua utilizável
+        expect(
+            await prisma.tokenAcesso.count({ where: { usuarioId: criado.id, usadoEm: null, revogadoEm: null } }),
+        ).toBe(1);
+    });
+
+    it("responde 404 quando o usuário não existe, e 403 para quem não é ADMIN", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        const gerente = await loginComo("gerente");
+
+        // Chama e confere
+        await chamar(admin, "POST", "/api/usuarios/00000000-0000-0000-0000-000000000000/convite", 404);
+        await chamar(gerente, "POST", `/api/usuarios/${visualizador.usuario.id}/convite`, 403);
     });
 });

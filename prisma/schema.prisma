@@ -180,13 +180,19 @@ enum TipoTokenAcesso {
 }
 
 model TokenAcesso {
-  id        String          @id @default(uuid(7))
-  usuarioId String
-  usuario   Usuario         @relation(fields: [usuarioId], references: [id])
-  tipo      TipoTokenAcesso
-  tokenHash String          @unique
-  expiraEm  DateTime
-  usadoEm   DateTime?
+  id         String          @id @default(uuid(7))
+  usuarioId  String
+  usuario    Usuario         @relation(fields: [usuarioId], references: [id])
+  tipo       TipoTokenAcesso
+  tokenHash  String          @unique
+  expiraEm   DateTime
+  // "Aceito": a pessoa definiu a senha com este convite
+  usadoEm    DateTime?
+  // Revogado por um convite novo ou pela inativação: um estado, e não uma data de expiração no passado, para não
+  // depender do relógio de quem revoga e de quem usa (F5)
+  revogadoEm DateTime?
+
+  @@index([usuarioId])
 }
 
 // Contador para os códigos

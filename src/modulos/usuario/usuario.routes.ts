@@ -6,6 +6,7 @@ import { autenticar } from "../../middlewares/autenticar.js";
 import { usuarioController } from "./usuario.controller.js";
 import {
     buscarUsuarioIdSchema,
+    conviteRespostaSchema,
     criarUsuarioSchema,
     editarUsuarioSchema,
     papelDoUsuarioParamsSchema,
@@ -72,6 +73,17 @@ export async function usuarioRoutes(app: FastifyInstance) {
             response: { 200: usuarioRespostaSchema, "4xx": erroSchema },
         },
         handler: usuarioController.editar,
+    });
+
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: "POST",
+        url: "/usuarios/:id/convite",
+        onRequest: [autenticar],
+        schema: {
+            params: buscarUsuarioIdSchema,
+            response: { 200: conviteRespostaSchema, "4xx": erroSchema },
+        },
+        handler: usuarioController.gerarConvite,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({

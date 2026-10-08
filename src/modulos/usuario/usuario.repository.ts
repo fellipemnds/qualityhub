@@ -115,14 +115,25 @@ export const usuarioRepository = {
         });
     },
 
-    // Inativar também derruba as sessões abertas: o autenticar recusa o inativo, e a versão nova garante que um token
-    // antigo não volte a valer se a pessoa for reativada
-    async inativar(tx: ClientePrisma, id: string) {
-        return tx.usuario.update({
-            where: { id },
-            data: { desativadoEm: new Date(), versaoSessao: { increment: 1 } },
-            select: camposParaAdmin,
+    // Trava a linha do usuário, só se ele estiver ativo: o UPDATE condicional é a trava (F5), e o count diz se pegou.
+    // Sempre o usuário primeiro, e nunca SELECT ... FOR UPDATE (com ele, dois ADMINs agindo um no outro se travam)
+    async travarAtivo(tx: ClientePrisma, id: string) {
+        const { count } = await tx.usuario.updateMany({
+            where: { id, desativadoEm: null },
+            data: { atualizadoEm: new Date() },
         });
+        return count > 0;
+    },
+
+    // Inativar também derruba as sessões abertas: o autenticar recusa o inativo, e a versão nova garante que um token
+    // antigo não volte a valer se a pessoa for reativada. Só se ainda estiver ativo: o UPDATE condicional é a trava, e
+    // dois inativar ao mesmo tempo gravam uma vez só (F5)
+    async inativar(tx: ClientePrisma, id: string) {
+        const { count } = await tx.usuario.updateMany({
+            where: { id, desativadoEm: null },
+            data: { desativadoEm: new Date(), versaoSessao: { increment: 1 } },
+        });
+        return count > 0;
     },
 
     async reativar(tx: ClientePrisma, id: string) {

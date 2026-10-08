@@ -1,4 +1,3 @@
-import crypto from "node:crypto";
 import { atribuicaoRepository } from "../../compartilhado/atribuicao/atribuicao.repository.js";
 import { auditoriaRepository } from "../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../compartilhado/auditoria/entidades-auditadas.js";
@@ -14,6 +13,7 @@ import { temPapel } from "../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../compartilhado/prisma/cliente.js";
 import type { ClientePrisma } from "../../compartilhado/prisma/tipos.js";
 import { LIMITE_PADRAO_PAGINACAO, paginar } from "../../compartilhado/registro/paginacao-cursor.js";
+import { emitirConvite } from "../auth/emitir-convite.js";
 import { tokenAcessoRepository } from "../auth/token-acesso.repository.js";
 import { conferirSetor } from "../setor/conferir-setor.js";
 import { usuarioRepository } from "./usuario.repository.js";
@@ -70,6 +70,23 @@ async function conferirSaida(tx: ClientePrisma, id: string, papeisQueSaem: Papel
             );
         }
     }
+}
+
+// Na trilha, quem gerou e para quem, e o id do convite (o definir senha grava o mesmo id): nunca o token em claro
+async function registrarConvite(
+    tx: ClientePrisma,
+    ator: Ator,
+    usuarioId: string,
+    convite: { id: string; expiraEm: Date },
+) {
+    await auditoriaRepository.registrar(tx, {
+        entidade: EntidadeAuditada.USUARIO,
+        entidadeId: usuarioId,
+        acao: "GERAR_CONVITE",
+        usuarioId: ator.id,
+        antes: undefined,
+        depois: { conviteId: convite.id, expiraEm: convite.expiraEm },
+    });
 }
 
 export const usuarioService = {
@@ -154,6 +171,25 @@ export const usuarioService = {
         });
     },
 
+    // Um link novo para definir a senha: o anterior se perdeu, expirou, ou a pessoa esqueceu a senha. Revoga os
+    // pendentes e derruba as sessões (se o link vazou e alguém entrou por ele, sai). Inativo não recebe convite (F5)
+    async gerarConvite(ator: Ator, id: string) {
+        exigirGerenciarUsuarios(ator);
+
+        return prisma.$transaction(async (tx) => {
+            if (!(await usuarioRepository.travarAtivo(tx, id))) {
+                await buscarParaAdminOuFalhar(tx, id);
+                throw new TransicaoInvalidaError("Esta pessoa está inativa: reative antes de gerar um convite.");
+            }
+
+            const { token, convite } = await emitirConvite(tx, id);
+            await usuarioRepository.encerrarSessoes(tx, id);
+            await registrarConvite(tx, ator, id, convite);
+
+            return { tokenConvite: token, expiraEm: convite.expiraEm };
+        });
+    },
+
     // Inativar quem já está inativo não é erro, e não mexe na data: responde como a pessoa está
     async inativarUsuario(ator: Ator, id: string) {
         exigirGerenciarUsuarios(ator);
@@ -166,7 +202,13 @@ export const usuarioService = {
 
             await conferirSaida(tx, id, comPapeis(antes).papeis);
 
-            const depois = await usuarioRepository.inativar(tx, id);
+            // Outro inativar chegou antes (a trava esperou por ele): responde como a pessoa está, sem gravar de novo
+            if (!(await usuarioRepository.inativar(tx, id))) {
+                return comPapeis(await buscarParaAdminOuFalhar(tx, id));
+            }
+            // Um convite pendente não pode voltar a valer se a pessoa for reativada (F5)
+            await tokenAcessoRepository.revogarPendentes(tx, id);
+            const depois = await buscarParaAdminOuFalhar(tx, id);
 
             await auditoriaRepository.registrar(tx, {
                 entidade: EntidadeAuditada.USUARIO,
@@ -263,15 +305,9 @@ export const usuarioService = {
                 depois: usuario,
             });
 
-            const token = crypto.randomBytes(32).toString("hex");
-            const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
-
-            await tokenAcessoRepository.criar(tx, {
-                usuarioId: usuario.id,
-                tipo: "CONVITE",
-                tokenHash,
-                expiraEm: new Date(Date.now() + 72 * 60 * 60 * 1000),
-            });
+            // O usuário acabou de nascer nesta transação: ninguém mais tem o id dele para disputar a trava
+            const { token, convite } = await emitirConvite(tx, usuario.id);
+            await registrarConvite(tx, ator, usuario.id, convite);
 
             return { usuario, token };
         });

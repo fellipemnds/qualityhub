@@ -23,6 +23,7 @@ export type AcaoAuditada =
     | "DEFINIR_APROVADOR"
     // Usuários e sessão
     | "CRIAR_USUARIO"
+    | "GERAR_CONVITE"
     | "CONCEDER_PAPEL"
     | "REVOGAR_PAPEL"
     | "INATIVAR_USUARIO"

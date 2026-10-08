@@ -49,6 +49,13 @@ export const buscarUsuarioIdSchema = z.object({
 
 // O que sai ao criar: o id e o convite, nada do usuário gravado. O token do convite é uma credencial (quem o tiver
 // define a senha): sai só aqui, uma vez, para o ADMIN mandar o link; no banco fica só o hash dele
+// O convite gerado de novo: o token (uma vez só) e até quando vale. A data ordena dois convites seguidos: o que vale é o
+// de expiração mais tarde
+export const conviteRespostaSchema = z.object({
+    tokenConvite: z.string(),
+    expiraEm: z.date(),
+});
+
 export const usuarioCriadoRespostaSchema = z.object({
     id: z.uuid(),
     tokenConvite: z.string(),
