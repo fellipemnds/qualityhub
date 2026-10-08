@@ -96,6 +96,15 @@ documento de arquitetura.
     respostas fora do APM (D).
   - **Ruído descartado** (o código já tratava): login de quem não tem
     senha, JWT sem expiração, senha acima de 72 bytes.
+  - **F5b feita** (2026-10-08): `revogadoEm` e o índice em `usuarioId`
+    (migration `convite_revogavel`); `emitirConvite`
+    (`modulos/auth/emitir-convite.ts`), usado pelo criar usuário e pelo
+    `POST /usuarios/:id/convite`, que trava o usuário (`travarAtivo`),
+    derruba as sessões e responde `{ tokenConvite, expiraEm }` com
+    `no-store` (o criar usuário também). `GERAR_CONVITE` grava o id do
+    convite, nunca o token. O inativar ficou condicional (dois ao mesmo
+    tempo gravam uma vez) e revoga os convites pendentes. Prova de quebra
+    do teste de concorrência: sem a trava, três rodadas vermelhas.
 - **A trava do `{id}` escolhe quem chama** (F1): as rotas de usuário são
   chamadas pelo `ADMIN`, e as dos itens, pelo gerente. Com o gerente, o
   `GET /usuarios/:id` respondia 403 (a permissão vem antes da busca), e a

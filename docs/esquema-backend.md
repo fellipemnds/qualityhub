@@ -360,7 +360,7 @@ Os caminhos abaixo são mostrados **sem** o prefixo `/api`.
 | ＋ | `DELETE /usuarios/:id/papeis/:papel` | `ADMIN` | Revoga — **recusa** se a pessoa for aprovadora de item aberto e o papel for `APROVADOR`, listando os itens (RN-43) |
 | ＋ | `POST /usuarios/:id/inativar` | `ADMIN` | Mesma trava; preenche `desativadoEm` e soma 1 à `versaoSessao` |
 | ＋ | `POST /usuarios/:id/reativar` | `ADMIN` | Limpa `desativadoEm` (E2) |
-| ＋ | `POST /usuarios/:id/convite` | `ADMIN` | Gera novo link (o anterior expirou, se perdeu, ou a pessoa esqueceu a senha) e **invalida os convites anteriores não usados** |
+| ＋ | `POST /usuarios/:id/convite` | `ADMIN` | Gera novo link (o anterior expirou, se perdeu, ou a pessoa esqueceu a senha) e **invalida os convites anteriores não usados** (`revogadoEm`); derruba as sessões; inativo → 409. Resposta `{ tokenConvite, expiraEm }`, `no-store` |
 | ＋ | `GET /pessoas` | Papéis de negócio | Busca leve (id, nome, setor — E3) de usuários **ativos**, com filtro `?papel=APROVADOR` — alimenta o painel de atribuições e o `@` do feed |
 | ＋ | `GET /setores` | Logado | Setores ativos (o `ADMIN` pode pedir os inativos também) |
 | ＋ | `POST /setores` · `PATCH /setores/:id` | `ADMIN` | Criar, renomear |
@@ -579,3 +579,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-08 | v1.47 — M2 aplicada (A6): `desativadoEm` no `Setor` (migration `setor_desativacao`) |
 | 2026-10-08 | v1.48 — B27 registrado (login em voo sobrevive à derrubada das sessões), achado na revisão adversarial da F5 |
 | 2026-10-08 | v1.49 — B27 corrigido (A6): a versão das sessões (`versaoSessao`) no lugar da data; M1 atualizada |
+| 2026-10-08 | v1.50 — `TokenAcesso.revogadoEm` e índice em `usuarioId` (A6, F5b, migration `convite_revogavel`); o convite novo e o inativar revogam os pendentes |
