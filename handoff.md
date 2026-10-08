@@ -5,7 +5,7 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-07 (fim do dia, no **trabalho**). A A5 avançou quase toda: B22, B23 e B24 corrigidos (nenhum bug aberto), schema de resposta em todas as rotas, OpenAPI 3.1 com `/api/docs` só em desenvolvimento, `GET /api/saude`, catálogo de auditoria, L5, L7 e o lote 4 (L4: tetos, corpo estrito, paginação dos filhos). Falta o **lote 5** (§6). Decisões de produto com a analista no PRD (Q19–Q22). O PC de casa continua sem foto (`casa.txt`).
+**Última atualização:** 2026-10-08 (retomada no **trabalho**: ambiente sem alertas, só o GitLens 19.2 → 19.3 na foto; descrição do PR #8 atualizada). Antes, 2026-10-07 (fim do dia, no trabalho). A A5 avançou quase toda: B22, B23 e B24 corrigidos (nenhum bug aberto), schema de resposta em todas as rotas, OpenAPI 3.1 com `/api/docs` só em desenvolvimento, `GET /api/saude`, catálogo de auditoria, L5, L7 e o lote 4 (L4: tetos, corpo estrito, paginação dos filhos). Falta o **lote 5** (§6). Decisões de produto com a analista no PRD (Q19–Q22). O PC de casa continua sem foto (`casa.txt`).
 
 ## 1. Objetivo
 

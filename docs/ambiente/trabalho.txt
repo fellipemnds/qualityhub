@@ -27,7 +27,7 @@ migrations: em dia
 ## VS Code — extensões no WSL
 anthropic.claude-code@2.1.292
 biomejs.biome@3.7.1
-eamodio.gitlens@19.2.0
+eamodio.gitlens@19.3.0
 github.vscode-github-actions@0.32.3
 github.vscode-pull-request-github@0.168.0
 humao.rest-client@0.25.1
@@ -42,7 +42,7 @@ usernamehw.errorlens@3.29.0
 ## VS Code — extensões no Windows
 anthropic.claude-code@2.1.292
 biomejs.biome@3.7.1
-eamodio.gitlens@19.2.0
+eamodio.gitlens@19.3.0
 esbenp.prettier-vscode@12.4.0
 github.vscode-github-actions@0.32.3
 github.vscode-pull-request-github@0.168.0
