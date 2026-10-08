@@ -28,7 +28,7 @@ fase.
   `diff-cover` antes do push). **Claude dá o push** depois da
   `/verificar` (`CLAUDE.md`, "Ambiente").
 - Nenhum bug aberto.
-- Suíte: **412 passando** (2026-10-08, depois da F3); cobertura 97,22%
+- Suíte: **421 passando** (2026-10-08, depois da F4); cobertura 97,27%
   das linhas (trava em 94,66%). Lint e typecheck limpos.
 - O que Matthew aprendeu na A5: `prefix` do Fastify e `Path` do
   cookie; schema de resposta (filtra o que sai, vigia o código: tipo
@@ -41,7 +41,8 @@ fase.
   `idea-refine` numa decisão de arquitetura (lote 5). Na A6 (F3, a trava da RN-43): filtro por relação no
   Prisma (`registro: { estado: { in: [...] } }`), `select` aninhado,
   `some` em relação de lista, `count`, `not`, desembrulhar com `.map`, e
-  contar "os outros" em vez do total. No "pronto
+  contar "os outros" em vez do total; na F4, refatorar com os testes
+  como rede (extrair o `conferirSaida`, que recebe os papéis que saem). No "pronto
   quando", as respostas tiveram lacunas, já explicadas: o OpenAPI diz
   também o que cada rota recebe e devolve (é daí que o Orval gera o
   cliente); o schema de resposta também vigia o nosso código; o B26 era
@@ -173,11 +174,10 @@ migration nem chave nova no `.env` desde a última sessão.
    rascunho; a ordem e as 7 fatias das rotas estão no plano, abaixo da tabela
    da A6). **Feitas:** M2, L6 (o `conferirSetor`, usado pela NC e pelo
    `POST /usuarios`), F1 (leitura de usuários), F2 (editar), **F3** (papéis,
-   com a trava da RN-43 e a do último `ADMIN`, escritas por Matthew) e F7
-   (`GET /pessoas`). A Q23 (o colaborador escolhe o aprovador) vai para a C2.
-   **Faltam:** a **F4** (inativar e reativar, reusando as duas travas: hora de
-   tirá-las para uma função só; o teste do filtro "inativos" troca o `update`
-   direto no banco pela rota), a **F5** (convite e senha, com `doubt-driven` e
+   com a trava da RN-43 e a do último `ADMIN`, escritas por Matthew), F4 (inativar
+   e reativar, com as travas extraídas por Matthew para o `conferirSaida`) e
+   F7 (`GET /pessoas`). A Q23 (o colaborador escolhe o aprovador) vai para a C2.
+   **Faltam:** a **F5** (convite e senha, com `doubt-driven` e
    `security` antes), a **F6** (setores; decidir NC em setor desativado, a
    paginação e o `id` numérico na trava do `{id}`), o **script do primeiro
    acesso** (Matthew) e o **item 6** (Matthew: os limites das travas — itens só
@@ -214,4 +214,4 @@ parado há tempo):
 6. **Primeira foto de casa:** `npm run ambiente -- casa` e depois
    `npm run ambiente -- comparar` (`SETUP.md` §12.5). Commitar o
    `docs/ambiente/casa.txt`.
-7. `npm run test:cobertura`: **412 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).
+7. `npm run test:cobertura`: **421 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).

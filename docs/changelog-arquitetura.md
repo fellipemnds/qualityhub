@@ -46,6 +46,16 @@ documento de arquitetura.
   outros, e não o total, deixa revogar o `ADMIN` de um admin já inativo.
   As duas conferências voltam no inativar (F4), que é a hora de tirá-las
   para uma função só.
+- **Inativar e reativar (F4, 2026-10-08):** `POST /usuarios/:id/inativar`
+  preenche o `desativadoEm` e o `sessaoValidaDesde` (a pessoa cai na
+  próxima requisição); `/reativar` limpa o `desativadoEm` (E2), e as
+  sessões de antes continuam derrubadas. Repetir não é erro nem duplica a
+  auditoria (`INATIVAR_USUARIO`, `REATIVAR_USUARIO`). As travas da RN-43
+  foram extraídas por Matthew para o `conferirSaida`, que recebe **os
+  papéis que saem**: o revogar passa `[papel]`, e o inativar, todos os da
+  pessoa; a regra de quais papéis travam fica num lugar só. As rotas ficam
+  declaradas por extenso, como as outras (um laço montava a URL e
+  escondia o texto da busca).
 - **Pessoas (F7, 2026-10-08):** `GET /pessoas`, para o painel de
   atribuições e o `@` do feed, aberta aos papéis de negócio
   (`VISUALIZAR`) e não ao `ADMIN`. Só usuários ativos, só id, nome e
