@@ -107,9 +107,11 @@ model Classificacao {
 
 // Setor
 model Setor {
-  id       Int      @id @default(autoincrement())
-  nome     String   @unique
-  criadoEm DateTime @default(now())
+  id           Int       @id @default(autoincrement())
+  nome         String    @unique
+  criadoEm     DateTime  @default(now())
+  // Setor em uso não se apaga: desativado, some das opções e continua nos itens que já o usam (RN-44, M2)
+  desativadoEm DateTime?
 
   usuarios         Usuario[]
   naoConformidades NaoConformidade[]
