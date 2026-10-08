@@ -109,6 +109,20 @@ describe("PATCH /setores/:id", () => {
         ).toMatchObject([{ antes: { nome: "Produção" }, depois: { nome: "Produção Linha 2" } }]);
     });
 
+    it("sem nome, ou com o mesmo nome, não muda nada nem vai para a auditoria", async () => {
+        // Prepara
+        const { admin, producao } = await criarSetores();
+
+        // Chama
+        const semNome = await chamar(admin, "PATCH", `/api/setores/${producao.id}`, 200, {});
+        const mesmoNome = await chamar(admin, "PATCH", `/api/setores/${producao.id}`, 200, { nome: "Produção" });
+
+        // Confere
+        expect(semNome).toEqual(producao);
+        expect(mesmoNome).toEqual(producao);
+        expect(await prisma.auditoria.count({ where: { acao: "RENOMEAR_SETOR" } })).toBe(0);
+    });
+
     it("recusa o nome de outro setor (409), mas aceita o próprio nome, até com outra maiúscula", async () => {
         // Prepara
         const { admin, producao } = await criarSetores();
