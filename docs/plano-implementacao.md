@@ -259,6 +259,11 @@ RF-20).
 | Testes das travas e das permissões de `ADMIN` | 🧑 |
 | Setor inexistente no `POST`/`PATCH` da NC responde 404, não 500 (auditoria L6 — confirmar antes com teste, como o B16). Junto: o `setorId` do `ncBaseSchema` sai do `z.coerce.number()` para `z.number()`, como no criar usuário (o coerce aceita `true`, `"1"` e `[1]` como setor 1; revisão da A5) | 🤖 |
 
+**Ordem** (combinada no começo da fase, 2026-10-08): M2 → L6 → as rotas, em fatias, com a trava da RN-43
+entrando na fatia de revogar papel e inativar (ela precisa dessas rotas) → o script do primeiro acesso → os testes
+de `ADMIN`. As travas da A5 valem para as rotas novas: o `GET /setores` pagina ou entra como exceção, e a trava
+do `{id}` precisa lidar com o `id` numérico do setor.
+
 ### ✅ Portão: fundação pronta
 
 Antes do Bloco C começar:
@@ -409,3 +414,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-08 | v1.19 — A5, lote 5: as funções repetidas dos services ficam, com a trava do B23 |
 | 2026-10-08 | v1.20 — B26 entra na A5 (revisão de segurança da fase); A6: o `setorId` sem coerce, junto da L6 |
 | 2026-10-08 | **A5 concluída** (branch `fase/a5-contrato-api`, PR #8): prefixo `/api`, schema de resposta em todas as rotas (D1–D5), OpenAPI 3.1 só em desenvolvimento, `GET /api/saude`, catálogo de auditoria, L4, L5, L7, B22–B26 e cinco travas sobre o OpenAPI no `app.test.ts`; as funções repetidas dos services ficam (lote 5). 374 testes. R7 e R8 ficam para a C1 |
+| 2026-10-08 | v1.21 — A6: a ordem das entregas (a trava da RN-43 junto das rotas de revogar e inativar) e as travas da A5 nas rotas novas |

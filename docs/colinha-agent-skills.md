@@ -36,7 +36,7 @@ tira o PR do rascunho e entrega a mensagem do merge. Você faz o merge → `/fec
 |---|---|
 | **A4** Sessão nova | `test-driven-development`, `code-simplification` (o `ciclo-vida`), `security-and-hardening` (cookie, `helmet`), `doubt-driven-development` (auth), `ci-cd-and-automation` (os checks do `CONSTRAINTS.md`) |
 | **A5** Contrato da API | `api-and-interface-design`, `documentation-and-adrs`, `source-driven-development` (`@fastify/swagger`), `security-and-hardening` (L4, L5, CSP da documentação), `idea-refine` (as funções repetidas dos services) |
-| **A6** Usuários e setores | `interview-me` (a trava da RN-43), `spec-driven-development`, `test-driven-development` |
+| **A6** Usuários e setores | `interview-me` (a trava da RN-43), `spec-driven-development`, `test-driven-development`, `security-and-hardening` (permissões de `ADMIN`, convite, inativação), `doubt-driven-development` (convite novo invalida os antigos, senha redefinida derruba as sessões), `idea-refine` (o script do primeiro acesso) |
 | **B** Design | Fora do `agent-skills`: as skills de design instaladas (`impeccable`, `taste-skill`) |
 | **C** Frontend | `spec-driven-development` por fatia, `frontend-ui-engineering`, `browser-testing-with-devtools`, `performance-optimization` |
 | **D** Produção | `shipping-and-launch`, `ci-cd-and-automation`, `observability-and-instrumentation`, `security-and-hardening` |
