@@ -29,6 +29,15 @@ documento de arquitetura.
   para o usuário inativo (Matthew: corrigir o cadastro de quem saiu não
   traz risco). A auditoria grava só o que a edição muda (`nome`,
   `setorId`): o usuário inteiro levaria o hash da senha para a trilha.
+- **Papéis (F3, 2026-10-08):** `POST /usuarios/:id/papeis` concede e
+  `DELETE /usuarios/:id/papeis/:papel` revoga, só do `ADMIN`. Conceder o
+  que a pessoa já tem, ou revogar o que ela não tem, responde 200 como
+  ela está, sem nada na auditoria (como os colaboradores, que respondem
+  `jaEramColaboradores`): a tela não trata um erro que não é erro. As
+  ações `CONCEDER_PAPEL` e `REVOGAR_PAPEL` gravam a lista de papéis de
+  antes e de depois. O papel muda na próxima requisição da pessoa (B7).
+  A trava da RN-43 e a do último `ADMIN` entram no revogar e no inativar
+  (Matthew, passo a passo).
 - **A trava do `{id}` escolhe quem chama** (F1): as rotas de usuário são
   chamadas pelo `ADMIN`, e as dos itens, pelo gerente. Com o gerente, o
   `GET /usuarios/:id` respondia 403 (a permissão vem antes da busca), e a

@@ -28,8 +28,8 @@ fase.
   `diff-cover` antes do push). **Claude dá o push** depois da
   `/verificar` (`CLAUDE.md`, "Ambiente").
 - Nenhum bug aberto.
-- Suíte: **393 passando** (2026-10-08, depois da F2); cobertura 97,13%
-  das linhas (trava em 94,66%). Lint e typecheck limpos.
+- Suíte: **403 passando** (2026-10-08, depois das rotas da F3); cobertura
+  97,18% das linhas (trava em 94,66%). Lint e typecheck limpos.
 - O que Matthew aprendeu na A5: `prefix` do Fastify e `Path` do
   cookie; schema de resposta (filtra o que sai, vigia o código: tipo
   errado vira 500); codec do Zod (`decode`/`encode`); *arrow function*;
@@ -170,9 +170,13 @@ migration nem chave nova no `.env` desde a última sessão.
    rascunho; a ordem está no plano, abaixo da tabela da A6). A **M2** e a
    **L6** estão feitas (o `conferirSetor` no módulo de setor, usado pela NC e
    pelo `POST /usuarios`); as **rotas** vão em 7 fatias (no plano, abaixo da
-   tabela da A6): a **F1** (leitura) e a **F2** (editar) estão feitas; a
-   próxima é a **F3** (papéis, com a **trava da RN-43**, de Matthew no passo a
-   passo; antes, o `interview-me` nos pontos abertos da regra). Na F4, o teste
+   tabela da A6): a **F1** (leitura), a **F2** (editar) e as **rotas da F3**
+   (conceder e revogar papel) estão feitas. Próximo: a **trava da RN-43**, de
+   Matthew no passo a passo, no `revogarPapel` do `usuario.service.ts` (depois
+   da busca, antes de revogar). A regra foi fechada no `interview-me`
+   (2026-10-08, PRD RN-43): trava revogar `APROVADOR` de quem é aprovador de
+   item em `RASCUNHO`/`ABERTO`/`EM_APROVACAO`, com a lista (409); e trava o
+   último `ADMIN` ativo. A Q23 (o colaborador escolhe o aprovador) vai para a C2. Na F4, o teste
    do filtro "inativos" troca o `update` direto no banco pela rota de inativar. Os itens de Matthew, no passo a passo, são a
    trava da RN-43, o script do primeiro acesso e os testes das permissões
    de `ADMIN`. **Migration nova (M2):** em casa, `npm run preparar`.
@@ -205,4 +209,4 @@ parado há tempo):
 6. **Primeira foto de casa:** `npm run ambiente -- casa` e depois
    `npm run ambiente -- comparar` (`SETUP.md` §12.5). Commitar o
    `docs/ambiente/casa.txt`.
-7. `npm run test:cobertura`: **393 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).
+7. `npm run test:cobertura`: **403 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).
