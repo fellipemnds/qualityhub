@@ -86,9 +86,9 @@ describe("GET /usuarios", () => {
     });
 
     it("filtra por situação: ativos e inativos", async () => {
-        // Prepara (a rota de inativar vem na F4; até lá, direto no banco)
+        // Prepara
         const { admin, visualizador } = await perfisDeFora();
-        await prisma.usuario.update({ where: { id: visualizador.usuario.id }, data: { desativadoEm: new Date() } });
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/inativar`, 200);
 
         // Chama
         const ativos = await chamar(admin, "GET", "/api/usuarios?situacao=ATIVO", 200);
@@ -223,9 +223,9 @@ describe("PATCH /usuarios/:id", () => {
     });
 
     it("edita também um usuário inativo: corrigir o cadastro de quem saiu não traz risco", async () => {
-        // Prepara (a rota de inativar vem na F4; até lá, direto no banco)
+        // Prepara
         const { admin, visualizador } = await perfisDeFora();
-        await prisma.usuario.update({ where: { id: visualizador.usuario.id }, data: { desativadoEm: new Date() } });
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/inativar`, 200);
 
         // Chama e confere
         await chamar(admin, "PATCH", `/api/usuarios/${visualizador.usuario.id}`, 200, { nome: "Quem Saiu" });
@@ -456,10 +456,11 @@ describe("DELETE /usuarios/:id/papeis/:papel", () => {
 
 describe("GET /pessoas", () => {
     it("acha pessoas ativas por parte do nome, sem diferenciar maiúscula", async () => {
-        // Prepara (a rota de inativar vem na F4; até lá, direto no banco)
+        // Prepara
         const editor = await loginComo("editor");
         const aprovador = await loginComo("aprovador");
-        await prisma.usuario.update({ where: { id: aprovador.usuario.id }, data: { desativadoEm: new Date() } });
+        const { admin } = await perfisDeFora();
+        await chamar(admin, "POST", `/api/usuarios/${aprovador.usuario.id}/inativar`, 200);
 
         // Chama
         const porNome = await chamar(editor, "GET", "/api/pessoas?busca=EDIT", 200);
@@ -467,7 +468,8 @@ describe("GET /pessoas", () => {
 
         // Confere: quem foi inativado não aparece para ninguém escolher
         expect(porNome.itensDaPagina.map((p: { id: string }) => p.id)).toEqual([editor.usuario.id]);
-        expect(todas.itensDaPagina.map((p: { id: string }) => p.id)).toEqual([editor.usuario.id]);
+        expect(todas.itensDaPagina.map((p: { id: string }) => p.id)).toContain(editor.usuario.id);
+        expect(todas.itensDaPagina.map((p: { id: string }) => p.id)).not.toContain(aprovador.usuario.id);
     });
 
     it("filtra por papel: o painel de atribuições pede só os aprovadores", async () => {
@@ -533,5 +535,125 @@ describe("GET /pessoas", () => {
         await chamar(visualizador, "GET", "/api/pessoas", 200);
         await chamar(admin, "GET", "/api/pessoas", 403);
         await chamar(semPapel, "GET", "/api/pessoas", 403);
+    });
+});
+
+describe("POST /usuarios/:id/inativar", () => {
+    it("o admin inativa, e a pessoa cai na próxima requisição", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        await chamar(visualizador, "GET", "/api/auth/eu", 200);
+
+        // Chama
+        const resposta = await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/inativar`, 200);
+
+        // Confere
+        expect(resposta.desativadoEm).toEqual(expect.any(String));
+        await chamar(visualizador, "GET", "/api/auth/eu", 401);
+    });
+
+    it("registra na auditoria, e inativar quem já está inativo não muda nada", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        const url = `/api/usuarios/${visualizador.usuario.id}/inativar`;
+        const primeira = await chamar(admin, "POST", url, 200);
+
+        // Chama
+        const segunda = await chamar(admin, "POST", url, 200);
+
+        // Confere: a data é a da primeira vez, e a auditoria tem uma linha só
+        expect(segunda.desativadoEm).toBe(primeira.desativadoEm);
+        expect(
+            await prisma.auditoria.findMany({
+                where: { entidadeId: visualizador.usuario.id, acao: "INATIVAR_USUARIO" },
+            }),
+        ).toMatchObject([{ entidade: "USUARIO", usuarioId: admin.usuario.id }]);
+    });
+
+    it("recusa inativar quem é aprovador de item aberto, com a lista, e a pessoa continua ativa (RN-43)", async () => {
+        // Prepara
+        const { editor, aprovador, nc } = await ncPublicada();
+        const { admin } = await perfisDeFora();
+        const ncAntes = await chamar(editor, "GET", `/api/nc/${nc.id}`, 200);
+
+        // Chama
+        const resposta = await chamar(admin, "POST", `/api/usuarios/${aprovador.usuario.id}/inativar`, 409);
+
+        // Confere: a mesma trava do revogar, e a pessoa segue entrando
+        expect(resposta.error).toEqual([
+            { id: ncAntes.id, codigo: ncAntes.codigo, tipo: ncAntes.tipo, estado: ncAntes.estado },
+        ]);
+        await chamar(aprovador, "GET", "/api/auth/eu", 200);
+    });
+
+    it("recusa inativar o último ADMIN ativo, inclusive a si mesmo (RN-43)", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+
+        // Chama e confere
+        await chamar(admin, "POST", `/api/usuarios/${admin.usuario.id}/inativar`, 409);
+        await chamar(admin, "GET", "/api/auth/eu", 200);
+    });
+
+    it("inativa um ADMIN quando sobra outro ADMIN ativo", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/papeis`, 200, { papel: "ADMIN" });
+
+        // Chama e confere
+        await chamar(visualizador, "POST", `/api/usuarios/${admin.usuario.id}/inativar`, 200);
+        await chamar(admin, "GET", "/api/auth/eu", 401);
+    });
+
+    it("responde 404 quando o usuário não existe, e 403 para quem não é ADMIN", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+        const gerente = await loginComo("gerente");
+
+        // Chama e confere
+        await chamar(admin, "POST", "/api/usuarios/00000000-0000-0000-0000-000000000000/inativar", 404);
+        await chamar(gerente, "POST", `/api/usuarios/${admin.usuario.id}/inativar`, 403);
+    });
+});
+
+describe("POST /usuarios/:id/reativar", () => {
+    it("o admin reativa, e a pessoa volta às opções de escolha (E2)", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        const editor = await loginComo("editor");
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/inativar`, 200);
+
+        // Chama
+        const resposta = await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/reativar`, 200);
+
+        // Confere
+        expect(resposta.desativadoEm).toBeNull();
+        const pessoas = await chamar(editor, "GET", "/api/pessoas", 200);
+        expect(pessoas.itensDaPagina.map((p: { id: string }) => p.id)).toContain(visualizador.usuario.id);
+    });
+
+    it("registra na auditoria, e reativar quem já está ativo não muda nada", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/inativar`, 200);
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/reativar`, 200);
+
+        // Chama
+        const resposta = await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/reativar`, 200);
+
+        // Confere
+        expect(resposta.desativadoEm).toBeNull();
+        expect(
+            await prisma.auditoria.count({ where: { entidadeId: visualizador.usuario.id, acao: "REATIVAR_USUARIO" } }),
+        ).toBe(1);
+    });
+
+    it("recusa quem não é ADMIN (403)", async () => {
+        // Prepara
+        const { visualizador } = await perfisDeFora();
+        const gerente = await loginComo("gerente");
+
+        // Chama e confere
+        await chamar(gerente, "POST", `/api/usuarios/${visualizador.usuario.id}/reativar`, 403);
     });
 });

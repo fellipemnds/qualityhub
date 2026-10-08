@@ -76,6 +76,28 @@ export async function usuarioRoutes(app: FastifyInstance) {
 
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
+        url: "/usuarios/:id/inativar",
+        onRequest: [autenticar],
+        schema: {
+            params: buscarUsuarioIdSchema,
+            response: { 200: usuarioRespostaSchema, "4xx": erroSchema },
+        },
+        handler: usuarioController.inativar,
+    });
+
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: "POST",
+        url: "/usuarios/:id/reativar",
+        onRequest: [autenticar],
+        schema: {
+            params: buscarUsuarioIdSchema,
+            response: { 200: usuarioRespostaSchema, "4xx": erroSchema },
+        },
+        handler: usuarioController.reativar,
+    });
+
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: "POST",
         url: "/usuarios/:id/papeis",
         onRequest: [autenticar],
         schema: {

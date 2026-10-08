@@ -47,6 +47,31 @@ async function buscarParaAdminOuFalhar(tx: ClientePrisma, id: string) {
     return usuario;
 }
 
+// As travas da RN-43, para quem perde papéis (revogar um ou inativar, que tira todos): ninguém sai deixando item em
+// aberto sem quem decida, nem o sistema sem ADMIN ativo. Recebe os papéis que saem; só o APROVADOR e o ADMIN travam
+async function conferirSaida(tx: ClientePrisma, id: string, papeisQueSaem: Papel[]) {
+    if (papeisQueSaem.includes("APROVADOR")) {
+        const itens = (await atribuicaoRepository.listarItensAbertosDoAprovador(tx, id)).map(
+            ({ registro }) => registro,
+        );
+        if (itens.length > 0) {
+            throw new TransicaoInvalidaError(
+                "Esta pessoa ainda é aprovadora dos itens da lista: reatribua o aprovador deles antes.",
+                itens,
+            );
+        }
+    }
+
+    if (papeisQueSaem.includes("ADMIN")) {
+        const outrosAdmins = await usuarioRepository.contarOutrosAdminsAtivos(tx, id);
+        if (outrosAdmins === 0) {
+            throw new TransicaoInvalidaError(
+                "Esta pessoa é o último ADMIN ativo: conceda o papel ADMIN a outra pessoa antes.",
+            );
+        }
+    }
+}
+
 export const usuarioService = {
     async listarUsuarios(ator: Ator, filtros: UsuarioFiltrosListagemInput) {
         exigirGerenciarUsuarios(ator);
@@ -111,26 +136,7 @@ export const usuarioService = {
                 return comPapeis(antes);
             }
 
-            if (papel === "APROVADOR") {
-                const itens = (await atribuicaoRepository.listarItensAbertosDoAprovador(tx, id)).map(
-                    ({ registro }) => registro,
-                );
-                if (itens.length > 0) {
-                    throw new TransicaoInvalidaError(
-                        "Esta pessoa ainda é aprovadora dos itens da lista: reatribua o aprovador deles antes de revogar o papel.",
-                        itens,
-                    );
-                }
-            }
-
-            if (papel === "ADMIN") {
-                const outrosAdmins = await usuarioRepository.contarOutrosAdminsAtivos(tx, id);
-                if (outrosAdmins === 0) {
-                    throw new TransicaoInvalidaError(
-                        "Esta pessoa é o último ADMIN ativo: conceda o papel ADMIN a outra pessoa antes de revogar.",
-                    );
-                }
-            }
+            await conferirSaida(tx, id, [papel]);
 
             await usuarioPapelRepository.revogarPapel(tx, id, papel);
             const depois = await buscarParaAdminOuFalhar(tx, id);
@@ -142,6 +148,58 @@ export const usuarioService = {
                 usuarioId: ator.id,
                 antes: { papeis: comPapeis(antes).papeis },
                 depois: { papeis: comPapeis(depois).papeis },
+            });
+
+            return comPapeis(depois);
+        });
+    },
+
+    // Inativar quem já está inativo não é erro, e não mexe na data: responde como a pessoa está
+    async inativarUsuario(ator: Ator, id: string) {
+        exigirGerenciarUsuarios(ator);
+
+        return prisma.$transaction(async (tx) => {
+            const antes = await buscarParaAdminOuFalhar(tx, id);
+            if (antes.desativadoEm !== null) {
+                return comPapeis(antes);
+            }
+
+            await conferirSaida(tx, id, comPapeis(antes).papeis);
+
+            const depois = await usuarioRepository.inativar(tx, id);
+
+            await auditoriaRepository.registrar(tx, {
+                entidade: EntidadeAuditada.USUARIO,
+                entidadeId: id,
+                acao: "INATIVAR_USUARIO",
+                usuarioId: ator.id,
+                antes: { desativadoEm: antes.desativadoEm },
+                depois: { desativadoEm: depois.desativadoEm },
+            });
+
+            return comPapeis(depois);
+        });
+    },
+
+    // Reativar (E2): a pessoa volta a entrar e a aparecer nas opções; as sessões de antes continuam derrubadas
+    async reativarUsuario(ator: Ator, id: string) {
+        exigirGerenciarUsuarios(ator);
+
+        return prisma.$transaction(async (tx) => {
+            const antes = await buscarParaAdminOuFalhar(tx, id);
+            if (antes.desativadoEm === null) {
+                return comPapeis(antes);
+            }
+
+            const depois = await usuarioRepository.reativar(tx, id);
+
+            await auditoriaRepository.registrar(tx, {
+                entidade: EntidadeAuditada.USUARIO,
+                entidadeId: id,
+                acao: "REATIVAR_USUARIO",
+                usuarioId: ator.id,
+                antes: { desativadoEm: antes.desativadoEm },
+                depois: { desativadoEm: depois.desativadoEm },
             });
 
             return comPapeis(depois);

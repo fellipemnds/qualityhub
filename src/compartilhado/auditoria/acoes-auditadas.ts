@@ -25,6 +25,8 @@ export type AcaoAuditada =
     | "CRIAR_USUARIO"
     | "CONCEDER_PAPEL"
     | "REVOGAR_PAPEL"
+    | "INATIVAR_USUARIO"
+    | "REATIVAR_USUARIO"
     | "DEFINIR_SENHA"
     | "LOGIN"
     | "SAIR_DE_TODOS";

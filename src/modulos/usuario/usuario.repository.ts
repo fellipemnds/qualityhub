@@ -113,6 +113,21 @@ export const usuarioRepository = {
         });
     },
 
+    // Inativar também derruba as sessões abertas: o autenticar recusa o inativo, e o sessaoValidaDesde garante que um
+    // token antigo não volte a valer se a pessoa for reativada
+    async inativar(tx: ClientePrisma, id: string) {
+        const agora = new Date();
+        return tx.usuario.update({
+            where: { id },
+            data: { desativadoEm: agora, sessaoValidaDesde: agora },
+            select: camposParaAdmin,
+        });
+    },
+
+    async reativar(tx: ClientePrisma, id: string) {
+        return tx.usuario.update({ where: { id }, data: { desativadoEm: null }, select: camposParaAdmin });
+    },
+
     async contarOutrosAdminsAtivos(tx: ClientePrisma, usuarioId: string) {
         return tx.usuario.count({
             where: {

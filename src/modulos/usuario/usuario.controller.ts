@@ -45,6 +45,18 @@ export const usuarioController = {
         return reply.status(200).send(usuario);
     },
 
+    async inativar(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
+        const usuario = await usuarioService.inativarUsuario(request.user, request.params.id);
+
+        return reply.status(200).send(usuario);
+    },
+
+    async reativar(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
+        const usuario = await usuarioService.reativarUsuario(request.user, request.params.id);
+
+        return reply.status(200).send(usuario);
+    },
+
     async concederPapel(request: FastifyRequest<{ Params: { id: string }; Body: PapelInput }>, reply: FastifyReply) {
         const usuario = await usuarioService.concederPapel(request.user, request.params.id, request.body.papel);
 
