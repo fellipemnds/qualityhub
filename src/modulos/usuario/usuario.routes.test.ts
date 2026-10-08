@@ -178,3 +178,97 @@ describe("GET /usuarios/:id", () => {
         await chamar(gerente, "GET", "/api/usuarios/00000000-0000-0000-0000-000000000000", 403);
     });
 });
+
+describe("PATCH /usuarios/:id", () => {
+    it("o admin troca o nome e o setor, e a resposta sai no formato do detalhe", async () => {
+        // Prepara (a rota de setores vem na F6; até lá, direto no banco)
+        const { admin, visualizador } = await perfisDeFora();
+        const producao = await prisma.setor.create({ data: { nome: "Produção" } });
+
+        // Chama
+        const resposta = await chamar(admin, "PATCH", `/api/usuarios/${visualizador.usuario.id}`, 200, {
+            nome: "Visualizador Renomeado",
+            setorId: producao.id,
+        });
+
+        // Confere
+        expect(resposta).toMatchObject({
+            id: visualizador.usuario.id,
+            nome: "Visualizador Renomeado",
+            setor: { id: producao.id, nome: "Produção" },
+            papeis: ["VISUALIZADOR"],
+        });
+    });
+
+    it("registra na auditoria o antes e o depois, sem a senha", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+
+        // Chama
+        await chamar(admin, "PATCH", `/api/usuarios/${visualizador.usuario.id}`, 200, { nome: "Outro Nome" });
+
+        // Confere
+        const linhas = await prisma.auditoria.findMany({
+            where: { entidadeId: visualizador.usuario.id, acao: "EDITAR" },
+        });
+        expect(linhas).toMatchObject([
+            {
+                entidade: "USUARIO",
+                usuarioId: admin.usuario.id,
+                antes: { nome: "visualizador", setorId: visualizador.usuario.setorId },
+                depois: { nome: "Outro Nome", setorId: visualizador.usuario.setorId },
+            },
+        ]);
+        expect(JSON.stringify(linhas)).not.toContain("senhaHash");
+    });
+
+    it("edita também um usuário inativo: corrigir o cadastro de quem saiu não traz risco", async () => {
+        // Prepara (a rota de inativar vem na F4; até lá, direto no banco)
+        const { admin, visualizador } = await perfisDeFora();
+        await prisma.usuario.update({ where: { id: visualizador.usuario.id }, data: { desativadoEm: new Date() } });
+
+        // Chama e confere
+        await chamar(admin, "PATCH", `/api/usuarios/${visualizador.usuario.id}`, 200, { nome: "Quem Saiu" });
+    });
+
+    it("responde 404 quando o setor não existe, e o usuário não muda (L6)", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+
+        // Chama
+        const resposta = await chamar(admin, "PATCH", `/api/usuarios/${visualizador.usuario.id}`, 404, {
+            nome: "Não Deveria Gravar",
+            setorId: 999999,
+        });
+
+        // Confere
+        expect(resposta).toEqual({ mensagem: "O setor não existe ou não foi encontrado." });
+        expect(await chamar(admin, "GET", `/api/usuarios/${visualizador.usuario.id}`, 200)).toMatchObject({
+            nome: "visualizador",
+        });
+    });
+
+    it("responde 404 quando o usuário não existe", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+
+        // Chama e confere
+        await chamar(admin, "PATCH", "/api/usuarios/00000000-0000-0000-0000-000000000000", 404, { nome: "Ninguém" });
+    });
+
+    it("recusa o e-mail: é o login da pessoa, e não se edita por aqui (400)", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+
+        // Chama e confere
+        await chamar(admin, "PATCH", `/api/usuarios/${visualizador.usuario.id}`, 400, { email: "novo@teste.com" });
+    });
+
+    it("recusa quem não é ADMIN antes de buscar (403)", async () => {
+        // Prepara
+        const gerente = await loginComo("gerente");
+
+        // Chama e confere
+        await chamar(gerente, "PATCH", `/api/usuarios/${gerente.usuario.id}`, 403, { nome: "Gerente" });
+    });
+});

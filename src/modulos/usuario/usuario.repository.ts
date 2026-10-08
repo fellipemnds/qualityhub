@@ -39,6 +39,10 @@ export const usuarioRepository = {
         return tx.usuario.findUnique({ where: { id }, select: camposParaAdmin });
     },
 
+    async atualizar(tx: ClientePrisma, id: string, dados: { nome?: string; setorId?: number }) {
+        return tx.usuario.update({ where: { id }, data: dados, select: camposParaAdmin });
+    },
+
     async buscarPorEmail(tx: ClientePrisma, email: string) {
         return tx.usuario.findUnique({
             where: { email },

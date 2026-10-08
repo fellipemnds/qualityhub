@@ -7,6 +7,7 @@ import { usuarioController } from "./usuario.controller.js";
 import {
     buscarUsuarioIdSchema,
     criarUsuarioSchema,
+    editarUsuarioSchema,
     usuarioCriadoRespostaSchema,
     usuarioFiltrosListagemSchema,
     usuarioRespostaSchema,
@@ -44,5 +45,17 @@ export async function usuarioRoutes(app: FastifyInstance) {
             response: { 200: usuarioRespostaSchema, "4xx": erroSchema },
         },
         handler: usuarioController.buscarPorId,
+    });
+
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: "PATCH",
+        url: "/usuarios/:id",
+        onRequest: [autenticar],
+        schema: {
+            params: buscarUsuarioIdSchema,
+            body: editarUsuarioSchema,
+            response: { 200: usuarioRespostaSchema, "4xx": erroSchema },
+        },
+        handler: usuarioController.editar,
     });
 }

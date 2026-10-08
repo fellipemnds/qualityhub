@@ -12,6 +12,14 @@ export const criarUsuarioSchema = z
     })
     .strict();
 
+// O ADMIN corrige o nome e o setor. O e-mail fica de fora: é o login da pessoa
+export const editarUsuarioSchema = z
+    .object({
+        nome: z.string().min(1).max(TEXTO_CURTO).optional(),
+        setorId: z.number().int().positive().optional(),
+    })
+    .strict();
+
 export const buscarUsuarioIdSchema = z.object({
     id: z.uuid(),
 });
@@ -45,4 +53,5 @@ export const usuarioRespostaSchema = z.object({
 });
 
 export type CriarUsuarioInput = z.infer<typeof criarUsuarioSchema>;
+export type EditarUsuarioInput = z.infer<typeof editarUsuarioSchema>;
 export type UsuarioFiltrosListagemInput = z.infer<typeof usuarioFiltrosListagemSchema>;
