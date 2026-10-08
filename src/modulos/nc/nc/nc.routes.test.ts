@@ -64,6 +64,33 @@ describe("POST /nc", () => {
         });
     });
 
+    it("responde 404 quando o setor não existe, e não 500 (L6)", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+
+        // Chama
+        const resposta = await chamar(editor, "POST", "/api/nc", 404, { titulo: "NC de testes", setorId: 999999 });
+
+        // Confere
+        expect(resposta).toEqual({ mensagem: "O setor não existe ou não foi encontrado." });
+    });
+
+    it("recusa o setor como texto: o número vem como número (L6)", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+
+        // Chama
+        const resposta = await chamar(editor, "POST", "/api/nc", 400, {
+            titulo: "NC de testes",
+            setorId: String(editor.usuario.setorId),
+        });
+
+        // Confere
+        expect(resposta).toMatchObject({
+            error: expect.arrayContaining([expect.objectContaining({ instancePath: "/setorId" })]),
+        });
+    });
+
     it("recusa data de detecção com hora: dia de calendário é AAAA-MM-DD (TRD §6)", async () => {
         // Prepara
         const editor = await loginComo("editor");
@@ -288,6 +315,19 @@ describe("PATCH /nc/:id", () => {
         expect(resposta).toMatchObject({
             error: expect.arrayContaining([expect.objectContaining({ instancePath: "/descricao" })]),
         });
+    });
+
+    it("responde 404 quando o setor não existe, e o setor da NC não muda (L6)", async () => {
+        // Prepara
+        const { editor, nc } = await levarNCAte("ABERTO");
+        const antes = await chamar(editor, "GET", `/api/nc/${nc.id}`, 200);
+
+        // Chama
+        const resposta = await chamar(editor, "PATCH", `/api/nc/${nc.id}`, 404, { setorId: 999999 });
+
+        // Confere
+        expect(resposta).toEqual({ mensagem: "O setor não existe ou não foi encontrado." });
+        expect(await chamar(editor, "GET", `/api/nc/${nc.id}`, 200)).toMatchObject({ setorId: antes.setorId });
     });
 
     it("null apaga a data de detecção, e não grava 01/01/1970 (B14)", async () => {

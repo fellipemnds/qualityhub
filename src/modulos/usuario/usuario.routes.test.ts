@@ -18,6 +18,17 @@ describe("POST /usuarios", () => {
         expect(resposta).toEqual({ id: expect.any(String), tokenConvite: expect.any(String) });
     });
 
+    it("responde 404 quando o setor não existe, e não 500 (L6)", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+
+        // Chama
+        const resposta = await chamar(admin, "POST", "/api/usuarios", 404, novoUsuario(999999));
+
+        // Confere
+        expect(resposta).toEqual({ mensagem: "O setor não existe ou não foi encontrado." });
+    });
+
     it("recusa quem não é ADMIN (403)", async () => {
         // Prepara
         const editor = await loginComo("editor");

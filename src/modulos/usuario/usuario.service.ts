@@ -6,6 +6,7 @@ import { SemPermissaoError, ValidacaoError } from "../../compartilhado/errors/er
 import { temPapel } from "../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../compartilhado/prisma/cliente.js";
 import { tokenAcessoRepository } from "../auth/token-acesso.repository.js";
+import { conferirSetor } from "../setor/conferir-setor.js";
 import { usuarioRepository } from "./usuario.repository.js";
 import type { CriarUsuarioInput } from "./usuario.schema.js";
 import { usuarioPapelRepository } from "./usuario-papel.repository.js";
@@ -24,6 +25,8 @@ export const usuarioService = {
             if (usuarioExistente !== null) {
                 throw new ValidacaoError("Este usuário já está cadastrado");
             }
+
+            await conferirSetor(tx, dados.setorId);
 
             const { papeis, ...dadosUsuario } = dados;
 
