@@ -28,7 +28,7 @@ fase.
   `diff-cover` antes do push). **Claude dá o push** depois da
   `/verificar` (`CLAUDE.md`, "Ambiente").
 - Nenhum bug aberto.
-- Suíte: **409 passando** (2026-10-08, depois da F7); cobertura 97,2%
+- Suíte: **412 passando** (2026-10-08, depois da F3); cobertura 97,22%
   das linhas (trava em 94,66%). Lint e typecheck limpos.
 - O que Matthew aprendeu na A5: `prefix` do Fastify e `Path` do
   cookie; schema de resposta (filtra o que sai, vigia o código: tipo
@@ -38,7 +38,10 @@ fase.
   junto; função genérica (`<T extends z.ZodType>`); `.nullable()` ×
   `.optional()`; supertipo e o `id` que não diz o tipo (B23, a busca
   com tipo escrita por ele); "expandir e contrair"; o que é OpenAPI; o
-  `idea-refine` numa decisão de arquitetura (lote 5). No "pronto
+  `idea-refine` numa decisão de arquitetura (lote 5). Na A6 (F3, a trava da RN-43): filtro por relação no
+  Prisma (`registro: { estado: { in: [...] } }`), `select` aninhado,
+  `some` em relação de lista, `count`, `not`, desembrulhar com `.map`, e
+  contar "os outros" em vez do total. No "pronto
   quando", as respostas tiveram lacunas, já explicadas: o OpenAPI diz
   também o que cada rota recebe e devolve (é daí que o Orval gera o
   cliente); o schema de resposta também vigia o nosso código; o B26 era
@@ -167,21 +170,21 @@ migration nem chave nova no `.env` desde a última sessão.
    auditoria → resposta), com Matthew dizendo o que cada parte faz antes
    de Claude explicar.
 2. **A6, pela `/item`** (`/comecar-fase` feito em 2026-10-08, PR #9 em
-   rascunho; a ordem está no plano, abaixo da tabela da A6). A **M2** e a
-   **L6** estão feitas (o `conferirSetor` no módulo de setor, usado pela NC e
-   pelo `POST /usuarios`); as **rotas** vão em 7 fatias (no plano, abaixo da
-   tabela da A6): a **F1** (leitura), a **F2** (editar) e as **rotas da F3**
-   (conceder e revogar papel) estão feitas. Próximo: a **trava da RN-43**, de
-   Matthew no passo a passo, no `revogarPapel` do `usuario.service.ts` (depois
-   da busca, antes de revogar). A regra foi fechada no `interview-me`
-   (2026-10-08, PRD RN-43): trava revogar `APROVADOR` de quem é aprovador de
-   item em `RASCUNHO`/`ABERTO`/`EM_APROVACAO`, com a lista (409); e trava o
-   último `ADMIN` ativo. A Q23 (o colaborador escolhe o aprovador) vai para a C2.
-   A **F7** (`GET /pessoas`) foi feita enquanto a trava esperava; faltam a F4
-   (inativar, depois da trava), a F5 (convite e senha) e a F6 (setores). Na F4, o teste
-   do filtro "inativos" troca o `update` direto no banco pela rota de inativar. Os itens de Matthew, no passo a passo, são a
-   trava da RN-43, o script do primeiro acesso e os testes das permissões
-   de `ADMIN`. **Migration nova (M2):** em casa, `npm run preparar`.
+   rascunho; a ordem e as 7 fatias das rotas estão no plano, abaixo da tabela
+   da A6). **Feitas:** M2, L6 (o `conferirSetor`, usado pela NC e pelo
+   `POST /usuarios`), F1 (leitura de usuários), F2 (editar), **F3** (papéis,
+   com a trava da RN-43 e a do último `ADMIN`, escritas por Matthew) e F7
+   (`GET /pessoas`). A Q23 (o colaborador escolhe o aprovador) vai para a C2.
+   **Faltam:** a **F4** (inativar e reativar, reusando as duas travas: hora de
+   tirá-las para uma função só; o teste do filtro "inativos" troca o `update`
+   direto no banco pela rota), a **F5** (convite e senha, com `doubt-driven` e
+   `security` antes), a **F6** (setores; decidir NC em setor desativado, a
+   paginação e o `id` numérico na trava do `{id}`), o **script do primeiro
+   acesso** (Matthew) e o **item 6** (Matthew: os limites das travas — itens só
+   `FECHADO`, só colaborador, revogar `EDITOR` de aprovador — e as permissões
+   de `ADMIN`). Anotado, sem tratar: duas revogações de `ADMIN` ao mesmo tempo
+   podem passar as duas (concorrência, como o B19). **Migration nova (M2):** em
+   casa, `npm run preparar`.
 
 Da revisão de design das APIs (2026-10-07), anotados para a C1/C2:
 **R7**, o erro sem código para máquina (os 409 diferentes só se
@@ -211,4 +214,4 @@ parado há tempo):
 6. **Primeira foto de casa:** `npm run ambiente -- casa` e depois
    `npm run ambiente -- comparar` (`SETUP.md` §12.5). Commitar o
    `docs/ambiente/casa.txt`.
-7. `npm run test:cobertura`: **409 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).
+7. `npm run test:cobertura`: **412 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).

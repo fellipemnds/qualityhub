@@ -36,8 +36,16 @@ documento de arquitetura.
   `jaEramColaboradores`): a tela não trata um erro que não é erro. As
   ações `CONCEDER_PAPEL` e `REVOGAR_PAPEL` gravam a lista de papéis de
   antes e de depois. O papel muda na próxima requisição da pessoa (B7).
-  A trava da RN-43 e a do último `ADMIN` entram no revogar e no inativar
-  (Matthew, passo a passo).
+  **A trava da RN-43** (escrita por Matthew, 2026-10-08): revogar o
+  `APROVADOR` de quem é aprovador de item em `RASCUNHO`, `ABERTO` ou
+  `EM_APROVACAO` responde 409 com a lista dos itens (`id`, `codigo`,
+  `tipo`, `estado`), pela consulta `listarItensAbertosDoAprovador`
+  (`atribuicao.repository.ts`), que atravessa a relação até o `Registro`.
+  **O último `ADMIN`:** revogar o `ADMIN` quando não sobra **outro**
+  `ADMIN` ativo responde 409 (`contarOutrosAdminsAtivos`): contar os
+  outros, e não o total, deixa revogar o `ADMIN` de um admin já inativo.
+  As duas conferências voltam no inativar (F4), que é a hora de tirá-las
+  para uma função só.
 - **Pessoas (F7, 2026-10-08):** `GET /pessoas`, para o painel de
   atribuições e o `@` do feed, aberta aos papéis de negócio
   (`VISUALIZAR`) e não ao `ADMIN`. Só usuários ativos, só id, nome e
