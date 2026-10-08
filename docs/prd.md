@@ -307,7 +307,7 @@ Legenda: ✅ pronto · 🔧 pronto, com ajuste decidido · ⬜ a construir
 | RN-38 | Mensagem de erro de login idêntica para qualquer falha |
 | RN-39 | Token de convite guardado como hash; 72 h; uso único |
 | RN-40 | Senha com mínimo de 12 caracteres na criação |
-| RN-43 | **(nova)** O `ADMIN` pode **inativar** um usuário (bloqueia o login) ou **revogar um papel** específico. Nos dois casos, o sistema **recusa** se a pessoa for aprovadora designada de algum item aberto — e lista esses itens para um `GERENTE` reatribuir antes. Itens fechados mantêm o nome da pessoa (são evidência) |
+| RN-43 | **(nova)** O `ADMIN` pode **inativar** um usuário (bloqueia o login) ou **revogar um papel** específico. O sistema **recusa** inativar, ou revogar o papel `APROVADOR`, de quem é aprovadora designada de algum item em `RASCUNHO`, `ABERTO` ou `EM_APROVACAO` — e lista esses itens para o time reatribuir antes (Q23). Revogar os outros papéis não tem essa trava. Também recusa inativar, ou revogar o papel `ADMIN`, do **último `ADMIN` ativo**: sem ele, ninguém administra o sistema. Itens fechados mantêm o nome da pessoa (são evidência) |
 
 ### Setores e anexos
 | ID | Regra |
@@ -395,6 +395,7 @@ fase for implementada (plano §8); até lá, o código segue as atuais.
 | Q20 | A classificação muda o que a NC exige para fechar? | **Sim.** **Menor:** ≥1 Contenção `FECHADA` (que pode ser a própria correção); investigação opcional, e a que existir precisa fechar. **Maior:** ≥1 Contenção **e** ≥1 Investigação `FECHADAS`. Nos dois, a Ação Corretiva **não** é obrigatória (quem confere é a investigação, Q17); a tela pede confirmação ao enviar investigação sem nenhuma ação → RN-21, RN-22 |
 | Q21 | Como garantir que uma Menor é mesmo Menor, e pegar o problema que se repete? | **Abrangência**, obrigatória ao classificar como Menor: o QA vê **todas** as NCs dos últimos 12 meses (descrição e real problema), sem filtro por setor, e marca as relacionadas; a ligação fica registrada (inclusive "nenhuma"). Com **≥2 relacionadas** em 12 meses (a 3ª ocorrência), a Menor só é aceita com uma **justificativa específica** de por que não é Maior (escolha da analista). Quem decide se é o mesmo problema é a pessoa, não o sistema por texto |
 | Q22 | Quem fez um item pode aprová-lo? | **Não.** Colaborador e aprovador são **excludentes por item**: o backend recusa definir como aprovador quem é colaborador, e incluir como colaborador quem é o aprovador (409, dizendo o que fazer); quem cria é colaborador, e só aprova se sair dos colaboradores. Sem exceção (nem em férias: esperar é melhor que aprovar o próprio trabalho). Com uma aprovadora só (a analista), a **Classificação perde o portão**: classificar já é o julgamento dela, e ela conclui direto, como na Verificação (a RN-21 segue, concluir leva a `FECHADA`). O filho **não herda** o aprovador da NC quando quem o cria é esse aprovador. Ficam de fora o gestor como segundo aprovador e a exceção de férias → RN-27 e RN-29 saem; RN-46 muda |
+| Q23 | Quem escolhe o aprovador de um item? | **Também o colaborador** (`EDITOR`), nos itens em que é colaborador: o time reatribui sozinho, sem depender do gerente (confirmado com a analista, 2026-10-08). Valem as regras de hoje: o escolhido tem o papel `APROVADOR`, não pode ser colaborador do item (Q22) e, com o item `EM_APROVACAO`, a troca continua só do `GERENTE` (o colaborador retira antes, RN-48). Implementação na C2, com a Q22 |
 
 Limite de tamanho e armazenamento dos anexos foram resolvidos no TRD (§8).
 
@@ -411,3 +412,4 @@ Limite de tamanho e armazenamento dos anexos foram resolvidos no TRD (§8).
 | 2026-10-02 | v1.4 — ajustes feitos na A3 passam para o §4.1; RF-07 e RF-08 prontos |
 | 2026-10-07 | v1.5 — classificação e reincidência: vigente, exigências por classificação e abrangência (Q19–Q21), ainda sem mudar as RNs |
 | 2026-10-07 | v1.6 — Q21 revista (3ª ocorrência aceita com justificativa); Q22, colaborador e aprovador excludentes e Classificação sem portão |
+| 2026-10-08 | v1.7 — RN-43 detalhada (os três estados, só o `APROVADOR` trava, o último `ADMIN`); Q23, o colaborador escolhe o aprovador (implementação na C2) |
