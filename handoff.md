@@ -28,7 +28,7 @@ fase.
   `diff-cover` antes do push). **Claude dá o push** depois da
   `/verificar` (`CLAUDE.md`, "Ambiente").
 - Nenhum bug aberto.
-- Suíte: **378 passando** (2026-10-08, depois da L6); cobertura 97,05%
+- Suíte: **386 passando** (2026-10-08, depois da F1); cobertura 97,1%
   das linhas (trava em 94,66%). Lint e typecheck limpos.
 - O que Matthew aprendeu na A5: `prefix` do Fastify e `Path` do
   cookie; schema de resposta (filtra o que sai, vigia o código: tipo
@@ -169,8 +169,10 @@ migration nem chave nova no `.env` desde a última sessão.
 2. **A6, pela `/item`** (`/comecar-fase` feito em 2026-10-08, PR #9 em
    rascunho; a ordem está no plano, abaixo da tabela da A6). A **M2** e a
    **L6** estão feitas (o `conferirSetor` no módulo de setor, usado pela NC e
-   pelo `POST /usuarios`); o próximo são as **rotas, em fatias** (a primeira:
-   leitura de usuários). Os itens de Matthew, no passo a passo, são a
+   pelo `POST /usuarios`); as **rotas** vão em 7 fatias (no plano, abaixo da
+   tabela da A6): a **F1** (leitura de usuários) está feita; a próxima é a
+   **F2** (editar usuário: nome e setor, com o `conferirSetor`). Na F4, o teste
+   do filtro "inativos" troca o `update` direto no banco pela rota de inativar. Os itens de Matthew, no passo a passo, são a
    trava da RN-43, o script do primeiro acesso e os testes das permissões
    de `ADMIN`. **Migration nova (M2):** em casa, `npm run preparar`.
 
@@ -202,4 +204,4 @@ parado há tempo):
 6. **Primeira foto de casa:** `npm run ambiente -- casa` e depois
    `npm run ambiente -- comparar` (`SETUP.md` §12.5). Commitar o
    `docs/ambiente/casa.txt`.
-7. `npm run test:cobertura`: **378 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).
+7. `npm run test:cobertura`: **386 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).

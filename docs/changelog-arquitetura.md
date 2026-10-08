@@ -9,6 +9,26 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Fase A6 — usuários, setores e pessoas (branch `fase/a6-usuarios-e-setores`, em andamento)
+
+- **Conferência do setor num lugar só** (2026-10-08, L6): o
+  `conferirSetor` (`modulos/setor/conferir-setor.ts`) responde 404 para
+  setor inexistente. A NC e o `POST /usuarios` usam; toda rota que
+  recebe setor também vai usar. Quando a RN-44 (setor desativado) entrar,
+  entra ali.
+- **Leitura de usuários (F1, 2026-10-08):** `GET /usuarios` e
+  `GET /usuarios/:id`, só do `ADMIN`, com a permissão antes de qualquer
+  busca (`exigirGerenciarUsuarios`, também no criar). A resposta é a lista
+  do que pode sair (`usuarioRespostaSchema`: sem senha nem datas da
+  sessão), a mesma na lista e no detalhe (D1). A situação é um enum
+  (`ATIVO`/`INATIVO`), não um booleano: na URL, `"false"` viraria `true`
+  num `z.coerce.boolean()`. A busca vazia acha todos, em vez de 400 (o
+  campo da tela pode ir em branco).
+- **A trava do `{id}` escolhe quem chama** (F1): as rotas de usuário são
+  chamadas pelo `ADMIN`, e as dos itens, pelo gerente. Com o gerente, o
+  `GET /usuarios/:id` respondia 403 (a permissão vem antes da busca), e a
+  trava não testava o 404.
+
 ### Fase A5 — contrato da API (branch `fase/a5-contrato-api`, PR #8)
 
 - **Prefixo `/api` num plugin só** (2026-10-06): as nove chamadas de
