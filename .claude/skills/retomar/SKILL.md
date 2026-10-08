@@ -7,18 +7,25 @@ description: Rotina de chegada no computador (trabalho ou casa) — lê o handof
 
 ## 0. Preparar o shell
 
-O mesmo passo 0 do `/trocar-pc`: `source ~/.nvm/nvm.sh`, `export PATH="$HOME/.local/bin:$PATH"`,
-checks pelo código de saída.
+O passo 0 da `/verificar`.
 
 ## 1. Ler o handoff
 
-`handoff.md` inteiro, antes de qualquer outra coisa.
+`handoff.md` inteiro, antes de qualquer outra coisa. Depois, a seção da fase atual no
+`docs/plano-implementacao.md` (o que já está **Feito** e o que falta). O resto do contexto vem
+do `CLAUDE.md` (carregado sozinho) e do código, lido quando o item começar.
 
 ## 2. Máquina e Git
 
 - Máquina pelo `hostname` (como no `/trocar-pc`).
 - `git fetch`, `git status -sb`. A branch atual é a do handoff? A remota está à frente?
   Diga, e sugira o `git pull`.
+- **O handoff está em dia?** `git log --since="<data da Última atualização>" --oneline`: commits
+  depois dela (o PC desligou antes do `/trocar-pc`, por exemplo) querem dizer que o handoff
+  descreve um estado velho. Diga quais, e confie no `git log` onde os dois divergirem.
+- **O PR da branch:** `gh pr view --json number,isDraft,body` e `gh pr checks`. CI vermelho
+  vai para os alertas; descrição que não fala do que os commits fizeram, também (o
+  `/abrir-pr` atualiza).
 - Sem `docs/ambiente/<máquina>.txt`: é a primeira foto desta máquina.
   Siga o "Chegando em casa" do handoff (`SETUP.md` §12.1).
 
@@ -74,5 +81,5 @@ Commit só com o ok.
 
 ## 6. Retomar
 
-Pelo "Próximo passo", na regra do `CLAUDE.md`: diga se o item é algo que Matthew
-já aprendeu e espere a confirmação antes de executar.
+O "Próximo passo" pela `/item`, que diz se o item é algo que Matthew já aprendeu e espera a
+confirmação antes de executar.

@@ -10,7 +10,7 @@ Peça antes de cada commit.
 
 ## 0. Preparar o shell
 
-`source ~/.nvm/nvm.sh` antes de npm/npx; checks pelo código de saída (`&& echo OK`).
+O passo 0 da `/verificar`.
 
 ## 1. O merge aconteceu?
 
@@ -79,5 +79,4 @@ do registro da fase. Nada a mudar: diga e siga.
 
 - Branch nova de fase: o próximo passo é o `/comecar-fase`. Pergunte se Matthew começa agora
   ou depois (outro dia, outro PC); depois, o `handoff.md` já aponta para ele.
-- Outra branch: pelo primeiro item do "Próximo passo", na regra do `CLAUDE.md`: diga se é algo
-  que Matthew já aprendeu (e o que tem de novo) e espere a confirmação antes de executar.
+- Outra branch: o primeiro item do "Próximo passo" pela `/item`.

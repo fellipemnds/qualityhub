@@ -10,7 +10,7 @@ Peça antes de cada commit.
 
 ## 0. Preparar o shell
 
-`source ~/.nvm/nvm.sh` antes de npm/npx; checks pelo código de saída (`&& echo OK`).
+O passo 0 da `/verificar`.
 
 ## 1. A branch
 
@@ -56,5 +56,5 @@ e espere. Depois, `/abrir-pr`: PR de fase em andamento nasce em rascunho.
 
 ## 6. Retomar
 
-Pelo primeiro item da fase, na regra do `CLAUDE.md`: diga se é algo que Matthew já aprendeu
-(e o que tem de novo) e espere a confirmação antes de executar.
+O primeiro item da fase pela `/item`, que começa dizendo se é algo que Matthew já aprendeu e
+espera a confirmação antes de executar.

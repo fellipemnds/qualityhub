@@ -11,7 +11,7 @@ criar ou editar o PR.
 
 ## 0. Preparar o shell
 
-`source ~/.nvm/nvm.sh` antes de npm/npx; checks pelo código de saída (`&& echo OK`).
+O passo 0 da `/verificar`.
 
 ## 1. Conferir a branch
 
@@ -22,13 +22,9 @@ criar ou editar o PR.
 
 ## 2. Verificação local (`CONSTRAINTS.md` §4)
 
-`git diff --name-only origin/main...HEAD`:
-
-- Mudou código (`src/`, `prisma/`, `package*.json`, `vitest.config.ts`, `tsconfig.json`,
-  `biome.json`, `.github/`): rode lint, typecheck e a **suíte completa** (`npm test`), a não ser
-  que ela já tenha rodado verde **depois** do último commit de código nesta sessão.
-- Só documentação: lint e typecheck bastam.
-- Vermelho: pare e mostre. PR não se abre com check vermelho.
+`/verificar` sobre `origin/main...HEAD`: mudou código → nível C e o diff-cover, a não ser
+que os dois já tenham rodado verdes **depois** do último commit de código nesta sessão; só
+documentação → nível A. Vermelho: pare e mostre. PR não se abre com check vermelho.
 
 ## 3. O PR já existe?
 
@@ -56,8 +52,8 @@ Em português, curta, para quem não acompanhou a conversa:
    (changelog, esquema §7, plano).
 3. **PR de fase:** a lista de entregas da fase no plano, marcada `- [x]` / `- [ ]` com o que
    está feito.
-4. **Verificação:** quantos testes passam (o número da última suíte), lint e typecheck, e a
-   prova de quebra, se houve.
+4. **Verificação:** o resumo da `/verificar` (testes passando, cobertura, diff-cover, lint e
+   typecheck) e a prova de quebra, se houve.
 5. Última linha: `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
 
 ## 6. Acompanhar o CI
@@ -74,7 +70,10 @@ Rode em background: `gh pr checks <n> --watch --interval 30`. Ao terminar:
 
 Quando Matthew disser que a fase acabou:
 
-1. **Revisões da fase**, no diff inteiro (`git diff origin/main...HEAD`), uma skill por vez:
+1. **Revisões da fase**, no diff inteiro (`git diff origin/main...HEAD`), uma skill por vez. Cada
+   item já foi revisado sozinho (`/item` §4): aqui o foco é o **conjunto**, o que só aparece
+   juntando os itens (padrão que divergiu entre eles, coerência dos documentos com o código,
+   segurança da fase inteira):
    - `agent-skills:code-review-and-quality`;
    - `agent-skills:security-and-hardening`, se a fase mexeu em login, sessão, permissão,
      entrada de usuário ou no CI;
