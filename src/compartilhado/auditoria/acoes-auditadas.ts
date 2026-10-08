@@ -30,4 +30,7 @@ export type AcaoAuditada =
     | "REATIVAR_USUARIO"
     | "DEFINIR_SENHA"
     | "LOGIN"
-    | "SAIR_DE_TODOS";
+    | "SAIR_DE_TODOS"
+    // Setores
+    | "CRIAR_SETOR"
+    | "RENOMEAR_SETOR";
