@@ -80,4 +80,21 @@ export const atribuicaoRepository = {
             },
         });
     },
+
+    async listarItensAbertosDoAprovador(cliente: ClientePrisma, usuarioId: string) {
+        return cliente.atribuicao.findMany({
+            where: {
+                usuarioId,
+                funcao: "APROVADOR",
+                registro: {
+                    estado: { in: ["RASCUNHO", "ABERTO", "EM_APROVACAO"] },
+                },
+            },
+            select: {
+                registro: {
+                    select: { id: true, codigo: true, tipo: true, estado: true },
+                },
+            },
+        });
+    },
 };

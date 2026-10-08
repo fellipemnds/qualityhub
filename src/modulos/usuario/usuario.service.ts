@@ -1,9 +1,15 @@
 import crypto from "node:crypto";
+import { atribuicaoRepository } from "../../compartilhado/atribuicao/atribuicao.repository.js";
 import { auditoriaRepository } from "../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../compartilhado/auditoria/entidades-auditadas.js";
 import type { Ator } from "../../compartilhado/entidades/ator.js";
 import type { Papel } from "../../compartilhado/entidades/papeis.js";
-import { NaoEncontradoError, SemPermissaoError, ValidacaoError } from "../../compartilhado/errors/errors.js";
+import {
+    NaoEncontradoError,
+    SemPermissaoError,
+    TransicaoInvalidaError,
+    ValidacaoError,
+} from "../../compartilhado/errors/errors.js";
 import { temPapel } from "../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../compartilhado/prisma/cliente.js";
 import type { ClientePrisma } from "../../compartilhado/prisma/tipos.js";
@@ -103,6 +109,27 @@ export const usuarioService = {
             const antes = await buscarParaAdminOuFalhar(tx, id);
             if (!antes.papeisRecebidos.some((recebido) => recebido.papel === papel)) {
                 return comPapeis(antes);
+            }
+
+            if (papel === "APROVADOR") {
+                const itens = (await atribuicaoRepository.listarItensAbertosDoAprovador(tx, id)).map(
+                    ({ registro }) => registro,
+                );
+                if (itens.length > 0) {
+                    throw new TransicaoInvalidaError(
+                        "Esta pessoa ainda é aprovadora dos itens da lista: reatribua o aprovador deles antes de revogar o papel.",
+                        itens,
+                    );
+                }
+            }
+
+            if (papel === "ADMIN") {
+                const outrosAdmins = await usuarioRepository.contarOutrosAdminsAtivos(tx, id);
+                if (outrosAdmins === 0) {
+                    throw new TransicaoInvalidaError(
+                        "Esta pessoa é o último ADMIN ativo: conceda o papel ADMIN a outra pessoa antes de revogar.",
+                    );
+                }
             }
 
             await usuarioPapelRepository.revogarPapel(tx, id, papel);

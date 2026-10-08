@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { app } from "../../app.js";
 import { prisma } from "../../compartilhado/prisma/cliente.js";
-import { chamar, perfisDeFora } from "../../testes/cenarios.js";
+import { chamar, ncPublicada, perfisDeFora } from "../../testes/cenarios.js";
 import { loginComo } from "../../testes/fabricas.js";
 
 function novoUsuario(setorId: number, papeis: string[] = ["EDITOR"]) {
@@ -362,6 +362,60 @@ describe("DELETE /usuarios/:id/papeis/:papel", () => {
         // Confere (B7: o papel é lido do banco a cada requisição)
         expect(resposta.papeis).toEqual([]);
         await chamar(editor, "POST", "/api/nc", 403, { titulo: "Já sem poder" });
+    });
+
+    it("revogar um aprovador de uma NC aberta falha e responde 409 com uma lista", async () => {
+        // Prepara
+        const { editor, aprovador, nc } = await ncPublicada();
+        const { admin } = await perfisDeFora();
+        const ncAtualizada = await chamar(editor, "GET", `/api/nc/${nc.id}`, 200);
+
+        // Chama
+        const resposta = await chamar(
+            admin,
+            "DELETE",
+            `/api/usuarios/${aprovador.usuario.id}/papeis/${"APROVADOR"}`,
+            409,
+        );
+
+        // Confere
+        expect(resposta.error).toEqual([
+            { id: ncAtualizada.id, codigo: ncAtualizada.codigo, tipo: ncAtualizada.tipo, estado: ncAtualizada.estado },
+        ]);
+        expect(await chamar(admin, "GET", `/api/usuarios/${aprovador.usuario.id}`, 200)).toMatchObject({
+            papeis: ["APROVADOR"],
+        });
+    });
+
+    it("o último ADMIN não revoga o próprio papel ADMIN (409, RN-43)", async () => {
+        // Prepara
+        const admin = await loginComo("admin");
+
+        // Chama
+        await chamar(admin, "DELETE", `/api/usuarios/${admin.usuario.id}/papeis/${"ADMIN"}`, 409);
+
+        // Confere
+        expect(await chamar(admin, "GET", `/api/usuarios/${admin.usuario.id}`, 200)).toMatchObject({
+            papeis: ["ADMIN"],
+        });
+    });
+
+    it("admin concede ADMIN a outro usuário e revoga o papel ADMIN de si mesmo e recebe 200", async () => {
+        // Prepara
+        const admin = await loginComo("admin");
+        const visualizador = await loginComo("visualizador");
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/papeis`, 200, { papel: "ADMIN" });
+
+        // Chama
+        await chamar(admin, "DELETE", `/api/usuarios/${admin.usuario.id}/papeis/${"ADMIN"}`, 200);
+
+        // Confere
+        expect(await chamar(visualizador, "GET", `/api/usuarios/${admin.usuario.id}`, 200)).toMatchObject({
+            papeis: [],
+        });
+        expect(await chamar(visualizador, "GET", `/api/usuarios/${visualizador.usuario.id}`, 200)).toMatchObject({
+            papeis: ["VISUALIZADOR", "ADMIN"],
+        });
     });
 
     it("registra na auditoria os papéis de antes e de depois", async () => {

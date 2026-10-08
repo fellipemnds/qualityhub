@@ -112,4 +112,16 @@ export const usuarioRepository = {
             data: { senhaHash },
         });
     },
+
+    async contarOutrosAdminsAtivos(tx: ClientePrisma, usuarioId: string) {
+        return tx.usuario.count({
+            where: {
+                id: { not: usuarioId },
+                desativadoEm: null,
+                papeisRecebidos: {
+                    some: { papel: "ADMIN" },
+                },
+            },
+        });
+    },
 };
