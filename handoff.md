@@ -5,7 +5,7 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-08 (no **trabalho**). A **A5 foi fechada** (PR #8, merge `b4aa14e`) e a branch `fase/a6-usuarios-e-setores` foi aberta. O PC de casa continua sem foto (`casa.txt`).
+**Última atualização:** 2026-10-08, fim do dia (no **trabalho**). A A6 avançou: **todas as rotas prontas** (F1–F7, com a F5 de convite e senha e o B27 corrigido); falta o script do primeiro acesso, o item 6 e fechar a fase. Antes, 2026-10-08 (no **trabalho**). A **A5 foi fechada** (PR #8, merge `b4aa14e`) e a branch `fase/a6-usuarios-e-setores` foi aberta. O PC de casa continua sem foto (`casa.txt`).
 
 ## 1. Objetivo
 
@@ -186,10 +186,31 @@ migration nem chave nova no `.env` desde a última sessão.
    antigos não valem). **F6 feita** (setores: listar, criar, renomear, desativar sem pessoas
    ativas, reativar; setor desativado fora das escolhas novas). **As rotas da A6
    estão completas.** **Faltam:** o **script do primeiro
-   acesso** (Matthew) e o **item 6** (Matthew: os limites das travas — itens só
+   acesso** (Matthew; **começar por aqui na próxima conversa**, ver abaixo) e o **item 6** (Matthew: os limites das travas — itens só
    `FECHADO`, só colaborador, revogar `EDITOR` de aprovador — e as permissões
    de `ADMIN`). Anotado, sem tratar: duas revogações de `ADMIN` ao mesmo tempo
    podem passar as duas (concorrência, como o B19).
+
+   **Script do primeiro acesso — o `idea-refine` foi feito (2026-10-08), falta
+   Matthew aprovar a direção e o nome da variável.** Respostas dele: quem roda
+   são **ele e a TI** (por um manual), o script **serve também de recuperação**
+   (o único `ADMIN` perdeu a senha ou saiu) e **pergunta no terminal**. Direção
+   proposta (um caminho só, `npm run criar-admin`): pergunta nome, e-mail e
+   setor → mostra um resumo → "confirma? (s/N)" → **garante que o e-mail seja
+   um `ADMIN` ativo**: pessoa nova é criada (e o setor, se o nome não existir);
+   pessoa que já existe é reativada, ganha `ADMIN` e muda de setor se o
+   informado for outro; nos dois casos, convite novo (`emitirConvite`, revoga
+   os anteriores) e as sessões derrubadas. Setor desativado é recusado (RN-44).
+   A auditoria grava a pessoa como autora de si mesma, com `origem:
+   "criar-admin"`. O link sai com a `URL_DO_SISTEMA` (opcional no `.env`), no
+   formato `/definir-senha#token=...`, uma vez só. Fora: argumentos na linha de
+   comando, e-mail, senha digitada no script, menu de modos, como rodar em
+   produção (D1). Estrutura: o miolo `garantirAdmin(tx, dados)` testado com o
+   banco, como os services, e uma casca fina (perguntas, confirmação, link). O
+   script fica em `src/` (o `tsx` é só de desenvolvimento; em produção roda o
+   JavaScript compilado). Ordem, no passo a passo: passeio pelo `emitirConvite`
+   e pelos repositórios de usuário, papel e setor → o teste do miolo → o miolo
+   → a casca. Na aprovação, a decisão vai para o changelog.
 
 Da revisão de design das APIs (2026-10-07), anotados para a C1/C2:
 **R7**, o erro sem código para máquina (os 409 diferentes só se
