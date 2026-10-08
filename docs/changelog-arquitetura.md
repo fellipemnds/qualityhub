@@ -63,6 +63,39 @@ documento de arquitetura.
   não é `ADMIN` descobriria o e-mail dos outros tentando letra por letra.
   Fica no módulo de usuário (pessoas são usuários vistos de outro jeito).
   Feita antes da F4–F6, enquanto a trava da RN-43 esperava Matthew.
+- **Convite e sessão sem depender do relógio (F5, 2026-10-08;
+  `security-and-hardening` e dois ciclos de `doubt-driven-development`,
+  um deles com o Gemini).** Decisões, todas aprovadas por Matthew:
+  - **Versão da sessão no lugar da data (B27).** O `Usuario` ganha
+    `versaoSessao` (inteiro) e perde o `sessaoValidaDesde`. O login lê a
+    senha e a versão **na mesma leitura** e grava a versão no JWT (`sv`); o
+    `autenticar` exige a **mesma** versão. Derrubar as sessões (sair de
+    todos, inativar, definir senha, gerar convite) soma 1. Com a data, um
+    login em voo durante a derrubada sobrevivia, todo token do mesmo
+    segundo passava, e um relógio que volta (NTP, WSL2) reabria sessões.
+  - **Revogar convite sem relógio.** O `TokenAcesso` ganha `revogadoEm`
+    (e um índice em `usuarioId`). Revogar marcando `expiraEm = agora`
+    dependia de o relógio de quem revoga estar antes do de quem usa: um
+    link revogado ainda definia a senha (a intercalação veio dos dois
+    revisores). O `usadoEm` continua querendo dizer "aceito".
+  - **Um lugar só para emitir convite** (`emitirConvite`): revoga os
+    pendentes e cria o novo; criar usuário, gerar convite e o script do
+    primeiro acesso passam por ele.
+  - **Travas sempre pelo `UPDATE` condicional, pelo `tx` e com o usuário
+    primeiro** (no gerar convite, no inativar e no definir senha): sem
+    `SELECT ... FOR UPDATE` (deadlock entre dois admins) e na mesma ordem
+    (deadlock entre convite e senha). O bcrypt do definir senha roda
+    **fora** da transação (não prende conexão).
+  - **Definir senha:** limite de tentativas por IP, só token do tipo
+    `CONVITE`, uma mensagem única para todo link que não vale (inexistente,
+    aceito, revogado, expirado, usuário inativo).
+  - **Aceitos como concessão:** o tempo da resposta ainda distingue "link
+    válido, usuário inativo" (recusa depois do bcrypt); dois `ADMIN`s
+    inativando um ao outro ao mesmo tempo (write skew). **Para depois:** o
+    token na URL do frontend vai no `#fragmento` (C0), e o corpo das
+    respostas fora do APM (D).
+  - **Ruído descartado** (o código já tratava): login de quem não tem
+    senha, JWT sem expiração, senha acima de 72 bytes.
 - **A trava do `{id}` escolhe quem chama** (F1): as rotas de usuário são
   chamadas pelo `ADMIN`, e as dos itens, pelo gerente. Com o gerente, o
   `GET /usuarios/:id` respondia 403 (a permissão vem antes da busca), e a
