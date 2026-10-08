@@ -10,7 +10,7 @@ import { loginComo } from "./fabricas.js";
 // executarAcao.
 
 type Quem = Awaited<ReturnType<typeof loginComo>>;
-type Metodo = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
+export type Metodo = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
 type Resultado = "EFICAZ" | "PARCIALMENTE_EFICAZ" | "NAO_EFICAZ";
 
 // Faz a requisição, confere o status e devolve o corpo.

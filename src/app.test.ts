@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { app } from "./app.js";
 import { prisma } from "./compartilhado/prisma/cliente.js";
+import { chamar, type Metodo, ncPublicada } from "./testes/cenarios.js";
 import { loginComo } from "./testes/fabricas.js";
 
 describe("GET /api/saude", () => {
@@ -239,5 +240,54 @@ describe("Documentação da API (OpenAPI)", () => {
 
         // Confere
         expect(JSON.stringify(doc)).not.toContain("portaoAtual");
+    });
+
+    it("toda rota com {id} recusa com 404 o id de um item de outro tipo: rota nova entra sozinha (B23)", async () => {
+        // Prepara: uma NC e uma contenção; a rota de NC recebe o id da contenção, e as dos filhos, o da NC
+        const doc = await documento();
+        const { gerente, editor, nc } = await ncPublicada();
+        const contencao = await chamar(editor, "POST", `/api/nc/${nc.id}/contencoes`, 201, {
+            descricao: "Contenção para a trava do B23.",
+        });
+        // As rotas de /registros valem para qualquer tipo, de propósito
+        const rotas = Object.entries(doc.paths)
+            .filter(([caminho]) => caminho.includes("{id}") && !caminho.startsWith("/api/registros/"))
+            .flatMap(([caminho, operacoes]) =>
+                Object.entries(operacoes).map(([metodo, operacao]) => ({
+                    metodo: metodo.toUpperCase(),
+                    caminho,
+                    operacao,
+                })),
+            );
+        // Um corpo válido por ação, para a requisição passar da validação (400) e chegar ao service. Rota com corpo
+        // obrigatório que não estiver aqui falha a trava, em vez de passar sem ser testada
+        const corpos: Record<string, object> = {
+            PATCH: {},
+            decidir: { decisao: "APROVADO" },
+            cancelar: { motivo: "Trava do B23." },
+            reabrir: { motivo: "Trava do B23." },
+            "finalizar-execucao": { diasParaVerificar: 30 },
+        };
+
+        // Chama
+        const fora404: string[] = [];
+        for (const { metodo, caminho, operacao } of rotas) {
+            const outroTipo = caminho.startsWith("/api/nc/") ? contencao.id : nc.id;
+            const acao = metodo === "PATCH" ? "PATCH" : caminho.split("/").at(-1);
+            const comCorpo = (operacao as { requestBody?: { required?: boolean } }).requestBody?.required === true;
+            const resposta = await app.inject({
+                method: metodo as Metodo,
+                url: caminho.replace("{id}", outroTipo),
+                headers: gerente.autenticacao,
+                body: comCorpo ? corpos[acao ?? ""] : undefined,
+            });
+            if (resposta.statusCode !== 404) {
+                fora404.push(`${metodo} ${caminho} → ${resposta.statusCode}`);
+            }
+        }
+
+        // Confere: a lista não pode estar vazia (sem rotas, a trava passaria sem testar nada)
+        expect(rotas.length).toBeGreaterThan(40);
+        expect(fora404).toEqual([]);
     });
 });

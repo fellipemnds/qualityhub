@@ -239,11 +239,7 @@ export const acaoCorretivaService = {
     // com a execução registrada (RN-25). Na mesma transação nasce a Verificação (gerarVerificacao)
     async finalizarExecucaoAcaoCorretiva(registroId: string, ator: Ator, diasParaVerificar: number) {
         return prisma.$transaction(async (tx) => {
-            const registro = await registroRepository.buscarPorId(tx, registroId);
-
-            if (registro === null) {
-                throw new NaoEncontradoError("Item não encontrado.");
-            }
+            const registro = await buscarRegistroDoTipoOuFalhar(tx, registroId, "ACAO_CORRETIVA");
 
             // O portaoAtual continua 0 antes e depois da aprovação: quem diz se o plano foi aprovado é o histórico (B1)
             const planoAprovado = await acaoCorretivaRepository.planoAprovado(tx, registroId);
