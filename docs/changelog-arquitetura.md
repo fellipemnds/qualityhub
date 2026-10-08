@@ -24,6 +24,11 @@ documento de arquitetura.
   (`ATIVO`/`INATIVO`), não um booleano: na URL, `"false"` viraria `true`
   num `z.coerce.boolean()`. A busca vazia acha todos, em vez de 400 (o
   campo da tela pode ir em branco).
+- **Editar usuário (F2, 2026-10-08):** `PATCH /usuarios/:id` só com
+  nome e setor; o e-mail fica de fora (é o login da pessoa). Vale também
+  para o usuário inativo (Matthew: corrigir o cadastro de quem saiu não
+  traz risco). A auditoria grava só o que a edição muda (`nome`,
+  `setorId`): o usuário inteiro levaria o hash da senha para a trilha.
 - **A trava do `{id}` escolhe quem chama** (F1): as rotas de usuário são
   chamadas pelo `ADMIN`, e as dos itens, pelo gerente. Com o gerente, o
   `GET /usuarios/:id` respondia 403 (a permissão vem antes da busca), e a
