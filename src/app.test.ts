@@ -174,7 +174,9 @@ describe("Documentação da API (OpenAPI)", () => {
         const semTeto: string[] = [];
         const percorrer = (no: No | undefined, onde: string) => {
             if (no === undefined) return;
-            const livre = no.format === undefined && no.enum === undefined && no.pattern === undefined;
+            // Só formato de tamanho fixo dispensa o teto: e-mail também tem formato, e cabia quase 1 MB nele (B26)
+            const tamanhoFixo = no.enum !== undefined || ["uuid", "date", "date-time"].includes(no.format ?? "");
+            const livre = !tamanhoFixo;
             if (no.type === "string" && livre && no.maxLength === undefined) semTeto.push(onde);
             if (no.type === "array" && no.maxItems === undefined) semTeto.push(`${onde}[]`);
             for (const [campo, filho] of Object.entries(no.properties ?? {})) percorrer(filho, `${onde}.${campo}`);

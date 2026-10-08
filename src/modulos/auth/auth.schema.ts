@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { Papel } from "../../compartilhado/entidades/papeis.js";
 import { TelaInicial } from "../../compartilhado/entidades/tela-inicial.js";
+import { EMAIL } from "../../compartilhado/validacao/tetos.js";
 
 // Schema usado para definir a senha
 export const definirSenhaSchema = z
@@ -19,7 +20,7 @@ export const definirSenhaSchema = z
 // Schema usado para definir os inputs do Login
 export const loginSchema = z
     .object({
-        email: z.email(),
+        email: z.email().max(EMAIL),
         senha: z.string().min(1).max(128),
         manterConectado: z.boolean().default(false),
     })

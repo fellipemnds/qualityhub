@@ -3,3 +3,6 @@
 // ganhar formatação (JSON do Tiptap, C4), o teto dele é revisto: a marcação ocupa espaço
 export const TEXTO_CURTO = 200;
 export const TEXTO_LONGO = 5000;
+// O maior e-mail que a norma admite (RFC 5321). Sem ele, cabia quase 1 MB num e-mail válido, e o do login vira a chave do
+// limite de tentativas, guardada em memória (B26)
+export const EMAIL = 254;
