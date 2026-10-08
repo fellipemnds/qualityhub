@@ -108,11 +108,14 @@ export const usuarioRepository = {
         });
     },
 
+    // Grava a senha e derruba as sessões (soma 1 à versão), só se a pessoa estiver ativa: o UPDATE condicional é a trava
+    // da linha do usuário, e vem antes da do convite (F5). Devolve se gravou
     async definirSenha(tx: ClientePrisma, id: string, senhaHash: string) {
-        return tx.usuario.update({
-            where: { id },
-            data: { senhaHash },
+        const { count } = await tx.usuario.updateMany({
+            where: { id, desativadoEm: null },
+            data: { senhaHash, versaoSessao: { increment: 1 } },
         });
+        return count > 0;
     },
 
     // Trava a linha do usuário, só se ele estiver ativo: o UPDATE condicional é a trava (F5), e o count diz se pegou.

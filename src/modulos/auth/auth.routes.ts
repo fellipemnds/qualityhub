@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
@@ -10,6 +11,21 @@ export async function authRoutes(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
         url: "/auth/definir-senha",
+        // 5 tentativas por minuto para o mesmo link (F5): o que pesa é o bcrypt de um link válido, e o link inválido é
+        // recusado antes dele. Por link, e não por IP: não junta pessoas atrás da mesma rede. A chave é o hash, para o
+        // token não ficar guardado no limitador
+        config: {
+            rateLimit: {
+                max: 5,
+                timeWindow: "1 minute",
+                hook: "preHandler",
+                keyGenerator: (request) =>
+                    `definir-senha:${crypto
+                        .createHash("sha256")
+                        .update((request.body as { token: string }).token)
+                        .digest("hex")}`,
+            },
+        },
         schema: {
             body: definirSenhaSchema,
             response: { 204: z.null(), "4xx": erroSchema },

@@ -19,44 +19,47 @@ function obterHashFalso() {
     return hashFalso;
 }
 
+// A recusa de todo link que não vale (inexistente, usado, revogado, expirado, de outro tipo, de pessoa inativa, ou que
+// perdeu uma corrida): uma mensagem só, para quem tenta não descobrir qual foi o caso (F5)
+const LINK_NAO_VALE = "Este link não vale mais. Peça um novo ao administrador.";
+
 export const authService = {
+    // Define a senha pelo convite (também serve para redefinir). Toda recusa sai com a mesma mensagem (F5). O bcrypt roda
+    // fora da transação, para não prender uma conexão do banco (~250 ms); a transação é curta, trava o usuário primeiro
+    // e só então o convite, e cada condição está no próprio UPDATE: quem perdeu uma corrida recebe a mesma recusa
     async definirSenha(token: string, senha: string) {
-        return prisma.$transaction(async (tx) => {
-            const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
-            const tokenAcesso = await tokenAcessoRepository.buscarPorHash(tx, tokenHash);
+        const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+        const convite = await tokenAcessoRepository.buscarPorHash(prisma, tokenHash);
 
-            if (!tokenAcesso) {
-                throw new ValidacaoError("Não foi possível processar a solicitação.");
+        if (
+            convite === null ||
+            convite.tipo !== "CONVITE" ||
+            convite.usadoEm !== null ||
+            convite.revogadoEm !== null ||
+            convite.expiraEm <= new Date()
+        ) {
+            throw new ValidacaoError(LINK_NAO_VALE);
+        }
+
+        // Custo 12: cada +1 dobra o tempo de quebrar a senha se o banco vazar (auditoria L2)
+        const senhaHash = await bcrypt.hash(senha, 12);
+
+        await prisma.$transaction(async (tx) => {
+            if (!(await usuarioRepository.definirSenha(tx, convite.usuarioId, senhaHash))) {
+                throw new ValidacaoError(LINK_NAO_VALE);
+            }
+            if (!(await tokenAcessoRepository.marcarComoUsado(tx, convite.id))) {
+                throw new ValidacaoError(LINK_NAO_VALE);
             }
 
-            // Revogado por um convite novo ou pela inativação (F5); a mensagem única de todo link que não vale é da F5c
-            if (tokenAcesso.revogadoEm !== null) {
-                throw new ValidacaoError("Este link não vale mais. Peça um novo ao administrador.");
-            }
-
-            if (tokenAcesso.usadoEm !== null) {
-                throw new ValidacaoError("Este token já foi utilizado");
-            }
-
-            const agora = new Date(Date.now());
-            if (tokenAcesso.expiraEm < agora) {
-                throw new ValidacaoError("Token expirado.");
-            }
-
-            // Custo 12: cada +1 dobra o tempo de quebrar a senha se o banco vazar (auditoria L2)
-            const senhaHash = await bcrypt.hash(senha, 12);
-
-            // Marcar primeiro: é a trava contra o mesmo convite usado duas vezes ao mesmo tempo (B19)
-            await tokenAcessoRepository.marcarComoUsado(tx, tokenAcesso.id);
-            await usuarioRepository.definirSenha(tx, tokenAcesso.usuarioId, senhaHash);
-
+            // O id do convite liga esta linha ao GERAR_CONVITE: quem gerou o link e quando
             await auditoriaRepository.registrar(tx, {
                 entidade: EntidadeAuditada.USUARIO,
-                entidadeId: tokenAcesso.usuarioId,
+                entidadeId: convite.usuarioId,
                 acao: "DEFINIR_SENHA",
-                usuarioId: tokenAcesso.usuarioId,
+                usuarioId: convite.usuarioId,
                 antes: undefined,
-                depois: undefined,
+                depois: { conviteId: convite.id },
             });
         });
     },
