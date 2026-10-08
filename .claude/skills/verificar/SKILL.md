@@ -64,8 +64,13 @@ de um nível C verde, com o relatório **desta** rodada:
 
 ```bash
 git fetch -q origin
+git add -N $(git ls-files --others --exclude-standard src)   # arquivo novo ainda sem commit
 uvx diff-cover==10.6.0 coverage/cobertura-coverage.xml --compare-branch=origin/main --fail-under=100
 ```
+
+O `diff-cover` só enxerga o que o Git rastreia: um arquivo **novo** ainda sem commit fica fora do
+diff e passa "100%" sem ser conferido (o `setor.service.ts` da F6a passou assim e o CI recusou,
+2026-10-08). O `git add -N` avisa o Git do arquivo sem pô-lo no commit. Ou rode depois do commit.
 
 Sem `uvx` (o Ubuntu vem sem `pip`): baixe o binário do `uv` para a pasta temporária da
 sessão, com o `UV_CACHE_DIR` lá também. Linha sem cobertura: um teste que a execute, ou
