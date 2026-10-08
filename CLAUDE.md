@@ -22,7 +22,7 @@ próprio, com aprovação de Matthew (`CONSTRAINTS.md` §6).
 | `docs/fluxo-app.md` | Telas, navegação, etapa calculada da NC, jornadas, ações por estado, "Minhas pendências" |
 | `docs/ui-ux.md` | Fundações visuais, componentes (shadcn/ui), wireframes em texto, textos da tela |
 | `docs/trd.md` | Stack, sessão, API, anexos, testes, infraestrutura, hospedagem, ADR-33 a ADR-38 |
-| `docs/esquema-backend.md` | Modelo de dados, mudanças M1–M5, valores calculados, contrato da API, correções B1–B24 |
+| `docs/esquema-backend.md` | Modelo de dados, mudanças M1–M5, valores calculados, contrato da API, correções B1–B25 |
 | `docs/plano-implementacao.md` | **Ordem de execução**: fases A0–A6 (fundação do backend), B (design), C0–C8 (frontend em fatias), D (produção) |
 | `docs/changelog-arquitetura.md` | Registro de toda decisão de arquitetura e divergência do documento original. **Leia antes de propor mudança estrutural** |
 | `docs/arquitetura.md` | Documento de design **original** (histórico). Onde diverge dos documentos acima, eles valem |
@@ -42,7 +42,7 @@ para os outros documentos em vez de repetir o que já está neles.
 Ainda pendente fora do código: hospedagem (TRD §10.6), identidade
 visual.
 
-**Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B24; os
+**Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B25; os
 corrigidos têm ✅). A A3 corrigiu B1–B6 e B8–B18, e a RN-48 entrou como
 regra nova (fase fechada em 2026-10-02, PR #4). A A4 corrigiu o B19
 (transições sem trava sob concorrência) e o B7 (papéis no token), os
@@ -51,7 +51,10 @@ dois em 2026-10-05, e o B21 (erro 4xx do Fastify respondia 500) e o B20
 2026-10-06, PR #6). A A5 corrigiu o B23 (as rotas aceitavam o `id` de
 um item de outro tipo) e o B24 (editar não mudava o `atualizadoEm`), em
 2026-10-07, e o B22 (dia de calendário saía com hora na resposta), no
-mesmo dia, com os schemas de resposta. **Nenhum bug aberto.**
+mesmo dia, com os schemas de resposta. O B25 (o `finalizar-execucao`
+aceitava o `id` de outro tipo, a rota que escapou do B23) foi achado e
+corrigido em 2026-10-08, pela trava do B23 no `app.test.ts`. **Nenhum
+bug aberto.**
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
@@ -151,7 +154,8 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   `GET`/`PATCH` dos services buscam pela `buscarRegistroDoTipoOuFalhar`
   (`compartilhado/registro/buscar-registro-do-tipo.ts`): item de outro
   tipo responde 404, como inexistente. Rota nova que recebe um `id`
-  busca por ela.
+  busca por ela; a trava do `app.test.ts` chama toda rota com `{id}`
+  com o id de outro tipo e cobra o 404 (achou o B25).
 - **Trava de concorrência (B19)**: toda gravação no `Registro` passa
   pelo `registroRepository.atualizar`/`excluir`, que exigem o **estado
   em que o item foi lido** e respondem 409 se ele mudou no meio (outra

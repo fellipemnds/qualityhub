@@ -129,6 +129,10 @@ Nenhuma migration nem chave nova no `.env`.
   PRD §8, que pede colaborador): com a Q22 (colaborador e aprovador
   excludentes), o aprovador não faz o que é do colaborador. Resolver na
   C2, junto da Q22.
+- **Ordem da permissão no `buscarPorIdX`** (lote 5, 2026-10-08): a
+  busca com tipo vem antes do `VISUALIZAR`, então quem não tem o papel
+  distingue 404 de 403 (como a L5). Risco nulo hoje (todo papel
+  visualiza); rever na C2, com o `podeExecutar`.
 - **Aprovador na lista das guardas: na C2** (decidido em 2026-10-01).
   Hoje o `cicloVidaService.submeter` confere o aprovador **antes** da
   guarda do tipo, então a NC sem aprovador recebe o 409 genérico, sem a
@@ -149,12 +153,9 @@ Nenhuma migration nem chave nova no `.env`.
 
 ## 6. Próximo passo
 
-1. **Lote 5 da A5: as funções repetidas dos services** (`retirarX`,
-   `decidirX`, `cancelarX`, `buscarPorIdX`, `listarX`, quase iguais nos
-   seis tipos). **Decisão de Matthew**, com o `idea-refine`: juntar
-   agora ou deixar. Mudar o padrão de módulo vai para o changelog antes
-   de mexer. Hoje o B23, o L7 e a paginação repetiram o mesmo padrão em
-   cinco ou seis arquivos: é o insumo da conversa.
+1. ~~Lote 5 da A5~~ **feito em 2026-10-08**: as funções repetidas
+   ficam, com a trava do B23 sobre o OpenAPI, que achou e corrigiu o
+   **B25** (changelog, "Fase A5"). Reavaliar a junção na C2.
 2. **Fechar a A5:** `/abrir-pr` (revisões da fase e o "pronto quando",
    que inclui Matthew explicar o que é OpenAPI e por que o schema de
    resposta importa tanto quanto o de entrada) → merge → `/fechar-fase`.

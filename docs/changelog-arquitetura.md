@@ -126,6 +126,27 @@ documento de arquitetura.
   de "toda rota declara a resposta". Anotados para a C1 (revisão de
   design): R7, o erro sem código para máquina, e R8, o `DELETE` com
   corpo.
+- **Funções repetidas dos services: ficam, com uma trava** (Matthew,
+  2026-10-08, lote 5; com o `idea-refine`). As dores levantadas foram
+  esquecer um tipo, o trabalho repetido e a leitura; a prioridade
+  escolhida foi **ler um arquivo e ver o fluxo inteiro do tipo**. O
+  padrão de módulo **não muda**: cada service continua com as suas
+  funções. A lógica pesada já mora no `cicloVidaService`; o que se
+  repete nos services é a cola entre ele e o repositório do tipo, e as
+  diferenças (`CLASSIFICAR`, `planoAprovado`, a RN-50, o filtro
+  "minhas" da NC) cresceriam na C1 e na C2. O medo de esquecer um tipo
+  ganhou uma **trava** no `app.test.ts`: ela percorre o OpenAPI e chama
+  **toda rota com `{id}`** com o id de um item de outro tipo, esperando
+  404 (rota nova entra sozinha; as de `/registros` ficam de fora, porque
+  valem para qualquer tipo). Ela achou o **B25** na primeira rodada.
+  Descartados: uma fábrica por tipo (dividiria o fluxo em dois lugares,
+  com uma opção para cada diferença), embrulhar `retirar`/`decidir`/
+  `cancelar` (já são uma chamada e uma busca), uma rota única
+  `/registros/:id/<ação>` (quebraria o D1) e um `listarPaginado` (o
+  `listarX` não é igual nos seis: a NC passa o `ator.id`, e a ação
+  corretiva calcula o `planoAprovado`). Reavaliar na C2, quando os seis
+  `submeter` mudarem juntos (o aprovador na lista do envio), com um caso
+  real.
 
 ### Fase A4 — sessão nova (branch `fase/a4-sessao`, PR #6)
 
