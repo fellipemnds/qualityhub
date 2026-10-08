@@ -272,6 +272,7 @@ describe("Documentação da API (OpenAPI)", () => {
             cancelar: { motivo: "Trava do B23." },
             reabrir: { motivo: "Trava do B23." },
             "finalizar-execucao": { diasParaVerificar: 30 },
+            papeis: { papel: "EDITOR" },
         };
 
         // Chama
@@ -282,7 +283,8 @@ describe("Documentação da API (OpenAPI)", () => {
             const comCorpo = (operacao as { requestBody?: { required?: boolean } }).requestBody?.required === true;
             const resposta = await app.inject({
                 method: metodo as Metodo,
-                url: caminho.replace("{id}", outroTipo),
+                // Os outros parâmetros ganham um valor válido, para a rota chegar à busca do {id}
+                url: caminho.replace("{id}", outroTipo).replace("{papel}", "EDITOR"),
                 headers: (caminho.startsWith("/api/usuarios/") ? admin : gerente).autenticacao,
                 body: comCorpo ? corpos[acao ?? ""] : undefined,
             });

@@ -8,6 +8,8 @@ import {
     buscarUsuarioIdSchema,
     criarUsuarioSchema,
     editarUsuarioSchema,
+    papelDoUsuarioParamsSchema,
+    papelSchema,
     usuarioCriadoRespostaSchema,
     usuarioFiltrosListagemSchema,
     usuarioRespostaSchema,
@@ -57,5 +59,28 @@ export async function usuarioRoutes(app: FastifyInstance) {
             response: { 200: usuarioRespostaSchema, "4xx": erroSchema },
         },
         handler: usuarioController.editar,
+    });
+
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: "POST",
+        url: "/usuarios/:id/papeis",
+        onRequest: [autenticar],
+        schema: {
+            params: buscarUsuarioIdSchema,
+            body: papelSchema,
+            response: { 200: usuarioRespostaSchema, "4xx": erroSchema },
+        },
+        handler: usuarioController.concederPapel,
+    });
+
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: "DELETE",
+        url: "/usuarios/:id/papeis/:papel",
+        onRequest: [autenticar],
+        schema: {
+            params: papelDoUsuarioParamsSchema,
+            response: { 200: usuarioRespostaSchema, "4xx": erroSchema },
+        },
+        handler: usuarioController.revogarPapel,
     });
 }

@@ -1,5 +1,11 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { CriarUsuarioInput, EditarUsuarioInput, UsuarioFiltrosListagemInput } from "./usuario.schema.js";
+import type { Papel } from "../../compartilhado/entidades/papeis.js";
+import type {
+    CriarUsuarioInput,
+    EditarUsuarioInput,
+    PapelInput,
+    UsuarioFiltrosListagemInput,
+} from "./usuario.schema.js";
 import { usuarioService } from "./usuario.service.js";
 
 export const usuarioController = {
@@ -28,6 +34,18 @@ export const usuarioController = {
 
     async editar(request: FastifyRequest<{ Params: { id: string }; Body: EditarUsuarioInput }>, reply: FastifyReply) {
         const usuario = await usuarioService.editarUsuario(request.user, request.params.id, request.body);
+
+        return reply.status(200).send(usuario);
+    },
+
+    async concederPapel(request: FastifyRequest<{ Params: { id: string }; Body: PapelInput }>, reply: FastifyReply) {
+        const usuario = await usuarioService.concederPapel(request.user, request.params.id, request.body.papel);
+
+        return reply.status(200).send(usuario);
+    },
+
+    async revogarPapel(request: FastifyRequest<{ Params: { id: string; papel: Papel } }>, reply: FastifyReply) {
+        const usuario = await usuarioService.revogarPapel(request.user, request.params.id, request.params.papel);
 
         return reply.status(200).send(usuario);
     },

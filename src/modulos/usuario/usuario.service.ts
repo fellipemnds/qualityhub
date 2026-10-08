@@ -52,6 +52,58 @@ export const usuarioService = {
         return comPapeis(await buscarParaAdminOuFalhar(prisma, id));
     },
 
+    // Conceder o que a pessoa já tem não é erro: responde como ela está, sem nada na auditoria (como os colaboradores)
+    async concederPapel(ator: Ator, id: string, papel: Papel) {
+        exigirGerenciarUsuarios(ator);
+
+        return prisma.$transaction(async (tx) => {
+            const antes = await buscarParaAdminOuFalhar(tx, id);
+            if (antes.papeisRecebidos.some((recebido) => recebido.papel === papel)) {
+                return comPapeis(antes);
+            }
+
+            await usuarioPapelRepository.concederPapel(tx, { usuarioId: id, papel, concedidoPorId: ator.id });
+            const depois = await buscarParaAdminOuFalhar(tx, id);
+
+            await auditoriaRepository.registrar(tx, {
+                entidade: EntidadeAuditada.USUARIO,
+                entidadeId: id,
+                acao: "CONCEDER_PAPEL",
+                usuarioId: ator.id,
+                antes: { papeis: comPapeis(antes).papeis },
+                depois: { papeis: comPapeis(depois).papeis },
+            });
+
+            return comPapeis(depois);
+        });
+    },
+
+    // Revogar o que a pessoa não tem também não é erro. O papel deixa de valer na próxima requisição dela (B7)
+    async revogarPapel(ator: Ator, id: string, papel: Papel) {
+        exigirGerenciarUsuarios(ator);
+
+        return prisma.$transaction(async (tx) => {
+            const antes = await buscarParaAdminOuFalhar(tx, id);
+            if (!antes.papeisRecebidos.some((recebido) => recebido.papel === papel)) {
+                return comPapeis(antes);
+            }
+
+            await usuarioPapelRepository.revogarPapel(tx, id, papel);
+            const depois = await buscarParaAdminOuFalhar(tx, id);
+
+            await auditoriaRepository.registrar(tx, {
+                entidade: EntidadeAuditada.USUARIO,
+                entidadeId: id,
+                acao: "REVOGAR_PAPEL",
+                usuarioId: ator.id,
+                antes: { papeis: comPapeis(antes).papeis },
+                depois: { papeis: comPapeis(depois).papeis },
+            });
+
+            return comPapeis(depois);
+        });
+    },
+
     // Vale também para o usuário inativo: corrigir o cadastro de quem saiu não traz risco (Matthew, 2026-10-08)
     async editarUsuario(ator: Ator, id: string, dados: EditarUsuarioInput) {
         exigirGerenciarUsuarios(ator);

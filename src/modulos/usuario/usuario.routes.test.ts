@@ -272,3 +272,130 @@ describe("PATCH /usuarios/:id", () => {
         await chamar(gerente, "PATCH", `/api/usuarios/${gerente.usuario.id}`, 403, { nome: "Gerente" });
     });
 });
+
+describe("POST /usuarios/:id/papeis", () => {
+    it("o admin concede um papel, e ele vale na próxima requisição da pessoa", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        await chamar(visualizador, "POST", "/api/nc", 403, { titulo: "Ainda sem poder" });
+
+        // Chama
+        const resposta = await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/papeis`, 200, {
+            papel: "EDITOR",
+        });
+
+        // Confere: a resposta traz os papéis atuais, e a sessão dela já enxerga o papel novo (B7)
+        expect(resposta.papeis).toEqual(["VISUALIZADOR", "EDITOR"]);
+        await chamar(visualizador, "POST", "/api/nc", 201, { titulo: "Agora pode" });
+    });
+
+    it("registra na auditoria os papéis de antes e de depois", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+
+        // Chama
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/papeis`, 200, { papel: "EDITOR" });
+
+        // Confere
+        expect(
+            await prisma.auditoria.findMany({ where: { entidadeId: visualizador.usuario.id, acao: "CONCEDER_PAPEL" } }),
+        ).toMatchObject([
+            {
+                entidade: "USUARIO",
+                usuarioId: admin.usuario.id,
+                antes: { papeis: ["VISUALIZADOR"] },
+                depois: { papeis: ["VISUALIZADOR", "EDITOR"] },
+            },
+        ]);
+    });
+
+    it("conceder um papel que a pessoa já tem não muda nada nem vai para a auditoria", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+
+        // Chama
+        const resposta = await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/papeis`, 200, {
+            papel: "VISUALIZADOR",
+        });
+
+        // Confere
+        expect(resposta.papeis).toEqual(["VISUALIZADOR"]);
+        expect(await prisma.auditoria.count({ where: { acao: "CONCEDER_PAPEL" } })).toBe(0);
+    });
+
+    it("recusa um papel que não existe (400)", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+
+        // Chama e confere
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/papeis`, 400, { papel: "SUPERUSUARIO" });
+    });
+
+    it("responde 404 quando o usuário não existe", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+
+        // Chama e confere
+        await chamar(admin, "POST", "/api/usuarios/00000000-0000-0000-0000-000000000000/papeis", 404, {
+            papel: "EDITOR",
+        });
+    });
+
+    it("recusa quem não é ADMIN, mesmo concedendo a si mesmo (403)", async () => {
+        // Prepara
+        const gerente = await loginComo("gerente");
+
+        // Chama e confere
+        await chamar(gerente, "POST", `/api/usuarios/${gerente.usuario.id}/papeis`, 403, { papel: "ADMIN" });
+    });
+});
+
+describe("DELETE /usuarios/:id/papeis/:papel", () => {
+    it("o admin revoga um papel, e ele deixa de valer na próxima requisição da pessoa", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+        const editor = await loginComo("editor");
+
+        // Chama
+        const resposta = await chamar(admin, "DELETE", `/api/usuarios/${editor.usuario.id}/papeis/EDITOR`, 200);
+
+        // Confere (B7: o papel é lido do banco a cada requisição)
+        expect(resposta.papeis).toEqual([]);
+        await chamar(editor, "POST", "/api/nc", 403, { titulo: "Já sem poder" });
+    });
+
+    it("registra na auditoria os papéis de antes e de depois", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+        const qa = await loginComo("qa");
+
+        // Chama
+        await chamar(admin, "DELETE", `/api/usuarios/${qa.usuario.id}/papeis/EDITOR`, 200);
+
+        // Confere
+        expect(
+            await prisma.auditoria.findMany({ where: { entidadeId: qa.usuario.id, acao: "REVOGAR_PAPEL" } }),
+        ).toMatchObject([{ antes: { papeis: ["EDITOR", "APROVADOR"] }, depois: { papeis: ["APROVADOR"] } }]);
+    });
+
+    it("revogar um papel que a pessoa não tem não muda nada nem vai para a auditoria", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+
+        // Chama
+        const resposta = await chamar(admin, "DELETE", `/api/usuarios/${visualizador.usuario.id}/papeis/GERENTE`, 200);
+
+        // Confere
+        expect(resposta.papeis).toEqual(["VISUALIZADOR"]);
+        expect(await prisma.auditoria.count({ where: { acao: "REVOGAR_PAPEL" } })).toBe(0);
+    });
+
+    it("recusa quem não é ADMIN (403)", async () => {
+        // Prepara
+        const gerente = await loginComo("gerente");
+        const editor = await loginComo("editor");
+
+        // Chama e confere
+        await chamar(gerente, "DELETE", `/api/usuarios/${editor.usuario.id}/papeis/EDITOR`, 403);
+    });
+});

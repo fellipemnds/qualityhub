@@ -20,6 +20,13 @@ export const editarUsuarioSchema = z
     })
     .strict();
 
+export const papelSchema = z.object({ papel: z.enum(Papel) }).strict();
+
+export const papelDoUsuarioParamsSchema = z.object({
+    id: z.uuid(),
+    papel: z.enum(Papel),
+});
+
 export const buscarUsuarioIdSchema = z.object({
     id: z.uuid(),
 });
@@ -53,5 +60,6 @@ export const usuarioRespostaSchema = z.object({
 });
 
 export type CriarUsuarioInput = z.infer<typeof criarUsuarioSchema>;
+export type PapelInput = z.infer<typeof papelSchema>;
 export type EditarUsuarioInput = z.infer<typeof editarUsuarioSchema>;
 export type UsuarioFiltrosListagemInput = z.infer<typeof usuarioFiltrosListagemSchema>;
