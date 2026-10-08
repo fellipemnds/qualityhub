@@ -399,3 +399,85 @@ describe("DELETE /usuarios/:id/papeis/:papel", () => {
         await chamar(gerente, "DELETE", `/api/usuarios/${editor.usuario.id}/papeis/EDITOR`, 403);
     });
 });
+
+describe("GET /pessoas", () => {
+    it("acha pessoas ativas por parte do nome, sem diferenciar maiúscula", async () => {
+        // Prepara (a rota de inativar vem na F4; até lá, direto no banco)
+        const editor = await loginComo("editor");
+        const aprovador = await loginComo("aprovador");
+        await prisma.usuario.update({ where: { id: aprovador.usuario.id }, data: { desativadoEm: new Date() } });
+
+        // Chama
+        const porNome = await chamar(editor, "GET", "/api/pessoas?busca=EDIT", 200);
+        const todas = await chamar(editor, "GET", "/api/pessoas", 200);
+
+        // Confere: quem foi inativado não aparece para ninguém escolher
+        expect(porNome.itensDaPagina.map((p: { id: string }) => p.id)).toEqual([editor.usuario.id]);
+        expect(todas.itensDaPagina.map((p: { id: string }) => p.id)).toEqual([editor.usuario.id]);
+    });
+
+    it("filtra por papel: o painel de atribuições pede só os aprovadores", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+        const aprovador = await loginComo("aprovador");
+        const qa = await loginComo("qa");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", "/api/pessoas?papel=APROVADOR", 200);
+
+        // Confere
+        expect(resposta.itensDaPagina.map((p: { id: string }) => p.id).sort()).toEqual(
+            [aprovador.usuario.id, qa.usuario.id].sort(),
+        );
+    });
+
+    it("traz só o id, o nome e o setor: e-mail e papéis são do ADMIN (E3)", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", "/api/pessoas", 200);
+
+        // Confere
+        expect(resposta.itensDaPagina).toEqual([
+            { id: editor.usuario.id, nome: "editor", setor: { id: editor.usuario.setorId, nome: "Qualidade" } },
+        ]);
+    });
+
+    it("não busca no e-mail: quem não é ADMIN não descobre o e-mail de ninguém tentando letra por letra", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", "/api/pessoas?busca=%40teste.com", 200);
+
+        // Confere
+        expect(resposta.itensDaPagina).toEqual([]);
+    });
+
+    it("pagina por cursor", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+        await loginComo("aprovador");
+        await loginComo("gerente");
+
+        // Chama
+        const primeira = await chamar(editor, "GET", "/api/pessoas?limit=2", 200);
+        const segunda = await chamar(editor, "GET", `/api/pessoas?limit=2&cursor=${primeira.proximoCursor}`, 200);
+
+        // Confere
+        expect(primeira.itensDaPagina).toHaveLength(2);
+        expect(segunda.itensDaPagina).toHaveLength(1);
+        expect(segunda.proximoCursor).toBeNull();
+    });
+
+    it("o visualizador também busca; quem só é ADMIN, ou não tem papel, não (403)", async () => {
+        // Prepara
+        const { admin, visualizador, semPapel } = await perfisDeFora();
+
+        // Chama e confere
+        await chamar(visualizador, "GET", "/api/pessoas", 200);
+        await chamar(admin, "GET", "/api/pessoas", 403);
+        await chamar(semPapel, "GET", "/api/pessoas", 403);
+    });
+});

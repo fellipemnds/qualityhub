@@ -20,6 +20,22 @@ export const editarUsuarioSchema = z
     })
     .strict();
 
+// As pessoas que os papéis de negócio escolhem (painel de atribuições, @ do feed). A busca é só no nome: no e-mail,
+// quem não é ADMIN descobriria o e-mail dos outros tentando letra por letra (E3)
+export const pessoaFiltrosListagemSchema = z
+    .object({
+        busca: z.string().trim().max(TEXTO_CURTO).optional(),
+        papel: z.enum(Papel).optional(),
+    })
+    .extend(paginacaoCursorSchema.shape);
+
+// Só o que identifica a pessoa na tela: e-mail e papéis ficam com o ADMIN (E3)
+export const pessoaRespostaSchema = z.object({
+    id: z.uuid(),
+    nome: z.string(),
+    setor: z.object({ id: z.number().int(), nome: z.string() }),
+});
+
 export const papelSchema = z.object({ papel: z.enum(Papel) }).strict();
 
 export const papelDoUsuarioParamsSchema = z.object({
@@ -60,6 +76,7 @@ export const usuarioRespostaSchema = z.object({
 });
 
 export type CriarUsuarioInput = z.infer<typeof criarUsuarioSchema>;
+export type PessoaFiltrosListagemInput = z.infer<typeof pessoaFiltrosListagemSchema>;
 export type PapelInput = z.infer<typeof papelSchema>;
 export type EditarUsuarioInput = z.infer<typeof editarUsuarioSchema>;
 export type UsuarioFiltrosListagemInput = z.infer<typeof usuarioFiltrosListagemSchema>;

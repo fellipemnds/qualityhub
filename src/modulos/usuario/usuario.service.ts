@@ -11,7 +11,12 @@ import { LIMITE_PADRAO_PAGINACAO, paginar } from "../../compartilhado/registro/p
 import { tokenAcessoRepository } from "../auth/token-acesso.repository.js";
 import { conferirSetor } from "../setor/conferir-setor.js";
 import { usuarioRepository } from "./usuario.repository.js";
-import type { CriarUsuarioInput, EditarUsuarioInput, UsuarioFiltrosListagemInput } from "./usuario.schema.js";
+import type {
+    CriarUsuarioInput,
+    EditarUsuarioInput,
+    PessoaFiltrosListagemInput,
+    UsuarioFiltrosListagemInput,
+} from "./usuario.schema.js";
 import { usuarioPapelRepository } from "./usuario-papel.repository.js";
 
 // Os papéis saem como lista de nomes, não como as linhas da tabela UsuarioPapel
@@ -44,6 +49,18 @@ export const usuarioService = {
         const usuarios = await usuarioRepository.listar(prisma, { ...filtros, limit });
 
         return paginar(usuarios.map(comPapeis), limit);
+    },
+
+    // Aberta aos papéis de negócio (VISUALIZAR), não ao ADMIN: quem só administra contas não mexe em NC
+    async listarPessoas(ator: Ator, filtros: PessoaFiltrosListagemInput) {
+        if (!temPapel(ator, "VISUALIZAR")) {
+            throw new SemPermissaoError("Você não tem permissões suficientes para visualizar.");
+        }
+
+        const limit = filtros.limit ?? LIMITE_PADRAO_PAGINACAO;
+        const pessoas = await usuarioRepository.listarPessoas(prisma, { ...filtros, limit });
+
+        return paginar(pessoas, limit);
     },
 
     async buscarUsuario(ator: Ator, id: string) {

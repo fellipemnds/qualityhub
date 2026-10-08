@@ -4,6 +4,7 @@ import type {
     CriarUsuarioInput,
     EditarUsuarioInput,
     PapelInput,
+    PessoaFiltrosListagemInput,
     UsuarioFiltrosListagemInput,
 } from "./usuario.schema.js";
 import { usuarioService } from "./usuario.service.js";
@@ -24,6 +25,12 @@ export const usuarioController = {
         const usuarios = await usuarioService.listarUsuarios(request.user, request.query);
 
         return reply.status(200).send(usuarios);
+    },
+
+    async listarPessoas(request: FastifyRequest<{ Querystring: PessoaFiltrosListagemInput }>, reply: FastifyReply) {
+        const pessoas = await usuarioService.listarPessoas(request.user, request.query);
+
+        return reply.status(200).send(pessoas);
     },
 
     async buscarPorId(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {

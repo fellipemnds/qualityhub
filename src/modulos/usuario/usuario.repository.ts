@@ -1,3 +1,4 @@
+import type { Papel } from "../../compartilhado/entidades/papeis.js";
 import type { TelaInicial } from "../../compartilhado/entidades/tela-inicial.js";
 import type { ClientePrisma } from "../../compartilhado/prisma/tipos.js";
 import type { Prisma } from "../../generated/prisma/client.js";
@@ -30,6 +31,21 @@ export const usuarioRepository = {
                 id: { gt: filtros.cursor },
             },
             select: camposParaAdmin,
+            orderBy: { id: "asc" },
+            take: filtros.limit + 1,
+        });
+    },
+
+    // Só os ativos: quem saiu não aparece para ninguém escolher
+    async listarPessoas(tx: ClientePrisma, filtros: { busca?: string; papel?: Papel; cursor?: string; limit: number }) {
+        return tx.usuario.findMany({
+            where: {
+                desativadoEm: null,
+                nome: filtros.busca === undefined ? undefined : { contains: filtros.busca, mode: "insensitive" },
+                papeisRecebidos: filtros.papel === undefined ? undefined : { some: { papel: filtros.papel } },
+                id: { gt: filtros.cursor },
+            },
+            select: { id: true, nome: true, setor: { select: { id: true, nome: true } } },
             orderBy: { id: "asc" },
             take: filtros.limit + 1,
         });

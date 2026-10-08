@@ -10,6 +10,8 @@ import {
     editarUsuarioSchema,
     papelDoUsuarioParamsSchema,
     papelSchema,
+    pessoaFiltrosListagemSchema,
+    pessoaRespostaSchema,
     usuarioCriadoRespostaSchema,
     usuarioFiltrosListagemSchema,
     usuarioRespostaSchema,
@@ -36,6 +38,17 @@ export async function usuarioRoutes(app: FastifyInstance) {
             response: { 200: paginaSchema(usuarioRespostaSchema), "4xx": erroSchema },
         },
         handler: usuarioController.listar,
+    });
+
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: "GET",
+        url: "/pessoas",
+        onRequest: [autenticar],
+        schema: {
+            querystring: pessoaFiltrosListagemSchema,
+            response: { 200: paginaSchema(pessoaRespostaSchema), "4xx": erroSchema },
+        },
+        handler: usuarioController.listarPessoas,
     });
 
     app.withTypeProvider<ZodTypeProvider>().route({
