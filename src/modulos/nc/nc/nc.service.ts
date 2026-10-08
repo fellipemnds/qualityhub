@@ -89,9 +89,9 @@ export const ncService = {
                 throw new SemPermissaoError("Você não tem permissões suficientes para atualizar este rascunho.");
             }
 
-            await conferirSetor(tx, dados.setorId);
-
             const ncAntes = await ncRepository.buscarPorId(tx, registroId);
+            await conferirSetor(tx, dados.setorId, ncAntes?.setorId ?? undefined);
+
             const ncAtualizada = await ncRepository.atualizar(tx, registroId, dados);
             // A edição também é gravação no Registro: o atualizadoEm muda (B24), e a trava do B19 recusa editar um item
             // que mudou de estado no meio

@@ -27,6 +27,32 @@ export const setorRepository = {
         return tx.setor.create({ data: { nome }, select: camposDoSetor });
     },
 
+    // As pessoas ativas do setor: desativar exige nenhuma (RN-44). As inativas ficam: é histórico
+    async listarPessoasAtivas(tx: ClientePrisma, id: number) {
+        return tx.usuario.findMany({
+            where: { setorId: id, desativadoEm: null },
+            select: { id: true, nome: true },
+            orderBy: { nome: "asc" },
+        });
+    },
+
+    // Só se ainda estiver ativo: o UPDATE condicional é a trava, e dois desativar ao mesmo tempo gravam uma vez
+    async desativar(tx: ClientePrisma, id: number) {
+        const { count } = await tx.setor.updateMany({
+            where: { id, desativadoEm: null },
+            data: { desativadoEm: new Date() },
+        });
+        return count > 0;
+    },
+
+    async reativar(tx: ClientePrisma, id: number) {
+        const { count } = await tx.setor.updateMany({
+            where: { id, desativadoEm: { not: null } },
+            data: { desativadoEm: null },
+        });
+        return count > 0;
+    },
+
     async renomear(tx: ClientePrisma, id: number, nome: string) {
         return tx.setor.update({ where: { id }, data: { nome }, select: camposDoSetor });
     },

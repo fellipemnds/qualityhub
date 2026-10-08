@@ -144,3 +144,146 @@ describe("PATCH /setores/:id", () => {
         await chamar(gerente, "PATCH", `/api/setores/${producao.id}`, 403, { nome: "Do Gerente" });
     });
 });
+
+describe("POST /setores/:id/desativar", () => {
+    it("recusa enquanto houver pessoa ativa no setor, com a lista, e o setor continua ativo (RN-44)", async () => {
+        // Prepara
+        const { admin, producao } = await criarSetores();
+        const pessoa = await chamar(admin, "POST", "/api/usuarios", 201, {
+            nome: "Pessoa da Produção",
+            email: "producao@teste.com",
+            papeis: ["EDITOR"],
+            setorId: producao.id,
+        });
+
+        // Chama
+        const resposta = await chamar(admin, "POST", `/api/setores/${producao.id}/desativar`, 409);
+
+        // Confere
+        expect(resposta.error).toEqual([{ id: pessoa.id, nome: "Pessoa da Produção" }]);
+        const ativos = await chamar(admin, "GET", "/api/setores", 200);
+        expect(ativos.map((s: { id: number }) => s.id)).toContain(producao.id);
+    });
+
+    it("desativa quando só sobram pessoas inativas (são histórico), e o setor some das opções (RN-44)", async () => {
+        // Prepara
+        const { admin, producao } = await criarSetores();
+        const pessoa = await chamar(admin, "POST", "/api/usuarios", 201, {
+            nome: "Quem Saiu",
+            email: "saiu@teste.com",
+            papeis: ["EDITOR"],
+            setorId: producao.id,
+        });
+        await chamar(admin, "POST", `/api/usuarios/${pessoa.id}/inativar`, 200);
+
+        // Chama
+        const resposta = await chamar(admin, "POST", `/api/setores/${producao.id}/desativar`, 200);
+
+        // Confere
+        expect(resposta.desativadoEm).toEqual(expect.any(String));
+        const ativos = await chamar(admin, "GET", "/api/setores", 200);
+        expect(ativos.map((s: { id: number }) => s.id)).not.toContain(producao.id);
+    });
+
+    it("desativar de novo não muda nada nem duplica a auditoria", async () => {
+        // Prepara
+        const { admin, producao } = await criarSetores();
+        const primeira = await chamar(admin, "POST", `/api/setores/${producao.id}/desativar`, 200);
+
+        // Chama
+        const segunda = await chamar(admin, "POST", `/api/setores/${producao.id}/desativar`, 200);
+
+        // Confere
+        expect(segunda.desativadoEm).toBe(primeira.desativadoEm);
+        expect(
+            await prisma.auditoria.count({ where: { entidadeId: String(producao.id), acao: "DESATIVAR_SETOR" } }),
+        ).toBe(1);
+    });
+
+    it("responde 404 quando o setor não existe, e 403 para quem não é ADMIN", async () => {
+        // Prepara
+        const { admin, producao } = await criarSetores();
+        const gerente = await loginComo("gerente");
+
+        // Chama e confere
+        await chamar(admin, "POST", "/api/setores/999999/desativar", 404);
+        await chamar(gerente, "POST", `/api/setores/${producao.id}/desativar`, 403);
+    });
+});
+
+describe("POST /setores/:id/reativar", () => {
+    it("reativa, o setor volta às opções, e repetir não duplica a auditoria", async () => {
+        // Prepara
+        const { admin, antigo } = await criarSetores();
+
+        // Chama
+        const resposta = await chamar(admin, "POST", `/api/setores/${antigo.id}/reativar`, 200);
+        await chamar(admin, "POST", `/api/setores/${antigo.id}/reativar`, 200);
+
+        // Confere
+        expect(resposta.desativadoEm).toBeNull();
+        const ativos = await chamar(admin, "GET", "/api/setores", 200);
+        expect(ativos.map((s: { id: number }) => s.id)).toContain(antigo.id);
+        expect(await prisma.auditoria.count({ where: { entidadeId: String(antigo.id), acao: "REATIVAR_SETOR" } })).toBe(
+            1,
+        );
+    });
+
+    it("recusa quem não é ADMIN (403)", async () => {
+        // Prepara
+        const { antigo } = await criarSetores();
+        const gerente = await loginComo("gerente");
+
+        // Chama e confere
+        await chamar(gerente, "POST", `/api/setores/${antigo.id}/reativar`, 403);
+    });
+});
+
+describe("Setor desativado nas escolhas (RN-44)", () => {
+    it("NC nova não escolhe setor desativado; a NC que já está nele continua editável com o mesmo setor", async () => {
+        // Prepara: a NC nasce na Produção, e a Produção é desativada depois
+        const { admin, producao } = await criarSetores();
+        const editor = await loginComo("editor");
+        const nc = await chamar(editor, "POST", "/api/nc", 201, { titulo: "NC da Produção", setorId: producao.id });
+        await chamar(admin, "POST", `/api/setores/${producao.id}/desativar`, 200);
+
+        // Chama e confere
+        await chamar(editor, "POST", "/api/nc", 409, { titulo: "NC nova na Produção", setorId: producao.id });
+        await chamar(editor, "PATCH", `/api/nc/${nc.id}`, 200, {
+            titulo: "NC da Produção, revista",
+            setorId: producao.id,
+        });
+    });
+
+    it("pessoa nova não escolhe setor desativado (409)", async () => {
+        // Prepara
+        const { admin, antigo } = await criarSetores();
+
+        // Chama e confere
+        await chamar(admin, "POST", "/api/usuarios", 409, {
+            nome: "Pessoa Nova",
+            email: "nova@teste.com",
+            papeis: ["EDITOR"],
+            setorId: antigo.id,
+        });
+    });
+
+    it("reativar uma pessoa cujo setor foi desativado é recusado; mudando o setor dela, passa", async () => {
+        // Prepara: a pessoa sai, o setor dela é desativado
+        const { admin, producao } = await criarSetores();
+        const pessoa = await chamar(admin, "POST", "/api/usuarios", 201, {
+            nome: "Volta Depois",
+            email: "volta@teste.com",
+            papeis: ["EDITOR"],
+            setorId: producao.id,
+        });
+        await chamar(admin, "POST", `/api/usuarios/${pessoa.id}/inativar`, 200);
+        await chamar(admin, "POST", `/api/setores/${producao.id}/desativar`, 200);
+
+        // Chama e confere: o setor dela pode continuar o mesmo na edição (é o que ela já tem)
+        await chamar(admin, "POST", `/api/usuarios/${pessoa.id}/reativar`, 409);
+        await chamar(admin, "PATCH", `/api/usuarios/${pessoa.id}`, 200, { setorId: producao.id });
+        await chamar(admin, "PATCH", `/api/usuarios/${pessoa.id}`, 200, { setorId: admin.usuario.setorId });
+        await chamar(admin, "POST", `/api/usuarios/${pessoa.id}/reativar`, 200);
+    });
+});

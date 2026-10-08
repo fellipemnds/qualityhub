@@ -33,4 +33,6 @@ export type AcaoAuditada =
     | "SAIR_DE_TODOS"
     // Setores
     | "CRIAR_SETOR"
-    | "RENOMEAR_SETOR";
+    | "RENOMEAR_SETOR"
+    | "DESATIVAR_SETOR"
+    | "REATIVAR_SETOR";

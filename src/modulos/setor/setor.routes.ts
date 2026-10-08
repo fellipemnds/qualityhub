@@ -46,4 +46,26 @@ export async function setorRoutes(app: FastifyInstance) {
         },
         handler: setorController.renomear,
     });
+
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: "POST",
+        url: "/setores/:id/desativar",
+        onRequest: [autenticar],
+        schema: {
+            params: setorIdSchema,
+            response: { 200: setorRespostaSchema, "4xx": erroSchema },
+        },
+        handler: setorController.desativar,
+    });
+
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: "POST",
+        url: "/setores/:id/reativar",
+        onRequest: [autenticar],
+        schema: {
+            params: setorIdSchema,
+            response: { 200: setorRespostaSchema, "4xx": erroSchema },
+        },
+        handler: setorController.reativar,
+    });
 }

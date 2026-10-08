@@ -16,6 +16,7 @@ import { LIMITE_PADRAO_PAGINACAO, paginar } from "../../compartilhado/registro/p
 import { emitirConvite } from "../auth/emitir-convite.js";
 import { tokenAcessoRepository } from "../auth/token-acesso.repository.js";
 import { conferirSetor } from "../setor/conferir-setor.js";
+import { setorRepository } from "../setor/setor.repository.js";
 import { usuarioRepository } from "./usuario.repository.js";
 import type {
     CriarUsuarioInput,
@@ -232,6 +233,12 @@ export const usuarioService = {
             if (antes.desativadoEm === null) {
                 return comPapeis(antes);
             }
+            // A pessoa voltaria para um setor que saiu das opções (RN-44): muda-se o setor dela antes
+            if ((await setorRepository.buscarPorId(tx, antes.setor.id))?.desativadoEm != null) {
+                throw new TransicaoInvalidaError(
+                    "O setor desta pessoa está desativado: mude o setor dela antes de reativar.",
+                );
+            }
 
             const depois = await usuarioRepository.reativar(tx, id);
 
@@ -254,7 +261,7 @@ export const usuarioService = {
 
         return prisma.$transaction(async (tx) => {
             const antes = await buscarParaAdminOuFalhar(tx, id);
-            await conferirSetor(tx, dados.setorId);
+            await conferirSetor(tx, dados.setorId, antes.setor.id);
 
             const depois = await usuarioRepository.atualizar(tx, id, dados);
 

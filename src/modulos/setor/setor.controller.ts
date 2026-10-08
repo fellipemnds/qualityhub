@@ -15,6 +15,18 @@ export const setorController = {
         return reply.status(201).send(setor);
     },
 
+    async desativar(request: FastifyRequest<{ Params: { id: number } }>, reply: FastifyReply) {
+        const setor = await setorService.desativarSetor(request.user, request.params.id);
+
+        return reply.status(200).send(setor);
+    },
+
+    async reativar(request: FastifyRequest<{ Params: { id: number } }>, reply: FastifyReply) {
+        const setor = await setorService.reativarSetor(request.user, request.params.id);
+
+        return reply.status(200).send(setor);
+    },
+
     async renomear(request: FastifyRequest<{ Params: { id: number }; Body: EditarSetorInput }>, reply: FastifyReply) {
         const setor = await setorService.renomearSetor(request.user, request.params.id, request.body);
 
