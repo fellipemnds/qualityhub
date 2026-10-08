@@ -78,7 +78,7 @@ export const authService = {
         return authService.eu(ator);
     },
 
-    // O sessaoValidaDesde vira "agora": o autenticar recusa todo token emitido antes (TRD §4.1, item 6)
+    // A versão das sessões soma 1: o autenticar recusa todo token com a versão de antes (TRD §4.1, item 6; B27)
     async sairDeTodos(ator: Ator) {
         return prisma.$transaction(async (tx) => {
             await usuarioRepository.encerrarSessoes(tx, ator.id);

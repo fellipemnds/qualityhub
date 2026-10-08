@@ -286,15 +286,9 @@ describe("POST /auth/logout", () => {
 });
 
 describe("POST /auth/sair-de-todos", () => {
-    afterEach(() => {
-        vi.useRealTimers();
-    });
-
     it("derruba toda sessão já emitida, e um login novo volta a funcionar", async () => {
-        // Prepara: o login agora; o pedido, alguns segundos depois (a comparação com o sessaoValidaDesde é em segundos)
+        // Prepara: o login e o pedido no mesmo instante; a versão das sessões não depende do relógio (B27)
         const editor = await loginComo("editor");
-        vi.useFakeTimers({ toFake: ["Date"] });
-        vi.setSystemTime(Date.now() + 5000);
 
         // Chama
         await chamar(editor, "POST", "/api/auth/sair-de-todos", 204);

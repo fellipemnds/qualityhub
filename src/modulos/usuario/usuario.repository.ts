@@ -99,10 +99,12 @@ export const usuarioRepository = {
         });
     },
 
+    // Soma 1 à versão das sessões: todo token com a versão de antes deixa de valer (B27). O +1 é feito pelo banco, de uma
+    // vez: duas derrubadas ao mesmo tempo somam 2, e nenhuma se perde
     async encerrarSessoes(tx: ClientePrisma, id: string) {
         return tx.usuario.update({
             where: { id },
-            data: { sessaoValidaDesde: new Date() },
+            data: { versaoSessao: { increment: 1 } },
         });
     },
 
@@ -113,13 +115,12 @@ export const usuarioRepository = {
         });
     },
 
-    // Inativar também derruba as sessões abertas: o autenticar recusa o inativo, e o sessaoValidaDesde garante que um
-    // token antigo não volte a valer se a pessoa for reativada
+    // Inativar também derruba as sessões abertas: o autenticar recusa o inativo, e a versão nova garante que um token
+    // antigo não volte a valer se a pessoa for reativada
     async inativar(tx: ClientePrisma, id: string) {
-        const agora = new Date();
         return tx.usuario.update({
             where: { id },
-            data: { desativadoEm: agora, sessaoValidaDesde: agora },
+            data: { desativadoEm: new Date(), versaoSessao: { increment: 1 } },
             select: camposParaAdmin,
         });
     },

@@ -155,11 +155,13 @@ model Usuario {
   setorId Int
   setor   Setor @relation(fields: [setorId], references: [id])
 
-  criadoEm          DateTime     @default(now())
-  atualizadoEm      DateTime     @updatedAt
-  desativadoEm      DateTime?
-  sessaoValidaDesde DateTime     @default(now())
-  telaInicial       TelaInicial?
+  criadoEm     DateTime     @default(now())
+  atualizadoEm DateTime     @updatedAt
+  desativadoEm DateTime?
+  // A versão das sessões (B27): o JWT leva a versão lida no login, e derrubar as sessões soma 1. Um número que só
+  // cresce, e não uma data: não depende do relógio
+  versaoSessao Int          @default(0)
+  telaInicial  TelaInicial?
 
   registros Registro[]
 
