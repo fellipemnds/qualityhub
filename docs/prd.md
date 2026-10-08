@@ -312,7 +312,7 @@ Legenda: ✅ pronto · 🔧 pronto, com ajuste decidido · ⬜ a construir
 ### Setores e anexos
 | ID | Regra |
 |---|---|
-| RN-44 | **(nova)** O `ADMIN` cria e renomeia setores. Setor com NC vinculada **não é apagado**, só desativado (some das opções de NCs novas; NCs antigas continuam apontando para ele) |
+| RN-44 | **(nova)** O `ADMIN` cria e renomeia setores. Setor com NC vinculada **não é apagado**, só desativado (some das opções de NCs novas; NCs antigas continuam apontando para ele). **Desativar exige o setor sem pessoas ativas**: o sistema recusa e lista quem ainda está nele, para o `ADMIN` mudar antes (as inativas ficam: é histórico). Setor desativado não entra em **escolha nova** (criar ou mudar o setor de uma NC ou de uma pessoa), e reativar uma pessoa cujo setor foi desativado é recusado até mudar o setor dela (Matthew, 2026-10-08) |
 | RN-45 | **(nova)** Anexos aceitam só imagens e PDF, com limite de tamanho por arquivo (valor definido no TRD). Anexo segue a visibilidade do item. Anexo de item `FECHADO` não é removido (é evidência) |
 
 ---
@@ -413,3 +413,4 @@ Limite de tamanho e armazenamento dos anexos foram resolvidos no TRD (§8).
 | 2026-10-07 | v1.5 — classificação e reincidência: vigente, exigências por classificação e abrangência (Q19–Q21), ainda sem mudar as RNs |
 | 2026-10-07 | v1.6 — Q21 revista (3ª ocorrência aceita com justificativa); Q22, colaborador e aprovador excludentes e Classificação sem portão |
 | 2026-10-08 | v1.7 — RN-43 detalhada (os três estados, só o `APROVADOR` trava, o último `ADMIN`); Q23, o colaborador escolhe o aprovador (implementação na C2) |
+| 2026-10-08 | v1.8 — RN-44 detalhada: desativar exige o setor sem pessoas ativas; setor desativado fora das escolhas novas e do reativar |
