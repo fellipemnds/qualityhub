@@ -166,10 +166,12 @@ migration nem chave nova no `.env` desde a última sessão.
    → `aplicarTransicao` → `registroRepository.atualizar` → banco →
    auditoria → resposta), com Matthew dizendo o que cada parte faz antes
    de Claude explicar.
-2. **`/comecar-fase` da A6** (usuários e setores): os itens de Matthew,
-   no passo a passo, são a trava da RN-43, o script do primeiro acesso e
-   os testes das permissões de `ADMIN`. Junto da L6, o `setorId` da NC
-   sem `coerce` (revisão da A5). Depois, cada item pela `/item`.
+2. **A6, pela `/item`** (`/comecar-fase` feito em 2026-10-08, PR #9 em
+   rascunho; a ordem está no plano, abaixo da tabela da A6). A **M2** está
+   feita; o próximo é a **L6** (setor inexistente na NC responde 404, e o
+   `setorId` sem `coerce`). Os itens de Matthew, no passo a passo, são a
+   trava da RN-43, o script do primeiro acesso e os testes das permissões
+   de `ADMIN`. **Migration nova (M2):** em casa, `npm run preparar`.
 
 Da revisão de design das APIs (2026-10-07), anotados para a C1/C2:
 **R7**, o erro sem código para máquina (os 409 diferentes só se

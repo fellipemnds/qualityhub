@@ -124,7 +124,7 @@ Aplicada na A4 (2026-10-05), migration `sessao_e_preferencia_do_usuario`. Os usu
 **Revogar papel** não precisa de campo: apaga a linha de `UsuarioPapel`
 e a auditoria guarda quem revogou e quando (ADR-19).
 
-### M2 — `Setor`: desativação
+### M2 — `Setor`: desativação ✅
 
 | Campo | Tipo | Para quê |
 |---|---|---|
@@ -575,3 +575,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-08 | v1.44 — B25 registrado (o `finalizar-execucao` aceita o `id` de outro tipo), achado pela trava do B23 |
 | 2026-10-08 | v1.45 — B25 corrigido (A5): o `finalizar-execucao` confere o tipo e responde 404; nenhum bug aberto |
 | 2026-10-08 | v1.46 — B26 registrado e corrigido (A5): e-mail com teto de 254, e a trava dos tetos só libera formato de tamanho fixo; nenhum bug aberto |
+| 2026-10-08 | v1.47 — M2 aplicada (A6): `desativadoEm` no `Setor` (migration `setor_desativacao`) |
