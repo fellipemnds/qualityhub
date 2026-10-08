@@ -28,8 +28,9 @@ fase.
   `diff-cover` antes do push). **Claude dá o push** depois da
   `/verificar` (`CLAUDE.md`, "Ambiente").
 - Nenhum bug aberto.
-- Suíte: **432 passando** (2026-10-08, depois da F5b); cobertura 97,32%
-  das linhas (trava em 94,66%). Lint e typecheck limpos.
+- Suíte: **437 passando** (2026-10-08, depois da F5); cobertura 97,38%
+  das linhas (trava em 94,66%). Com a máquina carregada (VS Code, pouca
+  memória livre), chegou a 473 s. Lint e typecheck limpos.
 - O que Matthew aprendeu na A5: `prefix` do Fastify e `Path` do
   cookie; schema de resposta (filtra o que sai, vigia o código: tipo
   errado vira 500); codec do Zod (`decode`/`encode`); *arrow function*;
@@ -177,21 +178,16 @@ migration nem chave nova no `.env` desde a última sessão.
    com a trava da RN-43 e a do último `ADMIN`, escritas por Matthew), F4 (inativar
    e reativar, com as travas extraídas por Matthew para o `conferirSaida`) e
    F7 (`GET /pessoas`). A Q23 (o colaborador escolhe o aprovador) vai para a C2.
-   **F5 em andamento**, em três fatias (desenho no changelog, "Fase A6",
-   aprovado depois de `security-and-hardening` e dois ciclos de `doubt-driven`,
-   um com o Gemini): **F5a feita** (o B27, a `versaoSessao` no lugar da data;
-   **em casa, depois do `npm run preparar`, entrar de novo**: os tokens antigos
-   não valem); **F5b feita** (o convite: `revogadoEm`, `emitirConvite`,
-   `POST /usuarios/:id/convite`, o inativar revoga; **em casa, `npm run preparar`**:
-   migration nova); falta a **F5c** (definir senha: limite de tentativas,
-   mensagem única, bcrypt fora da transação, tipo `CONVITE`, as travas e a versão).
-   O `noUnusedImports` do Biome subiu de aviso para erro (2026-10-08). **Faltam também:**, a **F6** (setores; decidir NC em setor desativado, a
+   **F5 feita** (2026-10-08, três fatias; o desenho, das revisões de segurança e
+   dos dois ciclos de `doubt-driven`, está no changelog): o B27 (a `versaoSessao`),
+   o convite que revoga os anteriores e o definir senha endurecido. **Em casa,
+   `npm run preparar` (duas migrations novas) e entrar de novo** (os tokens
+   antigos não valem). **Faltam:** a **F6** (setores; decidir NC em setor desativado, a
    paginação e o `id` numérico na trava do `{id}`), o **script do primeiro
    acesso** (Matthew) e o **item 6** (Matthew: os limites das travas — itens só
    `FECHADO`, só colaborador, revogar `EDITOR` de aprovador — e as permissões
    de `ADMIN`). Anotado, sem tratar: duas revogações de `ADMIN` ao mesmo tempo
-   podem passar as duas (concorrência, como o B19). **Migration nova (M2):** em
-   casa, `npm run preparar`.
+   podem passar as duas (concorrência, como o B19).
 
 Da revisão de design das APIs (2026-10-07), anotados para a C1/C2:
 **R7**, o erro sem código para máquina (os 409 diferentes só se
@@ -221,4 +217,4 @@ parado há tempo):
 6. **Primeira foto de casa:** `npm run ambiente -- casa` e depois
    `npm run ambiente -- comparar` (`SETUP.md` §12.5). Commitar o
    `docs/ambiente/casa.txt`.
-7. `npm run test:cobertura`: **432 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).
+7. `npm run test:cobertura`: **437 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).

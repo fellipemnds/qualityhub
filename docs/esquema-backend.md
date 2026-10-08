@@ -342,7 +342,7 @@ Os caminhos abaixo são mostrados **sem** o prefixo `/api`.
 | | Método e caminho | Quem | O que faz |
 |---|---|---|---|
 | Δ ✅ | `POST /auth/login` | Público | + `manterConectado`; responde com **cookie**, não com token no corpo; limite de tentativas (5/min por IP + e-mail, 429); recusa usuário **inativo** com a mesma mensagem de qualquer falha (RN-38); sucesso na auditoria (`LOGIN`), falha no log (E1); e-mail inexistente compara com um hash falso, no mesmo tempo (auditoria L1) |
-| Δ | `POST /auth/definir-senha` | Público (token) | Define a senha pelo convite (também serve para redefinir); passa a somar 1 à `versaoSessao` (derruba as sessões); recusa usuário inativo |
+| Δ ✅ | `POST /auth/definir-senha` | Público (token) | Define a senha pelo convite (também serve para redefinir); soma 1 à `versaoSessao` (derruba as sessões); recusa usuário inativo, token de outro tipo, usado, revogado ou expirado, com **uma mensagem só**; 5 tentativas por minuto por link (A6, F5) |
 | ＋ ✅ | `POST /auth/logout` | Logado | Apaga o cookie deste navegador |
 | ＋ ✅ | `POST /auth/sair-de-todos` | Logado | Soma 1 à `versaoSessao` (auditado: `SAIR_DE_TODOS`) e apaga o cookie deste navegador |
 | ＋ ✅ | `GET /auth/eu` | Logado | id, nome, e-mail, setor, papéis, `telaInicial` (a **efetiva**: a escolhida, se os papéis ainda a permitem; senão, o padrão do papel) e `telasIniciais` (as que pode escolher) |
@@ -360,7 +360,7 @@ Os caminhos abaixo são mostrados **sem** o prefixo `/api`.
 | ＋ | `DELETE /usuarios/:id/papeis/:papel` | `ADMIN` | Revoga — **recusa** se a pessoa for aprovadora de item aberto e o papel for `APROVADOR`, listando os itens (RN-43) |
 | ＋ | `POST /usuarios/:id/inativar` | `ADMIN` | Mesma trava; preenche `desativadoEm` e soma 1 à `versaoSessao` |
 | ＋ | `POST /usuarios/:id/reativar` | `ADMIN` | Limpa `desativadoEm` (E2) |
-| ＋ | `POST /usuarios/:id/convite` | `ADMIN` | Gera novo link (o anterior expirou, se perdeu, ou a pessoa esqueceu a senha) e **invalida os convites anteriores não usados** (`revogadoEm`); derruba as sessões; inativo → 409. Resposta `{ tokenConvite, expiraEm }`, `no-store` |
+| ＋ ✅ | `POST /usuarios/:id/convite` | `ADMIN` | Gera novo link (o anterior expirou, se perdeu, ou a pessoa esqueceu a senha) e **invalida os convites anteriores não usados** (`revogadoEm`); derruba as sessões; inativo → 409. Resposta `{ tokenConvite, expiraEm }`, `no-store` |
 | ＋ | `GET /pessoas` | Papéis de negócio | Busca leve (id, nome, setor — E3) de usuários **ativos**, com filtro `?papel=APROVADOR` — alimenta o painel de atribuições e o `@` do feed |
 | ＋ | `GET /setores` | Logado | Setores ativos (o `ADMIN` pode pedir os inativos também) |
 | ＋ | `POST /setores` · `PATCH /setores/:id` | `ADMIN` | Criar, renomear |
@@ -580,3 +580,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-08 | v1.48 — B27 registrado (login em voo sobrevive à derrubada das sessões), achado na revisão adversarial da F5 |
 | 2026-10-08 | v1.49 — B27 corrigido (A6): a versão das sessões (`versaoSessao`) no lugar da data; M1 atualizada |
 | 2026-10-08 | v1.50 — `TokenAcesso.revogadoEm` e índice em `usuarioId` (A6, F5b, migration `convite_revogavel`); o convite novo e o inativar revogam os pendentes |
+| 2026-10-08 | v1.51 — `definir-senha` endurecido (A6, F5c): mensagem única, limite por link, bcrypt fora da transação, derruba as sessões |

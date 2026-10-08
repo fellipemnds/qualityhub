@@ -86,9 +86,13 @@ documento de arquitetura.
     `SELECT ... FOR UPDATE` (deadlock entre dois admins) e na mesma ordem
     (deadlock entre convite e senha). O bcrypt do definir senha roda
     **fora** da transação (não prende conexão).
-  - **Definir senha:** limite de tentativas por IP, só token do tipo
+  - **Definir senha:** limite de tentativas, só token do tipo
     `CONVITE`, uma mensagem única para todo link que não vale (inexistente,
-    aceito, revogado, expirado, usuário inativo).
+    aceito, revogado, expirado, usuário inativo). O limite ficou **por
+    link** (5 por minuto, a chave é o hash do token), e não por IP (o
+    desenho): o que pesa é o bcrypt de um link válido; por IP, juntaria
+    pessoas atrás da mesma rede e travaria a suíte, que chama tudo do mesmo
+    IP (ajuste na F5c, 2026-10-08).
   - **Aceitos como concessão:** o tempo da resposta ainda distingue "link
     válido, usuário inativo" (recusa depois do bcrypt); dois `ADMIN`s
     inativando um ao outro ao mesmo tempo (write skew). **Para depois:** o
@@ -105,6 +109,11 @@ documento de arquitetura.
     convite, nunca o token. O inativar ficou condicional (dois ao mesmo
     tempo gravam uma vez) e revoga os convites pendentes. Prova de quebra
     do teste de concorrência: sem a trava, três rodadas vermelhas.
+  - **F5c feita** (2026-10-08): o `definirSenha` valida o convite numa
+    leitura, calcula o bcrypt fora da transação e grava numa transação
+    curta (o usuário ativo primeiro, somando 1 à versão; depois o convite
+    ainda valendo, tudo no `WHERE`). A auditoria `DEFINIR_SENHA` grava o
+    `conviteId`, o mesmo do `GERAR_CONVITE`.
 - **A trava do `{id}` escolhe quem chama** (F1): as rotas de usuário são
   chamadas pelo `ADMIN`, e as dos itens, pelo gerente. Com o gerente, o
   `GET /usuarios/:id` respondia 403 (a permissão vem antes da busca), e a
