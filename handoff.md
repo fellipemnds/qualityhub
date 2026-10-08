@@ -159,7 +159,7 @@ Nenhuma migration nem chave nova no `.env`.
 2. **Fechar a A5:** `/abrir-pr` (revisões da fase e o "pronto quando",
    que inclui Matthew explicar o que é OpenAPI e por que o schema de
    resposta importa tanto quanto o de entrada) → merge → `/fechar-fase`.
-3. **Passeio guiado pelo código** (em casa, num momento tranquilo).
+3. **Passeio guiado pelo código** (em casa, num momento tranquilo). Antes dele, rodar o `/understand-anything:understand` (uma vez, em português, só `src/` sem os testes) e usar o `understand-onboard` como roteiro; depois, decidir se o grafo fica (colinha §6).
    **Inclui o último item do "pronto quando" da A4**, adiado no merge:
    Matthew explicar o B19 ("confere e depois age", o `UPDATE`
    condicionado ao estado lido) e o que o `SameSite=Strict` bloqueia e

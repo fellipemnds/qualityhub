@@ -129,3 +129,19 @@ O plugin também traz quatro agentes (`code-reviewer`, `security-auditor`, `test
 | `/bug` | Achou um bug, ou terminou o conserto de um: registrar ou fechar nos documentos |
 | `/item` | Cada item da fase: escolher, planejar (as skills de antes do código), executar, revisar, verificar e registrar |
 | `/verificar` | Antes de commit e de push: lint, typecheck, testes no nível do `CONSTRAINTS.md` §4, diff-cover |
+
+## 6. Entender o código sem encher o contexto
+
+| Ferramenta | O que faz | Quando |
+|---|---|---|
+| Agente `Explore` (do Claude Code) | Lê os arquivos num contexto **separado** e devolve só a conclusão ("o item toca estes arquivos, o padrão é este"). Nada para manter | Dia a dia: descobrir o que um item toca antes de abrir arquivo. Peça "use o Explore para..." |
+| `/understand-anything:understand` | Analisa o projeto e grava um **grafo de conhecimento** em `.ua/knowledge-graph.json` (arquivos, funções, camadas, quem chama quem, um resumo de cada um). As outras abaixo dependem dele | Uma vez, antes de usar as outras. Cara na primeira vez (vários agentes); `--language pt` para os textos em português, `--exclude` para os testes. Envelhece: `--auto-update` atualiza a cada commit |
+| `/understand-anything:understand-onboard` | Roteiro guiado pelo código, em ordem didática | O passeio guiado pelo código (`handoff.md` §6) |
+| `/understand-anything:understand-chat` | Perguntas sobre o código, respondidas pelo grafo | "Onde fica X?", "quem usa Y?" |
+| `/understand-anything:understand-explain` | Explicação a fundo de um arquivo, função ou módulo | Reconhecer um pedaço do código antes de mexer |
+| `/understand-anything:understand-diff` | O que um diff ou PR muda, o que afeta e onde está o risco | Revisão de um item ou de uma fase |
+| `/understand-anything:understand-dashboard` | O grafo num painel interativo | Ver a arquitetura de cima |
+
+Os resumos do grafo são escritos por IA: servem de mapa, e a decisão continua sendo tomada
+lendo o código. **Em aberto** (decidir depois do passeio): o grafo fica, com a atualização
+automática? O `.ua/` entra no Git (um JSON grande que muda a cada commit) ou cada PC gera o seu?
