@@ -5,32 +5,31 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-08 (retomada no **trabalho**: ambiente sem alertas, só o GitLens 19.2 → 19.3 na foto; descrição do PR #8 atualizada). Antes, 2026-10-07 (fim do dia, no trabalho). A A5 avançou quase toda: B22, B23 e B24 corrigidos (nenhum bug aberto), schema de resposta em todas as rotas, OpenAPI 3.1 com `/api/docs` só em desenvolvimento, `GET /api/saude`, catálogo de auditoria, L5, L7 e o lote 4 (L4: tetos, corpo estrito, paginação dos filhos). Falta o **lote 5** (§6). Decisões de produto com a analista no PRD (Q19–Q22). O PC de casa continua sem foto (`casa.txt`).
+**Última atualização:** 2026-10-08 (no **trabalho**). A **A5 foi fechada** (PR #8, merge `b4aa14e`) e a branch `fase/a6-usuarios-e-setores` foi aberta. O PC de casa continua sem foto (`casa.txt`).
 
 ## 1. Objetivo
 
-Fase **A5 — Contrato da API** (`docs/plano-implementacao.md`), na branch
-`fase/a5-contrato-api` (PR #8, em rascunho). Falta só o lote 5 e o
-fechamento da fase (§6). O passeio guiado pelo código fica para um
-momento tranquilo em casa, sem bloquear a fase.
+Fase **A6 — Usuários, setores e pessoas** (`docs/plano-implementacao.md`),
+na branch `fase/a6-usuarios-e-setores`. Antes do `/comecar-fase`, o
+passeio guiado pelo código (§6), de preferência em casa, sem bloquear a
+fase.
 
 ## 2. Estado atual
 
-- **A5, feito em 2026-10-06 e 2026-10-07** (o detalhe de cada decisão
-  está no changelog, "Fase A5"): prefixo `/api`; schema de resposta em
-  **todas** as rotas (D1–D5; o `planoAprovado` em todas as rotas da ação
-  corretiva; o schema como lista do que pode sair no `/auth/eu` e no
-  `POST /usuarios`); OpenAPI 3.1 (`/api/docs` e o JSON só com
-  `NODE_ENV=development`); `GET /api/saude`; catálogo `AcaoAuditada`
-  (só tipo); L5; L7 (`ultimoMotivoReprovacao` no detalhe); L4 (tetos
-  `TEXTO_CURTO`/`TEXTO_LONGO`, senha até 72 bytes, corpo estrito, as
-  cinco listas dos filhos paginadas). Quatro **travas no documento**, no
-  `app.test.ts`: toda rota declara a resposta, todo texto e toda lista
-  de entrada têm teto, todo corpo recusa campo desconhecido, toda lista
-  é paginada (menos o checklist).
-- **B22, B23 e B24 corrigidos**; nenhum bug aberto.
-- Suíte: **374 passando** (2026-10-08); cobertura 97,03% das linhas (trava em 94,66%); o
-  `diff-cover` local em 100% antes de todo push. Lint e typecheck limpos.
+- **A5 fechada em 2026-10-08** (PR #8; o detalhe está no changelog,
+  "Fase A5", e na descrição do PR): prefixo `/api`, schema de resposta
+  em todas as rotas, OpenAPI 3.1 só em desenvolvimento, `GET
+  /api/saude`, catálogo de auditoria, L4, L5, L7, **B22–B26** e cinco
+  travas sobre o OpenAPI no `app.test.ts` (resposta declarada, teto,
+  corpo estrito, lista paginada, `{id}` de outro tipo responde 404). O
+  lote 5 decidiu que as funções repetidas dos services ficam.
+- **Skills novas** (2026-10-08): `/item` (o ciclo de um item, com a
+  revisão do diff) e `/verificar` (a verificação local, com o
+  `diff-cover` antes do push). **Claude dá o push** depois da
+  `/verificar` (`CLAUDE.md`, "Ambiente").
+- Nenhum bug aberto.
+- Suíte: **374 passando**; cobertura 97,03% das linhas (trava em
+  94,66%). Lint e typecheck limpos.
 - O que Matthew aprendeu na A5: `prefix` do Fastify e `Path` do
   cookie; schema de resposta (filtra o que sai, vigia o código: tipo
   errado vira 500); codec do Zod (`decode`/`encode`); *arrow function*;
@@ -38,11 +37,16 @@ momento tranquilo em casa, sem bloquear a fase.
   de caracterização; a conferência negativa precisa de uma positiva
   junto; função genérica (`<T extends z.ZodType>`); `.nullable()` ×
   `.optional()`; supertipo e o `id` que não diz o tipo (B23, a busca
-  com tipo escrita por ele); "expandir e contrair"; o que é OpenAPI.
-- **A4** fechada em 2026-10-06 (PR #6).
-- Tempo da suíte: 240 s a 330 s. Fechar o **Apple Music** na web antes
-  de rodar (o player consome a máquina). Se passar de ~5 min sem isso,
-  olhar o Docker Desktop e o `free -h` antes de mexer nos testes.
+  com tipo escrita por ele); "expandir e contrair"; o que é OpenAPI; o
+  `idea-refine` numa decisão de arquitetura (lote 5). No "pronto
+  quando", as respostas tiveram lacunas, já explicadas: o OpenAPI diz
+  também o que cada rota recebe e devolve (é daí que o Orval gera o
+  cliente); o schema de resposta também vigia o nosso código; o B26 era
+  teto **máximo** (254), e a trava liberava todo texto com `format`.
+- Tempo da suíte: 240 s a 330 s. Fechar **qualquer player no
+  navegador** (Apple Music, YouTube) antes de rodar: com o YouTube
+  aberto, a suíte levou 481 s (2026-10-08). Se passar de ~5 min sem
+  isso, olhar o Docker Desktop e o `free -h` antes de mexer nos testes.
 
 ## 3. Arquivos no meio de uma mudança
 
@@ -50,12 +54,12 @@ Nenhum.
 
 ## 4. O que foi alterado nesta sessão
 
-`git log fc33c06~22..HEAD` na branch: B23 (7 fatias), B24, os schemas de
-resposta dos filhos, da sessão, dos usuários e das atribuições, o
-OpenAPI, a saúde, o catálogo de auditoria, L5, L7 e L4. **Duas
-dependências novas** (`@fastify/swagger`, declarado, e
-`@fastify/swagger-ui`, de desenvolvimento): em casa, `npm run preparar`.
-Nenhuma migration nem chave nova no `.env`.
+Na A5 (`git log fc33c06..b4aa14e`): o lote 5, o B25, o B26, as
+convenções da A5 no TRD §7.1 e a descrição do PR #8. Fora do código: as
+skills `/item` e `/verificar`, a `/retomar` conferindo o PR e se o
+handoff está em dia, a revisão por item na `/item`, o push pelo Claude e
+a colinha §6 (`understand-anything` e `Explore`). Nenhuma dependência,
+migration nem chave nova no `.env` desde a última sessão.
 
 ## 5. Falhas (e o porquê)
 
@@ -153,13 +157,7 @@ Nenhuma migration nem chave nova no `.env`.
 
 ## 6. Próximo passo
 
-1. ~~Lote 5 da A5~~ **feito em 2026-10-08**: as funções repetidas
-   ficam, com a trava do B23 sobre o OpenAPI, que achou e corrigiu o
-   **B25** (changelog, "Fase A5"). Reavaliar a junção na C2.
-2. **Fechar a A5:** `/abrir-pr` (revisões da fase e o "pronto quando",
-   que inclui Matthew explicar o que é OpenAPI e por que o schema de
-   resposta importa tanto quanto o de entrada) → merge → `/fechar-fase`.
-3. **Passeio guiado pelo código** (em casa, num momento tranquilo). Antes dele, rodar o `/understand-anything:understand` (uma vez, em português, só `src/` sem os testes) e usar o `understand-onboard` como roteiro; depois, decidir se o grafo fica (colinha §6).
+1. **Passeio guiado pelo código** (em casa, num momento tranquilo). Antes dele, rodar o `/understand-anything:understand` (uma vez, em português, só `src/` sem os testes) e usar o `understand-onboard` como roteiro; depois, decidir se o grafo fica (colinha §6).
    **Inclui o último item do "pronto quando" da A4**, adiado no merge:
    Matthew explicar o B19 ("confere e depois age", o `UPDATE`
    condicionado ao estado lido) e o que o `SameSite=Strict` bloqueia e
@@ -167,10 +165,11 @@ Nenhuma migration nem chave nova no `.env`.
    controller → service → `cicloVidaService` → `buscarRegistroDoTipoOuFalhar`
    → `aplicarTransicao` → `registroRepository.atualizar` → banco →
    auditoria → resposta), com Matthew dizendo o que cada parte faz antes
-   de Claude explicar. Ajuda também a reconhecer o código depois do B23.
-4. **Depois, a A6** (usuários e setores): os itens de Matthew, no passo
-   a passo, são a trava da RN-43, o script do primeiro acesso e os
-   testes das permissões de `ADMIN`.
+   de Claude explicar.
+2. **`/comecar-fase` da A6** (usuários e setores): os itens de Matthew,
+   no passo a passo, são a trava da RN-43, o script do primeiro acesso e
+   os testes das permissões de `ADMIN`. Junto da L6, o `setorId` da NC
+   sem `coerce` (revisão da A5). Depois, cada item pela `/item`.
 
 Da revisão de design das APIs (2026-10-07), anotados para a C1/C2:
 **R7**, o erro sem código para máquina (os 409 diferentes só se
@@ -189,7 +188,7 @@ resolve as duas coisas. Os passos (`SETUP.md` §12.1 se o PC estiver
 parado há tempo):
 
 1. Docker Desktop aberto ("Engine running"), Ubuntu, pasta do projeto.
-2. `git fetch`, `git switch fase/a5-contrato-api`, `git pull`.
+2. `git fetch`, `git switch fase/a6-usuarios-e-setores`, `git pull`.
 3. **`npm run preparar`**: obrigatório. Se a migration do
    `investigacaoId` falhar (o banco de casa tem ações sem investigação),
    recriar o banco: `SETUP.md` §12, passos 6 e 7.
@@ -200,4 +199,4 @@ parado há tempo):
 6. **Primeira foto de casa:** `npm run ambiente -- casa` e depois
    `npm run ambiente -- comparar` (`SETUP.md` §12.5). Commitar o
    `docs/ambiente/casa.txt`.
-7. `npm run test:cobertura`: **374 passando**, cobertura acima de 94,66% (com o Apple Music fechado, para a suíte não passar de ~5 min).
+7. `npm run test:cobertura`: **374 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).

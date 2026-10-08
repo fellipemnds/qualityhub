@@ -408,3 +408,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-08 | v1.18 — B25 entra na A5, achado pela trava do B23 no lote 5 |
 | 2026-10-08 | v1.19 — A5, lote 5: as funções repetidas dos services ficam, com a trava do B23 |
 | 2026-10-08 | v1.20 — B26 entra na A5 (revisão de segurança da fase); A6: o `setorId` sem coerce, junto da L6 |
+| 2026-10-08 | **A5 concluída** (branch `fase/a5-contrato-api`, PR #8): prefixo `/api`, schema de resposta em todas as rotas (D1–D5), OpenAPI 3.1 só em desenvolvimento, `GET /api/saude`, catálogo de auditoria, L4, L5, L7, B22–B26 e cinco travas sobre o OpenAPI no `app.test.ts`; as funções repetidas dos services ficam (lote 5). 374 testes. R7 e R8 ficam para a C1 |

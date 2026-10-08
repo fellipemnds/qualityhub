@@ -55,8 +55,8 @@ mesmo dia, com os schemas de resposta. O B25 (o `finalizar-execucao`
 aceitava o `id` de outro tipo, a rota que escapou do B23) foi achado e
 corrigido em 2026-10-08, pela trava do B23 no `app.test.ts`, e o B26
 (e-mail sem teto, que deixava um anônimo encher a memória pela chave do
-limite de tentativas), no mesmo dia, na revisão de segurança da fase.
-**Nenhum bug aberto.**
+limite de tentativas), no mesmo dia, na revisão de segurança da fase
+(fase fechada em 2026-10-08, PR #8). **Nenhum bug aberto.**
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com

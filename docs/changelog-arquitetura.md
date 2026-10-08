@@ -9,7 +9,7 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
-### Fase A5 — contrato da API (branch `fase/a5-contrato-api`, em andamento)
+### Fase A5 — contrato da API (branch `fase/a5-contrato-api`, PR #8)
 
 - **Prefixo `/api` num plugin só** (2026-10-06): as nove chamadas de
   rotas foram para dentro de um `app.register(..., { prefix: "/api" })`
