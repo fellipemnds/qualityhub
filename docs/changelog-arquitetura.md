@@ -114,6 +114,17 @@ documento de arquitetura.
     curta (o usuário ativo primeiro, somando 1 à versão; depois o convite
     ainda valendo, tudo no `WHERE`). A auditoria `DEFINIR_SENHA` grava o
     `conviteId`, o mesmo do `GERAR_CONVITE`.
+- **Setores, F6a (2026-10-08):** módulo `setor/` com `GET /setores`
+  (logado: os ativos, em ordem de nome; o `ADMIN` pede `?situacao=INATIVO`
+  ou `TODOS`), `POST /setores` e `PATCH /setores/:id` (renomear), só do
+  `ADMIN` (ação `GERENCIAR_SETORES`). O `GET` **não pagina**: lista curta e
+  inteira para o seletor da tela, exceção explícita na trava da paginação,
+  como o checklist. O nome é único **sem diferenciar maiúscula**
+  ("qualidade" e "Qualidade" seriam o mesmo setor para quem escolhe numa
+  lista); com o nome de um setor desativado, a recusa sugere reativá-lo. A
+  trava do `{id}` aprendeu o `id` numérico do setor (um número que não
+  existe) na função `idDeOutroTipo`. A RN-44 foi detalhada (PRD v1.8):
+  desativar exige o setor sem pessoas ativas — vem na F6b.
 - **A trava do `{id}` escolhe quem chama** (F1): as rotas de usuário são
   chamadas pelo `ADMIN`, e as dos itens, pelo gerente. Com o gerente, o
   `GET /usuarios/:id` respondia 403 (a permissão vem antes da busca), e a

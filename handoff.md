@@ -28,7 +28,7 @@ fase.
   `diff-cover` antes do push). **Claude dá o push** depois da
   `/verificar` (`CLAUDE.md`, "Ambiente").
 - Nenhum bug aberto.
-- Suíte: **437 passando** (2026-10-08, depois da F5); cobertura 97,38%
+- Suíte: **447 passando** (2026-10-08, depois da F6a); cobertura 97,4%
   das linhas (trava em 94,66%). Com a máquina carregada (VS Code, pouca
   memória livre), chegou a 473 s. Lint e typecheck limpos.
 - O que Matthew aprendeu na A5: `prefix` do Fastify e `Path` do
@@ -182,8 +182,10 @@ migration nem chave nova no `.env` desde a última sessão.
    dos dois ciclos de `doubt-driven`, está no changelog): o B27 (a `versaoSessao`),
    o convite que revoga os anteriores e o definir senha endurecido. **Em casa,
    `npm run preparar` (duas migrations novas) e entrar de novo** (os tokens
-   antigos não valem). **Faltam:** a **F6** (setores; decidir NC em setor desativado, a
-   paginação e o `id` numérico na trava do `{id}`), o **script do primeiro
+   antigos não valem). **F6a feita** (setores: listar, criar, renomear). **Faltam:** a **F6b**
+   (desativar exige o setor sem pessoas ativas, com a lista; setor desativado
+   fora das escolhas novas — mandar o mesmo setor que já tem continua valendo;
+   reativar pessoa de setor desativado é recusado; PRD RN-44 v1.8), o **script do primeiro
    acesso** (Matthew) e o **item 6** (Matthew: os limites das travas — itens só
    `FECHADO`, só colaborador, revogar `EDITOR` de aprovador — e as permissões
    de `ADMIN`). Anotado, sem tratar: duas revogações de `ADMIN` ao mesmo tempo
@@ -217,4 +219,4 @@ parado há tempo):
 6. **Primeira foto de casa:** `npm run ambiente -- casa` e depois
    `npm run ambiente -- comparar` (`SETUP.md` §12.5). Commitar o
    `docs/ambiente/casa.txt`.
-7. `npm run test:cobertura`: **437 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).
+7. `npm run test:cobertura`: **447 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).
