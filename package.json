@@ -6,7 +6,7 @@
   "scripts": {
     "test": "vitest run",
     "test:cobertura": "vitest run --coverage",
-    "dev": "tsx watch src/server.ts",
+    "dev": "NODE_ENV=development tsx watch src/server.ts",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
@@ -27,6 +27,7 @@
   "homepage": "https://github.com/fellipemnds/qualityhub#readme",
   "devDependencies": {
     "@biomejs/biome": "2.5.14",
+    "@fastify/swagger-ui": "^6.1.1",
     "@testcontainers/postgresql": "^12.1.0",
     "@types/bcrypt": "^6.0.0",
     "@types/node": "^26.4.1",
@@ -51,6 +52,7 @@
     "@fastify/helmet": "^13.1.1",
     "@fastify/jwt": "^10.2.2",
     "@fastify/rate-limit": "^11.2.0",
+    "@fastify/swagger": "^9.8.1",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "bcrypt": "^6.0.0",

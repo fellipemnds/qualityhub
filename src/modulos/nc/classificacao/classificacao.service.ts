@@ -1,18 +1,21 @@
+import { aprovacaoRepository } from "../../../compartilhado/aprovacao/aprovacao.repository.js";
 import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
 import { herdarAprovadorDaNC } from "../../../compartilhado/atribuicao/herdar-aprovador.js";
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
 import type { Ator } from "../../../compartilhado/entidades/ator.js";
-import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js";
 import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
+import { buscarRegistroDoTipoOuFalhar } from "../../../compartilhado/registro/buscar-registro-do-tipo.js";
 import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
 import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
+import { LIMITE_PADRAO_PAGINACAO, paginar } from "../../../compartilhado/registro/paginacao-cursor.js";
 import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
 import { ncRepository } from "../nc/nc.repository.js";
 import { classificacaoRepository } from "./classificacao.repository.js";
+import type { ClassificacaoFiltrosListagemInput } from "./classificacao.schema.js";
 import {
     type ClassificacaoRascunhoInput,
     classificacaoFechamentoSchema,
@@ -51,11 +54,7 @@ export const classificacaoService = {
 
     async atualizarClassificacao(registroId: string, ator: Ator, dados: ClassificacaoRascunhoInput) {
         return prisma.$transaction(async (tx) => {
-            const registro = await registroRepository.buscarPorId(tx, registroId);
-
-            if (registro === null) {
-                throw new NaoEncontradoError("Item não encontrado.");
-            }
+            const registro = await buscarRegistroDoTipoOuFalhar(tx, registroId, "CLASSIFICACAO");
 
             if (!ESTADOS_EDITAVEIS.includes(registro.estado)) {
                 throw new TransicaoInvalidaError('O item precisa estar no status "Rascunho" ou "Aberto".');
@@ -70,23 +69,32 @@ export const classificacaoService = {
 
             const classificacaoAntes = await classificacaoRepository.buscarPorId(tx, registroId);
             const classificacaoAtualizada = await classificacaoRepository.atualizar(tx, registroId, dados);
+            // A edição também é gravação no Registro: o atualizadoEm muda (B24), e a trava do B19 recusa editar um item
+            // que mudou de estado no meio
+            const registroTocado = await registroRepository.atualizar(tx, registroId, registro.estado, {});
 
             await auditoriaRepository.registrar(tx, {
                 entidade: EntidadeAuditada[registro.tipo],
                 entidadeId: registro.id,
-                acao: "SALVAR_RASCUNHO",
+                acao: "EDITAR",
                 usuarioId: ator.id,
                 antes: classificacaoAntes,
                 depois: classificacaoAtualizada,
             });
 
-            return classificacaoAtualizada;
+            return { ...registroTocado, ...classificacaoAtualizada };
         });
     },
 
     async excluirRascunhoClassificacao(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
-            const registroExcluido = await cicloVidaService.excluirRascunho(tx, registroId, ator, "CLASSIFICAR");
+            const registroExcluido = await cicloVidaService.excluirRascunho(
+                tx,
+                registroId,
+                "CLASSIFICACAO",
+                ator,
+                "CLASSIFICAR",
+            );
 
             return registroExcluido;
         });
@@ -103,6 +111,7 @@ export const classificacaoService = {
             const registroPublicado = await cicloVidaService.publicar(
                 tx,
                 registroId,
+                "CLASSIFICACAO",
                 ator,
                 () => classificacaoPublicacaoSchema.parse(classificacao),
                 "CLASSIFICAR",
@@ -123,6 +132,7 @@ export const classificacaoService = {
             const registroSubmetido = await cicloVidaService.submeter(
                 tx,
                 registroId,
+                "CLASSIFICACAO",
                 ator,
                 () => classificacaoFechamentoSchema.parse(classificacao),
                 "CLASSIFICAR",
@@ -135,7 +145,13 @@ export const classificacaoService = {
     // Quem classificou desiste do envio: volta a ABERTO, sem decisão registrada (RN-48, RN-20: a ação é CLASSIFICAR)
     async retirarClassificacao(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
-            const registroRetirado = await cicloVidaService.retirar(tx, registroId, ator, "CLASSIFICAR");
+            const registroRetirado = await cicloVidaService.retirar(
+                tx,
+                registroId,
+                "CLASSIFICACAO",
+                ator,
+                "CLASSIFICAR",
+            );
             const classificacao = await classificacaoRepository.buscarPorId(tx, registroId);
 
             return { ...registroRetirado, ...classificacao };
@@ -144,7 +160,7 @@ export const classificacaoService = {
 
     async decidirClassificacao(registroId: string, ator: Ator, dados: DecisaoInput) {
         return prisma.$transaction(async (tx) => {
-            const registroDecidido = await cicloVidaService.decidir(tx, registroId, ator, dados);
+            const registroDecidido = await cicloVidaService.decidir(tx, registroId, "CLASSIFICACAO", ator, dados);
             const classificacao = await classificacaoRepository.buscarPorId(tx, registroId);
 
             return { ...registroDecidido, ...classificacao };
@@ -152,11 +168,7 @@ export const classificacaoService = {
     },
 
     async buscarPorIdClassificacao(registroId: string, ator: Ator) {
-        const registro = await registroRepository.buscarPorId(prisma, registroId);
-
-        if (registro === null) {
-            throw new NaoEncontradoError("Item não encontrado.");
-        }
+        const registro = await buscarRegistroDoTipoOuFalhar(prisma, registroId, "CLASSIFICACAO");
         const papel = temPapel(ator, "VISUALIZAR");
 
         if (!papel) {
@@ -165,29 +177,27 @@ export const classificacaoService = {
 
         const classificacao = await classificacaoRepository.buscarPorId(prisma, registroId);
 
-        return { ...registro, ...classificacao };
+        const ultimoMotivoReprovacao = await aprovacaoRepository.ultimoMotivoReprovacao(prisma, registroId);
+        return { ...registro, ...classificacao, ultimoMotivoReprovacao };
     },
 
-    async listarClassificacoes(
-        ator: Ator,
-        filtros: {
-            naoConformidadeId?: string;
-            estado?: EstadoRegistro;
-        },
-    ) {
+    async listarClassificacoes(ator: Ator, filtros: ClassificacaoFiltrosListagemInput) {
         const papel = temPapel(ator, "VISUALIZAR");
 
         if (!papel) {
             throw new SemPermissaoError("Você não tem permissões suficientes para visualizar.");
         }
 
-        const registros = await classificacaoRepository.listarClassificacoes(prisma, filtros);
+        // O limit vai sempre explícito: sem ele, o repositório traz todas
+        const limit = filtros.limit ?? LIMITE_PADRAO_PAGINACAO;
+
+        const registros = await classificacaoRepository.listarClassificacoes(prisma, { ...filtros, limit });
 
         const classificacaoCompleta = registros.map((item) => {
             const { registro, ...resto } = item;
             return { ...registro, ...resto };
         });
 
-        return classificacaoCompleta;
+        return paginar(classificacaoCompleta, limit);
     },
 };

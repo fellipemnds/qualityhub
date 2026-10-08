@@ -113,7 +113,7 @@ e na A1.
 | `@fastify/rate-limit` | Limitar tentativas de login | §4.3 |
 | `@fastify/multipart` | Receber upload de anexos | ADR-34 |
 | Cliente S3 (`minio` ou equivalente) | **Só se** os anexos forem para armazenamento de objetos; em disco, usa o `fs` do próprio Node | ADR-34, §8.1 |
-| `@fastify/swagger` + `@fastify/swagger-ui` | Gerar e exibir o OpenAPI (a interface visual só em desenvolvimento) | ADR-37 |
+| `@fastify/swagger` + `@fastify/swagger-ui` | Gerar e exibir o OpenAPI. A interface (e o JSON que ela publica) só em desenvolvimento: o `swagger-ui` é dependência de desenvolvimento, carregado com `import()` | ADR-37, §7.2 |
 | `@fastify/helmet` | Cabeçalhos de segurança (A4, auditoria R3) | `CONSTRAINTS.md`, changelog "Análise do repositório" |
 | **Dev:** contêiner do MinIO pelo Testcontainers | **Só se** os anexos forem para armazenamento de objetos | ADR-34, ADR-36 |
 | **Dev:** `@vitest/coverage-v8`, regras de arquitetura no Biome (o `dependency-cruiser` não lê o TypeScript 7); **CI:** gitleaks, Semgrep, osv-scanner | Os checks do contrato de qualidade (cobertura, arquitetura, segredos, SAST, dependências), instalados por Matthew na A4 | `CONSTRAINTS.md` §2 |
@@ -155,8 +155,7 @@ Docker Compose com **nginx**, **app**, **postgres** e **backup**, mais
    saíram do token na A4, B7).
 3. Cookie: `HttpOnly` (o JavaScript da página não lê), `Secure` (só via
    HTTPS), `SameSite=Strict` (o navegador não o envia em requisições
-   vindas de outros sites), `Path=/api` (até a A5, `Path=/`: as rotas
-   ainda não têm o prefixo `/api`).
+   vindas de outros sites), `Path=/api` (desde a A5; na A4, `Path=/`).
 4. **Duração** (T2):
 
    | "Manter conectado" | Cookie | Validade do JWT | Efeito |
@@ -246,8 +245,9 @@ backend.
 - **Auditoria:** append-only, gravada na mesma transação (ADR-18). O
   repository não expõe update nem delete.
 - **Catálogo de ações de auditoria tipado** (pendência 1 do changelog):
-  as strings soltas (`"PUBLICAR"`, `"SALVAR_RASCUNHO"`...) viram um enum
-  `as const` em `compartilhado/entidades/`, como os demais.
+  as strings soltas viram o `AcaoAuditada` (`as const`), em
+  `compartilhado/auditoria/acoes-auditadas.ts`, ao lado do
+  `EntidadeAuditada` (A5). A coluna continua texto.
 - **Retenção:** o que é evidência nunca é apagado; rascunho, comentário
   e atribuição substituída podem ser (ADR-19, `arquitetura.md` §7.4).
 - **Datas e fuso:** data e hora de eventos (`criadoEm`, `decididoEm`...)
@@ -288,14 +288,22 @@ necessárias) fica no **Esquema Backend**.
 
 ### 7.1 Convenções
 
-- **Prefixo `/api`** em todas as rotas (hoje não há prefixo — muda).
+- **Prefixo `/api`** em todas as rotas (desde a A5: um plugin com
+  `prefix` no `app.ts`; os `*.routes.ts` declaram o caminho sem ele).
 - REST, JSON, nomes em português e no plural (`/api/contencoes/:id`),
   ações de ciclo de vida como sub-rotas `POST` (`/publicar`,
   `/submeter`, `/decidir`...), como já é hoje.
 - **Datas** em ISO 8601 (UTC); **dias de calendário** em `"AAAA-MM-DD"` (§6). **IDs** UUID v7.
 - **Listas** com paginação por cursor (`cursor`, `limit`, teto 100) —
-  helper `paginacao-cursor.ts`, já existente, reaproveitado nas listas
-  novas.
+  helper `paginacao-cursor.ts`; toda lista sai no envelope
+  `{ itensDaPagina, proximoCursor }` (desde a A5).
+- **Entrada** (desde a A5, auditoria L4): todo texto tem teto
+  (`TEXTO_CURTO` 200, `TEXTO_LONGO` 5.000, e-mail 254, em
+  `compartilhado/validacao/tetos.ts`; senha até 72 bytes), toda lista
+  tem teto, e o corpo é **estrito**: campo desconhecido responde 400,
+  em vez de sumir em silêncio.
+- **Item de outro tipo** responde 404, como inexistente: os tipos
+  dividem o `Registro`, e a rota de um tipo não age sobre outro (B23).
 - **Erros** sempre no formato
   `{ "mensagem": string, "error"?: detalhes }`, com os status atuais:
   400 validação · 401 sem sessão · 403 sem permissão · 404 não
@@ -310,8 +318,13 @@ necessárias) fica no **Esquema Backend**.
 ### 7.2 Contrato com o frontend (ADR-37)
 
 1. O `fastify-type-provider-zod` transforma os schemas Zod das rotas em
-   **OpenAPI** (`@fastify/swagger`), disponível em `/api/docs/json`.
-2. Em desenvolvimento, a documentação navegável fica em `/api/docs`.
+   **OpenAPI 3.1** (`@fastify/swagger`). No 3.0 não existe o tipo `null`,
+   e o 204 sairia documentado com corpo; o Orval converte tudo para 3.1
+   ao ler.
+2. **Só em desenvolvimento** (`NODE_ENV=development`, que o `npm run
+   dev` define), a documentação navegável fica em `/api/docs` e o JSON
+   em `/api/docs/json`: o Orval roda contra o servidor local, e
+   produção não publica o mapa da API (decidido na A5).
 3. No frontend, o **Orval** lê esse OpenAPI e gera: tipos TypeScript,
    hooks do TanStack Query para cada rota e schemas Zod para os
    formulários.
@@ -572,12 +585,12 @@ Entram no Plano de Implementação:
 
 | Dívida | Origem |
 |---|---|
-| Papéis dentro do JWT (revogação atrasada) | §4 |
-| Rotas sem prefixo `/api` | §7.1 |
+| ~~Papéis dentro do JWT (revogação atrasada)~~ — resolvido na A4 (B7) | §4 |
+| ~~Rotas sem prefixo `/api`~~ — resolvido na A5 | §7.1 |
 | Respostas das rotas sem schema declarado | §7.2 |
 | ~~`ignoreTrailingSlash` na forma depreciada~~ — resolvido na A0 | Changelog, pendência 5 |
 | Ações de auditoria como strings soltas | Changelog, pendência 1 |
-| Login não auditado | Changelog, pendência 4 |
+| ~~Login não auditado~~ — resolvido na A4 (sucesso na auditoria, falha no log) | Changelog, pendência 4 |
 | ~~Barramento de eventos sem uso~~ — removido na A0 (ADR-38) | §2.3 |
 | `package.json` sem script de `build` (`test`, `lint` e `typecheck` entraram na A0/A1) | Plano, D1 |
 | ~~`testes/requests-acao-corretiva.http` descreve o modelo antigo de dois portões~~ — apagado na A0 | `CLAUDE.md` |

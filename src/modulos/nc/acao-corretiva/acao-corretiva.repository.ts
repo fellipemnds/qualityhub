@@ -30,13 +30,23 @@ export const acaoCorretivaRepository = {
         return cliente.acaoCorretiva.findMany({ where: { investigacaoId }, include: { registro: true } });
     },
 
-    async listar(tx: ClientePrisma, filtros: { naoConformidadeId?: string; estado?: EstadoRegistro }) {
+    async listar(
+        tx: ClientePrisma,
+        filtros: { naoConformidadeId?: string; estado?: EstadoRegistro; cursor?: string; limit?: number },
+    ) {
         return tx.acaoCorretiva.findMany({
             where: {
                 naoConformidadeId: filtros.naoConformidadeId,
                 registro: { estado: filtros.estado },
+                id: { gt: filtros.cursor },
             },
-            include: { registro: true },
+            // A aprovação do plano vem junto, para o planoAprovado de cada item sair da mesma consulta
+            include: {
+                registro: { include: { aprovacoes: { where: { portao: "PLANO", decisao: "APROVADO" }, take: 1 } } },
+            },
+            orderBy: { id: "asc" },
+            // Sem limit, todas; com limit, uma página com um item a mais, para o paginar() saber se há próxima
+            take: filtros.limit === undefined ? undefined : filtros.limit + 1,
         });
     },
 };

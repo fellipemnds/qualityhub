@@ -4,11 +4,13 @@ import {
     aprovarPlano,
     chamar,
     concluirVerificacao,
+    diaDaquiA,
     executarAcao,
     investigacaoAberta,
     ncProntaParaFechar,
 } from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
+import { levarVerificacaoAte } from "../../../testes/levar-ate/verificacao.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
 
@@ -24,10 +26,50 @@ describe("GET /verificacoes/:id", () => {
         const editor = await loginComo("editor");
 
         // Chama
-        const resposta = await chamar(editor, "GET", `/verificacoes/${ID_INEXISTENTE}`, 404);
+        const resposta = await chamar(editor, "GET", `/api/verificacoes/${ID_INEXISTENTE}`, 404);
 
         // Confere
         expect(resposta).toEqual({ mensagem: "Item não encontrado." });
+    });
+
+    it("devolve o prazo como dia, sem hora (B22)", async () => {
+        // Prepara: a verificação nasce com o prazo de hoje + diasParaVerificar (30, no executarAcao)
+        const cenario = await ncProntaParaFechar();
+        const { verificacao } = await executarAcao(cenario);
+
+        // Chama
+        const resposta = await chamar(cenario.editor, "GET", `/api/verificacoes/${verificacao.id}`, 200);
+
+        // Confere
+        expect(resposta.prazo).toBe(diaDaquiA(30));
+    });
+
+    it("não expõe o portaoAtual, detalhe interno do ciclo de vida (D2)", async () => {
+        // Prepara
+        const cenario = await ncProntaParaFechar();
+        const { verificacao } = await executarAcao(cenario);
+
+        // Chama
+        const resposta = await chamar(cenario.editor, "GET", `/api/verificacoes/${verificacao.id}`, 200);
+
+        // Confere
+        expect(resposta.id).toBe(verificacao.id);
+        expect(resposta).not.toHaveProperty("portaoAtual");
+    });
+});
+
+describe("PATCH /verificacoes/:id", () => {
+    it("devolve a verificação inteira, com estado, código e o dia sem hora (D1, B22)", async () => {
+        // Prepara
+        const { aprovador, verificacao } = await levarVerificacaoAte("ABERTO");
+
+        // Chama
+        const resposta = await chamar(aprovador, "PATCH", `/api/verificacoes/${verificacao.id}`, 200, {
+            verificadoEm: diaDaquiA(0),
+        });
+
+        // Confere
+        expect(resposta).toMatchObject({ verificadoEm: diaDaquiA(0), estado: "ABERTO", codigo: expect.any(String) });
     });
 });
 
@@ -39,11 +81,11 @@ describe("DELETE /verificacoes/:id", () => {
         const { verificacao } = await executarAcao(cenario);
 
         // Chama
-        const resposta = await chamar(cenario.editor, "DELETE", `/verificacoes/${verificacao.id}`, 404);
+        const resposta = await chamar(cenario.editor, "DELETE", `/api/verificacoes/${verificacao.id}`, 404);
 
         // Confere: o 404 é do roteador (rota inexistente), não do service (item inexistente)
         expect(resposta.message).toContain("not found");
-        expect(await chamar(cenario.editor, "GET", `/verificacoes/${verificacao.id}`, 200)).toMatchObject({
+        expect(await chamar(cenario.editor, "GET", `/api/verificacoes/${verificacao.id}`, 200)).toMatchObject({
             estado: "ABERTO",
         });
     });
@@ -57,14 +99,31 @@ describe("GET /verificacoes", () => {
         const { editor } = cenario;
 
         // Chama
-        const daAcao = await chamar(editor, "GET", `/verificacoes?acaoCorretivaId=${acao.id}`, 200);
-        const deOutraAcao = await chamar(editor, "GET", `/verificacoes?acaoCorretivaId=${ID_INEXISTENTE}`, 200);
-        const fechadas = await chamar(editor, "GET", `/verificacoes?acaoCorretivaId=${acao.id}&estado=FECHADO`, 200);
+        const daAcao = await chamar(editor, "GET", `/api/verificacoes?acaoCorretivaId=${acao.id}`, 200);
+        const deOutraAcao = await chamar(editor, "GET", `/api/verificacoes?acaoCorretivaId=${ID_INEXISTENTE}`, 200);
+        const fechadas = await chamar(
+            editor,
+            "GET",
+            `/api/verificacoes?acaoCorretivaId=${acao.id}&estado=FECHADO`,
+            200,
+        );
 
         // Confere
-        expect(daAcao.map((item: { id: string }) => item.id)).toEqual([verificacao.id]);
-        expect(deOutraAcao).toEqual([]);
-        expect(fechadas).toEqual([]);
+        expect(daAcao.itensDaPagina.map((item: { id: string }) => item.id)).toEqual([verificacao.id]);
+        expect(deOutraAcao.itensDaPagina).toEqual([]);
+        expect(fechadas.itensDaPagina).toEqual([]);
+    });
+
+    it("os itens da lista trazem o prazo como dia, sem hora (B22)", async () => {
+        // Prepara
+        const cenario = await ncProntaParaFechar();
+        const { acao } = await executarAcao(cenario);
+
+        // Chama
+        const resposta = await chamar(cenario.editor, "GET", `/api/verificacoes?acaoCorretivaId=${acao.id}`, 200);
+
+        // Confere
+        expect(resposta.itensDaPagina[0].prazo).toBe(diaDaquiA(30));
     });
 });
 
@@ -74,16 +133,16 @@ describe("POST /verificacoes/:id/concluir", () => {
         const cenario = await ncProntaParaFechar();
         const { gerente, aprovador } = cenario;
         const { verificacao } = await executarAcao(cenario);
-        await chamar(gerente, "POST", `/registros/${verificacao.id}/colaboradores`, 200, {
+        await chamar(gerente, "POST", `/api/registros/${verificacao.id}/colaboradores`, 200, {
             colaboradores: [aprovador.usuario.id],
         });
-        await chamar(aprovador, "PATCH", `/verificacoes/${verificacao.id}`, 200, {
+        await chamar(aprovador, "PATCH", `/api/verificacoes/${verificacao.id}`, 200, {
             resultado: "EFICAZ",
             conclusao: "Verificação feita na linha 2 depois do prazo, conforme as instruções do plano.",
         });
 
         // Chama
-        const resposta = await chamar(aprovador, "POST", `/verificacoes/${verificacao.id}/concluir`, 400);
+        const resposta = await chamar(aprovador, "POST", `/api/verificacoes/${verificacao.id}/concluir`, 400);
 
         // Confere
         expect(resposta).toMatchObject({
@@ -106,31 +165,31 @@ describe("POST /verificacoes/:id/concluir com NAO_EFICAZ", () => {
         await concluirVerificacao(cenario, verificacao.id, "NAO_EFICAZ");
 
         // Confere
-        expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
+        expect(await chamar(editor, "GET", `/api/investigacoes/${investigacao.id}`, 200)).toMatchObject({
             estado: "ABERTO",
         });
-        expect(await chamar(editor, "GET", `/nc/${nc.id}`, 200)).toMatchObject({ estado: "ABERTO" });
+        expect(await chamar(editor, "GET", `/api/nc/${nc.id}`, 200)).toMatchObject({ estado: "ABERTO" });
     });
 
     it("com a NC em aprovação: reabre a investigação e deixa a NC como está (B4)", async () => {
         // Prepara: a NC submetida para fechamento, com a investigação já fechada
         const cenario = await ncProntaParaFechar();
         const { editor, nc, investigacao } = cenario;
-        await chamar(editor, "PATCH", `/nc/${nc.id}`, 200, {
+        await chamar(editor, "PATCH", `/api/nc/${nc.id}`, 200, {
             riscosRevisados: "Risco de contaminação reavaliado, mitigado pela troca do material de vedação.",
             mudancasSGQ: "Procedimento PO-07 será atualizado para especificar o material de vedação compatível.",
         });
-        await chamar(editor, "POST", `/nc/${nc.id}/submeter`, 200);
+        await chamar(editor, "POST", `/api/nc/${nc.id}/submeter`, 200);
         const { verificacao } = await executarAcao(cenario);
 
         // Chama
         await concluirVerificacao(cenario, verificacao.id, "NAO_EFICAZ");
 
         // Confere
-        expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
+        expect(await chamar(editor, "GET", `/api/investigacoes/${investigacao.id}`, 200)).toMatchObject({
             estado: "ABERTO",
         });
-        expect(await chamar(editor, "GET", `/nc/${nc.id}`, 200)).toMatchObject({ estado: "EM_APROVACAO" });
+        expect(await chamar(editor, "GET", `/api/nc/${nc.id}`, 200)).toMatchObject({ estado: "EM_APROVACAO" });
     });
 
     it("com a investigação ainda aberta: não reabre nada (B4)", async () => {
@@ -144,10 +203,10 @@ describe("POST /verificacoes/:id/concluir com NAO_EFICAZ", () => {
         await concluirVerificacao(cenario, verificacao.id, "NAO_EFICAZ");
 
         // Confere
-        expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
+        expect(await chamar(editor, "GET", `/api/investigacoes/${investigacao.id}`, 200)).toMatchObject({
             estado: "ABERTO",
         });
-        expect(await chamar(editor, "GET", `/nc/${nc.id}`, 200)).toMatchObject({ estado: "ABERTO" });
+        expect(await chamar(editor, "GET", `/api/nc/${nc.id}`, 200)).toMatchObject({ estado: "ABERTO" });
     });
 
     it("com a investigação cancelada: ela continua cancelada (B4)", async () => {
@@ -156,7 +215,7 @@ describe("POST /verificacoes/:id/concluir com NAO_EFICAZ", () => {
         const { editor, aprovador, nc, investigacao } = cenario;
         const acao = await aprovarPlano(cenario);
         const { verificacao } = await executarAcao({ ...cenario, acao });
-        await chamar(aprovador, "POST", `/investigacoes/${investigacao.id}/cancelar`, 200, {
+        await chamar(aprovador, "POST", `/api/investigacoes/${investigacao.id}/cancelar`, 200, {
             motivo: "A causa foi tratada por outra investigação desta NC.",
         });
 
@@ -164,10 +223,10 @@ describe("POST /verificacoes/:id/concluir com NAO_EFICAZ", () => {
         await concluirVerificacao(cenario, verificacao.id, "NAO_EFICAZ");
 
         // Confere
-        expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
+        expect(await chamar(editor, "GET", `/api/investigacoes/${investigacao.id}`, 200)).toMatchObject({
             estado: "CANCELADO",
         });
-        expect(await chamar(editor, "GET", `/nc/${nc.id}`, 200)).toMatchObject({ estado: "ABERTO" });
+        expect(await chamar(editor, "GET", `/api/nc/${nc.id}`, 200)).toMatchObject({ estado: "ABERTO" });
     });
 });
 
@@ -176,7 +235,7 @@ describe("POST /verificacoes/:id/concluir com PARCIALMENTE_EFICAZ", () => {
         // Prepara: a ação com dois colaboradores — o editor, que a criou, e o gerente, posto depois
         const cenario = await ncProntaParaFechar();
         const { editor, gerente, nc, acao } = cenario;
-        await chamar(gerente, "POST", `/registros/${acao.id}/colaboradores`, 200, {
+        await chamar(gerente, "POST", `/api/registros/${acao.id}/colaboradores`, 200, {
             colaboradores: [gerente.usuario.id],
         });
         const { verificacao } = await executarAcao(cenario);
@@ -185,7 +244,9 @@ describe("POST /verificacoes/:id/concluir com PARCIALMENTE_EFICAZ", () => {
         await concluirVerificacao(cenario, verificacao.id, "PARCIALMENTE_EFICAZ");
 
         // Confere
-        const [nova] = await chamar(editor, "GET", `/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`, 200);
+        const [nova] = (
+            await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`, 200)
+        ).itensDaPagina;
         expect(await colaboradoresDe(nova.id)).toEqual([editor.usuario.id, gerente.usuario.id].sort());
     });
 
@@ -199,7 +260,9 @@ describe("POST /verificacoes/:id/concluir com PARCIALMENTE_EFICAZ", () => {
         await concluirVerificacao(cenario, verificacao.id, "PARCIALMENTE_EFICAZ");
 
         // Confere
-        const [nova] = await chamar(editor, "GET", `/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`, 200);
+        const [nova] = (
+            await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`, 200)
+        ).itensDaPagina;
         const aprovadores = await prisma.atribuicao.findMany({ where: { registroId: nova.id, funcao: "APROVADOR" } });
         expect(aprovadores.map((atribuicao) => atribuicao.usuarioId)).toEqual([aprovador.usuario.id]);
     });
@@ -215,7 +278,9 @@ describe("POST /verificacoes/:id/concluir com PARCIALMENTE_EFICAZ", () => {
         await concluirVerificacao(cenario, verificacao.id, "PARCIALMENTE_EFICAZ");
 
         // Confere: no registro e na auditoria
-        const [nova] = await chamar(editor, "GET", `/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`, 200);
+        const [nova] = (
+            await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`, 200)
+        ).itensDaPagina;
         expect(nova).toMatchObject({ criadoPorId: aprovador.usuario.id });
         expect(
             await prisma.auditoria.findMany({ where: { entidadeId: nova.id, acao: "CRIAR_RASCUNHO" } }),

@@ -1,3 +1,4 @@
+import { aprovacaoRepository } from "../../../compartilhado/aprovacao/aprovacao.repository.js";
 import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
@@ -7,6 +8,7 @@ import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from ".
 import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
 import type { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
+import { buscarRegistroDoTipoOuFalhar } from "../../../compartilhado/registro/buscar-registro-do-tipo.js";
 import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
 import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
@@ -71,11 +73,7 @@ export const ncService = {
 
     async atualizarNC(registroId: string, ator: Ator, dados: NCRascunhoInput) {
         return prisma.$transaction(async (tx) => {
-            const registro = await registroRepository.buscarPorId(tx, registroId);
-
-            if (registro === null) {
-                throw new NaoEncontradoError("Item não encontrado.");
-            }
+            const registro = await buscarRegistroDoTipoOuFalhar(tx, registroId, "NAO_CONFORMIDADE");
 
             if (!ESTADOS_EDITAVEIS.includes(registro.estado)) {
                 throw new TransicaoInvalidaError('O item precisa estar no status "Rascunho" ou "Aberto".');
@@ -90,23 +88,26 @@ export const ncService = {
 
             const ncAntes = await ncRepository.buscarPorId(tx, registroId);
             const ncAtualizada = await ncRepository.atualizar(tx, registroId, dados);
+            // A edição também é gravação no Registro: o atualizadoEm muda (B24), e a trava do B19 recusa editar um item
+            // que mudou de estado no meio
+            const registroTocado = await registroRepository.atualizar(tx, registroId, registro.estado, {});
 
             await auditoriaRepository.registrar(tx, {
                 entidade: EntidadeAuditada[registro.tipo],
                 entidadeId: registro.id,
-                acao: "SALVAR_RASCUNHO",
+                acao: "EDITAR",
                 usuarioId: ator.id,
                 antes: ncAntes,
                 depois: ncAtualizada,
             });
 
-            return ncAtualizada;
+            return { ...registroTocado, ...ncAtualizada };
         });
     },
 
     async excluirRascunhoNC(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
-            const registroExcluido = await cicloVidaService.excluirRascunho(tx, registroId, ator);
+            const registroExcluido = await cicloVidaService.excluirRascunho(tx, registroId, "NAO_CONFORMIDADE", ator);
 
             return registroExcluido;
         });
@@ -120,7 +121,7 @@ export const ncService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            const registroPublicado = await cicloVidaService.publicar(tx, registroId, ator, () =>
+            const registroPublicado = await cicloVidaService.publicar(tx, registroId, "NAO_CONFORMIDADE", ator, () =>
                 ncPublicacaoSchema.parse(nc),
             );
 
@@ -142,7 +143,7 @@ export const ncService = {
 
             // A guarda roda como validador, depois das checagens de estado, permissão e aprovador do ciclo de vida:
             // quem não pode submeter recebe 403, não a lista
-            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, () => {
+            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, "NAO_CONFORMIDADE", ator, () => {
                 if (faltando.length > 0) {
                     throw new TransicaoInvalidaError(
                         "Ainda falta o que está na lista para submeter esta Não Conformidade para fechamento.",
@@ -174,7 +175,7 @@ export const ncService = {
     // O colaborador desiste do envio: volta a ABERTO, sem decisão registrada (RN-48)
     async retirarNC(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
-            const registroRetirado = await cicloVidaService.retirar(tx, registroId, ator);
+            const registroRetirado = await cicloVidaService.retirar(tx, registroId, "NAO_CONFORMIDADE", ator);
             const nc = await ncRepository.buscarPorId(tx, registroId);
 
             return { ...registroRetirado, ...nc };
@@ -183,7 +184,7 @@ export const ncService = {
 
     async decidirNC(registroId: string, ator: Ator, dados: DecisaoInput) {
         return prisma.$transaction(async (tx) => {
-            const registroDecidido = await cicloVidaService.decidir(tx, registroId, ator, dados);
+            const registroDecidido = await cicloVidaService.decidir(tx, registroId, "NAO_CONFORMIDADE", ator, dados);
             const nc = await ncRepository.buscarPorId(tx, registroId);
 
             return { ...registroDecidido, ...nc };
@@ -192,7 +193,7 @@ export const ncService = {
 
     async reabrirNC(registroId: string, ator: Ator, motivo: string) {
         return prisma.$transaction(async (tx) => {
-            const registroReaberto = await cicloVidaService.reabrir(tx, registroId, ator, motivo);
+            const registroReaberto = await cicloVidaService.reabrir(tx, registroId, "NAO_CONFORMIDADE", ator, motivo);
             const nc = await ncRepository.buscarPorId(tx, registroId);
 
             return { ...registroReaberto, ...nc };
@@ -201,7 +202,7 @@ export const ncService = {
 
     async cancelarNC(registroId: string, ator: Ator, motivo: string) {
         return prisma.$transaction(async (tx) => {
-            const registroCancelado = await cicloVidaService.cancelar(tx, registroId, ator, motivo);
+            const registroCancelado = await cicloVidaService.cancelar(tx, registroId, "NAO_CONFORMIDADE", ator, motivo);
             const nc = await ncRepository.buscarPorId(tx, registroId);
 
             return { ...registroCancelado, ...nc };
@@ -209,11 +210,7 @@ export const ncService = {
     },
 
     async buscarPorIdNC(registroId: string, ator: Ator) {
-        const registro = await registroRepository.buscarPorId(prisma, registroId);
-
-        if (registro === null) {
-            throw new NaoEncontradoError("Item não encontrado.");
-        }
+        const registro = await buscarRegistroDoTipoOuFalhar(prisma, registroId, "NAO_CONFORMIDADE");
 
         const nc = await ncRepository.buscarPorId(prisma, registroId);
 
@@ -223,7 +220,9 @@ export const ncService = {
             throw new SemPermissaoError("Você não tem permissões suficientes para visualizar.");
         }
 
-        return { ...registro, ...nc };
+        const ultimoMotivoReprovacao = await aprovacaoRepository.ultimoMotivoReprovacao(prisma, registroId);
+
+        return { ...registro, ...nc, ultimoMotivoReprovacao };
     },
 
     async listarNC(ator: Ator, filtros: NCFiltrosListagemInput) {

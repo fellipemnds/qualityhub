@@ -1,15 +1,16 @@
 import z from "zod";
 import { ClassificacaoHipotese } from "../../../compartilhado/entidades/classificacao-hipotese.js";
+import { TEXTO_LONGO } from "../../../compartilhado/validacao/tetos.js";
 
 export const hipoteseBaseSchema = z.object({
-    descricao: z.string().min(1).nullish(),
+    descricao: z.string().min(1).max(TEXTO_LONGO).nullish(),
     numeroIshikawa: z.number().int().positive().nullish(),
     classificacao: z.enum(ClassificacaoHipotese).nullish(),
 });
 
 export const hipoteseRascunhoSchema = hipoteseBaseSchema.partial();
 export const hipoteseFechamentoSchema = hipoteseBaseSchema.extend({
-    descricao: z.string().min(1),
+    descricao: z.string().min(1).max(TEXTO_LONGO),
     classificacao: z.enum(ClassificacaoHipotese),
 });
 

@@ -13,35 +13,35 @@ type Quem = "editor" | "aprovador" | "qa" | "gerente" | "admin" | "visualizador"
 
 const acoes = {
     ver: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "GET", `/acoes-corretivas/${contexto.acao.id}`, 403),
+        chamar(contexto[quem], "GET", `/api/acoes-corretivas/${contexto.acao.id}`, 403),
     criar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/nc/${contexto.nc.id}/acoes-corretivas`, 403, {
+        chamar(contexto[quem], "POST", `/api/nc/${contexto.nc.id}/acoes-corretivas`, 403, {
             investigacaoId: contexto.investigacao.id,
         }),
     editar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "PATCH", `/acoes-corretivas/${contexto.acao.id}`, 403, {
+        chamar(contexto[quem], "PATCH", `/api/acoes-corretivas/${contexto.acao.id}`, 403, {
             descricao: "Tentativa de editar a ação corretiva sem permissão.",
         }),
     excluir: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "DELETE", `/acoes-corretivas/${contexto.acao.id}`, 403),
+        chamar(contexto[quem], "DELETE", `/api/acoes-corretivas/${contexto.acao.id}`, 403),
     publicar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/acoes-corretivas/${contexto.acao.id}/publicar`, 403),
+        chamar(contexto[quem], "POST", `/api/acoes-corretivas/${contexto.acao.id}/publicar`, 403),
     submeter: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/acoes-corretivas/${contexto.acao.id}/submeter`, 403),
+        chamar(contexto[quem], "POST", `/api/acoes-corretivas/${contexto.acao.id}/submeter`, 403),
     decidir: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/acoes-corretivas/${contexto.acao.id}/decidir`, 403, {
+        chamar(contexto[quem], "POST", `/api/acoes-corretivas/${contexto.acao.id}/decidir`, 403, {
             decisao: "APROVADO",
         }),
     cancelar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/acoes-corretivas/${contexto.acao.id}/cancelar`, 403, {
+        chamar(contexto[quem], "POST", `/api/acoes-corretivas/${contexto.acao.id}/cancelar`, 403, {
             motivo: "Tentativa de cancelar sem permissão",
         }),
     finalizar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/acoes-corretivas/${contexto.acao.id}/finalizar-execucao`, 403, {
+        chamar(contexto[quem], "POST", `/api/acoes-corretivas/${contexto.acao.id}/finalizar-execucao`, 403, {
             diasParaVerificar: 30,
         }),
     retirar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/acoes-corretivas/${contexto.acao.id}/retirar`, 403),
+        chamar(contexto[quem], "POST", `/api/acoes-corretivas/${contexto.acao.id}/retirar`, 403),
 };
 
 type NomeAcao = keyof typeof acoes;

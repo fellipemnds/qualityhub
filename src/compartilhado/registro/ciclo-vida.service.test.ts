@@ -25,7 +25,7 @@ const transicoes: {
         nome: "publicar",
         agir: async () => {
             const { editor, contencao } = await levarContencaoAte("RASCUNHO");
-            await chamar(editor, "POST", `/contencoes/${contencao.id}/publicar`, 200);
+            await chamar(editor, "POST", `/api/contencoes/${contencao.id}/publicar`, 200);
             return { id: contencao.id, quem: editor };
         },
         esperado: { entidade: "CONTENCAO", acao: "PUBLICAR", de: "RASCUNHO", para: "ABERTO" },
@@ -34,11 +34,11 @@ const transicoes: {
         nome: "submeter",
         agir: async () => {
             const { editor, contencao } = await levarContencaoAte("ABERTO");
-            await chamar(editor, "PATCH", `/contencoes/${contencao.id}`, 200, {
+            await chamar(editor, "PATCH", `/api/contencoes/${contencao.id}`, 200, {
                 executadaEm: diaDaquiA(-1),
                 disposicao: "CORRIGIDO",
             });
-            await chamar(editor, "POST", `/contencoes/${contencao.id}/submeter`, 200);
+            await chamar(editor, "POST", `/api/contencoes/${contencao.id}/submeter`, 200);
             return { id: contencao.id, quem: editor };
         },
         esperado: { entidade: "CONTENCAO", acao: "SUBMETER", de: "ABERTO", para: "EM_APROVACAO" },
@@ -47,7 +47,7 @@ const transicoes: {
         nome: "retirar",
         agir: async () => {
             const { editor, contencao } = await levarContencaoAte("EM_APROVACAO");
-            await chamar(editor, "POST", `/contencoes/${contencao.id}/retirar`, 200);
+            await chamar(editor, "POST", `/api/contencoes/${contencao.id}/retirar`, 200);
             return { id: contencao.id, quem: editor };
         },
         esperado: { entidade: "CONTENCAO", acao: "RETIRAR_DA_APROVACAO", de: "EM_APROVACAO", para: "ABERTO" },
@@ -56,7 +56,7 @@ const transicoes: {
         nome: "decidir aprovando (fecha)",
         agir: async () => {
             const { aprovador, contencao } = await levarContencaoAte("EM_APROVACAO");
-            await chamar(aprovador, "POST", `/contencoes/${contencao.id}/decidir`, 200, { decisao: "APROVADO" });
+            await chamar(aprovador, "POST", `/api/contencoes/${contencao.id}/decidir`, 200, { decisao: "APROVADO" });
             return { id: contencao.id, quem: aprovador };
         },
         esperado: { entidade: "CONTENCAO", acao: "APROVADO", de: "EM_APROVACAO", para: "FECHADO" },
@@ -65,7 +65,7 @@ const transicoes: {
         nome: "decidir reprovando",
         agir: async () => {
             const { aprovador, contencao } = await levarContencaoAte("EM_APROVACAO");
-            await chamar(aprovador, "POST", `/contencoes/${contencao.id}/decidir`, 200, {
+            await chamar(aprovador, "POST", `/api/contencoes/${contencao.id}/decidir`, 200, {
                 decisao: "REPROVADO",
                 motivo: "Disposição não condiz com o que foi feito na linha.",
             });
@@ -78,7 +78,7 @@ const transicoes: {
         nome: "decidir aprovando sem fechar (plano da ação corretiva)",
         agir: async () => {
             const { aprovador, acao } = await levarAcaoCorretivaAte("EM_APROVACAO");
-            await chamar(aprovador, "POST", `/acoes-corretivas/${acao.id}/decidir`, 200, { decisao: "APROVADO" });
+            await chamar(aprovador, "POST", `/api/acoes-corretivas/${acao.id}/decidir`, 200, { decisao: "APROVADO" });
             return { id: acao.id, quem: aprovador };
         },
         esperado: { entidade: "ACAO_CORRETIVA", acao: "APROVADO", de: "EM_APROVACAO", para: "ABERTO" },
@@ -87,12 +87,12 @@ const transicoes: {
         nome: "concluir",
         agir: async () => {
             const { aprovador, verificacao } = await levarVerificacaoAte("ABERTO");
-            await chamar(aprovador, "PATCH", `/verificacoes/${verificacao.id}`, 200, {
+            await chamar(aprovador, "PATCH", `/api/verificacoes/${verificacao.id}`, 200, {
                 resultado: "EFICAZ",
                 conclusao: "Verificação feita na linha 2 depois do prazo, conforme as instruções do plano.",
                 verificadoEm: diaDaquiA(0),
             });
-            await chamar(aprovador, "POST", `/verificacoes/${verificacao.id}/concluir`, 200);
+            await chamar(aprovador, "POST", `/api/verificacoes/${verificacao.id}/concluir`, 200);
             return { id: verificacao.id, quem: aprovador };
         },
         esperado: { entidade: "VERIFICACAO", acao: "CONCLUIR_VERIFICACAO", de: "ABERTO", para: "FECHADO" },
@@ -101,7 +101,7 @@ const transicoes: {
         nome: "reabrir",
         agir: async () => {
             const { aprovador, nc } = await levarNCAte("FECHADO");
-            await chamar(aprovador, "POST", `/nc/${nc.id}/reabrir`, 200, { motivo: "Reclamação nova do cliente." });
+            await chamar(aprovador, "POST", `/api/nc/${nc.id}/reabrir`, 200, { motivo: "Reclamação nova do cliente." });
             return { id: nc.id, quem: aprovador };
         },
         esperado: { entidade: "NAO_CONFORMIDADE", acao: "REABRIR", de: "FECHADO", para: "ABERTO" },
@@ -110,7 +110,7 @@ const transicoes: {
         nome: "cancelar",
         agir: async () => {
             const { aprovador, contencao } = await levarContencaoAte("ABERTO");
-            await chamar(aprovador, "POST", `/contencoes/${contencao.id}/cancelar`, 200, {
+            await chamar(aprovador, "POST", `/api/contencoes/${contencao.id}/cancelar`, 200, {
                 motivo: "Contenção registrada em duplicidade.",
             });
             return { id: contencao.id, quem: aprovador };
@@ -143,7 +143,7 @@ describe("Ciclo de vida: auditoria de cada transição", () => {
         const { editor, contencao } = await levarContencaoAte("RASCUNHO");
 
         // Chama
-        await chamar(editor, "DELETE", `/contencoes/${contencao.id}`, 204);
+        await chamar(editor, "DELETE", `/api/contencoes/${contencao.id}`, 204);
 
         // Confere: o item sumiu, mas a auditoria guarda que ele existiu (RN-09)
         expect(
@@ -164,7 +164,7 @@ const transicoesSimultaneas: {
         nome: "publicar",
         preparar: async () => {
             const { editor, contencao } = await levarContencaoAte("RASCUNHO");
-            return { id: contencao.id, quem: editor, url: `/contencoes/${contencao.id}/publicar` };
+            return { id: contencao.id, quem: editor, url: `/api/contencoes/${contencao.id}/publicar` };
         },
         acao: "PUBLICAR",
     },
@@ -172,11 +172,11 @@ const transicoesSimultaneas: {
         nome: "submeter",
         preparar: async () => {
             const { editor, contencao } = await levarContencaoAte("ABERTO");
-            await chamar(editor, "PATCH", `/contencoes/${contencao.id}`, 200, {
+            await chamar(editor, "PATCH", `/api/contencoes/${contencao.id}`, 200, {
                 executadaEm: diaDaquiA(-1),
                 disposicao: "CORRIGIDO",
             });
-            return { id: contencao.id, quem: editor, url: `/contencoes/${contencao.id}/submeter` };
+            return { id: contencao.id, quem: editor, url: `/api/contencoes/${contencao.id}/submeter` };
         },
         acao: "SUBMETER",
     },
@@ -184,7 +184,7 @@ const transicoesSimultaneas: {
         nome: "retirar",
         preparar: async () => {
             const { editor, contencao } = await levarContencaoAte("EM_APROVACAO");
-            return { id: contencao.id, quem: editor, url: `/contencoes/${contencao.id}/retirar` };
+            return { id: contencao.id, quem: editor, url: `/api/contencoes/${contencao.id}/retirar` };
         },
         acao: "RETIRAR_DA_APROVACAO",
     },
@@ -195,7 +195,7 @@ const transicoesSimultaneas: {
             return {
                 id: contencao.id,
                 quem: aprovador,
-                url: `/contencoes/${contencao.id}/decidir`,
+                url: `/api/contencoes/${contencao.id}/decidir`,
                 body: { decisao: "APROVADO" },
             };
         },
@@ -205,12 +205,12 @@ const transicoesSimultaneas: {
         nome: "concluir",
         preparar: async () => {
             const { aprovador, verificacao } = await levarVerificacaoAte("ABERTO");
-            await chamar(aprovador, "PATCH", `/verificacoes/${verificacao.id}`, 200, {
+            await chamar(aprovador, "PATCH", `/api/verificacoes/${verificacao.id}`, 200, {
                 resultado: "EFICAZ",
                 conclusao: "Verificação feita na linha 2 depois do prazo, conforme as instruções do plano.",
                 verificadoEm: diaDaquiA(0),
             });
-            return { id: verificacao.id, quem: aprovador, url: `/verificacoes/${verificacao.id}/concluir` };
+            return { id: verificacao.id, quem: aprovador, url: `/api/verificacoes/${verificacao.id}/concluir` };
         },
         acao: "CONCLUIR_VERIFICACAO",
     },
@@ -221,7 +221,7 @@ const transicoesSimultaneas: {
             return {
                 id: nc.id,
                 quem: aprovador,
-                url: `/nc/${nc.id}/reabrir`,
+                url: `/api/nc/${nc.id}/reabrir`,
                 body: { motivo: "Reclamação nova do cliente." },
             };
         },
@@ -234,7 +234,7 @@ const transicoesSimultaneas: {
             return {
                 id: contencao.id,
                 quem: aprovador,
-                url: `/contencoes/${contencao.id}/cancelar`,
+                url: `/api/contencoes/${contencao.id}/cancelar`,
                 body: { motivo: "Contenção registrada em duplicidade." },
             };
         },
@@ -244,7 +244,7 @@ const transicoesSimultaneas: {
         nome: "excluir rascunho",
         preparar: async () => {
             const { editor, contencao } = await levarContencaoAte("RASCUNHO");
-            return { id: contencao.id, quem: editor, url: `/contencoes/${contencao.id}`, metodo: "DELETE" };
+            return { id: contencao.id, quem: editor, url: `/api/contencoes/${contencao.id}`, metodo: "DELETE" };
         },
         acao: "EXCLUIR_RASCUNHO",
         status: 204,
@@ -270,11 +270,16 @@ describe("Ciclo de vida: a mesma transição duas vezes ao mesmo tempo (B19)", (
 // Só as transições cujo 404 vem do ciclo de vida: no publicar, no submeter e no concluir, o service do tipo busca o
 // item antes e já responde
 const rotasDeItemInexistente: { nome: string; metodo: "POST" | "DELETE"; url: string; body?: object }[] = [
-    { nome: "excluir", metodo: "DELETE", url: `/contencoes/${ID_INEXISTENTE}` },
-    { nome: "retirar", metodo: "POST", url: `/contencoes/${ID_INEXISTENTE}/retirar` },
-    { nome: "decidir", metodo: "POST", url: `/contencoes/${ID_INEXISTENTE}/decidir`, body: { decisao: "APROVADO" } },
-    { nome: "cancelar", metodo: "POST", url: `/contencoes/${ID_INEXISTENTE}/cancelar`, body: { motivo: "Teste." } },
-    { nome: "reabrir", metodo: "POST", url: `/nc/${ID_INEXISTENTE}/reabrir`, body: { motivo: "Teste." } },
+    { nome: "excluir", metodo: "DELETE", url: `/api/contencoes/${ID_INEXISTENTE}` },
+    { nome: "retirar", metodo: "POST", url: `/api/contencoes/${ID_INEXISTENTE}/retirar` },
+    {
+        nome: "decidir",
+        metodo: "POST",
+        url: `/api/contencoes/${ID_INEXISTENTE}/decidir`,
+        body: { decisao: "APROVADO" },
+    },
+    { nome: "cancelar", metodo: "POST", url: `/api/contencoes/${ID_INEXISTENTE}/cancelar`, body: { motivo: "Teste." } },
+    { nome: "reabrir", metodo: "POST", url: `/api/nc/${ID_INEXISTENTE}/reabrir`, body: { motivo: "Teste." } },
 ];
 
 describe("Ciclo de vida: item inexistente", () => {

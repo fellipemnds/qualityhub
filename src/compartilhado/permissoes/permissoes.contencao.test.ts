@@ -15,31 +15,32 @@ type Contexto = Awaited<ReturnType<typeof preparar>>;
 type Quem = "editor" | "aprovador" | "qa" | "gerente" | "admin" | "visualizador" | "semPapel";
 
 const acoes = {
-    ver: (contexto: Contexto, quem: Quem) => chamar(contexto[quem], "GET", `/contencoes/${contexto.contencao.id}`, 403),
+    ver: (contexto: Contexto, quem: Quem) =>
+        chamar(contexto[quem], "GET", `/api/contencoes/${contexto.contencao.id}`, 403),
     criar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/nc/${contexto.nc.id}/contencoes`, 403, {
+        chamar(contexto[quem], "POST", `/api/nc/${contexto.nc.id}/contencoes`, 403, {
             descricao: "Tentativa de criar uma contenção sem permissão.",
         }),
     editar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "PATCH", `/contencoes/${contexto.contencao.id}`, 403, {
+        chamar(contexto[quem], "PATCH", `/api/contencoes/${contexto.contencao.id}`, 403, {
             descricao: "Tentativa de editar a contenção sem permissão.",
         }),
     excluir: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "DELETE", `/contencoes/${contexto.contencao.id}`, 403),
+        chamar(contexto[quem], "DELETE", `/api/contencoes/${contexto.contencao.id}`, 403),
     publicar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/contencoes/${contexto.contencao.id}/publicar`, 403),
+        chamar(contexto[quem], "POST", `/api/contencoes/${contexto.contencao.id}/publicar`, 403),
     submeter: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/contencoes/${contexto.contencao.id}/submeter`, 403),
+        chamar(contexto[quem], "POST", `/api/contencoes/${contexto.contencao.id}/submeter`, 403),
     decidir: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/contencoes/${contexto.contencao.id}/decidir`, 403, {
+        chamar(contexto[quem], "POST", `/api/contencoes/${contexto.contencao.id}/decidir`, 403, {
             decisao: "APROVADO",
         }),
     cancelar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/contencoes/${contexto.contencao.id}/cancelar`, 403, {
+        chamar(contexto[quem], "POST", `/api/contencoes/${contexto.contencao.id}/cancelar`, 403, {
             motivo: "Tentativa de cancelar sem permissão",
         }),
     retirar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/contencoes/${contexto.contencao.id}/retirar`, 403),
+        chamar(contexto[quem], "POST", `/api/contencoes/${contexto.contencao.id}/retirar`, 403),
 };
 
 type NomeAcao = keyof typeof acoes;
@@ -88,10 +89,12 @@ describe("Permissões: Contenção", () => {
     it("o gerente cancela sem ser o aprovador designado", async () => {
         const { editor, gerente, contencao } = await preparar("ABERTO");
 
-        await chamar(gerente, "POST", `/contencoes/${contencao.id}/cancelar`, 200, {
+        await chamar(gerente, "POST", `/api/contencoes/${contencao.id}/cancelar`, 200, {
             motivo: "Teste de cancelamento.",
         });
 
-        expect(await chamar(editor, "GET", `/contencoes/${contencao.id}`, 200)).toMatchObject({ estado: "CANCELADO" });
+        expect(await chamar(editor, "GET", `/api/contencoes/${contencao.id}`, 200)).toMatchObject({
+            estado: "CANCELADO",
+        });
     });
 });

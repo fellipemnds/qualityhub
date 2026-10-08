@@ -1,15 +1,17 @@
+import { aprovacaoRepository } from "../../../compartilhado/aprovacao/aprovacao.repository.js";
 import { atribuicaoRepository } from "../../../compartilhado/atribuicao/atribuicao.repository.js";
 import { herdarAprovadorDaNC } from "../../../compartilhado/atribuicao/herdar-aprovador.js";
 import { auditoriaRepository } from "../../../compartilhado/auditoria/auditoria.repository.js";
 import { EntidadeAuditada } from "../../../compartilhado/auditoria/entidades-auditadas.js";
 import type { Ator } from "../../../compartilhado/entidades/ator.js";
-import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import { NaoEncontradoError, SemPermissaoError, TransicaoInvalidaError } from "../../../compartilhado/errors/errors.js";
 import { temPapel } from "../../../compartilhado/permissoes/pode-executar.js";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
+import { buscarRegistroDoTipoOuFalhar } from "../../../compartilhado/registro/buscar-registro-do-tipo.js";
 import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
 import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
+import { LIMITE_PADRAO_PAGINACAO, paginar } from "../../../compartilhado/registro/paginacao-cursor.js";
 import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
 import { acaoCorretivaRepository } from "../acao-corretiva/acao-corretiva.repository.js";
 import { ncRepository } from "../nc/nc.repository.js";
@@ -18,6 +20,7 @@ import { type AcaoNaGuarda, avaliarSubmissaoInvestigacao } from "./avaliar-submi
 import { hipoteseRepository } from "./hipotese.repository.js";
 import { hipoteseFechamentoSchema } from "./hipotese.schema.js";
 import { investigacaoRepository } from "./investigacao.repository.js";
+import type { InvestigacaoFiltrosListagemInput } from "./investigacao.schema.js";
 import {
     type InvestigacaoRascunhoInput,
     investigacaoFechamentoSchema,
@@ -56,11 +59,7 @@ export const investigacaoService = {
 
     async atualizarInvestigacao(registroId: string, ator: Ator, dados: InvestigacaoRascunhoInput) {
         return prisma.$transaction(async (tx) => {
-            const registro = await registroRepository.buscarPorId(tx, registroId);
-
-            if (registro === null) {
-                throw new NaoEncontradoError("Item não encontrado.");
-            }
+            const registro = await buscarRegistroDoTipoOuFalhar(tx, registroId, "INVESTIGACAO");
 
             if (!ESTADOS_EDITAVEIS.includes(registro.estado)) {
                 throw new TransicaoInvalidaError('O item precisa estar no status "Rascunho" ou "Aberto".');
@@ -75,23 +74,26 @@ export const investigacaoService = {
 
             const investigacaoAntes = await investigacaoRepository.buscarPorId(tx, registroId);
             const investigacaoAtualizada = await investigacaoRepository.atualizar(tx, registroId, dados);
+            // A edição também é gravação no Registro: o atualizadoEm muda (B24), e a trava do B19 recusa editar um item
+            // que mudou de estado no meio
+            const registroTocado = await registroRepository.atualizar(tx, registroId, registro.estado, {});
 
             await auditoriaRepository.registrar(tx, {
                 entidade: EntidadeAuditada[registro.tipo],
                 entidadeId: registro.id,
-                acao: "SALVAR_RASCUNHO",
+                acao: "EDITAR",
                 usuarioId: ator.id,
                 antes: investigacaoAntes,
                 depois: investigacaoAtualizada,
             });
 
-            return investigacaoAtualizada;
+            return { ...registroTocado, ...investigacaoAtualizada };
         });
     },
 
     async excluirRascunhoInvestigacao(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
-            const registroExcluido = await cicloVidaService.excluirRascunho(tx, registroId, ator);
+            const registroExcluido = await cicloVidaService.excluirRascunho(tx, registroId, "INVESTIGACAO", ator);
 
             return registroExcluido;
         });
@@ -105,7 +107,7 @@ export const investigacaoService = {
                 throw new NaoEncontradoError("Item não encontrado.");
             }
 
-            const registroPublicado = await cicloVidaService.publicar(tx, registroId, ator, () =>
+            const registroPublicado = await cicloVidaService.publicar(tx, registroId, "INVESTIGACAO", ator, () =>
                 investigacaoPublicacaoSchema.parse(investigacao),
             );
 
@@ -139,7 +141,7 @@ export const investigacaoService = {
             }
             const faltando = avaliarSubmissaoInvestigacao({ acoes }).filter((item) => !item.atendido);
 
-            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, ator, () => {
+            const registroSubmetido = await cicloVidaService.submeter(tx, registroId, "INVESTIGACAO", ator, () => {
                 if (faltando.length > 0) {
                     throw new TransicaoInvalidaError(
                         "Ainda falta o que está na lista para submeter esta investigação.",
@@ -156,7 +158,7 @@ export const investigacaoService = {
     // O colaborador desiste do envio: volta a ABERTO, sem decisão registrada (RN-48)
     async retirarInvestigacao(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
-            const registroRetirado = await cicloVidaService.retirar(tx, registroId, ator);
+            const registroRetirado = await cicloVidaService.retirar(tx, registroId, "INVESTIGACAO", ator);
             const investigacao = await investigacaoRepository.buscarPorId(tx, registroId);
 
             return { ...registroRetirado, ...investigacao };
@@ -165,7 +167,7 @@ export const investigacaoService = {
 
     async decidirInvestigacao(registroId: string, ator: Ator, dados: DecisaoInput) {
         return prisma.$transaction(async (tx) => {
-            const registroDecidido = await cicloVidaService.decidir(tx, registroId, ator, dados);
+            const registroDecidido = await cicloVidaService.decidir(tx, registroId, "INVESTIGACAO", ator, dados);
             const investigacao = await investigacaoRepository.buscarPorId(tx, registroId);
 
             return { ...registroDecidido, ...investigacao };
@@ -182,14 +184,21 @@ export const investigacaoService = {
             }));
             const faltando = avaliarCancelamentoInvestigacao({ acoes }).filter((item) => !item.atendido);
 
-            const registroCancelado = await cicloVidaService.cancelar(tx, registroId, ator, motivo, () => {
-                if (faltando.length > 0) {
-                    throw new TransicaoInvalidaError(
-                        "Ainda falta o que está na lista para cancelar esta investigação.",
-                        faltando,
-                    );
-                }
-            });
+            const registroCancelado = await cicloVidaService.cancelar(
+                tx,
+                registroId,
+                "INVESTIGACAO",
+                ator,
+                motivo,
+                () => {
+                    if (faltando.length > 0) {
+                        throw new TransicaoInvalidaError(
+                            "Ainda falta o que está na lista para cancelar esta investigação.",
+                            faltando,
+                        );
+                    }
+                },
+            );
             const investigacao = await investigacaoRepository.buscarPorId(tx, registroId);
 
             return { ...registroCancelado, ...investigacao };
@@ -203,37 +212,31 @@ export const investigacaoService = {
             throw new SemPermissaoError("Você não tem permissões suficientes para visualizar.");
         }
 
-        const registro = await registroRepository.buscarPorId(prisma, registroId);
-
-        if (registro === null) {
-            throw new NaoEncontradoError("Item não encontrado.");
-        }
+        const registro = await buscarRegistroDoTipoOuFalhar(prisma, registroId, "INVESTIGACAO");
 
         const investigacao = await investigacaoRepository.buscarPorId(prisma, registroId);
 
-        return { ...registro, ...investigacao };
+        const ultimoMotivoReprovacao = await aprovacaoRepository.ultimoMotivoReprovacao(prisma, registroId);
+        return { ...registro, ...investigacao, ultimoMotivoReprovacao };
     },
 
-    async listarInvestigacoes(
-        ator: Ator,
-        filtros: {
-            naoConformidadeId?: string;
-            estado?: EstadoRegistro;
-        },
-    ) {
+    async listarInvestigacoes(ator: Ator, filtros: InvestigacaoFiltrosListagemInput) {
         const papel = temPapel(ator, "VISUALIZAR");
 
         if (!papel) {
             throw new SemPermissaoError("Você não tem permissões suficientes para visualizar.");
         }
 
-        const registros = await investigacaoRepository.listarInvestigacoes(prisma, filtros);
+        // O limit vai sempre explícito: sem ele, o repositório traz todas
+        const limit = filtros.limit ?? LIMITE_PADRAO_PAGINACAO;
+
+        const registros = await investigacaoRepository.listarInvestigacoes(prisma, { ...filtros, limit });
 
         const investigacaoCompleta = registros.map((item) => {
             const { registro, ...resto } = item;
             return { ...registro, ...resto };
         });
 
-        return investigacaoCompleta;
+        return paginar(investigacaoCompleta, limit);
     },
 };

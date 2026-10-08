@@ -60,7 +60,7 @@ export async function loginComo(perfil: Perfil) {
     loginsFeitos++;
     const resposta = await app.inject({
         method: "POST",
-        url: "/auth/login",
+        url: "/api/auth/login",
         remoteAddress: `10.0.${Math.floor(loginsFeitos / 250)}.${(loginsFeitos % 250) + 1}`,
         payload: { email: usuario.email, senha },
     });

@@ -1,12 +1,18 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
-import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import { erroSchema } from "../../../compartilhado/errors/erro.schema.js";
 import { decisaoSchema } from "../../../compartilhado/registro/decidir.schema.js";
 import { motivoSchema } from "../../../compartilhado/registro/motivo.schema.js";
+import { paginaSchema } from "../../../compartilhado/registro/paginacao-cursor.js";
 import { autenticar } from "../../../middlewares/autenticar.js";
 import { investigacaoController } from "./investigacao.controller.js";
-import { investigacaoRascunhoSchema } from "./investigacao.schema.js";
+import {
+    investigacaoDetalheRespostaSchema,
+    investigacaoFiltrosListagemSchema,
+    investigacaoRascunhoSchema,
+    investigacaoRespostaSchema,
+} from "./investigacao.schema.js";
 
 export async function investigacaoRoutes(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -16,6 +22,7 @@ export async function investigacaoRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ naoConformidadeId: z.uuid() }),
             body: investigacaoRascunhoSchema,
+            response: { 201: investigacaoRespostaSchema, "4xx": erroSchema },
         },
         handler: investigacaoController.criarRascunhoInvestigacao,
     });
@@ -27,6 +34,7 @@ export async function investigacaoRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ id: z.uuid() }),
             body: investigacaoRascunhoSchema,
+            response: { 200: investigacaoRespostaSchema, "4xx": erroSchema },
         },
         handler: investigacaoController.atualizarInvestigacao,
     });
@@ -37,6 +45,7 @@ export async function investigacaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 204: z.null(), "4xx": erroSchema },
         },
         handler: investigacaoController.excluirRascunhoInvestigacao,
     });
@@ -47,6 +56,7 @@ export async function investigacaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: investigacaoRespostaSchema, "4xx": erroSchema },
         },
         handler: investigacaoController.publicarInvestigacao,
     });
@@ -57,6 +67,7 @@ export async function investigacaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: investigacaoRespostaSchema, "4xx": erroSchema },
         },
         handler: investigacaoController.submeterInvestigacao,
     });
@@ -67,6 +78,7 @@ export async function investigacaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: investigacaoRespostaSchema, "4xx": erroSchema },
         },
         handler: investigacaoController.retirarInvestigacao,
     });
@@ -78,6 +90,7 @@ export async function investigacaoRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ id: z.uuid() }),
             body: decisaoSchema,
+            response: { 200: investigacaoRespostaSchema, "4xx": erroSchema },
         },
         handler: investigacaoController.decidirInvestigacao,
     });
@@ -89,6 +102,7 @@ export async function investigacaoRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ id: z.uuid() }),
             body: motivoSchema,
+            response: { 200: investigacaoRespostaSchema, "4xx": erroSchema },
         },
         handler: investigacaoController.cancelarInvestigacao,
     });
@@ -99,6 +113,7 @@ export async function investigacaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: investigacaoDetalheRespostaSchema, "4xx": erroSchema },
         },
         handler: investigacaoController.buscarPorIdInvestigacao,
     });
@@ -108,10 +123,8 @@ export async function investigacaoRoutes(app: FastifyInstance) {
         url: "/investigacoes",
         onRequest: [autenticar],
         schema: {
-            querystring: z.object({
-                naoConformidadeId: z.string().min(1).optional(),
-                estado: z.enum(EstadoRegistro).optional(),
-            }),
+            querystring: investigacaoFiltrosListagemSchema,
+            response: { 200: paginaSchema(investigacaoRespostaSchema), "4xx": erroSchema },
         },
         handler: investigacaoController.listarInvestigacoes,
     });

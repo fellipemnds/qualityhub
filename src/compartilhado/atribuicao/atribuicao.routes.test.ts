@@ -20,12 +20,31 @@ describe("PUT /registros/:id/aprovador", () => {
         expect(await aprovadoresDe(nc.id)).toEqual([aprovador.usuario.id]);
     });
 
+    it("devolve a atribuição gravada, e só ela", async () => {
+        // Prepara
+        const { gerente, qa, nc } = await ncPublicada();
+
+        // Chama
+        const resposta = await chamar(gerente, "PUT", `/api/registros/${nc.id}/aprovador`, 200, {
+            usuarioId: qa.usuario.id,
+        });
+
+        // Confere
+        expect(resposta).toEqual({
+            registroId: nc.id,
+            usuarioId: qa.usuario.id,
+            funcao: "APROVADOR",
+            atribuidoPorId: gerente.usuario.id,
+            atribuidoEm: expect.any(String),
+        });
+    });
+
     it("um APROVADOR que não é gerente também define (RN-18)", async () => {
         // Prepara
         const { aprovador, qa, nc } = await ncPublicada();
 
         // Chama
-        await chamar(aprovador, "PUT", `/registros/${nc.id}/aprovador`, 200, { usuarioId: qa.usuario.id });
+        await chamar(aprovador, "PUT", `/api/registros/${nc.id}/aprovador`, 200, { usuarioId: qa.usuario.id });
 
         // Confere
         expect(await aprovadoresDe(nc.id)).toEqual([qa.usuario.id]);
@@ -36,7 +55,7 @@ describe("PUT /registros/:id/aprovador", () => {
         const { gerente, qa, nc } = await ncPublicada();
 
         // Chama
-        const resposta = await chamar(gerente, "PUT", `/registros/${nc.id}/aprovador`, 200, {
+        const resposta = await chamar(gerente, "PUT", `/api/registros/${nc.id}/aprovador`, 200, {
             usuarioId: qa.usuario.id,
         });
 
@@ -50,10 +69,41 @@ describe("PUT /registros/:id/aprovador", () => {
         const { editor, aprovador, qa, nc } = await ncPublicada();
 
         // Chama
-        await chamar(editor, "PUT", `/registros/${nc.id}/aprovador`, 403, { usuarioId: qa.usuario.id });
+        await chamar(editor, "PUT", `/api/registros/${nc.id}/aprovador`, 403, { usuarioId: qa.usuario.id });
 
         // Confere
         expect(await aprovadoresDe(nc.id)).toEqual([aprovador.usuario.id]);
+    });
+
+    // Quem não pode definir aprovador não aprende nada com a resposta: nem se o usuário escolhido existe, nem se ele é
+    // aprovador (auditoria L5). A permissão vem antes de qualquer busca
+    it.each([
+        { caso: "que não existe", usuarioId: () => ID_INEXISTENTE },
+        { caso: "sem o papel APROVADOR", usuarioId: (editor: { usuario: { id: string } }) => editor.usuario.id },
+    ])("sem permissão, escolher um usuário $caso também responde 403 (L5)", async ({ usuarioId }) => {
+        // Prepara
+        const { editor, nc } = await ncPublicada();
+
+        // Chama
+        const resposta = await chamar(editor, "PUT", `/api/registros/${nc.id}/aprovador`, 403, {
+            usuarioId: usuarioId(editor),
+        });
+
+        // Confere
+        expect(resposta).toEqual({ mensagem: "Você não tem permissões suficientes para gerenciar aprovadores." });
+    });
+
+    it("com o item em aprovação, quem não é gerente recebe 403 antes de saber se o usuário existe (L5, RN-47)", async () => {
+        // Prepara (o aprovador é APROVADOR, mas não GERENTE: em aprovação, não pode trocar)
+        const { aprovador, contencao } = await levarContencaoAte("EM_APROVACAO");
+
+        // Chama
+        const resposta = await chamar(aprovador, "PUT", `/api/registros/${contencao.id}/aprovador`, 403, {
+            usuarioId: ID_INEXISTENTE,
+        });
+
+        // Confere
+        expect(resposta).toEqual({ mensagem: "Com o item em aprovação, só o gerente troca o aprovador." });
     });
 
     it("recusa escolher quem não tem papel APROVADOR (RN-18)", async () => {
@@ -61,7 +111,7 @@ describe("PUT /registros/:id/aprovador", () => {
         const { editor, gerente, aprovador, nc } = await ncPublicada();
 
         // Chama
-        await chamar(gerente, "PUT", `/registros/${nc.id}/aprovador`, 400, { usuarioId: editor.usuario.id });
+        await chamar(gerente, "PUT", `/api/registros/${nc.id}/aprovador`, 400, { usuarioId: editor.usuario.id });
 
         // Confere
         expect(await aprovadoresDe(nc.id)).toEqual([aprovador.usuario.id]);
@@ -70,7 +120,7 @@ describe("PUT /registros/:id/aprovador", () => {
     it("responde 404 quando o item não existe", async () => {
         const { gerente, aprovador } = await ncPublicada();
 
-        await chamar(gerente, "PUT", `/registros/${ID_INEXISTENTE}/aprovador`, 404, {
+        await chamar(gerente, "PUT", `/api/registros/${ID_INEXISTENTE}/aprovador`, 404, {
             usuarioId: aprovador.usuario.id,
         });
     });
@@ -78,7 +128,7 @@ describe("PUT /registros/:id/aprovador", () => {
     it("responde 404 quando o usuário escolhido não existe", async () => {
         const { gerente, nc } = await ncPublicada();
 
-        await chamar(gerente, "PUT", `/registros/${nc.id}/aprovador`, 404, { usuarioId: ID_INEXISTENTE });
+        await chamar(gerente, "PUT", `/api/registros/${nc.id}/aprovador`, 404, { usuarioId: ID_INEXISTENTE });
     });
 });
 
@@ -88,7 +138,7 @@ const FILHOS: { tipo: string; criar: (cenario: Cenario) => Promise<string> }[] =
         tipo: "Contenção",
         criar: async ({ editor, nc }) =>
             (
-                await chamar(editor, "POST", `/nc/${nc.id}/contencoes`, 201, {
+                await chamar(editor, "POST", `/api/nc/${nc.id}/contencoes`, 201, {
                     descricao: "Retrabalho realizado na peça com defeito, substituindo a vedação danificada.",
                 })
             ).id,
@@ -97,7 +147,7 @@ const FILHOS: { tipo: string; criar: (cenario: Cenario) => Promise<string> }[] =
         tipo: "Classificação",
         criar: async ({ aprovador, nc }) =>
             (
-                await chamar(aprovador, "POST", `/nc/${nc.id}/classificacoes`, 201, {
+                await chamar(aprovador, "POST", `/api/nc/${nc.id}/classificacoes`, 201, {
                     valor: "MAIOR",
                     justificativa: "Vazamento afeta a segurança operacional e a qualidade do produto entregue.",
                 })
@@ -107,7 +157,7 @@ const FILHOS: { tipo: string; criar: (cenario: Cenario) => Promise<string> }[] =
         tipo: "Investigação",
         criar: async ({ editor, nc }) =>
             (
-                await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
+                await chamar(editor, "POST", `/api/nc/${nc.id}/investigacoes`, 201, {
                     realProblema: "Vedação da bomba hidráulica com desgaste prematuro.",
                 })
             ).id,
@@ -115,12 +165,14 @@ const FILHOS: { tipo: string; criar: (cenario: Cenario) => Promise<string> }[] =
     {
         tipo: "Ação corretiva",
         criar: async ({ editor, nc }) => {
-            const investigacao = await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
+            const investigacao = await chamar(editor, "POST", `/api/nc/${nc.id}/investigacoes`, 201, {
                 realProblema: "Vedação da bomba hidráulica com desgaste prematuro.",
             });
-            await chamar(editor, "POST", `/investigacoes/${investigacao.id}/publicar`, 200);
+            await chamar(editor, "POST", `/api/investigacoes/${investigacao.id}/publicar`, 200);
             return (
-                await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, { investigacaoId: investigacao.id })
+                await chamar(editor, "POST", `/api/nc/${nc.id}/acoes-corretivas`, 201, {
+                    investigacaoId: investigacao.id,
+                })
             ).id;
         },
     },
@@ -142,7 +194,7 @@ describe("Criação de um filho da NC", () => {
     it.each(FILHOS)("$tipo nasce sem aprovador quando a NC não tem um (RN-46)", async ({ criar }) => {
         // Prepara: uma NC em rascunho, ainda sem aprovador
         const cenario = await ncPublicada();
-        const nc = await chamar(cenario.editor, "POST", "/nc", 201, { titulo: "NC ainda sem aprovador" });
+        const nc = await chamar(cenario.editor, "POST", "/api/nc", 201, { titulo: "NC ainda sem aprovador" });
 
         // Chama
         const filhoId = await criar({ ...cenario, nc });
@@ -153,12 +205,29 @@ describe("Criação de um filho da NC", () => {
 });
 
 describe("POST /registros/:id/colaboradores", () => {
+    it("recusa mais de 50 colaboradores numa requisição, antes de consultar o banco (L4)", async () => {
+        // Prepara
+        const { editor, nc } = await ncPublicada();
+        const ids = Array.from({ length: 51 }, (_, i) => `00000000-0000-7000-8000-${String(i).padStart(12, "0")}`);
+
+        // Chama
+        const resposta = await chamar(editor, "POST", `/api/registros/${nc.id}/colaboradores`, 400, {
+            colaboradores: ids,
+        });
+
+        // Confere: erro de campo; com 50, a validação passaria e o service responderia que os usuários não existem
+        expect(resposta).toMatchObject({
+            error: expect.arrayContaining([expect.objectContaining({ instancePath: "/colaboradores" })]),
+        });
+        await chamar(editor, "POST", `/api/registros/${nc.id}/colaboradores`, 404, { colaboradores: ids.slice(0, 50) });
+    });
+
     it("um EDITOR que não está no item adiciona colaborador (RN-18, auto-organização)", async () => {
         // Prepara (o qa não é colaborador nem aprovador da NC)
         const { gerente, qa, nc } = await ncPublicada();
 
         // Chama
-        const resposta = await chamar(qa, "POST", `/registros/${nc.id}/colaboradores`, 200, {
+        const resposta = await chamar(qa, "POST", `/api/registros/${nc.id}/colaboradores`, 200, {
             colaboradores: [gerente.usuario.id],
         });
 
@@ -174,7 +243,7 @@ describe("POST /registros/:id/colaboradores", () => {
         const { editor, gerente, nc } = await ncPublicada();
 
         // Chama
-        const resposta = await chamar(editor, "POST", `/registros/${nc.id}/colaboradores`, 404, {
+        const resposta = await chamar(editor, "POST", `/api/registros/${nc.id}/colaboradores`, 404, {
             colaboradores: [gerente.usuario.id, ID_INEXISTENTE],
         });
 
@@ -189,7 +258,7 @@ describe("POST /registros/:id/colaboradores", () => {
         const { editor, nc } = await ncPublicada();
 
         // Chama
-        const resposta = await chamar(editor, "POST", `/registros/${nc.id}/colaboradores`, 200, {
+        const resposta = await chamar(editor, "POST", `/api/registros/${nc.id}/colaboradores`, 200, {
             colaboradores: [editor.usuario.id],
         });
 
@@ -202,7 +271,7 @@ describe("POST /registros/:id/colaboradores", () => {
         const { editor, qa, nc } = await ncPublicada();
 
         // Chama
-        const resposta = await chamar(editor, "POST", `/registros/${nc.id}/colaboradores`, 200, {
+        const resposta = await chamar(editor, "POST", `/api/registros/${nc.id}/colaboradores`, 200, {
             colaboradores: [qa.usuario.id, qa.usuario.id],
         });
 
@@ -215,7 +284,9 @@ describe("POST /registros/:id/colaboradores", () => {
         const { editor, nc } = await ncPublicada();
 
         // Chama
-        const resposta = await chamar(editor, "POST", `/registros/${nc.id}/colaboradores`, 400, { colaboradores: [] });
+        const resposta = await chamar(editor, "POST", `/api/registros/${nc.id}/colaboradores`, 400, {
+            colaboradores: [],
+        });
 
         // Confere
         expect(resposta).toMatchObject({
@@ -230,20 +301,36 @@ describe("POST /registros/:id/colaboradores", () => {
         const { visualizador } = await perfisDeFora();
 
         // Chama
-        await chamar(visualizador, "POST", `/registros/${nc.id}/colaboradores`, 403, {
+        await chamar(visualizador, "POST", `/api/registros/${nc.id}/colaboradores`, 403, {
             colaboradores: [qa.usuario.id],
         });
     });
 });
 
 describe("DELETE /registros/:id/colaboradores", () => {
+    it("a remoção fica na auditoria como REMOVER_COLABORADORES, o par do ADICIONAR_COLABORADORES", async () => {
+        // Prepara
+        const { editor, qa, nc } = await ncPublicada();
+        await chamar(editor, "POST", `/api/registros/${nc.id}/colaboradores`, 200, { colaboradores: [qa.usuario.id] });
+
+        // Chama
+        await chamar(editor, "DELETE", `/api/registros/${nc.id}/colaboradores`, 200, {
+            colaboradores: [qa.usuario.id],
+        });
+
+        // Confere
+        expect(
+            await prisma.auditoria.findMany({ where: { entidadeId: nc.id, acao: "REMOVER_COLABORADORES" } }),
+        ).toMatchObject([{ usuarioId: editor.usuario.id }]);
+    });
+
     it("remove um colaborador quando sobra outro", async () => {
         // Prepara
         const { editor, qa, nc } = await ncPublicada();
-        await chamar(editor, "POST", `/registros/${nc.id}/colaboradores`, 200, { colaboradores: [qa.usuario.id] });
+        await chamar(editor, "POST", `/api/registros/${nc.id}/colaboradores`, 200, { colaboradores: [qa.usuario.id] });
 
         // Chama
-        const resposta = await chamar(editor, "DELETE", `/registros/${nc.id}/colaboradores`, 200, {
+        const resposta = await chamar(editor, "DELETE", `/api/registros/${nc.id}/colaboradores`, 200, {
             colaboradores: [qa.usuario.id],
         });
 
@@ -256,7 +343,7 @@ describe("DELETE /registros/:id/colaboradores", () => {
         const { editor, nc } = await ncPublicada();
 
         // Chama
-        await chamar(editor, "DELETE", `/registros/${nc.id}/colaboradores`, 409, {
+        await chamar(editor, "DELETE", `/api/registros/${nc.id}/colaboradores`, 409, {
             colaboradores: [editor.usuario.id],
         });
     });
@@ -264,10 +351,10 @@ describe("DELETE /registros/:id/colaboradores", () => {
     it("o gerente também remove, sem estar no item (RN-18)", async () => {
         // Prepara
         const { editor, gerente, qa, nc } = await ncPublicada();
-        await chamar(editor, "POST", `/registros/${nc.id}/colaboradores`, 200, { colaboradores: [qa.usuario.id] });
+        await chamar(editor, "POST", `/api/registros/${nc.id}/colaboradores`, 200, { colaboradores: [qa.usuario.id] });
 
         // Chama
-        const resposta = await chamar(gerente, "DELETE", `/registros/${nc.id}/colaboradores`, 200, {
+        const resposta = await chamar(gerente, "DELETE", `/api/registros/${nc.id}/colaboradores`, 200, {
             colaboradores: [qa.usuario.id],
         });
 
@@ -280,7 +367,7 @@ describe("DELETE /registros/:id/colaboradores", () => {
         const { editor, nc } = await ncPublicada();
 
         // Chama
-        await chamar(editor, "DELETE", `/registros/${nc.id}/colaboradores`, 409, {
+        await chamar(editor, "DELETE", `/api/registros/${nc.id}/colaboradores`, 409, {
             colaboradores: [editor.usuario.id, editor.usuario.id],
         });
     });
@@ -288,15 +375,15 @@ describe("DELETE /registros/:id/colaboradores", () => {
     it("recusa remover todos de uma vez (RN-12)", async () => {
         // Prepara
         const { editor, qa, nc } = await ncPublicada();
-        await chamar(editor, "POST", `/registros/${nc.id}/colaboradores`, 200, { colaboradores: [qa.usuario.id] });
+        await chamar(editor, "POST", `/api/registros/${nc.id}/colaboradores`, 200, { colaboradores: [qa.usuario.id] });
 
         // Chama
-        await chamar(editor, "DELETE", `/registros/${nc.id}/colaboradores`, 409, {
+        await chamar(editor, "DELETE", `/api/registros/${nc.id}/colaboradores`, 409, {
             colaboradores: [editor.usuario.id, qa.usuario.id],
         });
 
         // Confere (nada foi removido: a transação desfez tudo)
-        const resposta = await chamar(editor, "POST", `/registros/${nc.id}/colaboradores`, 200, {
+        const resposta = await chamar(editor, "POST", `/api/registros/${nc.id}/colaboradores`, 200, {
             colaboradores: [editor.usuario.id, qa.usuario.id],
         });
         expect(resposta.jaEramColaboradores).toEqual([editor.usuario.id, qa.usuario.id]);
@@ -307,7 +394,7 @@ describe("DELETE /registros/:id/colaboradores", () => {
         const { editor, qa, nc } = await ncPublicada();
 
         // Chama
-        const resposta = await chamar(editor, "DELETE", `/registros/${nc.id}/colaboradores`, 200, {
+        const resposta = await chamar(editor, "DELETE", `/api/registros/${nc.id}/colaboradores`, 200, {
             colaboradores: [qa.usuario.id],
         });
 
@@ -318,11 +405,11 @@ describe("DELETE /registros/:id/colaboradores", () => {
     it("recusa quem não tem papel EDITOR nem GERENTE (403)", async () => {
         // Prepara
         const { editor, qa, nc } = await ncPublicada();
-        await chamar(editor, "POST", `/registros/${nc.id}/colaboradores`, 200, { colaboradores: [qa.usuario.id] });
+        await chamar(editor, "POST", `/api/registros/${nc.id}/colaboradores`, 200, { colaboradores: [qa.usuario.id] });
         const { visualizador } = await perfisDeFora();
 
         // Chama
-        await chamar(visualizador, "DELETE", `/registros/${nc.id}/colaboradores`, 403, {
+        await chamar(visualizador, "DELETE", `/api/registros/${nc.id}/colaboradores`, 403, {
             colaboradores: [qa.usuario.id],
         });
     });
@@ -340,8 +427,8 @@ describe("Atribuições conforme o estado do item (RN-47)", () => {
         const corpo = { colaboradores: [gerente.usuario.id] };
 
         // Chama
-        const adicionar = await chamar(editor, "POST", `/registros/${contencao.id}/colaboradores`, 409, corpo);
-        const remover = await chamar(editor, "DELETE", `/registros/${contencao.id}/colaboradores`, 409, corpo);
+        const adicionar = await chamar(editor, "POST", `/api/registros/${contencao.id}/colaboradores`, 409, corpo);
+        const remover = await chamar(editor, "DELETE", `/api/registros/${contencao.id}/colaboradores`, 409, corpo);
 
         // Confere
         expect(adicionar.mensagem).toContain("rascunho ou aberto");
@@ -353,7 +440,7 @@ describe("Atribuições conforme o estado do item (RN-47)", () => {
         const { gerente, qa, contencao } = await levarContencaoAte(estado);
 
         // Chama
-        await chamar(gerente, "PUT", `/registros/${contencao.id}/aprovador`, 409, { usuarioId: qa.usuario.id });
+        await chamar(gerente, "PUT", `/api/registros/${contencao.id}/aprovador`, 409, { usuarioId: qa.usuario.id });
 
         // Confere
         expect(await aprovadoresDe(contencao.id)).not.toContain(qa.usuario.id);
@@ -364,8 +451,8 @@ describe("Atribuições conforme o estado do item (RN-47)", () => {
         const { aprovador, gerente, qa, contencao } = await levarContencaoAte("EM_APROVACAO");
 
         // Chama: um APROVADOR que não é gerente é recusado; o gerente consegue
-        await chamar(aprovador, "PUT", `/registros/${contencao.id}/aprovador`, 403, { usuarioId: qa.usuario.id });
-        await chamar(gerente, "PUT", `/registros/${contencao.id}/aprovador`, 200, { usuarioId: qa.usuario.id });
+        await chamar(aprovador, "PUT", `/api/registros/${contencao.id}/aprovador`, 403, { usuarioId: qa.usuario.id });
+        await chamar(gerente, "PUT", `/api/registros/${contencao.id}/aprovador`, 200, { usuarioId: qa.usuario.id });
 
         // Confere
         expect(await aprovadoresDe(contencao.id)).toEqual([qa.usuario.id]);

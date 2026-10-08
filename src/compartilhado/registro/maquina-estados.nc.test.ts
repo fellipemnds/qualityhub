@@ -7,31 +7,31 @@ type Contexto = Awaited<ReturnType<typeof levarNCAte>>;
 
 const acoes = {
     editar: ({ editor, nc }: Contexto) =>
-        chamar(editor, "PATCH", `/nc/${nc.id}`, 409, {
+        chamar(editor, "PATCH", `/api/nc/${nc.id}`, 409, {
             descricao: "Tentativa de editar a não conformidade fora do estado permitido.",
         }),
-    publicar: ({ editor, nc }: Contexto) => chamar(editor, "POST", `/nc/${nc.id}/publicar`, 409),
-    excluir: ({ editor, nc }: Contexto) => chamar(editor, "DELETE", `/nc/${nc.id}`, 409),
-    submeter: ({ editor, nc }: Contexto) => chamar(editor, "POST", `/nc/${nc.id}/submeter`, 409),
+    publicar: ({ editor, nc }: Contexto) => chamar(editor, "POST", `/api/nc/${nc.id}/publicar`, 409),
+    excluir: ({ editor, nc }: Contexto) => chamar(editor, "DELETE", `/api/nc/${nc.id}`, 409),
+    submeter: ({ editor, nc }: Contexto) => chamar(editor, "POST", `/api/nc/${nc.id}/submeter`, 409),
     aprovar: ({ aprovador, nc }: Contexto) =>
-        chamar(aprovador, "POST", `/nc/${nc.id}/decidir`, 409, {
+        chamar(aprovador, "POST", `/api/nc/${nc.id}/decidir`, 409, {
             decisao: "APROVADO",
         }),
     reprovar: ({ aprovador, nc }: Contexto) =>
-        chamar(aprovador, "POST", `/nc/${nc.id}/decidir`, 409, {
+        chamar(aprovador, "POST", `/api/nc/${nc.id}/decidir`, 409, {
             decisao: "REPROVADO",
             motivo: "Tentativa de reprovar fora do estado permitido",
         }),
     cancelar: ({ aprovador, nc }: Contexto) =>
-        chamar(aprovador, "POST", `/nc/${nc.id}/cancelar`, 409, {
+        chamar(aprovador, "POST", `/api/nc/${nc.id}/cancelar`, 409, {
             motivo: "Tentativa de cancelar fora do estado permitido",
         }),
     reabrir: ({ aprovador, nc }: Contexto) =>
-        chamar(aprovador, "POST", `/nc/${nc.id}/reabrir`, 409, {
+        chamar(aprovador, "POST", `/api/nc/${nc.id}/reabrir`, 409, {
             motivo: "Tentativa de reabrir fora do estado permitido",
         }),
     // Retirar da aprovação (RN-48): só sai de EM_APROVACAO
-    retirar: ({ editor, nc }: Contexto) => chamar(editor, "POST", `/nc/${nc.id}/retirar`, 409),
+    retirar: ({ editor, nc }: Contexto) => chamar(editor, "POST", `/api/nc/${nc.id}/retirar`, 409),
 };
 
 type NomeAcao = keyof typeof acoes;

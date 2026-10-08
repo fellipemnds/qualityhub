@@ -1,7 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
-import type { InvestigacaoRascunhoInput } from "./investigacao.schema.js";
+import type { InvestigacaoFiltrosListagemInput, InvestigacaoRascunhoInput } from "./investigacao.schema.js";
 import { investigacaoService } from "./investigacao.service.js";
 
 export const investigacaoController = {
@@ -104,7 +103,7 @@ export const investigacaoController = {
     },
 
     async listarInvestigacoes(
-        request: FastifyRequest<{ Querystring: { naoConformidadeId?: string; estado?: EstadoRegistro } }>,
+        request: FastifyRequest<{ Querystring: InvestigacaoFiltrosListagemInput }>,
         reply: FastifyReply,
     ) {
         const ator = request.user;

@@ -15,13 +15,20 @@ export const verificacaoRepository = {
         return tx.verificacao.update({ where: { id }, data: dados });
     },
 
-    async listar(tx: ClientePrisma, filtros: { acaoCorretivaId?: string; estado?: EstadoRegistro }) {
+    async listar(
+        tx: ClientePrisma,
+        filtros: { acaoCorretivaId?: string; estado?: EstadoRegistro; cursor?: string; limit?: number },
+    ) {
         return tx.verificacao.findMany({
             where: {
                 acaoCorretivaId: filtros.acaoCorretivaId,
                 registro: { estado: filtros.estado },
+                id: { gt: filtros.cursor },
             },
             include: { registro: true },
+            orderBy: { id: "asc" },
+            // Sem limit, todas; com limit, uma página com um item a mais, para o paginar() saber se há próxima
+            take: filtros.limit === undefined ? undefined : filtros.limit + 1,
         });
     },
 };

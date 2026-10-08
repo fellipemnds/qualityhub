@@ -5,54 +5,44 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-06 (no **trabalho**; a sessão em casa não aconteceu). **A4 fechada** (PR #6, merge `a66c11b`). Na branch `chore/skills-de-fase`, as skills de início e fim de fase estão escritas; falta o PR (§6). No mesmo dia: B21 e B20 corrigidos por Matthew, checksum no CI, ajustes de documentos e três revisões.
+**Última atualização:** 2026-10-08 (retomada no **trabalho**: ambiente sem alertas, só o GitLens 19.2 → 19.3 na foto; descrição do PR #8 atualizada). Antes, 2026-10-07 (fim do dia, no trabalho). A A5 avançou quase toda: B22, B23 e B24 corrigidos (nenhum bug aberto), schema de resposta em todas as rotas, OpenAPI 3.1 com `/api/docs` só em desenvolvimento, `GET /api/saude`, catálogo de auditoria, L5, L7 e o lote 4 (L4: tetos, corpo estrito, paginação dos filhos). Falta o **lote 5** (§6). Decisões de produto com a analista no PRD (Q19–Q22). O PC de casa continua sem foto (`casa.txt`).
 
 ## 1. Objetivo
 
-Antes da A5 (**Contrato da API**, `docs/plano-implementacao.md`): as
-skills de início e fim de fase (branch `chore/skills-de-fase`) e o
-**passeio guiado pelo código** (§6).
+Fase **A5 — Contrato da API** (`docs/plano-implementacao.md`), na branch
+`fase/a5-contrato-api` (PR #8, em rascunho). Falta só o lote 5 e o
+fechamento da fase (§6). O passeio guiado pelo código fica para um
+momento tranquilo em casa, sem bloquear a fase.
 
 ## 2. Estado atual
 
-- **A4 fechada** em 2026-10-06 (PR #6, 41 commits,
-  `git log c10844c..a66c11b`). Por item do plano:
-  - simplificações do `ciclo-vida` (caracterização, `aplicarTransicao`,
-    `buscarRegistroOuFalhar`, validador `() => void`, `estadoAposDecisao`);
-  - **B19**: `registroRepository.atualizar`/`excluir` e o convite exigem
-    o estado lido (409/400); 9 testes de concorrência com o
-    `abrirDuasConexoes()`; skill **`/bug`** criada e usada para fechar;
-  - `gerarVerificacao` fora do `finalizarExecucao`;
-  - **escritos por Matthew, guiado passo a passo**: a M1, o login com
-    cookie e "manter conectado", o middleware `autenticar` (B7), os
-    testes da sessão, as regras de arquitetura no `biome.json`, a
-    cobertura e os jobs de segurança do CI;
-  - por Claude: `logout`, `sair-de-todos`, `GET`/`PATCH /auth/eu` (tela
-    inicial calculada no backend), login endurecido (limite, auditoria,
-    RN-38, L1), `helmet`;
-  - **2026-10-06**: B21 e B20 (escritos por Matthew), refactor do
-    `setErrorHandler`, checksum do gitleaks e do osv-scanner no CI.
-- Suíte: **304 passando**; cobertura **95,17%** das linhas (trava em
-  94,66%); as linhas novas da A4: **100%** (141, trava em 100% no CI).
-  Lint, typecheck, gitleaks, Semgrep e osv-scanner limpos (rodados à
-  mão; o CI ainda não rodou os jobs novos).
-- **Decisões do dia**, todas no `docs/changelog-arquitetura.md` (seção
-  "Fase A4"): repositório lança o 409 da trava; login 204 sem corpo;
-  `Path=/` do cookie até a A5; tela inicial no backend; falhas de login
-  só no log (E1); arquitetura no Biome (o dependency-cruiser não lê o
-  TypeScript 7); `diff-cover` no CI; exceções **X2, X3 e X4**
-  (`CONSTRAINTS.md` §5).
-- Tempo da suíte: variou de 150 s a 568 s com os mesmos testes (a
-  lentidão vem e vai; ~200 s no fim do dia). Se passar de ~5 min de
-  novo, olhar o Docker Desktop (Settings → Resources) e o `free -h`
-  **antes** de mexer nos testes.
-- O que Matthew aprendeu hoje: migration com default para linhas
-  antigas; cookie × token, `HttpOnly`/`Secure`/`SameSite`; por que
-  papéis no token atrasam a revogação; middleware que escreve no
-  `request`; TOCTOU e o `UPDATE` condicionado; prova de quebra (quebrar
-  o código testado, não o teste); objeto de opções no lugar de booleano;
-  `overrides` do Biome; cobertura e "medir e travar"; injeção por `${{ }}`
-  no CI.
+- **A5, feito em 2026-10-06 e 2026-10-07** (o detalhe de cada decisão
+  está no changelog, "Fase A5"): prefixo `/api`; schema de resposta em
+  **todas** as rotas (D1–D5; o `planoAprovado` em todas as rotas da ação
+  corretiva; o schema como lista do que pode sair no `/auth/eu` e no
+  `POST /usuarios`); OpenAPI 3.1 (`/api/docs` e o JSON só com
+  `NODE_ENV=development`); `GET /api/saude`; catálogo `AcaoAuditada`
+  (só tipo); L5; L7 (`ultimoMotivoReprovacao` no detalhe); L4 (tetos
+  `TEXTO_CURTO`/`TEXTO_LONGO`, senha até 72 bytes, corpo estrito, as
+  cinco listas dos filhos paginadas). Quatro **travas no documento**, no
+  `app.test.ts`: toda rota declara a resposta, todo texto e toda lista
+  de entrada têm teto, todo corpo recusa campo desconhecido, toda lista
+  é paginada (menos o checklist).
+- **B22, B23 e B24 corrigidos**; nenhum bug aberto.
+- Suíte: **374 passando** (2026-10-08); cobertura 97,03% das linhas (trava em 94,66%); o
+  `diff-cover` local em 100% antes de todo push. Lint e typecheck limpos.
+- O que Matthew aprendeu na A5: `prefix` do Fastify e `Path` do
+  cookie; schema de resposta (filtra o que sai, vigia o código: tipo
+  errado vira 500); codec do Zod (`decode`/`encode`); *arrow function*;
+  `Date()` sem `new` devolve texto; `toEqual` × `toMatchObject`; teste
+  de caracterização; a conferência negativa precisa de uma positiva
+  junto; função genérica (`<T extends z.ZodType>`); `.nullable()` ×
+  `.optional()`; supertipo e o `id` que não diz o tipo (B23, a busca
+  com tipo escrita por ele); "expandir e contrair"; o que é OpenAPI.
+- **A4** fechada em 2026-10-06 (PR #6).
+- Tempo da suíte: 240 s a 330 s. Fechar o **Apple Music** na web antes
+  de rodar (o player consome a máquina). Se passar de ~5 min sem isso,
+  olhar o Docker Desktop e o `free -h` antes de mexer nos testes.
 
 ## 3. Arquivos no meio de uma mudança
 
@@ -60,11 +50,12 @@ Nenhum.
 
 ## 4. O que foi alterado nesta sessão
 
-Os 41 commits da A4 (`git log c10844c..a66c11b`). Dependências
-novas: `@fastify/cookie`, `@fastify/rate-limit`, `@fastify/helmet`
-(produção) e `@vitest/coverage-v8`, com o Vitest 5.0.2 → 5.0.3; o
-`fastify` foi para 5.12.5 e o `fast-uri` para 3.1.8/4.2.1 por avisos de
-segurança novos. Migration nova: `sessao_e_preferencia_do_usuario` (M1).
+`git log fc33c06~22..HEAD` na branch: B23 (7 fatias), B24, os schemas de
+resposta dos filhos, da sessão, dos usuários e das atribuições, o
+OpenAPI, a saúde, o catálogo de auditoria, L5, L7 e L4. **Duas
+dependências novas** (`@fastify/swagger`, declarado, e
+`@fastify/swagger-ui`, de desenvolvimento): em casa, `npm run preparar`.
+Nenhuma migration nem chave nova no `.env`.
 
 ## 5. Falhas (e o porquê)
 
@@ -88,8 +79,24 @@ segurança novos. Migration nova: `sessao_e_preferencia_do_usuario` (M1).
 | O PC desligou no meio da sessão | — | Nada se perdeu (commits e arquivos salvos); as ferramentas na pasta temporária somem, e o CI baixa as dele |
 | Uma rodada da suíte terminou em 1 min 16 s com **0% de cobertura** (2026-10-06) | Nenhum teste chegou a rodar; o filtro da saída escondeu a causa. A rodada seguinte, com o mesmo código, passou | Provável falha na subida do container. Claude: guardar a saída inteira da suíte num arquivo antes de filtrar |
 | Sonda com `tsx` reclamou de *top-level await* | Arquivo `.ts` fora do projeto vira CommonJS | Claude: sonda com extensão `.mts` |
+| Sonda `.mts` na pasta temporária não achou o `fastify` | Fora do projeto não há `node_modules` | Claude: cópia temporária na raiz do projeto, apagada logo depois (ou importar o `app.ts` pelo caminho absoluto) |
+| Teste do RN-17 estourou os 15 s (2026-10-06) | Máquina lenta: Apple Music aberto no navegador | Fechar o player antes da suíte; o teste passou na rodada seguinte |
+| Teste do B9 quebrou na fatia 5 | Ele esperava o `detectadoEm` com hora, o formato do bug B22 | Ajustado para o dia (o objetivo do teste não mudou). Ao replicar nas outras entidades, testes que esperem data com hora ou `portaoAtual` mudam junto (ex.: `contencao.routes.test.ts:226`) |
+| Janela do VS Code no WSL não abria depois da atualização (2026-10-07) | O `npm run ambiente` chamou o `code` do WSL no meio da atualização: o servidor novo ficou descompactado numa pasta temporária, sem o último passo da instalação, e a versão antiga já tinha sido apagada | Resolvido: a pasta da versão em `~/.vscode-server/bin/` tirada do caminho, e o VS Code reinstalou ao reconectar. Claude: **não tirar a foto com o VS Code atualizando** |
+| Commit da fatia 7 do B23 entrou com a suíte vermelha (2026-10-07) | O comando lia o resultado da suíte e commitava em seguida, sem conferir o código de saída; e o `Confere` do teste novo comparava com o objeto do cenário, que já tinha sido editado (o vermelho parou no 500 antes de chegar nele) | Corrigido antes do push (`--amend`, local). Claude: o commit só roda **depois de conferir** o código de saída da suíte (`if [ $r -eq 0 ]`); e a conferência de "não mudou" compara com uma leitura feita **antes** da chamada, nunca com o objeto do cenário |
+| CI do lote 3 vermelho no `diff-cover` (2026-10-07) | O catálogo `AcaoAuditada` era um objeto que ninguém carregava (só o tipo era importado): a linha ficou sem cobertura, e o `diff-cover` só roda no CI | Resolvido: o catálogo virou só um tipo. Claude: rodar o `diff-cover` **antes de todo push** (`uvx diff-cover==10.6.0 coverage/cobertura-coverage.xml --compare-branch=origin/main --fail-under=100`, com o `uv` na pasta temporária da sessão) |
 
 **Pendências anotadas:**
+- **Classificação, reincidência e segregação** (2026-10-07, com a
+  analista): PRD Q19–Q22, na C2 como proposta (a 3ª ocorrência aceita a
+  Menor com justificativa; colaborador e aprovador excludentes por item;
+  Classificação sem portão).
+- **Ideia para refinar (`idea-refine`) depois do B23:** NCs da própria
+  Garantia da Qualidade aprovadas só por auditores (interno ou externo),
+  talvez por link externo temporário (PRD §4.3). Um link é uma
+  credencial: validade, uso único, um item só, auditoria; conversa com a
+  sessão (A4) e com a D0. A persona "auditor externo" (`VISUALIZADOR`)
+  já existe no PRD §3.1.
 - **⚠️ Em casa, trocar o `JWT_SECRET` do `.env` (prioridade).** Tokens
   de desenvolvimento antigos estão no histórico de um repositório
   público (exceção X2); se o segredo de casa ainda for o antigo e fraco,
@@ -102,8 +109,6 @@ segurança novos. Migration nova: `sessao_e_preferencia_do_usuario` (M1).
   → tela (`modulos/auth/tela-inicial.ts`) são do MVP de NCs.
 - **Falhas de login só no log (E1):** reavaliar na D0, junto com a
   retenção do log (anotado no plano).
-- **Cookie `Path=/` → `/api` na A5**, junto com o prefixo (anotado no
-  plano).
 - Melhoria, não regra: o Semgrep avisa (severidade baixa) que as actions
   do CI usam tag solta (`@v7`) em vez do commit fixo.
 - Os scripts `verificar:rapido`, `verificar:item` e `scripts/piso.mjs`
@@ -121,7 +126,13 @@ segurança novos. Migration nova: `sessao_e_preferencia_do_usuario` (M1).
   Os testes de função pura também sobem o Postgres (~15 s): um "projeto"
   do Vitest sem banco para eles é configuração (de Matthew, se quiser).
 - **Rever o `podeExecutar`** (colaborador **ou** aprovador designado × o
-  PRD §8, que pede colaborador): decidir com a analista se vira bug.
+  PRD §8, que pede colaborador): com a Q22 (colaborador e aprovador
+  excludentes), o aprovador não faz o que é do colaborador. Resolver na
+  C2, junto da Q22.
+- **Ordem da permissão no `buscarPorIdX`** (lote 5, 2026-10-08): a
+  busca com tipo vem antes do `VISUALIZAR`, então quem não tem o papel
+  distingue 404 de 403 (como a L5). Risco nulo hoje (todo papel
+  visualiza); rever na C2, com o `podeExecutar`.
 - **Aprovador na lista das guardas: na C2** (decidido em 2026-10-01).
   Hoje o `cicloVidaService.submeter` confere o aprovador **antes** da
   guarda do tipo, então a NC sem aprovador recebe o 409 genérico, sem a
@@ -131,20 +142,10 @@ segurança novos. Migration nova: `sessao_e_preferencia_do_usuario` (M1).
   e no esquema §4.3.
 - A **triagem** de filho publicado sem aprovador (parte da RN-46) fica
   para a C3 (pendências).
-- **Levar à analista: segregação de funções** (auditoria de segurança de
-  2026-10-02, seção 3). A RN-18 (qualquer `EDITOR` se inclui como
-  colaborador), o `DEFINIR_APROVADOR` (o `APROVADOR` pode indicar a si
-  mesmo) e a RN-27 (auto-aprovação permitida) juntos deixam uma QA
-  (`EDITOR` + `APROVADOR`) levar sozinha qualquer item da edição à
-  aprovação; o `GERENTE` pode trocar o aprovador para si em
-  `EM_APROVACAO` e decidir na hora. Tudo auditado — não é bug, mas é o
-  que um auditor ISO pergunta ("quem revisa quem?"), e a RN-29 (proibir
-  auto-aprovação) está prevista e não implementada. Perguntar se vale ao
-  menos impedir alguém de se indicar como aprovador. Junto: a revisão do
-  `podeExecutar` (item acima) e o `cicloVidaService.cancelar`, que
-  confere `GERENTE` direto, sem o catálogo de permissões (revisão de
-  código de 2026-10-02): as três perguntas são o mesmo assunto, quem pode
-  o quê.
+- **Segregação de funções** (auditoria de 2026-10-02, seção 3):
+  respondida pela analista em 2026-10-07 (PRD Q22). Fica técnica, para a
+  C2: o `cicloVidaService.cancelar` confere `GERENTE` direto, sem o
+  catálogo de permissões.
 - No trabalho, o Prettier ainda está instalado no lado Windows do VS
   Code (inofensivo; pode desinstalar — `SETUP.md` §12.4). O Copilot
   ficou desligado no projeto (`.vscode/settings.json`) e nas
@@ -152,38 +153,35 @@ segurança novos. Migration nova: `sessao_e_preferencia_do_usuario` (M1).
 
 ## 6. Próximo passo
 
-**As revisões de 2026-10-05 e de 2026-10-06 estão resolvidas.** O que
-ficou para depois foi registrado: S2 e S5 na D1 do plano (`trustProxy`,
-limite em memória, *Fetch Metadata*); o S4 (log de login) já estava na
-D0. Sugestões sem prazo da revisão de código de 2026-10-05: o `logout`
-sem `autenticar` não apaga o cookie de sessão vencida (inofensivo); o
-`include` de papéis no `usuarioRepository.buscarPorEmail` sobrou; o
-`gitleaks detect` vira `gitleaks git` nas versões novas; testes do 413 e
-da mensagem padrão do `setErrorHandler`.
-
-1. **Skills de início e fim de fase**: escritas e commitadas na branch
-   `chore/skills-de-fase` (2026-10-06): `/comecar-fase` novo, as três
-   revisões no `/abrir-pr` §7, o `/fechar-fase` apontando o
-   `/comecar-fase` e revendo as skills **no fim de cada bloco** (A, B,
-   C, D), o `/bug` com o `test-driven-development`, a colinha e o
-   `CLAUDE.md`. Falta: push (Matthew, `git push -u origin
-   chore/skills-de-fase`), `/abrir-pr`, CI e merge. Depois do merge,
-   `/fechar-fase` (como não é fase, ele só volta para a `main`, abre a
-   branch seguinte e atualiza o handoff).
-2. **Passeio guiado pelo código** (combinado em 2026-10-05, antes da
-   A5). **Inclui o último item do "pronto quando" da A4**, adiado no
-   merge: Matthew explicar o B19 ("confere e depois age", o `UPDATE`
+1. ~~Lote 5 da A5~~ **feito em 2026-10-08**: as funções repetidas
+   ficam, com a trava do B23 sobre o OpenAPI, que achou e corrigiu o
+   **B25** (changelog, "Fase A5"). Reavaliar a junção na C2.
+2. **Fechar a A5:** `/abrir-pr` (revisões da fase e o "pronto quando",
+   que inclui Matthew explicar o que é OpenAPI e por que o schema de
+   resposta importa tanto quanto o de entrada) → merge → `/fechar-fase`.
+3. **Passeio guiado pelo código** (em casa, num momento tranquilo). Antes dele, rodar o `/understand-anything:understand` (uma vez, em português, só `src/` sem os testes) e usar o `understand-onboard` como roteiro; depois, decidir se o grafo fica (colinha §6).
+   **Inclui o último item do "pronto quando" da A4**, adiado no merge:
+   Matthew explicar o B19 ("confere e depois age", o `UPDATE`
    condicionado ao estado lido) e o que o `SameSite=Strict` bloqueia e
-   o que não bloqueia. Roteiro: seguir uma requisição de ponta a ponta
-   (rota → controller → service → `cicloVidaService` → `aplicarTransicao` →
-   `registroRepository.atualizar` → banco → auditoria → resposta), com
-   Matthew dizendo o que cada parte faz antes de Claude explicar.
-   Motivo: Matthew disse que não estava mais reconhecendo o código.
-3. **`/comecar-fase`** da A5 (`fase/a5-...`). Nos itens 🧑 da A5 em
-   diante: o **passo a passo** combinado (regra no `CLAUDE.md`, "Como
-   trabalhamos").
+   o que não bloqueia. Roteiro: uma requisição de ponta a ponta (rota →
+   controller → service → `cicloVidaService` → `buscarRegistroDoTipoOuFalhar`
+   → `aplicarTransicao` → `registroRepository.atualizar` → banco →
+   auditoria → resposta), com Matthew dizendo o que cada parte faz antes
+   de Claude explicar. Ajuda também a reconhecer o código depois do B23.
+4. **Depois, a A6** (usuários e setores): os itens de Matthew, no passo
+   a passo, são a trava da RN-43, o script do primeiro acesso e os
+   testes das permissões de `ADMIN`.
 
-**Chegando em casa:** rodar o **`/retomar`**. Desde a última vez que a
+Da revisão de design das APIs (2026-10-07), anotados para a C1/C2:
+**R7**, o erro sem código para máquina (os 409 diferentes só se
+distinguem pelo texto; acrescentar um `codigo` é aditivo) e **R8**, o
+`DELETE /registros/:id/colaboradores` com corpo (decidir com a tela;
+ainda barato de mudar). Sugestões antigas sem prazo: o `logout` sem
+`autenticar` não apaga o cookie de sessão vencida; o `include` de papéis
+no `buscarPorEmail` sobrou; o `gitleaks detect` vira `gitleaks git` nas
+versões novas.
+
+**Chegando em casa:** rodar o **`/retomar`**. A A5 trouxe **duas dependências** (`@fastify/swagger`, declarado, e `@fastify/swagger-ui`, de desenvolvimento): o `npm run preparar` resolve. Sem migration nem chave nova no `.env`. Desde a última vez que a
 branch foi usada em casa (antes da A3): as migrations da A3 e a **M1**
 (`sessao_e_preferencia_do_usuario`), e **dependências novas** (cookie,
 rate-limit, helmet, cobertura, Vitest 5.0.3). O `npm run preparar`
@@ -191,8 +189,7 @@ resolve as duas coisas. Os passos (`SETUP.md` §12.1 se o PC estiver
 parado há tempo):
 
 1. Docker Desktop aberto ("Engine running"), Ubuntu, pasta do projeto.
-2. `git fetch`, `git switch main`, `git pull` e, se a branch das skills
-   ainda estiver aberta, `git switch chore/skills-de-fase`.
+2. `git fetch`, `git switch fase/a5-contrato-api`, `git pull`.
 3. **`npm run preparar`**: obrigatório. Se a migration do
    `investigacaoId` falhar (o banco de casa tem ações sem investigação),
    recriar o banco: `SETUP.md` §12, passos 6 e 7.
@@ -203,4 +200,4 @@ parado há tempo):
 6. **Primeira foto de casa:** `npm run ambiente -- casa` e depois
    `npm run ambiente -- comparar` (`SETUP.md` §12.5). Commitar o
    `docs/ambiente/casa.txt`.
-7. `npm run test:cobertura`: **304 passando**, cobertura acima de 94,66%.
+7. `npm run test:cobertura`: **374 passando**, cobertura acima de 94,66% (com o Apple Music fechado, para a suíte não passar de ~5 min).

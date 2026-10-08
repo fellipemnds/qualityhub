@@ -1,18 +1,21 @@
 import { describe, expect, it } from "vitest";
 import { chamar, investigacaoAberta, ncPublicada } from "../../../testes/cenarios.js";
+import { loginComo } from "../../../testes/fabricas.js";
 import { type DegrauAcaoCorretiva, levarAcaoCorretivaAte } from "../../../testes/levar-ate/acao-corretiva.js";
 import { levarInvestigacaoAte } from "../../../testes/levar-ate/investigacao.js";
+
+const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
 
 describe("PATCH /investigacoes/:id", () => {
     it("recusa método fora da lista (só A3_SPS)", async () => {
         // Prepara
         const { editor, nc } = await ncPublicada();
-        const investigacao = await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
+        const investigacao = await chamar(editor, "POST", `/api/nc/${nc.id}/investigacoes`, 201, {
             realProblema: "Vedação da bomba hidráulica com desgaste prematuro.",
         });
 
         // Chama
-        const resposta = await chamar(editor, "PATCH", `/investigacoes/${investigacao.id}`, 400, {
+        const resposta = await chamar(editor, "PATCH", `/api/investigacoes/${investigacao.id}`, 400, {
             metodo: "SEIS_SIGMA",
         });
 
@@ -22,22 +25,88 @@ describe("PATCH /investigacoes/:id", () => {
             error: expect.arrayContaining([expect.objectContaining({ instancePath: "/metodo" })]),
         });
     });
+
+    it("devolve a investigação inteira, com estado e código, como as outras rotas (D1)", async () => {
+        // Prepara
+        const { editor, investigacao } = await levarInvestigacaoAte("ABERTO");
+
+        // Chama
+        const resposta = await chamar(editor, "PATCH", `/api/investigacoes/${investigacao.id}`, 200, {
+            metodo: "A3_SPS",
+        });
+
+        // Confere
+        expect(resposta).toMatchObject({ metodo: "A3_SPS", estado: "ABERTO", codigo: expect.any(String) });
+    });
+
+    it("devolve o conteúdo do A3 do jeito que foi gravado", async () => {
+        // Prepara: o conteúdo é JSON livre, com objetos, listas, números e nulos aninhados
+        const { editor, investigacao } = await levarInvestigacaoAte("RASCUNHO");
+        const conteudo = { contramedidas: [{ ordem: 1, texto: "Trocar a vedação", prazo: null }], versao: 2 };
+
+        // Chama
+        await chamar(editor, "PATCH", `/api/investigacoes/${investigacao.id}`, 200, { conteudo });
+
+        // Confere
+        const resposta = await chamar(editor, "GET", `/api/investigacoes/${investigacao.id}`, 200);
+        expect(resposta.conteudo).toEqual(conteudo);
+    });
+});
+
+describe("GET /investigacoes/:id", () => {
+    it("traz o motivo da última reprovação, para o colaborador saber o que corrigir (L7)", async () => {
+        // Prepara
+        const { editor, aprovador, investigacao } = await levarInvestigacaoAte("EM_APROVACAO");
+        await chamar(aprovador, "POST", `/api/investigacoes/${investigacao.id}/decidir`, 200, {
+            decisao: "REPROVADO",
+            motivo: "Faltou detalhar o que foi feito.",
+        });
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/investigacoes/${investigacao.id}`, 200);
+
+        // Confere
+        expect(resposta).toMatchObject({ ultimoMotivoReprovacao: "Faltou detalhar o que foi feito." });
+    });
+
+    it("não expõe o portaoAtual, detalhe interno do ciclo de vida (D2)", async () => {
+        // Prepara
+        const { editor, investigacao } = await levarInvestigacaoAte("RASCUNHO");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/investigacoes/${investigacao.id}`, 200);
+
+        // Confere
+        expect(resposta.id).toBe(investigacao.id);
+        expect(resposta).not.toHaveProperty("portaoAtual");
+    });
+
+    it("responde 404 só com a mensagem quando a investigação não existe", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/investigacoes/${ID_INEXISTENTE}`, 404);
+
+        // Confere
+        expect(resposta).toEqual({ mensagem: "Item não encontrado." });
+    });
 });
 
 describe("POST /investigacoes/:id/submeter", () => {
     it("recusa sem causa raiz preenchida (RN-24)", async () => {
         // Prepara
         const { editor, gerente, aprovador, nc } = await ncPublicada();
-        const investigacao = await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
+        const investigacao = await chamar(editor, "POST", `/api/nc/${nc.id}/investigacoes`, 201, {
             realProblema: "Vedação da bomba hidráulica com desgaste prematuro.",
         });
-        await chamar(editor, "POST", `/investigacoes/${investigacao.id}/publicar`, 200);
-        await chamar(gerente, "PUT", `/registros/${investigacao.id}/aprovador`, 200, {
+        await chamar(editor, "POST", `/api/investigacoes/${investigacao.id}/publicar`, 200);
+        await chamar(gerente, "PUT", `/api/registros/${investigacao.id}/aprovador`, 200, {
             usuarioId: aprovador.usuario.id,
         });
 
         // Chama
-        const resposta = await chamar(editor, "POST", `/investigacoes/${investigacao.id}/submeter`, 400);
+        const resposta = await chamar(editor, "POST", `/api/investigacoes/${investigacao.id}/submeter`, 400);
 
         // Confere
         expect(resposta).toMatchObject({
@@ -60,15 +129,15 @@ describe("POST /investigacoes/:id/submeter, com ações ligadas", () => {
         // Prepara
         const { editor, aprovador, acao, investigacao } = await levarAcaoCorretivaAte(caso.degrau);
         if (caso.reprovar) {
-            await chamar(aprovador, "POST", `/acoes-corretivas/${acao.id}/decidir`, 200, {
+            await chamar(aprovador, "POST", `/api/acoes-corretivas/${acao.id}/decidir`, 200, {
                 decisao: "REPROVADO",
                 motivo: "O prazo não é compatível com a próxima parada da linha.",
             });
         }
-        const { codigo } = await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200);
+        const { codigo } = await chamar(editor, "GET", `/api/acoes-corretivas/${acao.id}`, 200);
 
         // Chama
-        const resposta = await chamar(editor, "POST", `/investigacoes/${investigacao.id}/submeter`, 409);
+        const resposta = await chamar(editor, "POST", `/api/investigacoes/${investigacao.id}/submeter`, 409);
 
         // Confere: a ação aparece com o código, e a investigação continua aberta
         expect(resposta.error).toEqual([
@@ -78,7 +147,7 @@ describe("POST /investigacoes/:id/submeter, com ações ligadas", () => {
                 pendentes: [{ id: acao.id, codigo }],
             }),
         ]);
-        expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
+        expect(await chamar(editor, "GET", `/api/investigacoes/${investigacao.id}`, 200)).toMatchObject({
             estado: "ABERTO",
         });
     });
@@ -90,7 +159,7 @@ describe("POST /investigacoes/:id/submeter, com ações ligadas", () => {
             const { editor, investigacao } = await levarAcaoCorretivaAte(degrau);
 
             // Chama
-            const resposta = await chamar(editor, "POST", `/investigacoes/${investigacao.id}/submeter`, 200);
+            const resposta = await chamar(editor, "POST", `/api/investigacoes/${investigacao.id}/submeter`, 200);
 
             // Confere
             expect(resposta).toMatchObject({ estado: "EM_APROVACAO" });
@@ -102,7 +171,7 @@ describe("POST /investigacoes/:id/submeter, com ações ligadas", () => {
         const { editor, investigacao } = await investigacaoAberta();
 
         // Chama
-        const resposta = await chamar(editor, "POST", `/investigacoes/${investigacao.id}/submeter`, 200);
+        const resposta = await chamar(editor, "POST", `/api/investigacoes/${investigacao.id}/submeter`, 200);
 
         // Confere
         expect(resposta).toMatchObject({ estado: "EM_APROVACAO" });
@@ -118,10 +187,16 @@ describe("POST /investigacoes/:id/cancelar", () => {
         async (degrau) => {
             // Prepara
             const { editor, aprovador, acao, investigacao } = await levarAcaoCorretivaAte(degrau);
-            const { codigo } = await chamar(editor, "GET", `/acoes-corretivas/${acao.id}`, 200);
+            const { codigo } = await chamar(editor, "GET", `/api/acoes-corretivas/${acao.id}`, 200);
 
             // Chama
-            const resposta = await chamar(aprovador, "POST", `/investigacoes/${investigacao.id}/cancelar`, 409, motivo);
+            const resposta = await chamar(
+                aprovador,
+                "POST",
+                `/api/investigacoes/${investigacao.id}/cancelar`,
+                409,
+                motivo,
+            );
 
             // Confere: a ação aparece com o código, e a investigação continua como estava
             expect(resposta.error).toEqual([
@@ -131,7 +206,7 @@ describe("POST /investigacoes/:id/cancelar", () => {
                     pendentes: [{ id: acao.id, codigo }],
                 }),
             ]);
-            expect(await chamar(editor, "GET", `/investigacoes/${investigacao.id}`, 200)).toMatchObject({
+            expect(await chamar(editor, "GET", `/api/investigacoes/${investigacao.id}`, 200)).toMatchObject({
                 estado: "ABERTO",
             });
         },
@@ -142,7 +217,7 @@ describe("POST /investigacoes/:id/cancelar", () => {
         const { aprovador, investigacao } = await levarAcaoCorretivaAte(degrau);
 
         // Chama
-        const resposta = await chamar(aprovador, "POST", `/investigacoes/${investigacao.id}/cancelar`, 200, motivo);
+        const resposta = await chamar(aprovador, "POST", `/api/investigacoes/${investigacao.id}/cancelar`, 200, motivo);
 
         // Confere
         expect(resposta).toMatchObject({ estado: "CANCELADO" });
@@ -153,7 +228,7 @@ describe("POST /investigacoes/:id/cancelar", () => {
         const { editor, investigacao } = await levarAcaoCorretivaAte("ABERTO");
 
         // Chama e confere
-        await chamar(editor, "POST", `/investigacoes/${investigacao.id}/cancelar`, 403, motivo);
+        await chamar(editor, "POST", `/api/investigacoes/${investigacao.id}/cancelar`, 403, motivo);
     });
 });
 
@@ -161,24 +236,29 @@ describe("GET /investigacoes", () => {
     it("filtra por NC e por estado", async () => {
         // Prepara: dois itens na NC do cenário (um publicado) e um em outra NC
         const { editor, nc } = await ncPublicada();
-        const outraNC = await chamar(editor, "POST", "/nc", 201, { titulo: "Outra NC, com o seu item" });
-        const publicado = await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
+        const outraNC = await chamar(editor, "POST", "/api/nc", 201, { titulo: "Outra NC, com o seu item" });
+        const publicado = await chamar(editor, "POST", `/api/nc/${nc.id}/investigacoes`, 201, {
             realProblema: "Vedação da bomba hidráulica com desgaste prematuro.",
         });
-        const rascunho = await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
+        const rascunho = await chamar(editor, "POST", `/api/nc/${nc.id}/investigacoes`, 201, {
             realProblema: "Vedação da bomba hidráulica com desgaste prematuro.",
         });
-        await chamar(editor, "POST", `/nc/${outraNC.id}/investigacoes`, 201, {
+        await chamar(editor, "POST", `/api/nc/${outraNC.id}/investigacoes`, 201, {
             realProblema: "Vedação da bomba hidráulica com desgaste prematuro.",
         });
-        await chamar(editor, "POST", `/investigacoes/${publicado.id}/publicar`, 200);
+        await chamar(editor, "POST", `/api/investigacoes/${publicado.id}/publicar`, 200);
 
         // Chama
-        const daNC = await chamar(editor, "GET", `/investigacoes?naoConformidadeId=${nc.id}`, 200);
-        const abertosDaNC = await chamar(editor, "GET", `/investigacoes?naoConformidadeId=${nc.id}&estado=ABERTO`, 200);
+        const daNC = await chamar(editor, "GET", `/api/investigacoes?naoConformidadeId=${nc.id}`, 200);
+        const abertosDaNC = await chamar(
+            editor,
+            "GET",
+            `/api/investigacoes?naoConformidadeId=${nc.id}&estado=ABERTO`,
+            200,
+        );
 
         // Confere
-        const ids = (lista: { id: string }[]) => lista.map((item) => item.id).sort();
+        const ids = (pagina: { itensDaPagina: { id: string }[] }) => pagina.itensDaPagina.map((item) => item.id).sort();
         expect(ids(daNC)).toEqual([publicado.id, rascunho.id].sort());
         expect(ids(abertosDaNC)).toEqual([publicado.id]);
     });
@@ -190,7 +270,7 @@ describe("POST /investigacoes/:id/retirar", () => {
         const { editor, investigacao } = await levarInvestigacaoAte("EM_APROVACAO");
 
         // Chama e confere
-        expect(await chamar(editor, "POST", `/investigacoes/${investigacao.id}/retirar`, 200)).toMatchObject({
+        expect(await chamar(editor, "POST", `/api/investigacoes/${investigacao.id}/retirar`, 200)).toMatchObject({
             estado: "ABERTO",
         });
     });

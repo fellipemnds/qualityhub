@@ -5,13 +5,13 @@ description: Rotina de saída quando Matthew vai trocar de computador (trabalho 
 
 # Trocar de computador (saída)
 
-Nunca dê push nem merge: o push é de Matthew. Peça antes de cada commit.
+Nunca dê merge: é de Matthew. Peça antes de cada commit; o push, Claude dá (`CLAUDE.md`,
+"Ambiente").
 
-## 0. Preparar o shell (as armadilhas do handoff §5)
+## 0. Preparar o shell
 
-- `source ~/.nvm/nvm.sh` antes de qualquer npm/npx; `npx --no-install`, nunca `npx biome`.
-- `export PATH="$HOME/.local/bin:$PATH"` (sem isso a foto acusa o Claude Code como "não instalado").
-- Checks conferidos pelo **código de saída** (`&& echo OK`), nunca pela última linha da saída.
+O passo 0 da `/verificar` (sem o `~/.local/bin` no `PATH`, a foto acusa o Claude Code como
+"não instalado").
 
 ## 1. Qual máquina é esta
 
@@ -26,8 +26,9 @@ Nunca descarte sem ordem explícita.
 
 ## 3. Verificação rápida
 
-`npm run -s typecheck` e `npm run -s lint`. Vermelho: pare e mostre o erro.
-Não se troca de PC com check vermelho sem Matthew decidir.
+`/verificar` no nível A (lint e typecheck). Vermelho: pare e mostre o erro.
+Não se troca de PC com check vermelho sem Matthew decidir. Commits de código ainda sem push:
+o diff-cover da `/verificar` §4 antes do push.
 
 ## 4. Foto do ambiente
 
@@ -52,5 +53,6 @@ e espere o ok. Se estiver na `main` (protegida), proponha uma branch antes.
 
 ## 7. Push
 
-Termine com o comando exato, num bloco `bash`: `git push`, ou `git push -u origin <branch>`
-se ainda não houver upstream.
+Depois do commit (e do diff-cover, se houver código sem push): `git push`, ou
+`git push -u origin <branch>` se ainda não houver upstream. Confira que a branch remota ficou
+em dia (`git status -sb`): o outro PC começa pelo `git pull`.

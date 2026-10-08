@@ -25,16 +25,23 @@ export const contencaoRepository = {
         filtros: {
             naoConformidadeId?: string;
             estado?: EstadoRegistro;
+            cursor?: string;
+            limit?: number;
         },
     ) {
+        // Sem limit, traz todas: é o que a guarda de fechamento da NC usa (uma pendente fora da página não pode escapar).
+        // Com limit, uma página por cursor, com um item a mais para saber se há próxima (o paginar() corta)
         return tx.contencao.findMany({
             where: {
                 naoConformidadeId: filtros.naoConformidadeId,
                 registro: {
                     estado: filtros.estado,
                 },
+                id: { gt: filtros.cursor },
             },
             include: { registro: true },
+            orderBy: { id: "asc" },
+            take: filtros.limit === undefined ? undefined : filtros.limit + 1,
         });
     },
 };

@@ -1,11 +1,19 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
+import { erroSchema } from "../../../compartilhado/errors/erro.schema.js";
 import { decisaoSchema } from "../../../compartilhado/registro/decidir.schema.js";
 import { motivoSchema } from "../../../compartilhado/registro/motivo.schema.js";
+import { paginaSchema } from "../../../compartilhado/registro/paginacao-cursor.js";
 import { autenticar } from "../../../middlewares/autenticar.js";
 import { ncController } from "./nc.controller.js";
-import { ncFiltrosListagemSchema, ncRascunhoSchema } from "./nc.schema.js";
+import {
+    checklistFechamentoRespostaSchema,
+    ncDetalheRespostaSchema,
+    ncFiltrosListagemSchema,
+    ncRascunhoSchema,
+    ncRespostaSchema,
+} from "./nc.schema.js";
 
 export async function ncRoutes(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -14,6 +22,7 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             body: ncRascunhoSchema,
+            response: { 201: ncRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.criarRascunhoNC,
     });
@@ -25,6 +34,7 @@ export async function ncRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ id: z.uuid() }),
             body: ncRascunhoSchema,
+            response: { 200: ncRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.atualizarNC,
     });
@@ -35,6 +45,7 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 204: z.null(), "4xx": erroSchema },
         },
         handler: ncController.excluirRascunhoNC,
     });
@@ -45,6 +56,7 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: ncRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.publicarNC,
     });
@@ -55,6 +67,7 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: ncRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.submeterNC,
     });
@@ -65,6 +78,7 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: ncRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.retirarNC,
     });
@@ -75,6 +89,7 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: checklistFechamentoRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.checklistFechamentoNC,
     });
@@ -86,6 +101,7 @@ export async function ncRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ id: z.uuid() }),
             body: decisaoSchema,
+            response: { 200: ncRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.decidirNC,
     });
@@ -97,6 +113,7 @@ export async function ncRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ id: z.uuid() }),
             body: motivoSchema,
+            response: { 200: ncRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.reabrirNC,
     });
@@ -108,6 +125,7 @@ export async function ncRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ id: z.uuid() }),
             body: motivoSchema,
+            response: { 200: ncRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.cancelarNC,
     });
@@ -118,6 +136,7 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: ncDetalheRespostaSchema, "4xx": erroSchema },
         },
         handler: ncController.buscarPorIdNC,
     });
@@ -128,6 +147,7 @@ export async function ncRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             querystring: ncFiltrosListagemSchema,
+            response: { 200: paginaSchema(ncRespostaSchema), "4xx": erroSchema },
         },
         handler: ncController.listarNC,
     });

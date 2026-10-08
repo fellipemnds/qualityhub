@@ -6,27 +6,27 @@ type Contexto = Awaited<ReturnType<typeof levarClassificacaoAte>>;
 
 const acoes = {
     editar: ({ aprovador, classificacao }: Contexto) =>
-        chamar(aprovador, "PATCH", `/classificacoes/${classificacao.id}`, 409, {
+        chamar(aprovador, "PATCH", `/api/classificacoes/${classificacao.id}`, 409, {
             justificativa: "Tentativa de editar a classificação fora do estado permitido.",
         }),
     publicar: ({ aprovador, classificacao }: Contexto) =>
-        chamar(aprovador, "POST", `/classificacoes/${classificacao.id}/publicar`, 409),
+        chamar(aprovador, "POST", `/api/classificacoes/${classificacao.id}/publicar`, 409),
     excluir: ({ aprovador, classificacao }: Contexto) =>
-        chamar(aprovador, "DELETE", `/classificacoes/${classificacao.id}`, 409),
+        chamar(aprovador, "DELETE", `/api/classificacoes/${classificacao.id}`, 409),
     submeter: ({ aprovador, classificacao }: Contexto) =>
-        chamar(aprovador, "POST", `/classificacoes/${classificacao.id}/submeter`, 409),
+        chamar(aprovador, "POST", `/api/classificacoes/${classificacao.id}/submeter`, 409),
     aprovar: ({ qa, classificacao }: Contexto) =>
-        chamar(qa, "POST", `/classificacoes/${classificacao.id}/decidir`, 409, {
+        chamar(qa, "POST", `/api/classificacoes/${classificacao.id}/decidir`, 409, {
             decisao: "APROVADO",
         }),
     reprovar: ({ qa, classificacao }: Contexto) =>
-        chamar(qa, "POST", `/classificacoes/${classificacao.id}/decidir`, 409, {
+        chamar(qa, "POST", `/api/classificacoes/${classificacao.id}/decidir`, 409, {
             decisao: "REPROVADO",
             motivo: "Tentativa de reprovar fora do estado permitido",
         }),
     // Retirar da aprovação (RN-48): só sai de EM_APROVACAO
     retirar: ({ aprovador, classificacao }: Contexto) =>
-        chamar(aprovador, "POST", `/classificacoes/${classificacao.id}/retirar`, 409),
+        chamar(aprovador, "POST", `/api/classificacoes/${classificacao.id}/retirar`, 409),
 };
 
 type NomeAcao = keyof typeof acoes;

@@ -7,30 +7,31 @@ type Contexto = Awaited<ReturnType<typeof levarInvestigacaoAte>>;
 
 const acoes = {
     editar: ({ editor, investigacao }: Contexto) =>
-        chamar(editor, "PATCH", `/investigacoes/${investigacao.id}`, 409, {
+        chamar(editor, "PATCH", `/api/investigacoes/${investigacao.id}`, 409, {
             realProblema: "Tentativa de editar a investigação fora do estado permitido.",
         }),
     publicar: ({ editor, investigacao }: Contexto) =>
-        chamar(editor, "POST", `/investigacoes/${investigacao.id}/publicar`, 409),
-    excluir: ({ editor, investigacao }: Contexto) => chamar(editor, "DELETE", `/investigacoes/${investigacao.id}`, 409),
+        chamar(editor, "POST", `/api/investigacoes/${investigacao.id}/publicar`, 409),
+    excluir: ({ editor, investigacao }: Contexto) =>
+        chamar(editor, "DELETE", `/api/investigacoes/${investigacao.id}`, 409),
     submeter: ({ editor, investigacao }: Contexto) =>
-        chamar(editor, "POST", `/investigacoes/${investigacao.id}/submeter`, 409),
+        chamar(editor, "POST", `/api/investigacoes/${investigacao.id}/submeter`, 409),
     aprovar: ({ aprovador, investigacao }: Contexto) =>
-        chamar(aprovador, "POST", `/investigacoes/${investigacao.id}/decidir`, 409, {
+        chamar(aprovador, "POST", `/api/investigacoes/${investigacao.id}/decidir`, 409, {
             decisao: "APROVADO",
         }),
     reprovar: ({ aprovador, investigacao }: Contexto) =>
-        chamar(aprovador, "POST", `/investigacoes/${investigacao.id}/decidir`, 409, {
+        chamar(aprovador, "POST", `/api/investigacoes/${investigacao.id}/decidir`, 409, {
             decisao: "REPROVADO",
             motivo: "Tentativa de reprovar fora do estado permitido",
         }),
     cancelar: ({ aprovador, investigacao }: Contexto) =>
-        chamar(aprovador, "POST", `/investigacoes/${investigacao.id}/cancelar`, 409, {
+        chamar(aprovador, "POST", `/api/investigacoes/${investigacao.id}/cancelar`, 409, {
             motivo: "Tentativa de cancelar fora do estado permitido",
         }),
     // Retirar da aprovação (RN-48): só sai de EM_APROVACAO
     retirar: ({ editor, investigacao }: Contexto) =>
-        chamar(editor, "POST", `/investigacoes/${investigacao.id}/retirar`, 409),
+        chamar(editor, "POST", `/api/investigacoes/${investigacao.id}/retirar`, 409),
 };
 
 type NomeAcao = keyof typeof acoes;

@@ -2,11 +2,19 @@ import fastifyCookie from "@fastify/cookie";
 import fastifyHelmet from "@fastify/helmet";
 import fastifyJwt from "@fastify/jwt";
 import fastifyRateLimit from "@fastify/rate-limit";
+import fastifySwagger from "@fastify/swagger";
 import Fastify from "fastify";
-import { hasZodFastifySchemaValidationErrors, serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
-import { ZodError } from "zod";
+import {
+    hasZodFastifySchemaValidationErrors,
+    jsonSchemaTransform,
+    serializerCompiler,
+    validatorCompiler,
+    type ZodTypeProvider,
+} from "fastify-type-provider-zod";
+import { ZodError, z } from "zod";
 import { atribuicaoRoutes } from "./compartilhado/atribuicao/atribuicao.routes.js";
 import { AppError, MuitasTentativasError } from "./compartilhado/errors/errors.js";
+import { interfaceDaDocumentacao } from "./interface-documentacao.js";
 import { authRoutes } from "./modulos/auth/auth.routes.js";
 import { COOKIE_SESSAO } from "./modulos/auth/cookie-sessao.js";
 import { acaoCorretivaRoutes } from "./modulos/nc/acao-corretiva/acao-corretiva.routes.js";
@@ -46,18 +54,36 @@ app.register(fastifyJwt, {
     cookie: { cookieName: COOKIE_SESSAO, signed: false },
     verify: { onlyCookie: true },
 });
-app.get("/", async () => {
-    return { status: "Servidor online" };
+// O OpenAPI montado a partir dos schemas das rotas, de entrada e de resposta (TRD §7.2, ADR-37): é dele que o Orval gera o
+// cliente do frontend. Registrado antes das rotas, para enxergar todas. Só monta o documento (app.swagger()); quem o
+// publica em /api/docs é a interface, só em desenvolvimento. OpenAPI 3.1, e não 3.0: no 3.0 não existe o tipo null, e o 204
+// sairia documentado com corpo (o Orval também converte tudo para 3.1 ao ler: github.com/orval-labs/orval/pull/3981)
+app.register(fastifySwagger, {
+    openapi: { openapi: "3.1.0", info: { title: "QualityHub API", version: "1.0.0" } },
+    transform: jsonSchemaTransform,
 });
-app.register(authRoutes);
-app.register(usuarioRoutes);
-app.register(ncRoutes);
-app.register(atribuicaoRoutes);
-app.register(contencaoRoutes);
-app.register(classificacaoRoutes);
-app.register(investigacaoRoutes);
-app.register(acaoCorretivaRoutes);
-app.register(verificacaoRoutes);
+app.register(interfaceDaDocumentacao, { ligada: process.env.NODE_ENV === "development" });
+// Toda rota da API sob /api (TRD §7.1): o nginx entrega o frontend em "/" e repassa "/api" ao backend
+app.register(
+    async (api) => {
+        // Para saber se o servidor está de pé, sem login. Testar o banco também fica para a D1, quando houver quem pergunte
+        api.withTypeProvider<ZodTypeProvider>().get(
+            "/saude",
+            { schema: { response: { 200: z.object({ status: z.literal("ok") }) } } },
+            async () => ({ status: "ok" as const }),
+        );
+        api.register(authRoutes);
+        api.register(usuarioRoutes);
+        api.register(ncRoutes);
+        api.register(atribuicaoRoutes);
+        api.register(contencaoRoutes);
+        api.register(classificacaoRoutes);
+        api.register(investigacaoRoutes);
+        api.register(acaoCorretivaRoutes);
+        api.register(verificacaoRoutes);
+    },
+    { prefix: "/api" },
+);
 
 const MENSAGENS_ERRO_CLIENTE: Record<number, string> = {
     400: "Corpo da requisição inválido.",

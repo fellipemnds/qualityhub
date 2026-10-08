@@ -1,8 +1,8 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
 import type {
     AcaoCorretivaCriacaoInput,
+    AcaoCorretivaFiltrosListagemInput,
     AcaoCorretivaRascunhoInput,
     FinalizarExecucaoInput,
 } from "./acao-corretiva.schema.js";
@@ -96,7 +96,7 @@ export const acaoCorretivaController = {
     },
 
     async listarAcoesCorretivas(
-        request: FastifyRequest<{ Querystring: { naoConformidadeId?: string; estado?: EstadoRegistro } }>,
+        request: FastifyRequest<{ Querystring: AcaoCorretivaFiltrosListagemInput }>,
         reply: FastifyReply,
     ) {
         const acoesCorretivas = await acaoCorretivaService.listarAcoesCorretivas(request.user, request.query);

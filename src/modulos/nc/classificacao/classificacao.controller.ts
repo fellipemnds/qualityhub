@@ -1,7 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
 import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schema.js";
-import type { ClassificacaoRascunhoInput } from "./classificacao.schema.js";
+import type { ClassificacaoFiltrosListagemInput, ClassificacaoRascunhoInput } from "./classificacao.schema.js";
 import { classificacaoService } from "./classificacao.service.js";
 
 export const classificacaoController = {
@@ -91,7 +90,7 @@ export const classificacaoController = {
     },
 
     async listarClassificacoes(
-        request: FastifyRequest<{ Querystring: { naoConformidadeId?: string; estado?: EstadoRegistro } }>,
+        request: FastifyRequest<{ Querystring: ClassificacaoFiltrosListagemInput }>,
         reply: FastifyReply,
     ) {
         const ator = request.user;

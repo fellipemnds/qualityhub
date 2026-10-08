@@ -22,7 +22,7 @@ próprio, com aprovação de Matthew (`CONSTRAINTS.md` §6).
 | `docs/fluxo-app.md` | Telas, navegação, etapa calculada da NC, jornadas, ações por estado, "Minhas pendências" |
 | `docs/ui-ux.md` | Fundações visuais, componentes (shadcn/ui), wireframes em texto, textos da tela |
 | `docs/trd.md` | Stack, sessão, API, anexos, testes, infraestrutura, hospedagem, ADR-33 a ADR-38 |
-| `docs/esquema-backend.md` | Modelo de dados, mudanças M1–M5, valores calculados, contrato da API, correções B1–B21 |
+| `docs/esquema-backend.md` | Modelo de dados, mudanças M1–M5, valores calculados, contrato da API, correções B1–B26 |
 | `docs/plano-implementacao.md` | **Ordem de execução**: fases A0–A6 (fundação do backend), B (design), C0–C8 (frontend em fatias), D (produção) |
 | `docs/changelog-arquitetura.md` | Registro de toda decisão de arquitetura e divergência do documento original. **Leia antes de propor mudança estrutural** |
 | `docs/arquitetura.md` | Documento de design **original** (histórico). Onde diverge dos documentos acima, eles valem |
@@ -42,21 +42,30 @@ para os outros documentos em vez de repetir o que já está neles.
 Ainda pendente fora do código: hospedagem (TRD §10.6), identidade
 visual.
 
-**Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B21; os
+**Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B26; os
 corrigidos têm ✅). A A3 corrigiu B1–B6 e B8–B18, e a RN-48 entrou como
 regra nova (fase fechada em 2026-10-02, PR #4). A A4 corrigiu o B19
 (transições sem trava sob concorrência) e o B7 (papéis no token), os
 dois em 2026-10-05, e o B21 (erro 4xx do Fastify respondia 500) e o B20
 (a API aceitava corpo `text/plain`), em 2026-10-06 (fase fechada em
-2026-10-06, PR #6). **Nenhum bug aberto.**
+2026-10-06, PR #6). A A5 corrigiu o B23 (as rotas aceitavam o `id` de
+um item de outro tipo) e o B24 (editar não mudava o `atualizadoEm`), em
+2026-10-07, e o B22 (dia de calendário saía com hora na resposta), no
+mesmo dia, com os schemas de resposta. O B25 (o `finalizar-execucao`
+aceitava o `id` de outro tipo, a rota que escapou do B23) foi achado e
+corrigido em 2026-10-08, pela trava do B23 no `app.test.ts`, e o B26
+(e-mail sem teto, que deixava um anônimo encher a memória pela chave do
+limite de tentativas), no mesmo dia, na revisão de segurança da fase.
+**Nenhum bug aberto.**
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
 o Docker Desktop fechado o comando `docker` some do WSL. O `gh` está
 instalado e autenticado neste computador (escopos `repo` e `workflow`);
 Claude pode abrir PRs e ler o CI com ele, e o `git push` também
-funciona por ele (2026-10-06). O push continua sendo de Matthew, salvo
-pedido explícito.
+funciona por ele (2026-10-06). Desde 2026-10-08, **Claude dá o push**
+(autorização de Matthew): depois da `/verificar`, só na branch de
+trabalho, nunca na `main` e nunca com `--force`. O merge é de Matthew.
 
 **Dois computadores:** Matthew alterna entre o do trabalho e o de casa
 (mesmo ambiente: Windows + WSL2 + Docker Desktop + nvm; `SETUP.md` §12).
@@ -94,13 +103,14 @@ seguidos feitos por Claude, ele deixou de reconhecer o código.
 
 A partir do plano de implementação:
 - **Uma branch e um Pull Request por fase**; CI verde para entrar na `main`.
-  Começo: `/comecar-fase` (o PR nasce em rascunho). Fim: `/abrir-pr`
-  (revisões da fase e "pronto quando") → merge → `/fechar-fase`.
+  Começo: `/comecar-fase` (o PR nasce em rascunho). Cada item: `/item`
+  (verifica pela `/verificar`). Fim: `/abrir-pr` (revisões da fase e
+  "pronto quando") → merge → `/fechar-fase`.
 - **Bug começa por um teste que falha.**
 - Cada fase termina com o checklist "pronto quando" (plano §1.1).
 - **Pedir antes de cada commit**, inclusive dentro da branch da fase,
-  mostrando o que entra (Matthew pode pedir o diff antes). Push, ele
-  faz, salvo pedido explícito (ex.: longe do PC).
+  mostrando o que entra (Matthew pode pedir o diff antes). O push, Claude
+  dá depois do commit (regra em "Ambiente").
 - Commit de formatação automática sempre **separado** das mudanças de
   código, para o diff de lógica ficar legível.
 
@@ -142,10 +152,19 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   permissão como parâmetro (default a ação genérica), porque
   `Classificacao` exige `CLASSIFICAR` em vez de
   `PUBLICAR`/`SUBMETER`/`GERENCIAR_RASCUNHO`.
+- **Tipo conferido (B23)**: os tipos dividem o `Registro`, e o `id`
+  sozinho não diz o tipo. Toda transição do ciclo de vida recebe o
+  `tipo` esperado (obrigatório, logo depois do `registroId`), e os
+  `GET`/`PATCH` dos services buscam pela `buscarRegistroDoTipoOuFalhar`
+  (`compartilhado/registro/buscar-registro-do-tipo.ts`): item de outro
+  tipo responde 404, como inexistente. Rota nova que recebe um `id`
+  busca por ela; a trava do `app.test.ts` chama toda rota com `{id}`
+  com o id de outro tipo e cobra o 404 (achou o B25).
 - **Trava de concorrência (B19)**: toda gravação no `Registro` passa
   pelo `registroRepository.atualizar`/`excluir`, que exigem o **estado
   em que o item foi lido** e respondem 409 se ele mudou no meio (outra
-  requisição chegou antes). Transição nova passa por eles, de
+  requisição chegou antes). A edição também passa por ele, com os dados
+  vazios, só para tocar o `atualizadoEm` (B24). Transição nova passa por eles, de
   preferência pelo `aplicarTransicao`. Teste de concorrência chama o
   `abrirDuasConexoes()` antes do `Promise.all`, senão a corrida pode não
   acontecer e o teste passa sem provar nada.

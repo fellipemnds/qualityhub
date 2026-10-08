@@ -1,6 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
-import type { VerificacaoRascunhoInput } from "./verificacao.schema.js";
+import type { VerificacaoFiltrosListagemInput, VerificacaoRascunhoInput } from "./verificacao.schema.js";
 import { verificacaoService } from "./verificacao.service.js";
 
 export const verificacaoController = {
@@ -39,7 +38,7 @@ export const verificacaoController = {
     },
 
     async listarVerificacoes(
-        request: FastifyRequest<{ Querystring: { acaoCorretivaId?: string; estado?: EstadoRegistro } }>,
+        request: FastifyRequest<{ Querystring: VerificacaoFiltrosListagemInput }>,
         reply: FastifyReply,
     ) {
         const verificacoes = await verificacaoService.listarVerificacoes(request.user, request.query);

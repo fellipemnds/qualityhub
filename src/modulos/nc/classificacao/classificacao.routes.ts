@@ -1,11 +1,17 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
-import { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import { erroSchema } from "../../../compartilhado/errors/erro.schema.js";
 import { decisaoSchema } from "../../../compartilhado/registro/decidir.schema.js";
+import { paginaSchema } from "../../../compartilhado/registro/paginacao-cursor.js";
 import { autenticar } from "../../../middlewares/autenticar.js";
 import { classificacaoController } from "./classificacao.controller.js";
-import { classificacaoRascunhoSchema } from "./classificacao.schema.js";
+import {
+    classificacaoDetalheRespostaSchema,
+    classificacaoFiltrosListagemSchema,
+    classificacaoRascunhoSchema,
+    classificacaoRespostaSchema,
+} from "./classificacao.schema.js";
 
 export async function classificacaoRoutes(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -15,6 +21,7 @@ export async function classificacaoRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ naoConformidadeId: z.uuid() }),
             body: classificacaoRascunhoSchema,
+            response: { 201: classificacaoRespostaSchema, "4xx": erroSchema },
         },
         handler: classificacaoController.criarRascunhoClassificacao,
     });
@@ -26,6 +33,7 @@ export async function classificacaoRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ id: z.uuid() }),
             body: classificacaoRascunhoSchema,
+            response: { 200: classificacaoRespostaSchema, "4xx": erroSchema },
         },
         handler: classificacaoController.atualizarClassificacao,
     });
@@ -36,6 +44,7 @@ export async function classificacaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 204: z.null(), "4xx": erroSchema },
         },
         handler: classificacaoController.excluirRascunhoClassificacao,
     });
@@ -46,6 +55,7 @@ export async function classificacaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: classificacaoRespostaSchema, "4xx": erroSchema },
         },
         handler: classificacaoController.publicarClassificacao,
     });
@@ -56,6 +66,7 @@ export async function classificacaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: classificacaoRespostaSchema, "4xx": erroSchema },
         },
         handler: classificacaoController.submeterClassificacao,
     });
@@ -66,6 +77,7 @@ export async function classificacaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: classificacaoRespostaSchema, "4xx": erroSchema },
         },
         handler: classificacaoController.retirarClassificacao,
     });
@@ -77,6 +89,7 @@ export async function classificacaoRoutes(app: FastifyInstance) {
         schema: {
             params: z.object({ id: z.uuid() }),
             body: decisaoSchema,
+            response: { 200: classificacaoRespostaSchema, "4xx": erroSchema },
         },
         handler: classificacaoController.decidirClassificacao,
     });
@@ -87,6 +100,7 @@ export async function classificacaoRoutes(app: FastifyInstance) {
         onRequest: [autenticar],
         schema: {
             params: z.object({ id: z.uuid() }),
+            response: { 200: classificacaoDetalheRespostaSchema, "4xx": erroSchema },
         },
         handler: classificacaoController.buscarPorIdClassificacao,
     });
@@ -96,10 +110,8 @@ export async function classificacaoRoutes(app: FastifyInstance) {
         url: "/classificacoes",
         onRequest: [autenticar],
         schema: {
-            querystring: z.object({
-                naoConformidadeId: z.string().min(1).optional(),
-                estado: z.enum(EstadoRegistro).optional(),
-            }),
+            querystring: classificacaoFiltrosListagemSchema,
+            response: { 200: paginaSchema(classificacaoRespostaSchema), "4xx": erroSchema },
         },
         handler: classificacaoController.listarClassificacoes,
     });

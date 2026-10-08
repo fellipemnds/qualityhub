@@ -13,14 +13,15 @@ com você, puxa a linha da §2, diz em cada entrega o que é seu e o que é novo
 `interview-me`, `idea-refine`, `doubt-driven-development` ou `spec` + `plan`. Termina com o PR
 em rascunho.
 
-**Cada item da fase:**
-1. O Claude diz o que é novo para você e espera o "pode".
-2. Bug → `test-driven-development` (o teste que falha primeiro). Regra nova → idem.
-3. Mais de um arquivo → `incremental-implementation` (fatia, verifica, fatia).
-4. Biblioteca nova ou dúvida de API → `source-driven-development`.
-5. Quebrou e não se sabe por quê → `debugging-and-error-recovery`.
-6. Ficou pesado → `code-simplification`. Decidiu algo → `documentation-and-adrs`.
-7. Commit pedido, com a verificação do `CONSTRAINTS.md` §4.
+**Cada item da fase:** `/item`. Diz o que é novo para você e espera o "pode"; antes do
+código, chama `interview-me`, `idea-refine`, `doubt-driven-development` ou
+`source-driven-development` se o item pedir; executa com `test-driven-development` e
+`incremental-implementation`; revisa o diff do item com `code-simplification` (proposta
+mostrada antes) e `code-review-and-quality` (por fatia, acima de ~400 linhas); verifica pela
+`/verificar`; registra nos documentos e pede o commit.
+
+**Verificação (antes de commit e de push):** `/verificar`. Escolhe o nível pelo
+`CONSTRAINTS.md` §4 e, antes do push, roda o diff-cover.
 
 **Fim da fase:** diga "a fase acabou" e chame o `/abrir-pr`. O §7 dele roda
 `code-review-and-quality`, `security-and-hardening` (se mexeu em login, sessão, permissão,
@@ -34,7 +35,7 @@ tira o PR do rascunho e entrega a mensagem do merge. Você faz o merge → `/fec
 | Fase | Skills que mais ajudam |
 |---|---|
 | **A4** Sessão nova | `test-driven-development`, `code-simplification` (o `ciclo-vida`), `security-and-hardening` (cookie, `helmet`), `doubt-driven-development` (auth), `ci-cd-and-automation` (os checks do `CONSTRAINTS.md`) |
-| **A5** Contrato da API | `api-and-interface-design`, `documentation-and-adrs`, `source-driven-development` (`@fastify/swagger`) |
+| **A5** Contrato da API | `api-and-interface-design`, `documentation-and-adrs`, `source-driven-development` (`@fastify/swagger`), `security-and-hardening` (L4, L5, CSP da documentação), `idea-refine` (as funções repetidas dos services) |
 | **A6** Usuários e setores | `interview-me` (a trava da RN-43), `spec-driven-development`, `test-driven-development` |
 | **B** Design | Fora do `agent-skills`: as skills de design instaladas (`impeccable`, `taste-skill`) |
 | **C** Frontend | `spec-driven-development` por fatia, `frontend-ui-engineering`, `browser-testing-with-devtools`, `performance-optimization` |
@@ -126,3 +127,21 @@ O plugin também traz quatro agentes (`code-reviewer`, `security-auditor`, `test
 | `/comecar-fase` | Começo de fase: ler a fase, as skills de cada entrega, PR em rascunho |
 | `/fechar-fase` | Depois do merge: voltar para a `main`, abrir a próxima branch e, no fim de cada bloco (A, B, C, D), rever as skills |
 | `/bug` | Achou um bug, ou terminou o conserto de um: registrar ou fechar nos documentos |
+| `/item` | Cada item da fase: escolher, planejar (as skills de antes do código), executar, revisar, verificar e registrar |
+| `/verificar` | Antes de commit e de push: lint, typecheck, testes no nível do `CONSTRAINTS.md` §4, diff-cover |
+
+## 6. Entender o código sem encher o contexto
+
+| Ferramenta | O que faz | Quando |
+|---|---|---|
+| Agente `Explore` (do Claude Code) | Lê os arquivos num contexto **separado** e devolve só a conclusão ("o item toca estes arquivos, o padrão é este"). Nada para manter | Dia a dia: descobrir o que um item toca antes de abrir arquivo. Peça "use o Explore para..." |
+| `/understand-anything:understand` | Analisa o projeto e grava um **grafo de conhecimento** em `.ua/knowledge-graph.json` (arquivos, funções, camadas, quem chama quem, um resumo de cada um). As outras abaixo dependem dele | Uma vez, antes de usar as outras. Cara na primeira vez (vários agentes); `--language pt` para os textos em português, `--exclude` para os testes. Envelhece: `--auto-update` atualiza a cada commit |
+| `/understand-anything:understand-onboard` | Roteiro guiado pelo código, em ordem didática | O passeio guiado pelo código (`handoff.md` §6) |
+| `/understand-anything:understand-chat` | Perguntas sobre o código, respondidas pelo grafo | "Onde fica X?", "quem usa Y?" |
+| `/understand-anything:understand-explain` | Explicação a fundo de um arquivo, função ou módulo | Reconhecer um pedaço do código antes de mexer |
+| `/understand-anything:understand-diff` | O que um diff ou PR muda, o que afeta e onde está o risco | Revisão de um item ou de uma fase |
+| `/understand-anything:understand-dashboard` | O grafo num painel interativo | Ver a arquitetura de cima |
+
+Os resumos do grafo são escritos por IA: servem de mapa, e a decisão continua sendo tomada
+lendo o código. **Em aberto** (decidir depois do passeio): o grafo fica, com a atualização
+automática? O `.ua/` entra no Git (um JSON grande que muda a cada commit) ou cada PC gera o seu?

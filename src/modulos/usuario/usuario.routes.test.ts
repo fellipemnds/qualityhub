@@ -12,7 +12,7 @@ describe("POST /usuarios", () => {
         const { admin } = await perfisDeFora();
 
         // Chama
-        const resposta = await chamar(admin, "POST", "/usuarios", 201, novoUsuario(admin.usuario.setorId));
+        const resposta = await chamar(admin, "POST", "/api/usuarios", 201, novoUsuario(admin.usuario.setorId));
 
         // Confere
         expect(resposta).toEqual({ id: expect.any(String), tokenConvite: expect.any(String) });
@@ -23,7 +23,7 @@ describe("POST /usuarios", () => {
         const editor = await loginComo("editor");
 
         // Chama
-        await chamar(editor, "POST", "/usuarios", 403, novoUsuario(editor.usuario.setorId));
+        await chamar(editor, "POST", "/api/usuarios", 403, novoUsuario(editor.usuario.setorId));
     });
 
     it("recusa quem não tem papel nenhum: lista vazia nega, não libera (403)", async () => {
@@ -31,7 +31,7 @@ describe("POST /usuarios", () => {
         const { semPapel } = await perfisDeFora();
 
         // Chama
-        await chamar(semPapel, "POST", "/usuarios", 403, novoUsuario(semPapel.usuario.setorId));
+        await chamar(semPapel, "POST", "/api/usuarios", 403, novoUsuario(semPapel.usuario.setorId));
     });
 
     it("recusa usuário sem papéis", async () => {
@@ -39,7 +39,7 @@ describe("POST /usuarios", () => {
         const { admin } = await perfisDeFora();
 
         // Chama
-        const resposta = await chamar(admin, "POST", "/usuarios", 400, novoUsuario(admin.usuario.setorId, []));
+        const resposta = await chamar(admin, "POST", "/api/usuarios", 400, novoUsuario(admin.usuario.setorId, []));
 
         // Confere
         expect(resposta).toMatchObject({

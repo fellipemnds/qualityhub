@@ -1,9 +1,14 @@
 import { describe, expect, it } from "vitest";
+import z from "zod";
 import { diaDeCalendario } from "./dia-de-calendario.js";
 
 describe("diaDeCalendario", () => {
     it("aceita AAAA-MM-DD e guarda a meia-noite UTC do dia (TRD §6)", () => {
         expect(diaDeCalendario().parse("2026-09-10")).toEqual(new Date("2026-09-10T00:00:00.000Z"));
+    });
+
+    it("devolve o dia como AAAA-MM-DD na saída, sem hora (B22)", () => {
+        expect(z.encode(diaDeCalendario(), new Date("2026-09-10T00:00:00.000Z"))).toBe("2026-09-10");
     });
 
     it.each([

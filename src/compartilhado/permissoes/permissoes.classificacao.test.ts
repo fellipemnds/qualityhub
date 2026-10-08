@@ -13,28 +13,28 @@ type Quem = "editor" | "aprovador" | "qa" | "gerente" | "admin" | "visualizador"
 
 const acoes = {
     ver: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "GET", `/classificacoes/${contexto.classificacao.id}`, 403),
+        chamar(contexto[quem], "GET", `/api/classificacoes/${contexto.classificacao.id}`, 403),
     criar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/nc/${contexto.nc.id}/classificacoes`, 403, {
+        chamar(contexto[quem], "POST", `/api/nc/${contexto.nc.id}/classificacoes`, 403, {
             valor: "MENOR",
             justificativa: "Tentativa de criar uma classificação sem permissão.",
         }),
     editar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "PATCH", `/classificacoes/${contexto.classificacao.id}`, 403, {
+        chamar(contexto[quem], "PATCH", `/api/classificacoes/${contexto.classificacao.id}`, 403, {
             justificativa: "Tentativa de editar a classificação sem permissão.",
         }),
     excluir: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "DELETE", `/classificacoes/${contexto.classificacao.id}`, 403),
+        chamar(contexto[quem], "DELETE", `/api/classificacoes/${contexto.classificacao.id}`, 403),
     publicar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/classificacoes/${contexto.classificacao.id}/publicar`, 403),
+        chamar(contexto[quem], "POST", `/api/classificacoes/${contexto.classificacao.id}/publicar`, 403),
     submeter: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/classificacoes/${contexto.classificacao.id}/submeter`, 403),
+        chamar(contexto[quem], "POST", `/api/classificacoes/${contexto.classificacao.id}/submeter`, 403),
     decidir: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/classificacoes/${contexto.classificacao.id}/decidir`, 403, {
+        chamar(contexto[quem], "POST", `/api/classificacoes/${contexto.classificacao.id}/decidir`, 403, {
             decisao: "APROVADO",
         }),
     retirar: (contexto: Contexto, quem: Quem) =>
-        chamar(contexto[quem], "POST", `/classificacoes/${contexto.classificacao.id}/retirar`, 403),
+        chamar(contexto[quem], "POST", `/api/classificacoes/${contexto.classificacao.id}/retirar`, 403),
 };
 
 type NomeAcao = keyof typeof acoes;

@@ -12,6 +12,7 @@ import {
 import { loginComo } from "../../../testes/fabricas.js";
 import { levarInvestigacaoAte } from "../../../testes/levar-ate/investigacao.js";
 import { levarNCAte } from "../../../testes/levar-ate/nc.js";
+import { levarVerificacaoAte } from "../../../testes/levar-ate/verificacao.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
 
@@ -34,7 +35,7 @@ describe("POST /nc", () => {
         // Chama
         const resultado = await app.inject({
             method: "POST",
-            url: "/nc",
+            url: "/api/nc",
             headers: autenticacao,
             body: { titulo },
         });
@@ -54,7 +55,7 @@ describe("POST /nc", () => {
         const editor = await loginComo("editor");
 
         // Chama
-        const resposta = await chamar(editor, "POST", "/nc", 400, { titulo: "NC" });
+        const resposta = await chamar(editor, "POST", "/api/nc", 400, { titulo: "NC" });
 
         // Confere
         expect(resposta).toMatchObject({
@@ -68,7 +69,7 @@ describe("POST /nc", () => {
         const editor = await loginComo("editor");
 
         // Chama
-        const resposta = await chamar(editor, "POST", "/nc", 400, {
+        const resposta = await chamar(editor, "POST", "/api/nc", 400, {
             titulo: "NC de testes",
             detectadoEm: "2026-09-10T10:00:00.000Z",
         });
@@ -85,7 +86,7 @@ describe("POST /nc", () => {
         const editor = await loginComo("editor");
 
         // Chama
-        const resposta = await chamar(editor, "POST", "/nc", 400, {
+        const resposta = await chamar(editor, "POST", "/api/nc", 400, {
             titulo: "NC de testes",
             detectadoEm: diaDaquiA(1),
         });
@@ -104,7 +105,7 @@ describe("POST /nc", () => {
         const editor = await loginComo("editor");
 
         // Chama
-        const resposta = await chamar(editor, "POST", "/nc", 400, {
+        const resposta = await chamar(editor, "POST", "/api/nc", 400, {
             titulo: "NC de testes",
             detectadoEm: "2026-10-01",
         });
@@ -124,10 +125,10 @@ describe("POST /nc", () => {
 
         // Chama
         const ontem = diaDaquiA(-1);
-        const resposta = await chamar(editor, "POST", "/nc", 201, { titulo: "NC de testes", detectadoEm: ontem });
+        const resposta = await chamar(editor, "POST", "/api/nc", 201, { titulo: "NC de testes", detectadoEm: ontem });
 
         // Confere
-        expect(resposta).toMatchObject({ estado: "RASCUNHO", detectadoEm: `${ontem}T00:00:00.000Z` });
+        expect(resposta).toMatchObject({ estado: "RASCUNHO", detectadoEm: ontem });
     });
 });
 
@@ -138,7 +139,7 @@ describe("POST /nc/:id/submeter", () => {
         const { editor, nc } = await ncPublicada();
 
         // Chama
-        const resposta = await chamar(editor, "POST", `/nc/${nc.id}/submeter`, 409);
+        const resposta = await chamar(editor, "POST", `/api/nc/${nc.id}/submeter`, 409);
 
         // Confere: o que está atendido (contenções, aprovador) não vem na lista
         expect(resposta.mensagem).toEqual(expect.any(String));
@@ -155,7 +156,7 @@ describe("POST /nc/:id/submeter", () => {
         const { editor, nc } = await ncProntaParaFechar();
 
         // Chama
-        const resposta = await chamar(editor, "POST", `/nc/${nc.id}/submeter`, 409);
+        const resposta = await chamar(editor, "POST", `/api/nc/${nc.id}/submeter`, 409);
 
         // Confere
         expect(resposta.error).toMatchObject([
@@ -167,14 +168,14 @@ describe("POST /nc/:id/submeter", () => {
     it("recusa com uma investigação fechada e outra aberta (RN-21)", async () => {
         // Prepara: a NC pronta, com o envio preenchido, e uma segunda investigação ainda aberta
         const { editor, nc } = await ncProntaParaFechar();
-        await chamar(editor, "PATCH", `/nc/${nc.id}`, 200, CAMPOS_DO_ENVIO);
-        const outra = await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
+        await chamar(editor, "PATCH", `/api/nc/${nc.id}`, 200, CAMPOS_DO_ENVIO);
+        const outra = await chamar(editor, "POST", `/api/nc/${nc.id}/investigacoes`, 201, {
             realProblema: "Ruído anormal no redutor da esteira, percebido na mesma inspeção da linha 2.",
         });
-        const publicada = await chamar(editor, "POST", `/investigacoes/${outra.id}/publicar`, 200);
+        const publicada = await chamar(editor, "POST", `/api/investigacoes/${outra.id}/publicar`, 200);
 
         // Chama
-        const resposta = await chamar(editor, "POST", `/nc/${nc.id}/submeter`, 409);
+        const resposta = await chamar(editor, "POST", `/api/nc/${nc.id}/submeter`, 409);
 
         // Confere: a aberta aparece com o código, para a tela apontar o que resolve
         expect(resposta.error).toEqual([
@@ -184,7 +185,7 @@ describe("POST /nc/:id/submeter", () => {
                 pendentes: [{ id: outra.id, codigo: publicada.codigo }],
             }),
         ]);
-        expect(await chamar(editor, "GET", `/nc/${nc.id}`, 200)).toMatchObject({ estado: "ABERTO" });
+        expect(await chamar(editor, "GET", `/api/nc/${nc.id}`, 200)).toMatchObject({ estado: "ABERTO" });
     });
 
     // A investigação pode concluir sem ação corretiva, e a NC não confere as ações (PRD Q17)
@@ -193,27 +194,47 @@ describe("POST /nc/:id/submeter", () => {
         const cenario = await levarInvestigacaoAte("FECHADO");
         const { editor, aprovador, nc } = cenario;
         await classificarNC(cenario);
-        await chamar(editor, "PATCH", `/nc/${nc.id}`, 200, CAMPOS_DO_ENVIO);
+        await chamar(editor, "PATCH", `/api/nc/${nc.id}`, 200, CAMPOS_DO_ENVIO);
 
         // Chama
-        await chamar(editor, "POST", `/nc/${nc.id}/submeter`, 200);
-        await chamar(aprovador, "POST", `/nc/${nc.id}/decidir`, 200, { decisao: "APROVADO" });
+        await chamar(editor, "POST", `/api/nc/${nc.id}/submeter`, 200);
+        await chamar(aprovador, "POST", `/api/nc/${nc.id}/decidir`, 200, { decisao: "APROVADO" });
 
         // Confere
-        expect(await chamar(editor, "GET", `/nc/${nc.id}`, 200)).toMatchObject({ estado: "FECHADO" });
-        expect(await chamar(editor, "GET", `/acoes-corretivas?naoConformidadeId=${nc.id}`, 200)).toEqual([]);
+        expect(await chamar(editor, "GET", `/api/nc/${nc.id}`, 200)).toMatchObject({ estado: "FECHADO" });
+        expect(
+            (await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}`, 200)).itensDaPagina,
+        ).toEqual([]);
     });
 });
 
 // A mesma guarda do submeter, só para ler: a tela mostra o checklist sem tentar submeter (TRD §5, lacuna L6)
 describe("GET /nc/:id/checklist-fechamento", () => {
+    it("a guarda vê todas as contenções, não só uma página da lista (L4)", async () => {
+        // Prepara: mais contenções pendentes (em rascunho) do que cabem numa página da lista (20)
+        const { editor, nc } = await ncPublicada();
+        for (let n = 1; n <= 25; n++) {
+            await chamar(editor, "POST", `/api/nc/${nc.id}/contencoes`, 201, {
+                descricao: `Contenção pendente número ${n}.`,
+            });
+        }
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/nc/${nc.id}/checklist-fechamento`, 200);
+
+        // Confere: as 25 aparecem como pendentes; paginada, a guarda deixaria a 21ª em diante escapar
+        const contencoes = resposta.find((item: { requisito: string }) => item.requisito === "CONTENCOES_RESOLVIDAS");
+        expect(contencoes).toMatchObject({ atendido: false });
+        expect(contencoes.pendentes).toHaveLength(25);
+    });
+
     it("devolve os seis requisitos, atendidos ou não, na ordem", async () => {
         // Prepara: só a NC publicada, com aprovador
         const { nc } = await ncPublicada();
         const { visualizador } = await perfisDeFora();
 
         // Chama
-        const resposta = await chamar(visualizador, "GET", `/nc/${nc.id}/checklist-fechamento`, 200);
+        const resposta = await chamar(visualizador, "GET", `/api/nc/${nc.id}/checklist-fechamento`, 200);
 
         // Confere
         expect(resposta).toMatchObject([
@@ -229,7 +250,7 @@ describe("GET /nc/:id/checklist-fechamento", () => {
     it("responde 404 quando a NC não existe", async () => {
         const editor = await loginComo("editor");
 
-        await chamar(editor, "GET", `/nc/${ID_INEXISTENTE}/checklist-fechamento`, 404);
+        await chamar(editor, "GET", `/api/nc/${ID_INEXISTENTE}/checklist-fechamento`, 404);
     });
 
     it("recusa quem não tem papel de leitura", async () => {
@@ -238,21 +259,62 @@ describe("GET /nc/:id/checklist-fechamento", () => {
         const { semPapel } = await perfisDeFora();
 
         // Chama e confere
-        await chamar(semPapel, "GET", `/nc/${nc.id}/checklist-fechamento`, 403);
+        await chamar(semPapel, "GET", `/api/nc/${nc.id}/checklist-fechamento`, 403);
     });
 });
 
 describe("PATCH /nc/:id", () => {
+    it("recusa um campo desconhecido, em vez de responder 200 sem mudar nada (L4)", async () => {
+        // Prepara
+        const { editor, nc } = await levarNCAte("ABERTO");
+
+        // Chama: "titlo" no lugar de "titulo"
+        const resposta = await chamar(editor, "PATCH", `/api/nc/${nc.id}`, 400, {
+            titlo: "Título com erro de digitação",
+        });
+
+        // Confere
+        expect(resposta).toMatchObject({ mensagem: "Dados inválidos" });
+        expect(await chamar(editor, "GET", `/api/nc/${nc.id}`, 200)).toMatchObject({ titulo: nc.titulo });
+    });
+
+    it("aceita a descrição no teto, 5.000 caracteres, e recusa um a mais (L4)", async () => {
+        // Prepara
+        const { editor, nc } = await levarNCAte("ABERTO");
+
+        // Chama e confere: no teto passa, um a mais é erro de campo
+        await chamar(editor, "PATCH", `/api/nc/${nc.id}`, 200, { descricao: "a".repeat(5000) });
+        const resposta = await chamar(editor, "PATCH", `/api/nc/${nc.id}`, 400, { descricao: "a".repeat(5001) });
+        expect(resposta).toMatchObject({
+            error: expect.arrayContaining([expect.objectContaining({ instancePath: "/descricao" })]),
+        });
+    });
+
     it("null apaga a data de detecção, e não grava 01/01/1970 (B14)", async () => {
         // Prepara
         const editor = await loginComo("editor");
-        const nc = await chamar(editor, "POST", "/nc", 201, { titulo: "NC de testes", detectadoEm: "2026-09-10" });
+        const nc = await chamar(editor, "POST", "/api/nc", 201, { titulo: "NC de testes", detectadoEm: "2026-09-10" });
 
         // Chama
-        const resposta = await chamar(editor, "PATCH", `/nc/${nc.id}`, 200, { detectadoEm: null });
+        const resposta = await chamar(editor, "PATCH", `/api/nc/${nc.id}`, 200, { detectadoEm: null });
 
         // Confere
         expect(resposta).toMatchObject({ detectadoEm: null });
+    });
+
+    it("devolve a NC inteira, com estado e código, como as outras rotas (D1)", async () => {
+        // Prepara
+        const { editor, nc } = await levarNCAte("ABERTO");
+
+        // Chama
+        const resposta = await chamar(editor, "PATCH", `/api/nc/${nc.id}`, 200, { titulo: "Título editado na A5" });
+
+        // Confere
+        expect(resposta).toMatchObject({
+            titulo: "Título editado na A5",
+            estado: "ABERTO",
+            codigo: expect.any(String),
+        });
     });
 });
 
@@ -260,24 +322,126 @@ describe("GET /nc", () => {
     it("filtra por estado", async () => {
         // Prepara (a NC do ncPublicada está ABERTA; a segunda fica em rascunho)
         const { editor, nc } = await ncPublicada();
-        await chamar(editor, "POST", "/nc", 201, { titulo: "NC que fica em rascunho" });
+        await chamar(editor, "POST", "/api/nc", 201, { titulo: "NC que fica em rascunho" });
 
         // Chama
-        const resposta = await chamar(editor, "GET", "/nc?estado=ABERTO", 200);
+        const resposta = await chamar(editor, "GET", "/api/nc?estado=ABERTO", 200);
 
         // Confere
         expect(resposta.itensDaPagina.map((item: { id: string }) => item.id)).toEqual([nc.id]);
     });
+
+    it("os itens da lista trazem a data de detecção como dia, sem hora (B22)", async () => {
+        // Prepara: o ncPublicada cria a NC com detectadoEm "2026-09-10"
+        const { editor } = await ncPublicada();
+
+        // Chama
+        const resposta = await chamar(editor, "GET", "/api/nc", 200);
+
+        // Confere
+        expect(resposta.itensDaPagina[0].detectadoEm).toBe("2026-09-10");
+    });
 });
 
 describe("GET /nc/:id", () => {
+    it("o último motivo de reprovação é null quando a NC nunca foi decidida (L7)", async () => {
+        // Prepara
+        const { editor, nc } = await levarNCAte("EM_APROVACAO");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/nc/${nc.id}`, 200);
+
+        // Confere
+        expect(resposta).toMatchObject({ ultimoMotivoReprovacao: null });
+    });
+
+    it("traz o motivo da última reprovação, para o colaborador saber o que corrigir (L7)", async () => {
+        // Prepara
+        const { editor, aprovador, nc } = await levarNCAte("EM_APROVACAO");
+        await chamar(aprovador, "POST", `/api/nc/${nc.id}/decidir`, 200, {
+            decisao: "REPROVADO",
+            motivo: "Faltou revisar os riscos da linha 3.",
+        });
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/nc/${nc.id}`, 200);
+
+        // Confere
+        expect(resposta).toMatchObject({
+            estado: "ABERTO",
+            ultimoMotivoReprovacao: "Faltou revisar os riscos da linha 3.",
+        });
+    });
+
+    it("depois de reprovada e aprovada, o motivo volta a null: a última decisão é a que vale (L7)", async () => {
+        // Prepara
+        const { editor, aprovador, nc } = await levarNCAte("EM_APROVACAO");
+        await chamar(aprovador, "POST", `/api/nc/${nc.id}/decidir`, 200, {
+            decisao: "REPROVADO",
+            motivo: "Faltou revisar os riscos da linha 3.",
+        });
+        await chamar(editor, "POST", `/api/nc/${nc.id}/submeter`, 200);
+        await chamar(aprovador, "POST", `/api/nc/${nc.id}/decidir`, 200, { decisao: "APROVADO" });
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/nc/${nc.id}`, 200);
+
+        // Confere
+        expect(resposta).toMatchObject({ estado: "FECHADO", ultimoMotivoReprovacao: null });
+    });
+
+    it("devolve a data de detecção como dia, sem hora (B22)", async () => {
+        // Prepara: o levarNCAte cria a NC com detectadoEm "2026-09-10"
+        const { editor, nc } = await levarNCAte("RASCUNHO");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/nc/${nc.id}`, 200);
+
+        // Confere
+        expect(resposta.detectadoEm).toBe("2026-09-10");
+    });
+
+    it("não expõe o portaoAtual, detalhe interno do ciclo de vida (D2)", async () => {
+        // Prepara
+        const { editor, nc } = await levarNCAte("RASCUNHO");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/nc/${nc.id}`, 200);
+
+        // Confere
+        expect(resposta.id).toBe(nc.id);
+        expect(resposta).not.toHaveProperty("portaoAtual");
+    });
+
+    it("responde 404 só com a mensagem quando a NC não existe", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", `/api/nc/${ID_INEXISTENTE}`, 404);
+
+        // Confere
+        expect(resposta).toEqual({ mensagem: "Item não encontrado." });
+    });
+
+    it("responde 400 com a lista do que está inválido quando o id não é UUID", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", "/api/nc/nao-e-uuid", 400);
+
+        // Confere
+        expect(resposta).toMatchObject({ mensagem: "Dados inválidos", error: expect.any(Array) });
+    });
+
     it("o visualizador lê a NC", async () => {
         // Prepara
         const { nc } = await ncPublicada();
         const { visualizador } = await perfisDeFora();
 
         // Chama
-        const resposta = await chamar(visualizador, "GET", `/nc/${nc.id}`, 200);
+        const resposta = await chamar(visualizador, "GET", `/api/nc/${nc.id}`, 200);
 
         // Confere
         expect(resposta).toMatchObject({ id: nc.id, estado: "ABERTO" });
@@ -288,45 +452,56 @@ describe("DELETE /nc/:id", () => {
     it("exclui o rascunho de verdade (RN-09)", async () => {
         // Prepara
         const editor = await loginComo("editor");
-        const nc = await chamar(editor, "POST", "/nc", 201, { titulo: "NC que vai ser excluída" });
+        const nc = await chamar(editor, "POST", "/api/nc", 201, { titulo: "NC que vai ser excluída" });
 
         // Chama
-        await chamar(editor, "DELETE", `/nc/${nc.id}`, 204);
+        await chamar(editor, "DELETE", `/api/nc/${nc.id}`, 204);
 
         // Confere
-        await chamar(editor, "GET", `/nc/${nc.id}`, 404);
+        await chamar(editor, "GET", `/api/nc/${nc.id}`, 404);
     });
 
     it("responde 404 quando a NC não existe", async () => {
         const editor = await loginComo("editor");
 
-        await chamar(editor, "DELETE", `/nc/${ID_INEXISTENTE}`, 404);
+        await chamar(editor, "DELETE", `/api/nc/${ID_INEXISTENTE}`, 404);
     });
 
     // O banco apaga os filhos junto, e a ação aponta para a investigação, que também é apagada (RN-49)
     it("exclui o rascunho com uma investigação e uma ação ligadas", async () => {
         // Prepara
         const editor = await loginComo("editor");
-        const nc = await chamar(editor, "POST", "/nc", 201, { titulo: "NC que vai ser excluída" });
-        const investigacao = await chamar(editor, "POST", `/nc/${nc.id}/investigacoes`, 201, {
+        const nc = await chamar(editor, "POST", "/api/nc", 201, { titulo: "NC que vai ser excluída" });
+        const investigacao = await chamar(editor, "POST", `/api/nc/${nc.id}/investigacoes`, 201, {
             realProblema: "Vedação da bomba hidráulica com desgaste prematuro.",
         });
-        await chamar(editor, "POST", `/investigacoes/${investigacao.id}/publicar`, 200);
-        await chamar(editor, "POST", `/nc/${nc.id}/acoes-corretivas`, 201, { investigacaoId: investigacao.id });
+        await chamar(editor, "POST", `/api/investigacoes/${investigacao.id}/publicar`, 200);
+        await chamar(editor, "POST", `/api/nc/${nc.id}/acoes-corretivas`, 201, { investigacaoId: investigacao.id });
 
         // Chama
-        await chamar(editor, "DELETE", `/nc/${nc.id}`, 204);
+        await chamar(editor, "DELETE", `/api/nc/${nc.id}`, 204);
 
         // Confere
-        await chamar(editor, "GET", `/nc/${nc.id}`, 404);
+        await chamar(editor, "GET", `/api/nc/${nc.id}`, 404);
     });
 });
 
 describe("POST /nc/:id/publicar", () => {
+    it("devolve a NC publicada com a data de detecção como dia, sem hora (B22)", async () => {
+        // Prepara: o levarNCAte cria o rascunho com detectadoEm "2026-09-10" e o aprovador já designado
+        const { editor, nc } = await levarNCAte("RASCUNHO");
+
+        // Chama
+        const resposta = await chamar(editor, "POST", `/api/nc/${nc.id}/publicar`, 200);
+
+        // Confere
+        expect(resposta).toMatchObject({ id: nc.id, estado: "ABERTO", detectadoEm: "2026-09-10" });
+    });
+
     it("recusa publicar sem data de detecção (B14)", async () => {
         // Prepara: todos os campos da publicação, menos a data
         const editor = await loginComo("editor");
-        const nc = await chamar(editor, "POST", "/nc", 201, {
+        const nc = await chamar(editor, "POST", "/api/nc", 201, {
             titulo: "Vazamento de óleo na linha 2",
             descricao: "Identificado vazamento de óleo hidráulico durante inspeção de rotina na linha 2.",
             requisitoViolado: "Procedimento PO-07, item 4.3 - inspeção de recebimento",
@@ -336,7 +511,7 @@ describe("POST /nc/:id/publicar", () => {
         });
 
         // Chama
-        const resposta = await chamar(editor, "POST", `/nc/${nc.id}/publicar`, 400);
+        const resposta = await chamar(editor, "POST", `/api/nc/${nc.id}/publicar`, 400);
 
         // Confere
         expect(resposta).toMatchObject({
@@ -348,7 +523,7 @@ describe("POST /nc/:id/publicar", () => {
     it("responde 404 quando a NC não existe", async () => {
         const editor = await loginComo("editor");
 
-        await chamar(editor, "POST", `/nc/${ID_INEXISTENTE}/publicar`, 404);
+        await chamar(editor, "POST", `/api/nc/${ID_INEXISTENTE}/publicar`, 404);
     });
 
     it("o código usa o ano de São Paulo, não o do servidor (B11)", async () => {
@@ -358,7 +533,7 @@ describe("POST /nc/:id/publicar", () => {
         const { editor, nc } = await ncPublicada();
 
         // Chama
-        const publicada = await chamar(editor, "GET", `/nc/${nc.id}`, 200);
+        const publicada = await chamar(editor, "GET", `/api/nc/${nc.id}`, 200);
 
         // Confere
         expect(publicada.codigo).toBe("NC-2026-0001");
@@ -371,7 +546,7 @@ describe("POST /nc/:id/reabrir", () => {
         const { qa, nc } = await levarNCAte("FECHADO");
 
         // Chama
-        const resposta = await chamar(qa, "POST", `/nc/${nc.id}/reabrir`, 200, {
+        const resposta = await chamar(qa, "POST", `/api/nc/${nc.id}/reabrir`, 200, {
             motivo: "Reincidência do vazamento na linha 2.",
         });
 
@@ -385,10 +560,25 @@ describe("POST /nc/:id/reabrir", () => {
         const { aprovador, editor, nc } = await levarNCAte("FECHADO");
 
         // Chama
-        await chamar(aprovador, "POST", `/nc/${nc.id}/reabrir`, 400, { motivo: "   " });
+        await chamar(aprovador, "POST", `/api/nc/${nc.id}/reabrir`, 400, { motivo: "   " });
 
         // Confere
-        expect(await chamar(editor, "GET", `/nc/${nc.id}`, 200)).toMatchObject({ estado: "FECHADO" });
+        expect(await chamar(editor, "GET", `/api/nc/${nc.id}`, 200)).toMatchObject({ estado: "FECHADO" });
+    });
+
+    it("recusa com 404 o id de uma verificação, que continua fechada (B23)", async () => {
+        // Prepara (o qa tem o papel APROVADOR e não está na verificação: a RN-17 não pede atribuição)
+        const { editor, qa, verificacao } = await levarVerificacaoAte("FECHADO");
+
+        // Chama
+        await chamar(qa, "POST", `/api/nc/${verificacao.id}/reabrir`, 404, {
+            motivo: "Tentativa de reabrir a verificação pela rota da NC.",
+        });
+
+        // Confere
+        expect(await chamar(editor, "GET", `/api/verificacoes/${verificacao.id}`, 200)).toMatchObject({
+            estado: "FECHADO",
+        });
     });
 });
 
@@ -398,6 +588,6 @@ describe("POST /nc/:id/retirar", () => {
         const { editor, nc } = await levarNCAte("EM_APROVACAO");
 
         // Chama e confere
-        expect(await chamar(editor, "POST", `/nc/${nc.id}/retirar`, 200)).toMatchObject({ estado: "ABERTO" });
+        expect(await chamar(editor, "POST", `/api/nc/${nc.id}/retirar`, 200)).toMatchObject({ estado: "ABERTO" });
     });
 });

@@ -9,6 +9,145 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Fase A5 — contrato da API (branch `fase/a5-contrato-api`, em andamento)
+
+- **Prefixo `/api` num plugin só** (2026-10-06): as nove chamadas de
+  rotas foram para dentro de um `app.register(..., { prefix: "/api" })`
+  no `app.ts`; os `*.routes.ts` continuam declarando o caminho sem o
+  prefixo, e rota nova registrada ali ganha o `/api` sozinha. O cookie
+  `qh_sessao` passa a `Path=/api` (fim da divergência da A4). Nos testes,
+  as URLs ficam **por extenso, com `/api`** (trocadas por script): o
+  `chamar` não acrescenta o prefixo, para o teste mostrar a URL real.
+- **Contrato de resposta das rotas de NC** (Matthew, 2026-10-06; levantamento
+  das respostas reais com o `api-and-interface-design`): **D1** um formato
+  só, o `ncRespostaSchema` (os campos do `Registro` e da NC lado a lado), em
+  criar, detalhe, itens da lista e todas as transições; o `PATCH`, que
+  devolvia só os campos da NC, passa a devolver o formato completo.
+  **D2** o `portaoAtual` não sai (detalhe interno do ciclo de vida; o que
+  é exposto vira compromisso). **D3** a lista mantém o envelope
+  `{ itensDaPagina, proximoCursor }`. **D4** erros declarados com
+  `"4xx": erroSchema` (`{ mensagem, error? }`, compartilhado). **D5** o
+  detalhe não ganha filhos, aprovador, colaboradores nem etapa na A5: o
+  formato certo depende da T-06, e acrescentar campo depois não quebra
+  quem usa (anotado na C1); a exceção é o último motivo de reprovação
+  (L7), que o plano põe nesta fase.
+- **Como o schema de resposta foi montado** (rotas de NC, Matthew,
+  2026-10-06): schema **próprio de resposta**, não o de entrada (o de
+  entrada tem regras, como mínimo de caracteres, e um rascunho
+  incompleto guardado viraria 500); `.nullable()` em tudo o que o banco
+  permite nulo. O `diaDeCalendario()` virou **codec** do Zod (`decode`
+  na entrada, `encode` na saída, os dois em `"AAAA-MM-DD"`), o que
+  conserta o B22 pela resposta. Os erros usam um `erroSchema`
+  compartilhado (`compartilhado/errors/erro.schema.ts`), com `error`
+  `unknown` e opcional; as listas, o `paginaSchema(itemSchema)` genérico,
+  ao lado do `paginar()`. O 204 sem corpo declara `z.null()`, que o
+  Fastify não serializa: é só documentação para o OpenAPI. Testes que
+  esperavam o formato antigo (data com hora) mudam junto, sem mudar o
+  objetivo deles.
+
+- **Busca com tipo (B23)** (2026-10-07, Matthew escreveu a busca e o
+  `decidir`; Claude repetiu): toda transição do `cicloVidaService` passa
+  a receber o `tipo` esperado, **obrigatório**, logo depois do
+  `registroId` (`decidir(tx, id, "CONTENCAO", ator, dados)`); os `GET` e
+  `PATCH` dos services usam a mesma `buscarRegistroDoTipoOuFalhar`, em
+  arquivo próprio. Obrigatório pelo mesmo motivo da trava do B19: o
+  compilador aponta a chamada que esquecer. Feito em "expandir e
+  contrair": a busca nova ao lado da antiga, as transições migradas uma
+  por fatia, e a antiga apagada quando ninguém mais a usava. Item de
+  outro tipo responde como inexistente (404, mesma mensagem), sem
+  revelar que o `id` existe.
+
+- **Schema de resposta nos cinco filhos** (2026-10-07, Claude, no padrão
+  das rotas de NC): contenção, classificação, investigação, ação
+  corretiva e verificação seguem o D1–D5. As listas dos filhos continuam
+  um array simples (a paginação deles é a L4). O `PATCH` de cada um
+  devolve o formato completo, com o `Registro` que o B24 já toca. O
+  `planoAprovado` sai em **todas** as rotas da ação corretiva, não só no
+  detalhe (Matthew, 2026-10-07): depois de aprovar, a resposta já libera
+  a execução, sem outro `GET`; na lista, ele vem na mesma consulta (as
+  aprovações do `Registro` no `include`). O `finalizar-execucao` devolve
+  a ação com a `verificacaoGerada` no formato da Verificação, por isso a
+  Verificação veio antes da ação corretiva.
+
+- **Schema de resposta na sessão, nos usuários e nas atribuições**
+  (2026-10-07, Claude; planejado antes com Matthew, por tocar o login):
+  só a declaração do que sai, sem mudar o login, o cookie, o JWT nem o
+  limite de tentativas. No `/auth/eu` e no `POST /usuarios`, o schema é
+  a **lista do que pode sair**, a segunda trava depois do `select`: a
+  prova de quebra pôs `senhaHash` na consulta e no controller, e sem o
+  schema o hash saía na resposta. O convite (`tokenConvite`) é uma
+  credencial e sai só na criação, para o `ADMIN`. As atribuições
+  devolvem o registro gravado, como já faziam (o resto, na C1, pelo D5).
+
+- **OpenAPI** (2026-10-07, A5 item 3; planejado com Matthew, com as
+  fontes): o `@fastify/swagger` (o 9.8.1 que já vinha com o provider,
+  agora declarado) monta o documento com o `jsonSchemaTransform`, antes
+  das rotas. **OpenAPI 3.1**, e não 3.0: sem o tipo `null`, o 204 saía
+  com corpo (o Orval converte tudo para 3.1 ao ler). O
+  `diaDeCalendario()` ganhou `.meta({ type: "string", format: "date" })`:
+  nas respostas, o provider documenta o lado de saída do codec (o
+  `Date`) como `date-time`, e o cliente gerado recusaria o
+  `"AAAA-MM-DD"`. A interface (`@fastify/swagger-ui`, dependência de
+  desenvolvimento, carregada com `import()`) publica `/api/docs` e
+  `/api/docs/json` **só com `NODE_ENV=development`** (Matthew): produção
+  não publica o mapa da API. O CSP do `helmet` não bloqueou a página.
+  Uma trava nova no `app.test.ts`: toda rota da API declara a resposta
+  de sucesso.
+- **`GET /api/saude`** (2026-10-07, A5 item 5) no lugar do `GET /`,
+  sem login, com schema de resposta; testar o banco fica para a D1.
+
+- **Lote de auditoria e permissões** (2026-10-07, planejado com Matthew):
+  **L5**, o `definirAprovador` confere permissão, item e estado antes
+  de buscar o usuário escolhido (quem não podia agir sabia, pela
+  resposta, se o usuário existia e se era aprovador). **Catálogo
+  `AcaoAuditada`**, ao lado do `EntidadeAuditada` em
+  `compartilhado/auditoria/` (o TRD dizia `compartilhado/entidades/`;
+  ficou junto do irmão, e o TRD foi corrigido): o `registrar` e o
+  `aplicarTransicao` só aceitam o que está nele. Renomeadas antes de
+  existir produção: `SALVAR_RASCUNHO` → `EDITAR` e `REMOVER_COLABORADOR`
+  → `REMOVER_COLABORADORES`; registros antigos com os nomes velhos só
+  existem nos bancos de desenvolvimento. **L7**, o
+  `ultimoMotivoReprovacao` no detalhe dos cinco tipos com portão (a
+  última decisão vale; aprovada depois, `null`).
+
+- **Tetos de entrada e listas paginadas** (2026-10-07, lote 4, L4;
+  planejado com Matthew, com a revisão de design das APIs): os tetos
+  `TEXTO_CURTO` (200) e `TEXTO_LONGO` (5.000) em
+  `compartilhado/validacao/tetos.ts`; a senha até **72 bytes** (o bcrypt
+  só usa os primeiros 72; em bytes, porque acento ocupa 2); até 50
+  colaboradores por requisição. Os **schemas de corpo** ficam estritos
+  (`.strict()`): campo desconhecido responde 400. Os schemas base não,
+  porque também conferem linhas do banco, e os de resposta também não,
+  porque descartar o que sobra é a trava do que pode sair. As cinco
+  listas dos filhos passam ao envelope paginado da lista de NCs, com o
+  filtro exigindo UUID; nos repositórios, **sem `limit` vêm todas**,
+  porque a guarda de fechamento da NC usa as mesmas funções. Três
+  travas novas no OpenAPI (teto, corpo estrito, lista paginada), como a
+  de "toda rota declara a resposta". Anotados para a C1 (revisão de
+  design): R7, o erro sem código para máquina, e R8, o `DELETE` com
+  corpo.
+- **Funções repetidas dos services: ficam, com uma trava** (Matthew,
+  2026-10-08, lote 5; com o `idea-refine`). As dores levantadas foram
+  esquecer um tipo, o trabalho repetido e a leitura; a prioridade
+  escolhida foi **ler um arquivo e ver o fluxo inteiro do tipo**. O
+  padrão de módulo **não muda**: cada service continua com as suas
+  funções. A lógica pesada já mora no `cicloVidaService`; o que se
+  repete nos services é a cola entre ele e o repositório do tipo, e as
+  diferenças (`CLASSIFICAR`, `planoAprovado`, a RN-50, o filtro
+  "minhas" da NC) cresceriam na C1 e na C2. O medo de esquecer um tipo
+  ganhou uma **trava** no `app.test.ts`: ela percorre o OpenAPI e chama
+  **toda rota com `{id}`** com o id de um item de outro tipo, esperando
+  404 (rota nova entra sozinha; as de `/registros` ficam de fora, porque
+  valem para qualquer tipo). Ela achou o **B25** na primeira rodada.
+  Descartados: uma fábrica por tipo (dividiria o fluxo em dois lugares,
+  com uma opção para cada diferença), embrulhar `retirar`/`decidir`/
+  `cancelar` (já são uma chamada e uma busca), uma rota única
+  `/registros/:id/<ação>` (quebraria o D1) e um `listarPaginado` (o
+  `listarX` não é igual nos seis: a NC passa o `ator.id`, e a ação
+  corretiva calcula o `planoAprovado`). Reavaliar na C2, quando os seis
+  `submeter` mudarem juntos (o aprovador na lista do envio), com um caso
+  real.
+
 ### Fase A4 — sessão nova (branch `fase/a4-sessao`, PR #6)
 
 - **Trava de concorrência no repositório (B19):** o
@@ -23,7 +162,7 @@ documento de arquitetura.
   default `false`: sem pedir, a sessão é a curta (cookie de sessão, JWT
   de 12 h); pedindo, 30 dias. **Divergência temporária do TRD §4.1:**
   `Path=/` em vez de `/api`, porque as rotas só ganham o prefixo na A5
-  (com `/api`, o navegador nunca mandaria o cookie). Troca na A5.
+  (com `/api`, o navegador nunca mandaria o cookie). Trocado na A5.
 - **`@fastify/cookie`** (dependência nova, plugin oficial do Fastify),
   registrado antes do `@fastify/jwt`, que passa a ler o token do cookie.
 - **Middleware `autenticar` pergunta ao banco (B7):** o JWT carrega só o
