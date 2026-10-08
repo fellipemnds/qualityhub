@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { app } from "../../app.js";
+import { prisma } from "../../compartilhado/prisma/cliente.js";
 import { chamar, perfisDeFora } from "../../testes/cenarios.js";
 import { loginComo } from "../../testes/fabricas.js";
 
@@ -57,5 +59,122 @@ describe("POST /usuarios", () => {
             mensagem: "Dados inválidos",
             error: expect.arrayContaining([expect.objectContaining({ instancePath: "/papeis" })]),
         });
+    });
+});
+
+describe("GET /usuarios", () => {
+    it("acha por parte do nome ou do e-mail, sem diferenciar maiúscula, e a busca vazia acha todos", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+        const maria = await chamar(admin, "POST", "/api/usuarios", 201, {
+            ...novoUsuario(admin.usuario.setorId),
+            nome: "Maria Souza",
+            email: "maria.souza@empresa.com",
+        });
+
+        // Chama
+        const porNome = await chamar(admin, "GET", "/api/usuarios?busca=MARIA", 200);
+        const porEmail = await chamar(admin, "GET", "/api/usuarios?busca=%40EMPRESA", 200);
+        const nenhum = await chamar(admin, "GET", "/api/usuarios?busca=ninguem", 200);
+        const vazia = await chamar(admin, "GET", "/api/usuarios?busca=", 200);
+
+        // Confere
+        expect(porNome.itensDaPagina.map((u: { id: string }) => u.id)).toEqual([maria.id]);
+        expect(porEmail.itensDaPagina.map((u: { id: string }) => u.id)).toEqual([maria.id]);
+        expect(nenhum).toEqual({ itensDaPagina: [], proximoCursor: null });
+        expect(vazia.itensDaPagina).toHaveLength(4);
+    });
+
+    it("filtra por situação: ativos e inativos", async () => {
+        // Prepara (a rota de inativar vem na F4; até lá, direto no banco)
+        const { admin, visualizador } = await perfisDeFora();
+        await prisma.usuario.update({ where: { id: visualizador.usuario.id }, data: { desativadoEm: new Date() } });
+
+        // Chama
+        const ativos = await chamar(admin, "GET", "/api/usuarios?situacao=ATIVO", 200);
+        const inativos = await chamar(admin, "GET", "/api/usuarios?situacao=INATIVO", 200);
+        const todos = await chamar(admin, "GET", "/api/usuarios", 200);
+
+        // Confere
+        const ids = (pagina: { itensDaPagina: { id: string }[] }) => pagina.itensDaPagina.map((u) => u.id);
+        expect(ids(inativos)).toEqual([visualizador.usuario.id]);
+        expect(ids(ativos)).not.toContain(visualizador.usuario.id);
+        expect(ids(ativos)).toContain(admin.usuario.id);
+        expect(ids(todos)).toHaveLength(3);
+    });
+
+    it("pagina por cursor", async () => {
+        // Prepara: admin, visualizador e semPapel
+        const { admin } = await perfisDeFora();
+
+        // Chama
+        const primeira = await chamar(admin, "GET", "/api/usuarios?limit=2", 200);
+        const segunda = await chamar(admin, "GET", `/api/usuarios?limit=2&cursor=${primeira.proximoCursor}`, 200);
+
+        // Confere
+        expect(primeira.itensDaPagina).toHaveLength(2);
+        expect(segunda.itensDaPagina).toHaveLength(1);
+        expect(segunda.proximoCursor).toBeNull();
+    });
+
+    it("traz o setor e os papéis, e nunca o hash da senha", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+
+        // Chama
+        const resposta = await app.inject({ method: "GET", url: "/api/usuarios", headers: admin.autenticacao });
+
+        // Confere
+        expect(resposta.body).not.toContain("senhaHash");
+        expect(resposta.body).not.toContain("$2");
+        expect(resposta.json().itensDaPagina).toContainEqual({
+            id: admin.usuario.id,
+            nome: "admin",
+            email: "admin@teste.com",
+            setor: { id: admin.usuario.setorId, nome: "Qualidade" },
+            papeis: ["ADMIN"],
+            criadoEm: expect.any(String),
+            desativadoEm: null,
+        });
+    });
+
+    it("recusa quem não é ADMIN (403)", async () => {
+        // Prepara
+        const gerente = await loginComo("gerente");
+
+        // Chama e confere
+        await chamar(gerente, "GET", "/api/usuarios", 403);
+    });
+});
+
+describe("GET /usuarios/:id", () => {
+    it("traz o usuário com o setor e os papéis", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+        const qa = await loginComo("qa");
+
+        // Chama
+        const resposta = await chamar(admin, "GET", `/api/usuarios/${qa.usuario.id}`, 200);
+
+        // Confere
+        expect(resposta).toMatchObject({ id: qa.usuario.id, nome: "qa", papeis: ["EDITOR", "APROVADOR"] });
+        expect(resposta).not.toHaveProperty("senhaHash");
+    });
+
+    it("responde 404 quando o usuário não existe", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+
+        // Chama e confere
+        await chamar(admin, "GET", "/api/usuarios/00000000-0000-0000-0000-000000000000", 404);
+    });
+
+    it("recusa quem não é ADMIN antes de buscar: não revela se o usuário existe (403)", async () => {
+        // Prepara
+        const gerente = await loginComo("gerente");
+
+        // Chama e confere: o mesmo 403 para um id que existe e um que não existe
+        await chamar(gerente, "GET", `/api/usuarios/${gerente.usuario.id}`, 403);
+        await chamar(gerente, "GET", "/api/usuarios/00000000-0000-0000-0000-000000000000", 403);
     });
 });

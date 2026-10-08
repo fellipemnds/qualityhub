@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { CriarUsuarioInput } from "./usuario.schema.js";
+import type { CriarUsuarioInput, UsuarioFiltrosListagemInput } from "./usuario.schema.js";
 import { usuarioService } from "./usuario.service.js";
 
 export const usuarioController = {
@@ -12,5 +12,17 @@ export const usuarioController = {
         const contrato = { id: registro.usuario.id, tokenConvite: registro.token };
 
         return reply.status(201).send(contrato);
+    },
+
+    async listar(request: FastifyRequest<{ Querystring: UsuarioFiltrosListagemInput }>, reply: FastifyReply) {
+        const usuarios = await usuarioService.listarUsuarios(request.user, request.query);
+
+        return reply.status(200).send(usuarios);
+    },
+
+    async buscarPorId(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
+        const usuario = await usuarioService.buscarUsuario(request.user, request.params.id);
+
+        return reply.status(200).send(usuario);
     },
 };

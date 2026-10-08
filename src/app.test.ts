@@ -248,6 +248,9 @@ describe("Documentação da API (OpenAPI)", () => {
         // Prepara: uma NC e uma contenção; a rota de NC recebe o id da contenção, e as dos filhos, o da NC
         const doc = await documento();
         const { gerente, editor, nc } = await ncPublicada();
+        // Quem chama é quem pode agir na rota, para a permissão (conferida antes da busca) não responder 403 no lugar do
+        // 404: as de usuário são do ADMIN; as dos itens, do gerente
+        const admin = await loginComo("admin");
         const contencao = await chamar(editor, "POST", `/api/nc/${nc.id}/contencoes`, 201, {
             descricao: "Contenção para a trava do B23.",
         });
@@ -280,7 +283,7 @@ describe("Documentação da API (OpenAPI)", () => {
             const resposta = await app.inject({
                 method: metodo as Metodo,
                 url: caminho.replace("{id}", outroTipo),
-                headers: gerente.autenticacao,
+                headers: (caminho.startsWith("/api/usuarios/") ? admin : gerente).autenticacao,
                 body: comCorpo ? corpos[acao ?? ""] : undefined,
             });
             if (resposta.statusCode !== 404) {

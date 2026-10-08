@@ -1,9 +1,16 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { erroSchema } from "../../compartilhado/errors/erro.schema.js";
+import { paginaSchema } from "../../compartilhado/registro/paginacao-cursor.js";
 import { autenticar } from "../../middlewares/autenticar.js";
 import { usuarioController } from "./usuario.controller.js";
-import { criarUsuarioSchema, usuarioCriadoRespostaSchema } from "./usuario.schema.js";
+import {
+    buscarUsuarioIdSchema,
+    criarUsuarioSchema,
+    usuarioCriadoRespostaSchema,
+    usuarioFiltrosListagemSchema,
+    usuarioRespostaSchema,
+} from "./usuario.schema.js";
 
 export async function usuarioRoutes(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -15,5 +22,27 @@ export async function usuarioRoutes(app: FastifyInstance) {
             response: { 201: usuarioCriadoRespostaSchema, "4xx": erroSchema },
         },
         handler: usuarioController.criar,
+    });
+
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: "GET",
+        url: "/usuarios",
+        onRequest: [autenticar],
+        schema: {
+            querystring: usuarioFiltrosListagemSchema,
+            response: { 200: paginaSchema(usuarioRespostaSchema), "4xx": erroSchema },
+        },
+        handler: usuarioController.listar,
+    });
+
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: "GET",
+        url: "/usuarios/:id",
+        onRequest: [autenticar],
+        schema: {
+            params: buscarUsuarioIdSchema,
+            response: { 200: usuarioRespostaSchema, "4xx": erroSchema },
+        },
+        handler: usuarioController.buscarPorId,
     });
 }
