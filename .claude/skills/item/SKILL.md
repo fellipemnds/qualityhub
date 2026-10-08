@@ -7,7 +7,7 @@ description: O ciclo de um item da fase, do planejamento ao commit — escolhe o
 
 O roteiro chama as skills do `agent-skills` **pelo nome**, no momento certo, e acrescenta só o
 que é do projeto. Não copie o conteúdo delas para cá: o plugin é atualizado e a cópia
-envelheceria. Peça antes de cada commit; o push é de Matthew.
+envelheceria. Peça antes de cada commit. O push, Claude dá depois da `/verificar` (`CLAUDE.md`, "Ambiente").
 
 ## 1. Escolher o item
 

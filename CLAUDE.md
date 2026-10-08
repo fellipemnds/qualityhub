@@ -61,8 +61,9 @@ aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
 o Docker Desktop fechado o comando `docker` some do WSL. O `gh` está
 instalado e autenticado neste computador (escopos `repo` e `workflow`);
 Claude pode abrir PRs e ler o CI com ele, e o `git push` também
-funciona por ele (2026-10-06). O push continua sendo de Matthew, salvo
-pedido explícito.
+funciona por ele (2026-10-06). Desde 2026-10-08, **Claude dá o push**
+(autorização de Matthew): depois da `/verificar`, só na branch de
+trabalho, nunca na `main` e nunca com `--force`. O merge é de Matthew.
 
 **Dois computadores:** Matthew alterna entre o do trabalho e o de casa
 (mesmo ambiente: Windows + WSL2 + Docker Desktop + nvm; `SETUP.md` §12).
@@ -106,8 +107,8 @@ A partir do plano de implementação:
 - **Bug começa por um teste que falha.**
 - Cada fase termina com o checklist "pronto quando" (plano §1.1).
 - **Pedir antes de cada commit**, inclusive dentro da branch da fase,
-  mostrando o que entra (Matthew pode pedir o diff antes). Push, ele
-  faz, salvo pedido explícito (ex.: longe do PC).
+  mostrando o que entra (Matthew pode pedir o diff antes). O push, Claude
+  dá depois do commit (regra em "Ambiente").
 - Commit de formatação automática sempre **separado** das mudanças de
   código, para o diff de lógica ficar legível.
 

@@ -5,7 +5,8 @@ description: Rotina depois do merge de um Pull Request — volta para a main atu
 
 # Fechar a fase (depois do merge)
 
-Nunca dê push, nem apague branch remota sem pedido explícito.
+Nunca apague branch remota sem pedido explícito. O push da branch nova, Claude dá
+(`CLAUDE.md`, "Ambiente").
 Peça antes de cada commit.
 
 ## 0. Preparar o shell

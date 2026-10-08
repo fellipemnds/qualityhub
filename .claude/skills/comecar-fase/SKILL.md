@@ -51,8 +51,7 @@ dúvida travar o plano da fase inteira.
 ## 5. O PR em rascunho
 
 O PR nasce agora, não no fim. Ele precisa de pelo menos um commit na branch (o registro do
-`/fechar-fase` serve). Commit sem push: passe o comando a Matthew (`git push -u origin <branch>`)
-e espere. Depois, `/abrir-pr`: PR de fase em andamento nasce em rascunho.
+`/fechar-fase` serve). Commit sem push: `git push -u origin <branch>`. Depois, `/abrir-pr`: PR de fase em andamento nasce em rascunho.
 
 ## 6. Retomar
 

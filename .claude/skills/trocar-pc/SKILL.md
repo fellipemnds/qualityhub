@@ -5,7 +5,8 @@ description: Rotina de saída quando Matthew vai trocar de computador (trabalho 
 
 # Trocar de computador (saída)
 
-Nunca dê push nem merge: o push é de Matthew. Peça antes de cada commit.
+Nunca dê merge: é de Matthew. Peça antes de cada commit; o push, Claude dá (`CLAUDE.md`,
+"Ambiente").
 
 ## 0. Preparar o shell
 
@@ -52,5 +53,6 @@ e espere o ok. Se estiver na `main` (protegida), proponha uma branch antes.
 
 ## 7. Push
 
-Termine com o comando exato, num bloco `bash`: `git push`, ou `git push -u origin <branch>`
-se ainda não houver upstream.
+Depois do commit (e do diff-cover, se houver código sem push): `git push`, ou
+`git push -u origin <branch>` se ainda não houver upstream. Confira que a branch remota ficou
+em dia (`git status -sb`): o outro PC começa pelo `git pull`.
