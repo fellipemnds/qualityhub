@@ -364,7 +364,7 @@ Os caminhos abaixo são mostrados **sem** o prefixo `/api`.
 | ＋ | `GET /pessoas` | Papéis de negócio | Busca leve (id, nome, setor — E3) de usuários **ativos**, com filtro `?papel=APROVADOR` — alimenta o painel de atribuições e o `@` do feed |
 | ＋ ✅ | `GET /setores` | Logado | Setores ativos (o `ADMIN` pode pedir os inativos também) |
 | ＋ ✅ | `POST /setores` · `PATCH /setores/:id` | `ADMIN` | Criar, renomear |
-| ＋ | `POST /setores/:id/desativar` · `/reativar` | `ADMIN` | RN-44 |
+| ＋ ✅ | `POST /setores/:id/desativar` · `/reativar` | `ADMIN` | RN-44 |
 
 `GET /pessoas` separado de `GET /usuarios` porque devolve **menos
 dados** e é aberto a todos os papéis de negócio — o e-mail e os papéis
@@ -582,3 +582,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-08 | v1.50 — `TokenAcesso.revogadoEm` e índice em `usuarioId` (A6, F5b, migration `convite_revogavel`); o convite novo e o inativar revogam os pendentes |
 | 2026-10-08 | v1.51 — `definir-senha` endurecido (A6, F5c): mensagem única, limite por link, bcrypt fora da transação, derruba as sessões |
 | 2026-10-08 | v1.52 — setores: listar, criar e renomear (A6, F6a); nome único sem diferenciar maiúscula |
+| 2026-10-08 | v1.53 — setores: desativar (sem pessoas ativas) e reativar (A6, F6b); setor desativado fora das escolhas novas |

@@ -125,6 +125,16 @@ documento de arquitetura.
   trava do `{id}` aprendeu o `id` numérico do setor (um número que não
   existe) na função `idDeOutroTipo`. A RN-44 foi detalhada (PRD v1.8):
   desativar exige o setor sem pessoas ativas — vem na F6b.
+- **Setores, F6b (2026-10-08):** `POST /setores/:id/desativar` recusa
+  (409, com a lista de id e nome) enquanto houver pessoa **ativa** no setor
+  (as inativas são histórico); `/reativar` devolve o setor às opções. Os
+  dois pelo `UPDATE` condicional: repetir não grava de novo. O
+  `conferirSetor` ganhou o setor atual: setor desativado não entra em
+  **escolha nova** (criar ou mudar o setor de NC ou de pessoa), mas mandar
+  o setor que o item já tem passa. Reativar uma pessoa de setor
+  desativado é recusado até mudar o setor dela. **Concessão:** desativar
+  o setor no mesmo instante em que se cria uma pessoa nele (cada lado
+  trava uma linha diferente; com um `ADMIN`, não acontece).
 - **A trava do `{id}` escolhe quem chama** (F1): as rotas de usuário são
   chamadas pelo `ADMIN`, e as dos itens, pelo gerente. Com o gerente, o
   `GET /usuarios/:id` respondia 403 (a permissão vem antes da busca), e a
