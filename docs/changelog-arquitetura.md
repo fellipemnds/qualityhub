@@ -38,6 +38,13 @@ documento de arquitetura.
   antes e de depois. O papel muda na próxima requisição da pessoa (B7).
   A trava da RN-43 e a do último `ADMIN` entram no revogar e no inativar
   (Matthew, passo a passo).
+- **Pessoas (F7, 2026-10-08):** `GET /pessoas`, para o painel de
+  atribuições e o `@` do feed, aberta aos papéis de negócio
+  (`VISUALIZAR`) e não ao `ADMIN`. Só usuários ativos, só id, nome e
+  setor (E3), filtro `?papel=`. A busca é **só no nome**: no e-mail, quem
+  não é `ADMIN` descobriria o e-mail dos outros tentando letra por letra.
+  Fica no módulo de usuário (pessoas são usuários vistos de outro jeito).
+  Feita antes da F4–F6, enquanto a trava da RN-43 esperava Matthew.
 - **A trava do `{id}` escolhe quem chama** (F1): as rotas de usuário são
   chamadas pelo `ADMIN`, e as dos itens, pelo gerente. Com o gerente, o
   `GET /usuarios/:id` respondia 403 (a permissão vem antes da busca), e a

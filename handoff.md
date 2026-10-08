@@ -28,8 +28,8 @@ fase.
   `diff-cover` antes do push). **Claude dá o push** depois da
   `/verificar` (`CLAUDE.md`, "Ambiente").
 - Nenhum bug aberto.
-- Suíte: **403 passando** (2026-10-08, depois das rotas da F3); cobertura
-  97,18% das linhas (trava em 94,66%). Lint e typecheck limpos.
+- Suíte: **409 passando** (2026-10-08, depois da F7); cobertura 97,2%
+  das linhas (trava em 94,66%). Lint e typecheck limpos.
 - O que Matthew aprendeu na A5: `prefix` do Fastify e `Path` do
   cookie; schema de resposta (filtra o que sai, vigia o código: tipo
   errado vira 500); codec do Zod (`decode`/`encode`); *arrow function*;
@@ -176,7 +176,9 @@ migration nem chave nova no `.env` desde a última sessão.
    da busca, antes de revogar). A regra foi fechada no `interview-me`
    (2026-10-08, PRD RN-43): trava revogar `APROVADOR` de quem é aprovador de
    item em `RASCUNHO`/`ABERTO`/`EM_APROVACAO`, com a lista (409); e trava o
-   último `ADMIN` ativo. A Q23 (o colaborador escolhe o aprovador) vai para a C2. Na F4, o teste
+   último `ADMIN` ativo. A Q23 (o colaborador escolhe o aprovador) vai para a C2.
+   A **F7** (`GET /pessoas`) foi feita enquanto a trava esperava; faltam a F4
+   (inativar, depois da trava), a F5 (convite e senha) e a F6 (setores). Na F4, o teste
    do filtro "inativos" troca o `update` direto no banco pela rota de inativar. Os itens de Matthew, no passo a passo, são a
    trava da RN-43, o script do primeiro acesso e os testes das permissões
    de `ADMIN`. **Migration nova (M2):** em casa, `npm run preparar`.
@@ -209,4 +211,4 @@ parado há tempo):
 6. **Primeira foto de casa:** `npm run ambiente -- casa` e depois
    `npm run ambiente -- comparar` (`SETUP.md` §12.5). Commitar o
    `docs/ambiente/casa.txt`.
-7. `npm run test:cobertura`: **403 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).
+7. `npm run test:cobertura`: **409 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).
