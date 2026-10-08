@@ -29,7 +29,7 @@ momento tranquilo em casa, sem bloquear a fase.
   de entrada têm teto, todo corpo recusa campo desconhecido, toda lista
   é paginada (menos o checklist).
 - **B22, B23 e B24 corrigidos**; nenhum bug aberto.
-- Suíte: **373 passando**; cobertura 96,44% (trava em 94,66%); o
+- Suíte: **374 passando** (2026-10-08); cobertura 97,03% das linhas (trava em 94,66%); o
   `diff-cover` local em 100% antes de todo push. Lint e typecheck limpos.
 - O que Matthew aprendeu na A5: `prefix` do Fastify e `Path` do
   cookie; schema de resposta (filtra o que sai, vigia o código: tipo
@@ -200,4 +200,4 @@ parado há tempo):
 6. **Primeira foto de casa:** `npm run ambiente -- casa` e depois
    `npm run ambiente -- comparar` (`SETUP.md` §12.5). Commitar o
    `docs/ambiente/casa.txt`.
-7. `npm run test:cobertura`: **373 passando**, cobertura acima de 94,66% (com o Apple Music fechado, para a suíte não passar de ~5 min).
+7. `npm run test:cobertura`: **374 passando**, cobertura acima de 94,66% (com o Apple Music fechado, para a suíte não passar de ~5 min).

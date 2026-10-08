@@ -295,8 +295,15 @@ necessárias) fica no **Esquema Backend**.
   `/submeter`, `/decidir`...), como já é hoje.
 - **Datas** em ISO 8601 (UTC); **dias de calendário** em `"AAAA-MM-DD"` (§6). **IDs** UUID v7.
 - **Listas** com paginação por cursor (`cursor`, `limit`, teto 100) —
-  helper `paginacao-cursor.ts`, já existente, reaproveitado nas listas
-  novas.
+  helper `paginacao-cursor.ts`; toda lista sai no envelope
+  `{ itensDaPagina, proximoCursor }` (desde a A5).
+- **Entrada** (desde a A5, auditoria L4): todo texto tem teto
+  (`TEXTO_CURTO` 200, `TEXTO_LONGO` 5.000, e-mail 254, em
+  `compartilhado/validacao/tetos.ts`; senha até 72 bytes), toda lista
+  tem teto, e o corpo é **estrito**: campo desconhecido responde 400,
+  em vez de sumir em silêncio.
+- **Item de outro tipo** responde 404, como inexistente: os tipos
+  dividem o `Registro`, e a rota de um tipo não age sobre outro (B23).
 - **Erros** sempre no formato
   `{ "mensagem": string, "error"?: detalhes }`, com os status atuais:
   400 validação · 401 sem sessão · 403 sem permissão · 404 não
