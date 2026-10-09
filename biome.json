@@ -29,6 +29,9 @@
       },
       "suspicious": {
         "noImportCycles": "error"
+      },
+      "nursery": {
+        "noFloatingPromises": "error"
       }
     }
   },

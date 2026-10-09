@@ -49,7 +49,7 @@ Hoje o código cumpre o piso inteiro: nenhuma supressão, `TODO` ou
 | Dimensão | Regra | Verificado por | Roda em | Falha | Situação |
 |---|---|---|---|---|---|
 | Tipos | Zero erros | `npm run typecheck` (`tsc --noEmit`) | cada edição, CI | **bloqueia** | ✅ em uso |
-| Lint e formatação | Zero erros na nossa config (Biome `recommended`, com `noUnusedImports` subido de aviso para erro em 2026-10-08: o `recommended` só avisava, e o lint passava) | `npm run lint` (`biome check .`) | cada edição, CI | **bloqueia** | ✅ em uso |
+| Lint e formatação | Zero erros na nossa config (Biome `recommended`, com `noUnusedImports` subido de aviso para erro em 2026-10-08: o `recommended` só avisava, e o lint passava; e o `noFloatingPromises`, experimental, ligado em 2026-10-09: pega a promessa sem `await` de função `async` nossa, mas não a do Prisma, que o Biome não reconhece como promessa) | `npm run lint` (`biome check .`) | cada edição, CI | **bloqueia** | ✅ em uso |
 | Testes | Todos passando | `npm test` (Vitest + Testcontainers) | ao fechar um item (§4), CI | **bloqueia** | ✅ em uso |
 | Segredos | Nenhum segredo no código nem no histórico, fora as exceções (§5) | `gitleaks detect --redact --no-banner` (v8.30.1, job `segredos`; exceções no `.gitleaksignore`) | CI | **bloqueia** | ✅ em uso |
 | Arquitetura | Zero violações das regras da §2.1 | `npm run lint` (Biome: `noRestrictedImports` por grupo de arquivo e `noImportCycles`, no `biome.json`) | cada edição, CI | **bloqueia** | ✅ em uso |
