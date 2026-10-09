@@ -290,6 +290,7 @@ o último `ADMIN`, em que cada lado mexe numa pessoa diferente, usa uma trava ú
 | **B32** (último `ADMIN`) e **B33** (revogar ou inativar × designar) **Feito** (2026-10-09) | 🤖 |
 | **B34** (RN-12) e **B36** (a troca de aprovador que respondia 500): a trava do item nas atribuições **Feito** (2026-10-09) | 🤖 |
 | **B35** (desativar o setor × escolher o setor) **Feito** (2026-10-09) | 🤖 |
+| **B37** (o OpenAPI com `$ref` sem destino no `conteudo` da investigação), achado ao conferir o portão. **Feito** (2026-10-09): o `conteudo` como objeto de chaves livres e a trava de `$ref` no `app.test.ts`; o OpenAPI passa no Redocly sem erro | 🤖 |
 
 **Quem escreve:** combinado em 2026-10-09, na sessão na nuvem (Matthew pelo iPad, sem como digitar código): Claude
 escreve, Matthew revisa os diffs. Cada bug começa por um teste que falha. Os de corrida usam o `pausarNoMeio`
@@ -329,7 +330,7 @@ repetem o padrão, geradas.
 
 | Fase | Telas | Backend junto | Tamanho |
 |---|---|---|---|
-| **C0 · Base do front** | Projeto Vite + Tailwind + shadcn/ui + Router + TanStack Query; cliente gerado pelo **Orval**; layout (menu lateral e barra inferior); login e definir senha (T-01, T-02); tela inicial por papel; estados de tela padrão (`fluxo-app.md` §8); mapa tipado de estados | — (já pronto no A4/A5) | G |
+| **C0 · Base do front** | Projeto Vite + Tailwind + shadcn/ui + Router + TanStack Query; cliente gerado pelo **Orval** (antes, um `operationId` em cada rota: sem ele, o Orval inventa os nomes das funções a partir do caminho; o Redocly avisa nas 82 operações, revisão do portão de 2026-10-09); layout (menu lateral e barra inferior); login e definir senha (T-01, T-02); tela inicial por papel; estados de tela padrão (`fluxo-app.md` §8); mapa tipado de estados | — (já pronto no A4/A5) | G |
 | **C1 · NCs** | Lista (T-04), Nova NC (T-05), Detalhe da NC (T-06) com checklist | Etapa calculada (função pura, testada sem banco); filtros novos; NC criada com colaboradores; `GET /registros/:id/atribuicoes`; **o que a T-06 pedir no `GET /nc/:id`** (etapa, resumo dos filhos, aprovador, colaboradores; decidir aqui entre uma chamada só ou várias), acrescentado ao `ncSchema` da A5 sem tirar nada (decisão D5 da A5) | G |
 | **C2 · Itens filhos** | T-07 para os cinco tipos, barra de ações, `BotaoBloqueado`, `DialogoMotivo`, `DialogoEfeito`, Investigação A3 com índice e as **contramedidas** (ações vinculadas, com o selo do plano) | **Hipóteses** (L1); investigação com ações vinculadas; **rota de leitura da lista do envio** (a tela precisa dela antes do clique; hoje só a NC tem checklist): decidir entre uma rota por tipo ou uma genérica, `GET /<tipo>/:id/checklist-submissao` (TRD §5). Junto, o **aprovador entra na lista** dos seis tipos: a checagem genérica do `cicloVidaService.submeter` deixa de barrar antes da guarda (hoje, sem aprovador, o 409 vem sem a lista — esquema §4.3). Junto da Q22, a **Q23** (PRD): o colaborador (`EDITOR`) define o aprovador dos itens em que é colaborador — a regra de permissão do `definirAprovador` passa a combinar papel e atribuição (`podeExecutar`) | G |
 | **C3 · Pendências** | Minhas pendências (T-03), contador no menu, preferência de tela inicial | `GET /pendencias` (esquema §4.4) | M |
@@ -381,7 +382,7 @@ Onde cada item dos documentos anteriores é feito:
 | Pendência 4 (login auditado) | A4 |
 | Pendência OpenAPI · RNF-04 (schema de resposta) · L7 (último motivo de reprovação) · B22 (dia de calendário na resposta) · B23 (`id` de outro tipo) · B24 (`atualizadoEm` na edição) · B25 (`finalizar-execucao` sem tipo) · B26 (e-mail sem teto) | A5 |
 | B27 (login em voo sobrevive à derrubada das sessões) · B28 (pessoa inativa recebe atribuição) | A6 |
-| B29–B36 (filho fora da NC aberta; as conferências entre linhas sem trava) · RN-51 | A7 |
+| B29–B36 (filho fora da NC aberta; as conferências entre linhas sem trava) · B37 (`$ref` sem destino no OpenAPI) · RN-51 | A7 |
 | RF-15 (usuários) · RF-20 (setores) · RN-43 · RN-44 | A6 (backend), C6 (telas) |
 | RF-01 (NC com colaboradores) · RF-16 (etapa) · L2, L5, L6 · R7 (código de erro para máquina) e R8 (`DELETE` com corpo), da revisão de design da A5 | C1 |
 | L1 (hipóteses) · L3 (plano aprovado) | C2 · A3 |
@@ -456,3 +457,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-09 | v1.26 — fase A7 (travas entre linhas): B29–B36, da revisão de concorrência da A6; o portão passa a exigir A0–A7 |
 | 2026-10-09 | **A6 concluída** (branch `fase/a6-usuarios-e-setores`, PR #9): usuários, setores e `GET /pessoas` (F1–F7), as travas da RN-43 e do último `ADMIN`, a RN-44 detalhada, o script do primeiro acesso, B27 e B28; a revisão de concorrência levou B29–B36 para a A7. 475 testes. O "pronto quando" de Matthew explicar a fase fica para o passeio guiado |
 | 2026-10-09 | v1.27 — revisão de segurança do repositório inteiro (`security-and-hardening`), sem conserto a fazer: a validade do link de redefinir senha vai para a C6 e a LGPD (retenção, base legal, pedido de exclusão) para a D0 |
+| 2026-10-09 | v1.28 — B37 na A7 (o OpenAPI conferido para o portão); C0: o `operationId` antes do Orval |

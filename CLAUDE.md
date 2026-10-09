@@ -22,7 +22,7 @@ próprio, com aprovação de Matthew (`CONSTRAINTS.md` §6).
 | `docs/fluxo-app.md` | Telas, navegação, etapa calculada da NC, jornadas, ações por estado, "Minhas pendências" |
 | `docs/ui-ux.md` | Fundações visuais, componentes (shadcn/ui), wireframes em texto, textos da tela |
 | `docs/trd.md` | Stack, sessão, API, anexos, testes, infraestrutura, hospedagem, ADR-33 a ADR-38 |
-| `docs/esquema-backend.md` | Modelo de dados, mudanças M1–M5, valores calculados, contrato da API, correções B1–B36 |
+| `docs/esquema-backend.md` | Modelo de dados, mudanças M1–M5, valores calculados, contrato da API, correções B1–B37 |
 | `docs/plano-implementacao.md` | **Ordem de execução**: fases A0–A7 (fundação do backend), B (design), C0–C8 (frontend em fatias), D (produção) |
 | `docs/changelog-arquitetura.md` | Registro de toda decisão de arquitetura e divergência do documento original. **Leia antes de propor mudança estrutural** |
 | `docs/arquitetura.md` | Documento de design **original** (histórico). Onde diverge dos documentos acima, eles valem |
@@ -42,7 +42,7 @@ para os outros documentos em vez de repetir o que já está neles.
 Ainda pendente fora do código: hospedagem (TRD §10.6), identidade
 visual.
 
-**Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B36; os
+**Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B37; os
 corrigidos têm ✅). A A3 corrigiu B1–B6 e B8–B18, e a RN-48 entrou como
 regra nova (fase fechada em 2026-10-02, PR #4). A A4 corrigiu o B19
 (transições sem trava sob concorrência) e o B7 (papéis no token), os
@@ -65,7 +65,9 @@ RN-43), em 2026-10-09, achado na revisão da fase (fase fechada em
 (o filho novo nascia com a NC em aprovação ou fechada; RN-51) e o
 B30–B36 (sete regras que conferem outras linhas quebravam com duas
 requisições ao mesmo tempo), em 2026-10-09, achados na revisão de
-concorrência da A6. **Nenhum bug aberto.**
+concorrência da A6, e o B37 (o OpenAPI tinha `$ref` sem destino no
+`conteudo` da investigação), no mesmo dia, ao conferir o portão.
+**Nenhum bug aberto.**
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com

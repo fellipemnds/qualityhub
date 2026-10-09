@@ -47,6 +47,21 @@ documento de arquitetura.
   requisição ali e espera 300 ms: sem a trava, a outra grava por baixo
   (vermelho sempre); com ela, espera e é recusada (verde sempre).
 
+- **O OpenAPI conferido para o portão (2026-10-09, B37).** Gerado e
+  passado no Redocly (`@redocly/cli`, regras mínimas): 82 operações, as
+  81 rotas e o `/api/saude`. Achou 11 `$ref` sem destino, todos no
+  `conteudo` da investigação: o `z.json()` é recursivo, e o
+  `fastify-type-provider-zod` não leva a definição recursiva para o
+  documento (com nome no registro do Zod e o `transformObject`, o `$ref`
+  saía malformado). **Decisão:** o `conteudo` vira objeto de chaves
+  livres (`z.record(z.string(), z.unknown())`), não recursivo, porque o
+  A3 é sempre um objeto; a conversão para o JSON do Prisma fica num lugar
+  só, no repository. **Descartado:** o `override` do Zod para o JSON
+  Schema (mais código para o mesmo efeito). Junto, uma trava nova no
+  `app.test.ts` (todo `$ref` aponta para um schema do documento). Os
+  avisos que sobraram são de estilo; o `operationId` vai para a C0, antes
+  do Orval.
+
 ### Fase A6 — usuários, setores e pessoas (branch `fase/a6-usuarios-e-setores`, PR #9)
 
 - **Conferência do setor num lugar só** (2026-10-08, L6): o

@@ -39,7 +39,7 @@ a A6 já mesclada entrou nela por merge). Depois da A7, o portão
   `diff-cover` antes do push). **Claude dá o push** depois da
   `/verificar` (`CLAUDE.md`, "Ambiente").
 - Nenhum bug aberto (B1–B36).
-- Suíte: **488 passando** (2026-10-09, na nuvem, depois da A7; cobertura 97,47% das linhas; 145 s na nuvem). Antes, **472 passando** (2026-10-09, depois do item 6 da A6;
+- Suíte: **489 passando** (2026-10-09, na nuvem, depois da A7 e do B37; cobertura 97,47% das linhas; 145 s na nuvem). Antes, **472 passando** (2026-10-09, depois do item 6 da A6;
   cobertura 97,42% das linhas (trava em 94,66%). Com a máquina carregada (VS Code, pouca
   memória livre), chegou a 473 s.
 - O que Matthew aprendeu na A5: `prefix` do Fastify e `Path` do
@@ -196,13 +196,26 @@ dependência nem chave nova no `.env`**: no PC, só `git pull` (e o
 
 ## 6. Próximo passo
 
-1. ~~Merge do PR #9 (A6) e `/fechar-fase`~~ **feitos em 2026-10-09**.
-2. **Matthew: revisar os diffs da A7** (o PR #10, em rascunho).
-3. Fechar a A7 (`/abrir-pr`) e o **portão "fundação pronta"**: o item
-   adiado do "pronto quando" da A4 e da A6 (Matthew explicar o B19, o
-   `SameSite=Strict` e, agora, a trava entre linhas), no **passeio
-   guiado** (em casa, com o `/understand-anything:understand` antes),
-   e o OpenAPI conferido.
+1. **Matthew: merge do PR #10 (A7)**, com a mensagem entregue na
+   conversa. Depois, o `/fechar-fase` da A7, que é a **última fase do
+   bloco A**: inclui o passo 5, rever as skills no fim do bloco.
+2. **O portão "fundação pronta"** (plano, fim da seção 3):
+   - ~~OpenAPI completo, gerando sem erro~~ **conferido em 2026-10-09**
+     (Redocly sem erro; o B37 corrigido no caminho);
+   - nenhum bug aberto: ok (B1–B37);
+   - A0–A7 concluídas, com o CI verde na `main`: falta o merge da A7;
+   - e o que ficou adiado dos "pronto quando": **Matthew explicar a A4
+     (o B19 e o `SameSite=Strict`), a A6 e a A7 (a trava entre
+     linhas)**, no **passeio guiado** (em casa, com o
+     `/understand-anything:understand` antes; roteiro no passo 3 abaixo).
+3. Roteiro do passeio: uma requisição de ponta a ponta (rota →
+   controller → service → `cicloVidaService` →
+   `buscarRegistroDoTipoOuFalhar` → `aplicarTransicao` →
+   `registroRepository.atualizar` → banco → auditoria → resposta), com
+   Matthew dizendo o que cada parte faz antes de Claude explicar; e, para
+   a A7, um teste com o `pausarNoMeio` lido linha a linha.
+4. Depois do portão: o Bloco B (design) e a C0 (com o `operationId`
+   antes do Orval, plano C0).
 
 Da revisão de design das APIs (2026-10-07), anotados para a C1/C2:
 **R7**, o erro sem código para máquina (os 409 diferentes só se
@@ -232,4 +245,4 @@ parado há tempo):
 6. **Primeira foto de casa:** `npm run ambiente -- casa` e depois
    `npm run ambiente -- comparar` (`SETUP.md` §12.5). Commitar o
    `docs/ambiente/casa.txt`.
-7. `npm run test:cobertura`: **488 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).
+7. `npm run test:cobertura`: **489 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).

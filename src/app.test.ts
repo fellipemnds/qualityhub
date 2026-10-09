@@ -130,6 +130,21 @@ describe("Documentação da API (OpenAPI)", () => {
         expect(semResposta).toEqual([]);
     });
 
+    // Um $ref sem destino passa no app.swagger(), mas o Orval não gera o cliente, e as outras travas não enxergam o que
+    // está atrás dele (B37: o conteudo da investigação, um z.json(), apontava para um schema que não saía no documento)
+    it("todo $ref aponta para um schema que existe no documento (B37)", async () => {
+        // Chama
+        const doc = (await documento()) as unknown as { components?: { schemas?: Record<string, unknown> } };
+
+        // Confere
+        const existentes = Object.keys(doc.components?.schemas ?? {}).map((nome) => `#/components/schemas/${nome}`);
+        const refsEm = (texto: string) =>
+            [...texto.matchAll(/"\$ref":"([^"]+)"/g)].flatMap(([, ref]) => (ref ? [ref] : []));
+        // O detector acha um $ref de verdade: sem isto, um documento sem nenhum passaria por engano
+        expect(refsEm('{"$ref":"#/components/schemas/schema0"}')).toEqual(["#/components/schemas/schema0"]);
+        expect([...new Set(refsEm(JSON.stringify(doc)))].filter((ref) => !existentes.includes(ref))).toEqual([]);
+    });
+
     it("o 204 sai documentado sem corpo", async () => {
         // Chama
         const doc = await documento();

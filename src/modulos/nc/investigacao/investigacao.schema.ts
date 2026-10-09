@@ -5,10 +5,14 @@ import { TipoRegistro } from "../../../compartilhado/entidades/tipos-registro.js
 import { paginacaoCursorSchema } from "../../../compartilhado/registro/paginacao-cursor.js";
 import { TEXTO_LONGO } from "../../../compartilhado/validacao/tetos.js";
 
+// O conteúdo do método (A3 SPS): um objeto de chaves livres (percepção inicial, descrição, ishikawa...). Não o z.json(): ele é
+// recursivo, e a definição recursiva saía no OpenAPI como um $ref para o nada, que o Orval não segue (B37)
+const conteudoA3 = z.record(z.string(), z.unknown());
+
 export const investigacaoBaseSchema = z.object({
     realProblema: z.string().min(20).max(TEXTO_LONGO),
     metodo: z.enum(MetodoInvestigacao).nullish(),
-    conteudo: z.json().nullish(),
+    conteudo: conteudoA3.nullish(),
     causaDireta: z.string().min(20).max(TEXTO_LONGO).nullish(),
     causaRaiz: z.string().min(20).max(TEXTO_LONGO).nullish(),
 });
@@ -17,7 +21,7 @@ export const investigacaoRascunhoSchema = investigacaoBaseSchema.partial().stric
 export const investigacaoPublicacaoSchema = investigacaoBaseSchema;
 export const investigacaoFechamentoSchema = investigacaoBaseSchema.extend({
     metodo: z.enum(MetodoInvestigacao),
-    conteudo: z.json(),
+    conteudo: conteudoA3,
     causaDireta: z.string().min(20).max(TEXTO_LONGO),
     causaRaiz: z.string().min(20).max(TEXTO_LONGO),
 });
@@ -40,7 +44,7 @@ export const investigacaoRespostaSchema = z.object({
     naoConformidadeId: z.uuid(),
     realProblema: z.string().nullable(),
     metodo: z.enum(MetodoInvestigacao).nullable(),
-    conteudo: z.json().nullable(),
+    conteudo: conteudoA3.nullable(),
     causaDireta: z.string().nullable(),
     causaRaiz: z.string().nullable(),
 });
