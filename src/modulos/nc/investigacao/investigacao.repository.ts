@@ -3,9 +3,15 @@ import type { ClientePrisma } from "../../../compartilhado/prisma/tipos.js";
 import { Prisma } from "../../../generated/prisma/client.js";
 import type { InvestigacaoRascunhoInput } from "./investigacao.schema.js";
 
+// O conteúdo chega do corpo JSON da requisição: todo valor dentro dele já é JSON. O schema o declara como objeto de valores
+// unknown (o z.json() recursivo quebrava o OpenAPI, B37), e é aqui, na entrada do Prisma, que ele volta a ser JSON
+function conteudoParaPrisma(conteudo: InvestigacaoRascunhoInput["conteudo"]) {
+    return conteudo === null ? Prisma.JsonNull : (conteudo as Prisma.InputJsonObject | undefined);
+}
+
 export const investigacaoRepository = {
     async criar(tx: ClientePrisma, dados: InvestigacaoRascunhoInput & { id: string; naoConformidadeId: string }) {
-        const conteudo = dados.conteudo === null ? Prisma.JsonNull : dados.conteudo;
+        const conteudo = conteudoParaPrisma(dados.conteudo);
         return tx.investigacao.create({
             data: {
                 ...dados,
@@ -15,7 +21,7 @@ export const investigacaoRepository = {
     },
 
     async atualizar(tx: ClientePrisma, id: string, dados: InvestigacaoRascunhoInput) {
-        const conteudo = dados.conteudo === null ? Prisma.JsonNull : dados.conteudo;
+        const conteudo = conteudoParaPrisma(dados.conteudo);
         return tx.investigacao.update({
             where: { id },
             data: {

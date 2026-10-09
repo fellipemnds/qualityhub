@@ -136,6 +136,8 @@ export const ncService = {
 
     async submeterNC(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
+            // Trava a NC antes de ler os filhos: um filho criado no meio espera o envio terminar (RN-51, B29)
+            await registroRepository.travar(tx, registroId);
             const nc = await ncRepository.buscarPorId(tx, registroId);
 
             if (nc === null) {

@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
-import { chamar, diaDaquiA, ncPublicada } from "../../../testes/cenarios.js";
+import { chamar, diaDaquiA, ncAbertaSemAprovador, ncPublicada } from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
 import { levarAcaoCorretivaAte } from "../../../testes/levar-ate/acao-corretiva.js";
 import { levarClassificacaoAte } from "../../../testes/levar-ate/classificacao.js";
 import { levarContencaoAte } from "../../../testes/levar-ate/contencao.js";
+import { levarNCAte } from "../../../testes/levar-ate/nc.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
 
@@ -20,6 +21,20 @@ describe("POST /nc/:naoConformidadeId/contencoes", () => {
 
         // Confere
         expect(resposta).toEqual({ mensagem: "A Não Conformidade não existe ou não foi encontrada" });
+    });
+
+    it("recusa com a NC em aprovação (RN-51, B29)", async () => {
+        // Prepara
+        const { editor, nc } = await levarNCAte("EM_APROVACAO");
+        const antes = await prisma.contencao.count({ where: { naoConformidadeId: nc.id } });
+
+        // Chama
+        await chamar(editor, "POST", `/api/nc/${nc.id}/contencoes`, 409, {
+            descricao: "Segregação do lote seguinte, aberta com a NC já em aprovação.",
+        });
+
+        // Confere
+        expect(await prisma.contencao.count({ where: { naoConformidadeId: nc.id } })).toBe(antes);
     });
 });
 
@@ -118,7 +133,7 @@ describe("GET /contencoes", () => {
     it("filtra por NC e por estado", async () => {
         // Prepara: duas contenções na NC do cenário (uma publicada) e uma em outra NC
         const { editor, nc } = await ncPublicada();
-        const outraNC = await chamar(editor, "POST", "/api/nc", 201, { titulo: "Outra NC, com a sua contenção" });
+        const outraNC = await ncAbertaSemAprovador(editor, "Outra NC, com a sua contenção");
         const publicada = await chamar(editor, "POST", `/api/nc/${nc.id}/contencoes`, 201, {
             descricao: "Contenção que vai ser publicada.",
         });
@@ -296,7 +311,7 @@ describe("POST /contencoes/:id/submeter", () => {
     it("recusa sem aprovador definido (RN-13)", async () => {
         // Prepara: a NC ainda sem aprovador, então o filho também nasce sem (RN-46)
         const { editor } = await ncPublicada();
-        const nc = await chamar(editor, "POST", "/api/nc", 201, { titulo: "NC ainda sem aprovador" });
+        const nc = await ncAbertaSemAprovador(editor, "NC ainda sem aprovador");
         const contencao = await chamar(editor, "POST", `/api/nc/${nc.id}/contencoes`, 201, {
             descricao: "Retrabalho realizado na peça com defeito.",
             executadaEm: diaDaquiA(-1),

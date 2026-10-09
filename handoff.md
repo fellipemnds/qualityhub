@@ -5,17 +5,28 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-09, fim do dia (no **trabalho**, `/trocar-pc`). **Todas as entregas da A6 estão feitas**: o script do primeiro acesso (`npm run criar-admin`) e o item 6, escritos por Matthew. Falta o CI do PR #9 ficar verde (parado no Docker Hub, fora do ar; não é o código) e fechar a fase (§6). Antes, 2026-10-09, chegada no **trabalho** (`/retomar`: branch em dia com a remota, CI do PR #9 verde, ambiente sem alertas; a foto só mudou as extensões do Claude Code e do Prisma no VS Code). Antes, 2026-10-08, fim do dia (no **trabalho**). A A6 avançou: **todas as rotas prontas** (F1–F7, com a F5 de convite e senha e o B27 corrigido); falta o script do primeiro acesso, o item 6 e fechar a fase. Antes, 2026-10-08 (no **trabalho**). A **A5 foi fechada** (PR #8, merge `b4aa14e`) e a branch `fase/a6-usuarios-e-setores` foi aberta. O PC de casa continua sem foto (`casa.txt`).
+**Última atualização:** 2026-10-09, noite (**sessão na nuvem**, Matthew pelo iPad; a primeira, `SETUP.md` §13). **A6 fechada** (PR #9, merge `e441212`; a `main` já entrou na branch da A7 por merge). **A7 aberta e feita** na branch `fase/a7-travas-entre-linhas` (B29–B36 corrigidos), **esperando a revisão dos diffs por Matthew**. Antes, 2026-10-09, fim do dia (no **trabalho**, `/trocar-pc`): o script do primeiro acesso e o item 6. O PC de casa continua sem foto (`casa.txt`).
 
 ## 1. Objetivo
 
-Fase **A6 — Usuários, setores e pessoas** (`docs/plano-implementacao.md`),
-na branch `fase/a6-usuarios-e-setores`. Antes do `/comecar-fase`, o
-passeio guiado pelo código (§6), de preferência em casa, sem bloquear a
-fase.
+Fase **A7 — Travas entre linhas** (`docs/plano-implementacao.md`), na
+branch `fase/a7-travas-entre-linhas` (PR #10, em rascunho; a `main` com
+a A6 já mesclada entrou nela por merge). Depois da A7, o portão
+"fundação pronta".
 
 ## 2. Estado atual
 
+- **A7 (2026-10-09, na nuvem; Claude escreveu, Matthew revisa os
+  diffs):** B29–B36 corrigidos por **travar antes de ler** (o
+  `registroRepository.travar`, as travas da pessoa e do setor e a trava
+  única da saída de ADMIN), sempre `FOR NO KEY UPDATE`; filho novo só
+  com a NC aberta, nem em rascunho (RN-51, decisão de Matthew, que revê a
+  da A3). Os testes de corrida usam o `pausarNoMeio`
+  (`testes/cenarios.ts`). Detalhe no changelog, "Fase A7".
+- **A6, revisão da fase (2026-10-09, na nuvem):** o **B28** (pessoa
+  inativa designada aprovadora ou colaboradora) e a revisão de
+  concorrência que achou o B29–B36. O "pronto quando" da A6 (Matthew
+  explicar a fase) foi adiado para o passeio guiado, como o da A4.
 - **A5 fechada em 2026-10-08** (PR #8; o detalhe está no changelog,
   "Fase A5", e na descrição do PR): prefixo `/api`, schema de resposta
   em todas as rotas, OpenAPI 3.1 só em desenvolvimento, `GET
@@ -27,8 +38,8 @@ fase.
   revisão do diff) e `/verificar` (a verificação local, com o
   `diff-cover` antes do push). **Claude dá o push** depois da
   `/verificar` (`CLAUDE.md`, "Ambiente").
-- Nenhum bug aberto.
-- Suíte: **472 passando** (2026-10-09, depois do item 6 da A6;
+- Nenhum bug aberto (B1–B36).
+- Suíte: **489 passando** (2026-10-09, na nuvem, depois da A7 e do B37; cobertura 97,47% das linhas; 145 s na nuvem). Antes, **472 passando** (2026-10-09, depois do item 6 da A6;
   cobertura 97,42% das linhas (trava em 94,66%). Com a máquina carregada (VS Code, pouca
   memória livre), chegou a 473 s.
 - O que Matthew aprendeu na A5: `prefix` do Fastify e `Path` do
@@ -76,23 +87,20 @@ Nenhum.
 
 ## 4. O que foi alterado nesta sessão
 
-Na A5 (`git log fc33c06..b4aa14e`): o lote 5, o B25, o B26, as
-convenções da A5 no TRD §7.1 e a descrição do PR #8. Fora do código: as
-skills `/item` e `/verificar`, a `/retomar` conferindo o PR e se o
-handoff está em dia, a revisão por item na `/item`, o push pelo Claude e
-a colinha §6 (`understand-anything` e `Explore`).
-
-Em 2026-10-09 (no trabalho): o script do primeiro acesso, o `fast-jwt`
-6.3.4 (alerta do `osv-scanner`), a regra `noFloatingPromises` no Biome e
-a exceção X5. **Chave nova no `.env`: `URL_DO_SISTEMA`** (opcional; o
-`npm run ambiente` acusa a falta dela no outro PC: copiar a linha do
-`.env.example`). Sem migration nem dependência nova (o `fast-jwt` só
-subiu de versão: o `npm run preparar` resolve).
+Na nuvem (2026-10-09, noite): na **A6** (`git log e29265d..ca93de8`), o
+B28, a `SETUP.md` §13 (a sessão na nuvem), o registro do B29–B36, da
+RN-51 e da fase A7, e o PR #9 fora do rascunho. Na **A7** (a branch
+nova): os consertos do B29–B36 e os documentos. **Sem migration,
+dependência nem chave nova no `.env`**: no PC, só `git pull` (e o
+`npm run preparar` de sempre).
 
 ## 5. Falhas (e o porquê)
 
 | O que falhou | Por quê | Situação |
 |---|---|---|
+| Na nuvem, a suíte caiu com `Could not find a working container runtime strategy` (2026-10-09) | O `dockerd` da sessão morreu sozinho entre uma rodada e outra | Claude: `docker info` antes de cada suíte, e ligar o `dockerd` de novo (`SETUP.md` §13) |
+| O teste de corrida do envio da NC passou **sem** a trava (2026-10-09) | Com o `Promise.all`, a corrida acontece em 1 de 4 rodadas | Testes de corrida pelo `pausarNoMeio` (pausa entre conferir e gravar): vermelho sempre sem a trava, verde sempre com ela |
+| A primeira trava do B32 deu *deadlock* (500) | O `FOR UPDATE` segura também a chave estrangeira da auditoria que aponta para a pessoa (os dois ADMINs se esperavam) | `FOR NO KEY UPDATE`, a trava do `UPDATE` (no `CLAUDE.md`, "Trava entre linhas") |
 | `npm audit`: 4 vulnerabilidades altas | Herdadas do Prisma 7 | **Aberto**, risco baixo — `docs/trd.md` §13. Nunca `npm audit fix --force` |
 | Aviso "Update available 7.10.0 → 8.0.0-rc" do Prisma | É release candidate e versão major | **Não atualizar** |
 | Aviso no CI: `ubuntu-latest` vira Ubuntu 26 em 19/10/2026 | Migração do GitHub | Nada a fazer; se o CI quebrar depois dessa data, começar por aqui |
@@ -188,51 +196,26 @@ subiu de versão: o `npm run preparar` resolve).
 
 ## 6. Próximo passo
 
-1. **Passeio guiado pelo código** (em casa, num momento tranquilo). Antes dele, rodar o `/understand-anything:understand` (uma vez, em português, só `src/` sem os testes) e usar o `understand-onboard` como roteiro; depois, decidir se o grafo fica (colinha §6).
-   **Inclui o último item do "pronto quando" da A4**, adiado no merge:
-   Matthew explicar o B19 ("confere e depois age", o `UPDATE`
-   condicionado ao estado lido) e o que o `SameSite=Strict` bloqueia e
-   o que não bloqueia. Roteiro: uma requisição de ponta a ponta (rota →
-   controller → service → `cicloVidaService` → `buscarRegistroDoTipoOuFalhar`
-   → `aplicarTransicao` → `registroRepository.atualizar` → banco →
-   auditoria → resposta), com Matthew dizendo o que cada parte faz antes
-   de Claude explicar.
-2. **A6, pela `/item`** (`/comecar-fase` feito em 2026-10-08, PR #9 em
-   rascunho; a ordem e as 7 fatias das rotas estão no plano, abaixo da tabela
-   da A6). **Feitas:** M2, L6 (o `conferirSetor`, usado pela NC e pelo
-   `POST /usuarios`), F1 (leitura de usuários), F2 (editar), **F3** (papéis,
-   com a trava da RN-43 e a do último `ADMIN`, escritas por Matthew), F4 (inativar
-   e reativar, com as travas extraídas por Matthew para o `conferirSaida`) e
-   F7 (`GET /pessoas`). A Q23 (o colaborador escolhe o aprovador) vai para a C2.
-   **F5 feita** (2026-10-08, três fatias; o desenho, das revisões de segurança e
-   dos dois ciclos de `doubt-driven`, está no changelog): o B27 (a `versaoSessao`),
-   o convite que revoga os anteriores e o definir senha endurecido. **Em casa,
-   `npm run preparar` (duas migrations novas) e entrar de novo** (os tokens
-   antigos não valem). **F6 feita** (setores: listar, criar, renomear, desativar sem pessoas
-   ativas, reativar; setor desativado fora das escolhas novas). **As rotas da A6
-   estão completas.** **Script do primeiro acesso feito** (2026-10-09, escrito
-   por Matthew; `npm run criar-admin`, desenho e o que mudou no changelog,
-   exceção X5 no `CONSTRAINTS.md` §5). **Item 6 feito** (2026-10-09: os
-   limites da RN-43, com prova de quebra; as permissões de `ADMIN` já eram
-   cobertas pelas tabelas da A2). **Todas as entregas da A6 estão feitas.**
-
-   **Começar por aqui na próxima conversa:**
-   1. **O CI do PR #9 verde.** Caiu por causa do Docker Hub (limite de
-      downloads sem login; depois, erros 500 e timeout do próprio Docker
-      Hub, também daqui do PC). O login no Docker Hub já está no CI
-      (*secrets* `DOCKERHUB_USERNAME` e `DOCKERHUB_TOKEN`, token só de
-      leitura, criados por Matthew). Rodar de novo (`gh run rerun <id>
-      --failed`) quando o Docker Hub voltar; o código está verificado aqui
-      (472 testes, `diff-cover` 100%). Com o CI verde, atualizar a
-      descrição do PR com o script e o item 6.
-   2. **Fechar a A6** (`/abrir-pr`): as revisões da fase, o "pronto quando"
-      (Matthew explica o que a fase mudou) e a decisão sobre o que foi
-      anotado sem tratar: duas revogações de `ADMIN` ao mesmo tempo podem
-      passar as duas (concorrência, como o B19; o `revogarPapel` não trava a
-      linha do usuário). Depois, o merge de Matthew e o `/fechar-fase`.
-   3. **O portão "fundação pronta"** (fim do bloco A): o item adiado do
-      "pronto quando" da A4 (Matthew explicar o B19 e o `SameSite=Strict`,
-      no passeio guiado, passo 1) e o OpenAPI conferido.
+1. **Matthew: merge do PR #10 (A7)**, com a mensagem entregue na
+   conversa. Depois, o `/fechar-fase` da A7, que é a **última fase do
+   bloco A**: inclui o passo 5, rever as skills no fim do bloco.
+2. **O portão "fundação pronta"** (plano, fim da seção 3):
+   - ~~OpenAPI completo, gerando sem erro~~ **conferido em 2026-10-09**
+     (Redocly sem erro; o B37 corrigido no caminho);
+   - nenhum bug aberto: ok (B1–B37);
+   - A0–A7 concluídas, com o CI verde na `main`: falta o merge da A7;
+   - e o que ficou adiado dos "pronto quando": **Matthew explicar a A4
+     (o B19 e o `SameSite=Strict`), a A6 e a A7 (a trava entre
+     linhas)**, no **passeio guiado** (em casa, com o
+     `/understand-anything:understand` antes; roteiro no passo 3 abaixo).
+3. Roteiro do passeio: uma requisição de ponta a ponta (rota →
+   controller → service → `cicloVidaService` →
+   `buscarRegistroDoTipoOuFalhar` → `aplicarTransicao` →
+   `registroRepository.atualizar` → banco → auditoria → resposta), com
+   Matthew dizendo o que cada parte faz antes de Claude explicar; e, para
+   a A7, um teste com o `pausarNoMeio` lido linha a linha.
+4. Depois do portão: o Bloco B (design) e a C0 (com o `operationId`
+   antes do Orval, plano C0).
 
 Da revisão de design das APIs (2026-10-07), anotados para a C1/C2:
 **R7**, o erro sem código para máquina (os 409 diferentes só se
@@ -251,7 +234,7 @@ resolve as duas coisas. Os passos (`SETUP.md` §12.1 se o PC estiver
 parado há tempo):
 
 1. Docker Desktop aberto ("Engine running"), Ubuntu, pasta do projeto.
-2. `git fetch`, `git switch fase/a6-usuarios-e-setores`, `git pull`.
+2. `git fetch`, `git switch fase/a7-travas-entre-linhas`, `git pull`.
 3. **`npm run preparar`**: obrigatório. Se a migration do
    `investigacaoId` falhar (o banco de casa tem ações sem investigação),
    recriar o banco: `SETUP.md` §12, passos 6 e 7.
@@ -262,4 +245,4 @@ parado há tempo):
 6. **Primeira foto de casa:** `npm run ambiente -- casa` e depois
    `npm run ambiente -- comparar` (`SETUP.md` §12.5). Commitar o
    `docs/ambiente/casa.txt`.
-7. `npm run test:cobertura`: **472 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).
+7. `npm run test:cobertura`: **489 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).

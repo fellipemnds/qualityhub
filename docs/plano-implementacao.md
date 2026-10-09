@@ -285,15 +285,17 @@ o último `ADMIN`, em que cada lado mexe numa pessoa diferente, usa uma trava ú
 
 | Entrega | Quem |
 |---|---|
-| **B29** (filho só com a NC `ABERTO`, RN-51) e a trava da NC no `submeter` | 🤖 |
-| **B30** e **B31** (a trava da investigação: enviar, cancelar, criar e religar ação) | 🤖 |
-| **B32** (último `ADMIN`) e **B33** (revogar ou inativar × designar) | 🤖 |
-| **B34** (RN-12) e **B36** (a troca de aprovador que respondia 500): a trava do item nas atribuições | 🤖 |
-| **B35** (desativar o setor × escolher o setor) | 🤖 |
+| **B29** (filho novo só com a NC aberta, RN-51) e a trava da NC no `submeter` **Feito** (2026-10-09) | 🤖 |
+| **B30** e **B31** (a trava da investigação: enviar, cancelar, criar e religar ação) **Feito** (2026-10-09) | 🤖 |
+| **B32** (último `ADMIN`) e **B33** (revogar ou inativar × designar) **Feito** (2026-10-09) | 🤖 |
+| **B34** (RN-12) e **B36** (a troca de aprovador que respondia 500): a trava do item nas atribuições **Feito** (2026-10-09) | 🤖 |
+| **B35** (desativar o setor × escolher o setor) **Feito** (2026-10-09) | 🤖 |
+| **B37** (o OpenAPI com `$ref` sem destino no `conteudo` da investigação), achado ao conferir o portão. **Feito** (2026-10-09): o `conteudo` como objeto de chaves livres e a trava de `$ref` no `app.test.ts`; o OpenAPI passa no Redocly sem erro | 🤖 |
 
 **Quem escreve:** combinado em 2026-10-09, na sessão na nuvem (Matthew pelo iPad, sem como digitar código): Claude
-escreve, Matthew revisa os diffs. Cada bug começa por um teste de concorrência que falha (`abrirDuasConexoes`
-antes do `Promise.all`), como o da A2.
+escreve, Matthew revisa os diffs. Cada bug começa por um teste que falha. Os de corrida usam o `pausarNoMeio`
+(`testes/cenarios.ts`), que pausa a transação entre conferir e gravar e dispara a outra requisição nesse intervalo:
+com o `Promise.all`, a corrida acontecia em uma rodada a cada quatro, e o teste passaria sem provar nada.
 
 ### ✅ Portão: fundação pronta
 
@@ -328,13 +330,13 @@ repetem o padrão, geradas.
 
 | Fase | Telas | Backend junto | Tamanho |
 |---|---|---|---|
-| **C0 · Base do front** | Projeto Vite + Tailwind + shadcn/ui + Router + TanStack Query; cliente gerado pelo **Orval**; layout (menu lateral e barra inferior); login e definir senha (T-01, T-02); tela inicial por papel; estados de tela padrão (`fluxo-app.md` §8); mapa tipado de estados | — (já pronto no A4/A5) | G |
+| **C0 · Base do front** | Projeto Vite + Tailwind + shadcn/ui + Router + TanStack Query; cliente gerado pelo **Orval** (antes, um `operationId` em cada rota: sem ele, o Orval inventa os nomes das funções a partir do caminho; o Redocly avisa nas 82 operações, revisão do portão de 2026-10-09); layout (menu lateral e barra inferior); login e definir senha (T-01, T-02); tela inicial por papel; estados de tela padrão (`fluxo-app.md` §8); mapa tipado de estados | — (já pronto no A4/A5) | G |
 | **C1 · NCs** | Lista (T-04), Nova NC (T-05), Detalhe da NC (T-06) com checklist | Etapa calculada (função pura, testada sem banco); filtros novos; NC criada com colaboradores; `GET /registros/:id/atribuicoes`; **o que a T-06 pedir no `GET /nc/:id`** (etapa, resumo dos filhos, aprovador, colaboradores; decidir aqui entre uma chamada só ou várias), acrescentado ao `ncSchema` da A5 sem tirar nada (decisão D5 da A5) | G |
 | **C2 · Itens filhos** | T-07 para os cinco tipos, barra de ações, `BotaoBloqueado`, `DialogoMotivo`, `DialogoEfeito`, Investigação A3 com índice e as **contramedidas** (ações vinculadas, com o selo do plano) | **Hipóteses** (L1); investigação com ações vinculadas; **rota de leitura da lista do envio** (a tela precisa dela antes do clique; hoje só a NC tem checklist): decidir entre uma rota por tipo ou uma genérica, `GET /<tipo>/:id/checklist-submissao` (TRD §5). Junto, o **aprovador entra na lista** dos seis tipos: a checagem genérica do `cicloVidaService.submeter` deixa de barrar antes da guarda (hoje, sem aprovador, o 409 vem sem a lista — esquema §4.3). Junto da Q22, a **Q23** (PRD): o colaborador (`EDITOR`) define o aprovador dos itens em que é colaborador — a regra de permissão do `definirAprovador` passa a combinar papel e atribuição (`podeExecutar`) | G |
 | **C3 · Pendências** | Minhas pendências (T-03), contador no menu, preferência de tela inicial | `GET /pendencias` (esquema §4.4) | M |
 | **C4 · Feed** | Feed em todo item, editor com `@`/`#` (Tiptap), pendência "mencionado". **Texto formatado guardado como o JSON do Tiptap, validado por schema no backend (só os nós permitidos), nunca como HTML** (XSS); o teto do campo é revisto junto (Matthew, 2026-10-07) | Migration **M4**; comentários, menções, `GET /registros/:id/feed`, `GET /registros/busca` | G |
 | **C5 · Anexos** | Anexos em todo item, câmera no celular | Migration **M3**; armazenamento (disco ou objetos, **conforme D0**); validação pelo conteúdo; limpeza de órfãos | M |
-| **C6 · Administração** | Usuários, detalhe, novo, setores (T-09 a T-12) | — (já pronto no A6) | M |
+| **C6 · Administração** | Usuários, detalhe, novo, setores (T-09 a T-12). **Decidir junto com a tela do convite:** a validade do link de redefinir senha. Hoje é o mesmo convite do primeiro acesso, de 72 h; o checklist da `security-and-hardening` recomenda até 1 h para redefinição. Risco baixo (uso único, um novo revoga o anterior, derruba as sessões, 5 tentativas por minuto), mas um link vazado vale três dias. Opção: 72 h no primeiro acesso e ~24 h na redefinição (revisão de segurança de 2026-10-09) | — (já pronto no A6; a validade separada, se decidida, é no `emitirConvite`) | M |
 | **C7 · Relatórios** | Relatórios (T-08), números levando à lista filtrada | 4 rotas de relatório | M |
 | **C8 · Revisão final (G5)** | Jornadas do teste com colegas feitas **só com teclado**; foco visível; rótulos; celular nas telas que precisam | Ajustes | P |
 
@@ -348,7 +350,7 @@ garantidos pelos testes de API do backend.
 
 | Fase | Entrega | Quem |
 |---|---|---|
-| **D0 · Decidir hospedagem** | Escolha entre as opções de `trd.md` §10.6, depois de perguntar à empresa se os dados podem ficar fora e qual o orçamento. Atualiza o TRD e o ADR-30. **Junto:** para onde vai o log da aplicação e por quanto tempo fica guardado. As tentativas de login com falha (e o 429) só estão no log (esquema, E1); se a retenção for curta, ou se a analista disser que o auditor ISO pede essa evidência, elas passam a ir também para a auditoria quando há usuário identificado (senha errada, inativo), sem mudar o banco (decidido em 2026-10-05) | 🧑 decide e propõe; 🤖 ajuda a comparar |
+| **D0 · Decidir hospedagem** | Escolha entre as opções de `trd.md` §10.6, depois de perguntar à empresa se os dados podem ficar fora e qual o orçamento. Atualiza o TRD e o ADR-30. **Junto:** para onde vai o log da aplicação e por quanto tempo fica guardado. As tentativas de login com falha (e o 429) só estão no log (esquema, E1); se a retenção for curta, ou se a analista disser que o auditor ISO pede essa evidência, elas passam a ir também para a auditoria quando há usuário identificado (senha errada, inativo), sem mudar o banco (decidido em 2026-10-05). **Também: LGPD** (revisão de segurança de 2026-10-09). Ninguém é apagado (só inativado), e a auditoria guarda nomes e e-mails para sempre: é evidência para a ISO, mas falta a decisão escrita de retenção e de base legal (cumprimento de obrigação, legítimo interesse) e o que responder a um pedido de exclusão. Com a analista e, se a empresa tiver, o jurídico ou o encarregado de dados | 🧑 decide e propõe; 🤖 ajuda a comparar |
 | **D1 · Ambiente de produção** | Dockerfile do backend; Compose de produção (nginx, app, postgres, backup); HTTPS; backup diário **fora da máquina**; **primeiro teste de restauração**; monitor externo; manual de operação no `SETUP.md`; ambiente de homologação; o `GET /api/saude` passa a testar o banco (`SELECT 1`), para o Docker e o nginx saberem se o app está de pé de verdade; `trustProxy` no Fastify atrás do nginx (sem ele, o `request.ip` é o do nginx e o limite do login vira só por e-mail: qualquer um bloqueia o login de outro por 1 minuto) e o limite de tentativas, que fica em memória, conferido para um servidor só (revisão de segurança da A4, S2); **Fetch Metadata**: um hook que recusa `POST`/`PATCH`/`DELETE` com `Sec-Fetch-Site` diferente de `same-origin` (ou `none`), porque POST **sem** corpo não tem `content-type`, passa pela regra "só JSON" do B20 e só tem o `SameSite=Strict`, que não barra um subdomínio irmão (18 rotas, como `sair-de-todos` e o `publicar`/`submeter`/`retirar` dos seis tipos; revisão de segurança da A4, S5) | 🧑 com orientação passo a passo (é conhecimento que Matthew vai precisar para operar sozinho); 🤖 gera os arquivos de configuração |
 | **D2 · Piloto** | NCs reais registradas no sistema **em paralelo** com a planilha, por um período combinado com a analista | 🧑 + analista |
 | **D3 · Planilha aposentada** | Data de corte; NC **nova** só no sistema (métrica de sucesso 1 do PRD). **Nenhuma NC da planilha é migrada** (P1): as que estiverem abertas na data de corte terminam na planilha, que fica guardada como arquivo histórico | 🧑 + analista |
@@ -380,7 +382,7 @@ Onde cada item dos documentos anteriores é feito:
 | Pendência 4 (login auditado) | A4 |
 | Pendência OpenAPI · RNF-04 (schema de resposta) · L7 (último motivo de reprovação) · B22 (dia de calendário na resposta) · B23 (`id` de outro tipo) · B24 (`atualizadoEm` na edição) · B25 (`finalizar-execucao` sem tipo) · B26 (e-mail sem teto) | A5 |
 | B27 (login em voo sobrevive à derrubada das sessões) · B28 (pessoa inativa recebe atribuição) | A6 |
-| B29–B36 (filho fora da NC aberta; as conferências entre linhas sem trava) · RN-51 | A7 |
+| B29–B36 (filho fora da NC aberta; as conferências entre linhas sem trava) · B37 (`$ref` sem destino no OpenAPI) · RN-51 | A7 |
 | RF-15 (usuários) · RF-20 (setores) · RN-43 · RN-44 | A6 (backend), C6 (telas) |
 | RF-01 (NC com colaboradores) · RF-16 (etapa) · L2, L5, L6 · R7 (código de erro para máquina) e R8 (`DELETE` com corpo), da revisão de design da A5 | C1 |
 | L1 (hipóteses) · L3 (plano aprovado) | C2 · A3 |
@@ -453,3 +455,6 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-08 | v1.24 — A6: a F6 em duas fatias (F6a ler, criar e renomear; F6b desativar e reativar, com a RN-44 detalhada) |
 | 2026-10-09 | v1.25 — B28 entra na A6 (revisão da fase) |
 | 2026-10-09 | v1.26 — fase A7 (travas entre linhas): B29–B36, da revisão de concorrência da A6; o portão passa a exigir A0–A7 |
+| 2026-10-09 | **A6 concluída** (branch `fase/a6-usuarios-e-setores`, PR #9): usuários, setores e `GET /pessoas` (F1–F7), as travas da RN-43 e do último `ADMIN`, a RN-44 detalhada, o script do primeiro acesso, B27 e B28; a revisão de concorrência levou B29–B36 para a A7. 475 testes. O "pronto quando" de Matthew explicar a fase fica para o passeio guiado |
+| 2026-10-09 | v1.27 — revisão de segurança do repositório inteiro (`security-and-hardening`), sem conserto a fazer: a validade do link de redefinir senha vai para a C6 e a LGPD (retenção, base legal, pedido de exclusão) para a D0 |
+| 2026-10-09 | v1.28 — B37 na A7 (o OpenAPI conferido para o portão); C0: o `operationId` antes do Orval |

@@ -8,6 +8,7 @@ import {
     diaDaquiA,
     executarAcao,
     investigacaoAberta,
+    ncAbertaSemAprovador,
     ncProntaParaFechar,
     ncPublicada,
 } from "../../../testes/cenarios.js";
@@ -39,9 +40,7 @@ const INVESTIGACOES_INVALIDAS = [
         caso: "de outra NC",
         montar: async () => {
             const cenario = await ncPublicada();
-            const outraNC = await chamar(cenario.editor, "POST", "/api/nc", 201, {
-                titulo: "Outra NC, com a sua investigação",
-            });
+            const outraNC = await ncAbertaSemAprovador(cenario.editor, "Outra NC, com a sua investigação");
             const investigacao = await chamar(cenario.editor, "POST", `/api/nc/${outraNC.id}/investigacoes`, 201, {
                 realProblema: "Ruído anormal no redutor da esteira, sem relação com o vazamento da linha 2.",
             });
@@ -505,7 +504,7 @@ describe("GET /acoes-corretivas", () => {
     it("filtra por NC e por estado", async () => {
         // Prepara: dois itens na NC do cenário (um publicado) e um em outra NC
         const { editor, nc } = await ncPublicada();
-        const outraNC = await chamar(editor, "POST", "/api/nc", 201, { titulo: "Outra NC, com o seu item" });
+        const outraNC = await ncAbertaSemAprovador(editor, "Outra NC, com o seu item");
         const daNCDoCenario = { investigacaoId: (await investigacaoPublicada(editor, nc.id)).id };
         const daOutraNC = { investigacaoId: (await investigacaoPublicada(editor, outraNC.id)).id };
         const publicado = await chamar(editor, "POST", `/api/nc/${nc.id}/acoes-corretivas`, 201, daNCDoCenario);

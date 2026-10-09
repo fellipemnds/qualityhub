@@ -15,6 +15,7 @@ import { LIMITE_PADRAO_PAGINACAO, paginar } from "../../../compartilhado/registr
 import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
 import { acaoCorretivaRepository } from "../acao-corretiva/acao-corretiva.repository.js";
 import { ncRepository } from "../nc/nc.repository.js";
+import { travarNCParaFilhoNovo } from "../nc/travar-nc-para-filho-novo.js";
 import { avaliarCancelamentoInvestigacao } from "./avaliar-cancelamento.js";
 import { type AcaoNaGuarda, avaliarSubmissaoInvestigacao } from "./avaliar-submissao.js";
 import { hipoteseRepository } from "./hipotese.repository.js";
@@ -41,6 +42,7 @@ export const investigacaoService = {
             if (nc === null) {
                 throw new NaoEncontradoError("A Não Conformidade não existe ou não foi encontrada");
             }
+            await travarNCParaFilhoNovo(tx, naoConformidadeId);
 
             const registro = await cicloVidaService.criarRascunho(tx, { tipo: "INVESTIGACAO", criadoPorId: ator.id });
 
@@ -117,6 +119,8 @@ export const investigacaoService = {
 
     async submeterInvestigacao(registroId: string, ator: Ator) {
         return prisma.$transaction(async (tx) => {
+            // Trava a investigação antes de ler as ações: uma ação criada no meio espera o envio terminar (B30)
+            await registroRepository.travar(tx, registroId);
             const investigacao = await investigacaoRepository.buscarPorId(tx, registroId);
             if (investigacao === null) {
                 throw new NaoEncontradoError("Item não encontrado.");
@@ -176,6 +180,8 @@ export const investigacaoService = {
 
     async cancelarInvestigacao(registroId: string, ator: Ator, motivo: string) {
         return prisma.$transaction(async (tx) => {
+            // Trava a investigação antes de ler as ações, pelo mesmo motivo do envio (B31)
+            await registroRepository.travar(tx, registroId);
             // As ações ligadas precisam estar canceladas ou fechadas, para nenhuma ficar solta (RN-50)
             const acoes = (await acaoCorretivaRepository.listarPorInvestigacao(tx, registroId)).map((acao) => ({
                 id: acao.id,

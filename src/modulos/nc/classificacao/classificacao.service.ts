@@ -14,6 +14,7 @@ import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-edita
 import { LIMITE_PADRAO_PAGINACAO, paginar } from "../../../compartilhado/registro/paginacao-cursor.js";
 import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
 import { ncRepository } from "../nc/nc.repository.js";
+import { travarNCParaFilhoNovo } from "../nc/travar-nc-para-filho-novo.js";
 import { classificacaoRepository } from "./classificacao.repository.js";
 import type { ClassificacaoFiltrosListagemInput } from "./classificacao.schema.js";
 import {
@@ -36,6 +37,7 @@ export const classificacaoService = {
             if (nc === null) {
                 throw new NaoEncontradoError("A Não Conformidade não existe ou não foi encontrada");
             }
+            await travarNCParaFilhoNovo(tx, naoConformidadeId);
 
             const registro = await cicloVidaService.criarRascunho(tx, { tipo: "CLASSIFICACAO", criadoPorId: ator.id });
 

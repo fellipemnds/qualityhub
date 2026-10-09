@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { chamar, ncPublicada } from "../../../testes/cenarios.js";
+import { prisma } from "../../../compartilhado/prisma/cliente.js";
+import { chamar, ncAbertaSemAprovador, ncPublicada } from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
 import { levarClassificacaoAte } from "../../../testes/levar-ate/classificacao.js";
+import { levarNCAte } from "../../../testes/levar-ate/nc.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
 
@@ -21,6 +23,23 @@ describe("POST /nc/:naoConformidadeId/classificacoes", () => {
             mensagem: "Dados inválidos",
             error: expect.arrayContaining([expect.objectContaining({ instancePath: "/justificativa" })]),
         });
+    });
+});
+
+describe("POST /nc/:naoConformidadeId/classificacoes, com a NC fora de ABERTO", () => {
+    it("recusa com a NC em aprovação (RN-51, B29)", async () => {
+        // Prepara
+        const { aprovador, nc } = await levarNCAte("EM_APROVACAO");
+        const antes = await prisma.classificacao.count({ where: { naoConformidadeId: nc.id } });
+
+        // Chama
+        await chamar(aprovador, "POST", `/api/nc/${nc.id}/classificacoes`, 409, {
+            valor: "MENOR",
+            justificativa: "Reclassificação pedida com a NC já em aprovação pelo aprovador.",
+        });
+
+        // Confere
+        expect(await prisma.classificacao.count({ where: { naoConformidadeId: nc.id } })).toBe(antes);
     });
 });
 
@@ -63,7 +82,7 @@ describe("GET /classificacoes", () => {
     it("filtra por NC e por estado", async () => {
         // Prepara: dois itens na NC do cenário (um publicado) e um em outra NC. Classificar é do APROVADOR (RN-20)
         const { editor, aprovador, nc } = await ncPublicada();
-        const outraNC = await chamar(editor, "POST", "/api/nc", 201, { titulo: "Outra NC, com o seu item" });
+        const outraNC = await ncAbertaSemAprovador(editor, "Outra NC, com o seu item");
         const publicado = await chamar(aprovador, "POST", `/api/nc/${nc.id}/classificacoes`, 201, {
             valor: "MAIOR",
             justificativa: "Vazamento afeta a segurança operacional da linha 2.",

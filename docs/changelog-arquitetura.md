@@ -9,7 +9,60 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
-### Fase A6 — usuários, setores e pessoas (branch `fase/a6-usuarios-e-setores`, em andamento)
+### Fase A7 — travas entre linhas (branch `fase/a7-travas-entre-linhas`, em andamento)
+
+- **Travar antes de ler (2026-10-09, B29–B36).** A trava do B19 (o
+  `UPDATE` condicionado ao estado lido) protege a linha do próprio item,
+  mas age só na gravação, depois da conferência. As regras que leem
+  **outras linhas** ganharam uma trava pega **antes** da leitura, na
+  mesma linha pelos dois lados da corrida: o pai (`registroRepository
+  .travar`: a NC para os filhos e o envio, a investigação para as ações,
+  o envio e o cancelar), o item (as atribuições), a pessoa
+  (`usuarioRepository.travar` para quem a muda × `travarParaEscolha`,
+  compartilhada, para quem a escolhe) e o setor (o mesmo par). O último
+  `ADMIN` usa uma trava só (`pg_advisory_xact_lock`), porque cada lado
+  mexe numa pessoa diferente. **`FOR NO KEY UPDATE`, nunca `FOR
+  UPDATE`:** o primeiro teste do B32 deu *deadlock*. O `FOR UPDATE`
+  bloqueia também quem só aponta para a linha (a chave estrangeira da
+  auditoria, que pega `FOR KEY SHARE`), e dois ADMINs agindo um no outro
+  se esperavam. O `FOR NO KEY UPDATE` é a trava que um `UPDATE` comum já
+  pega, e era o aviso do comentário do `travarAtivo` (A6). **Alternativa
+  descartada:** transações `SERIALIZABLE`, que acham a corrida sozinhas,
+  mas devolvem erro de serialização a ser repetido em toda rota.
+- **Filho novo só com a NC aberta (RN-51, B29), nem em rascunho.** Na
+  primeira versão, Claude manteve o rascunho recebendo filhos (a A3 tinha
+  decidido e testado a NC em rascunho com filhos); Matthew recusou: "pra
+  que criar filhos pra uma NC que pode nem chegar a existir?". Custo
+  aceito: o registro da contenção espera a publicação da NC (7 campos; a
+  contenção física acontece de qualquer jeito). **Revê a decisão da A3**:
+  o teste "exclui o rascunho com uma investigação e uma ação ligadas"
+  saiu, porque o cenário ficou impossível (o caso do rascunho entrou no
+  teste do B29); a exclusão em cascata do banco continua, sem uso. Os
+  testes que montavam a "outra NC" e a "NC sem aprovador" em rascunho
+  passaram a usar o `ncAbertaSemAprovador` (`testes/cenarios.ts`).
+- **Teste de corrida sem sorte: o `pausarNoMeio`** (`testes/cenarios.ts`).
+  Com o `Promise.all`, a corrida do envio da NC aconteceu em 1 de 4
+  rodadas, e o teste passaria sem a trava. A pausa espiona o método que
+  vem entre a conferência e a gravação (`vi.spyOn`), dispara a outra
+  requisição ali e espera 300 ms: sem a trava, a outra grava por baixo
+  (vermelho sempre); com ela, espera e é recusada (verde sempre).
+
+- **O OpenAPI conferido para o portão (2026-10-09, B37).** Gerado e
+  passado no Redocly (`@redocly/cli`, regras mínimas): 82 operações, as
+  81 rotas e o `/api/saude`. Achou 11 `$ref` sem destino, todos no
+  `conteudo` da investigação: o `z.json()` é recursivo, e o
+  `fastify-type-provider-zod` não leva a definição recursiva para o
+  documento (com nome no registro do Zod e o `transformObject`, o `$ref`
+  saía malformado). **Decisão:** o `conteudo` vira objeto de chaves
+  livres (`z.record(z.string(), z.unknown())`), não recursivo, porque o
+  A3 é sempre um objeto; a conversão para o JSON do Prisma fica num lugar
+  só, no repository. **Descartado:** o `override` do Zod para o JSON
+  Schema (mais código para o mesmo efeito). Junto, uma trava nova no
+  `app.test.ts` (todo `$ref` aponta para um schema do documento). Os
+  avisos que sobraram são de estilo; o `operationId` vai para a C0, antes
+  do Orval.
+
+### Fase A6 — usuários, setores e pessoas (branch `fase/a6-usuarios-e-setores`, PR #9)
 
 - **Conferência do setor num lugar só** (2026-10-08, L6): o
   `conferirSetor` (`modulos/setor/conferir-setor.ts`) responde 404 para
@@ -201,7 +254,8 @@ documento de arquitetura.
   Uma sonda de testes (descartada depois) confirmou cada caso, 5 de 5
   rodadas: **B29–B36**. Decisões de Matthew: a A6 fecha com o B28, e os
   oito vão para uma **fase nova, A7**, antes do portão; e o filho novo
-  **só nasce com a NC `ABERTO`** (RN-51, PRD Q24). O mecanismo
+  **só nasce com a NC aberta** (RN-51, PRD Q24; nem em rascunho, o que
+  revê a A3: changelog, "Fase A7"). O mecanismo
   planejado, um só: travar antes de ler (plano, A7).
 
 ### Fase A5 — contrato da API (branch `fase/a5-contrato-api`, PR #8)
@@ -506,7 +560,8 @@ de código, e coerência documental. Nenhuma regra de negócio mudou.
   investigação com ação está sempre publicada — item publicado não se
   exclui, então o caso da exclusão nem aparece. Barrar só na tela foi
   descartado: a API deixaria passar. A NC em rascunho continua sendo
-  excluída com os filhos (testado). A checagem "ação sem
+  excluída com os filhos (testado; **revisto na A7**: a NC em rascunho não
+  recebe mais filhos, RN-51). A checagem "ação sem
   investigação" do `NAO_EFICAZ` saiu: o caso não existe mais. O banco de
   desenvolvimento precisou de reset (tinha 10 ações sem investigação):
   quem tiver ações assim no banco local precisa do mesmo

@@ -9,6 +9,20 @@ export const setorRepository = {
         return tx.setor.findUnique({ where: { id } });
     },
 
+    // Trava a linha do setor até o fim da transação, para o desativar (A7, B35): quem escolhe o setor (travarParaEscolha)
+    // espera, e lê o setor já desativado. FOR NO KEY UPDATE, a trava do UPDATE, pelo motivo do registroRepository.travar
+    async travar(tx: ClientePrisma, id: number) {
+        await tx.$queryRaw`SELECT "id" FROM "Setor" WHERE "id" = ${id} FOR NO KEY UPDATE`;
+    },
+
+    // Lê o setor travando a linha para uma escolha (pessoa, NC): compartilhada, então duas escolhas não esperam uma pela
+    // outra, mas esperam o desativar, e vice-versa (A7, B35)
+    async travarParaEscolha(tx: ClientePrisma, id: number) {
+        const [setor] = await tx.$queryRaw<{ id: number; desativadoEm: Date | null }[]>`
+            SELECT "id", "desativadoEm" FROM "Setor" WHERE "id" = ${id} FOR SHARE`;
+        return setor ?? null;
+    },
+
     // Sem diferenciar maiúscula: "qualidade" e "Qualidade" seriam o mesmo setor para quem escolhe numa lista
     async buscarPorNome(tx: ClientePrisma, nome: string) {
         return tx.setor.findFirst({ where: { nome: { equals: nome, mode: "insensitive" } }, select: camposDoSetor });

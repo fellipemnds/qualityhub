@@ -8,9 +8,12 @@ import {
     executarAcao,
     fecharNC,
     ncPublicada,
+    pausarNoMeio,
     perfisDeFora,
+    statusDe,
 } from "../../testes/cenarios.js";
 import { loginComo } from "../../testes/fabricas.js";
+import { usuarioPapelRepository } from "./usuario-papel.repository.js";
 
 function novoUsuario(setorId: number, papeis: string[] = ["EDITOR"]) {
     return { nome: "Pessoa Nova", email: "pessoa.nova@teste.com", papeis, setorId };
@@ -359,6 +362,44 @@ describe("POST /usuarios/:id/papeis", () => {
 });
 
 describe("DELETE /usuarios/:id/papeis/:papel", () => {
+    // Cada um conta "existe 1 outro ADMIN" e apaga numa pessoa diferente: sem uma trava comum, os dois passavam e o
+    // sistema ficava sem ADMIN (B32). A pausa vem depois da contagem do primeiro e antes de ele apagar
+    it("dois ADMINs revogam o ADMIN um do outro ao mesmo tempo: o segundo espera e é recusado (RN-43, B32)", async () => {
+        // Prepara: dois ADMINs ativos
+        const admin = await loginComo("admin");
+        const gerente = await loginComo("gerente");
+        await chamar(admin, "POST", `/api/usuarios/${gerente.usuario.id}/papeis`, 200, { papel: "ADMIN" });
+        const pausa = pausarNoMeio(usuarioPapelRepository, "revogarPapel", () =>
+            statusDe(gerente, "DELETE", `/api/usuarios/${admin.usuario.id}/papeis/ADMIN`),
+        );
+
+        // Chama
+        await chamar(admin, "DELETE", `/api/usuarios/${gerente.usuario.id}/papeis/ADMIN`, 200);
+
+        // Confere: sobra um ADMIN
+        expect(await pausa.outra()).toBe(409);
+        expect(await prisma.usuarioPapel.count({ where: { papel: "ADMIN" } })).toBe(1);
+    });
+
+    // O revogar conferiu que a pessoa não aprova nada aberto; no meio, outra pessoa a designa aprovadora (B33). Sem a
+    // trava da linha da pessoa, o item ficava com um aprovador sem o papel, que não decide
+    it("designar como aprovador no meio da revogação do APROVADOR: o designar espera e é recusado (RN-43, B33)", async () => {
+        // Prepara
+        const { gerente, aprovador, qa, nc } = await ncPublicada();
+        const { admin } = await perfisDeFora();
+        const pausa = pausarNoMeio(usuarioPapelRepository, "revogarPapel", () =>
+            statusDe(gerente, "PUT", `/api/registros/${nc.id}/aprovador`, { usuarioId: qa.usuario.id }),
+        );
+
+        // Chama
+        await chamar(admin, "DELETE", `/api/usuarios/${qa.usuario.id}/papeis/APROVADOR`, 200);
+
+        // Confere: o designar viu a pessoa já sem o papel, e o aprovador da NC não mudou
+        expect(await pausa.outra()).toBe(400);
+        const aprovadorDaNC = await prisma.atribuicao.findFirst({ where: { registroId: nc.id, funcao: "APROVADOR" } });
+        expect(aprovadorDaNC?.usuarioId).toBe(aprovador.usuario.id);
+    });
+
     it("o admin revoga um papel, e ele deixa de valer na próxima requisição da pessoa", async () => {
         // Prepara
         const { admin } = await perfisDeFora();

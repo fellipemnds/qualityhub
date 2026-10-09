@@ -46,8 +46,9 @@ async function conferirInvestigacao(tx: ClientePrisma, naoConformidadeId: string
         throw new ValidacaoError("A investigação não existe ou não é desta Não Conformidade.");
     }
 
-    const registro = await registroRepository.buscarPorId(tx, investigacaoId);
-    if (registro?.estado !== "ABERTO") {
+    // Trava a investigação antes de conferir o estado: o envio e o cancelamento dela também a travam antes de ler as
+    // ações, e quem chega depois espera (B30, B31)
+    if ((await registroRepository.travar(tx, investigacaoId)) !== "ABERTO") {
         throw new ValidacaoError("A investigação precisa estar aberta para receber ações corretivas.");
     }
 }

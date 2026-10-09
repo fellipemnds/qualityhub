@@ -1,4 +1,4 @@
-import { expect } from "vitest";
+import { expect, vi } from "vitest";
 import { app } from "../app.js";
 import { hojeEmSaoPaulo } from "../compartilhado/datas/hoje-em-sao-paulo.js";
 import { prisma } from "../compartilhado/prisma/cliente.js";
@@ -40,6 +40,35 @@ export async function abrirDuasConexoes() {
     await Promise.all([prisma.$queryRaw`SELECT 1`, prisma.$queryRaw`SELECT 1`]);
 }
 
+// Faz a requisição e devolve só o status, sem conferir: para a requisição que corre no meio de outra (A7)
+export async function statusDe(quem: Quem, metodo: Metodo, url: string, body?: object) {
+    const resposta = await app.inject({ method: metodo, url, headers: quem.autenticacao, body });
+    return resposta.statusCode;
+}
+
+// Uma corrida sem depender da sorte (A7). Pausa a transação na próxima chamada de `alvo[metodo]` (que vem depois de
+// ela ler o que confere e antes de gravar), dispara a `outra` requisição nesse intervalo e espera 300 ms antes de
+// seguir. Sem trava, a outra termina dentro da pausa e grava por baixo da conferência; com a trava, ela fica
+// esperando e só segue depois. Com o Promise.all, a corrida acontecia em uma rodada a cada quatro
+export function pausarNoMeio<T extends object>(alvo: T, metodo: keyof T & string, outra: () => Promise<number>) {
+    const original = alvo[metodo] as (...argumentos: unknown[]) => Promise<unknown>;
+    let statusDaOutra: Promise<number> | undefined;
+
+    vi.spyOn(alvo as Record<string, typeof original>, metodo).mockImplementationOnce(async (...argumentos) => {
+        statusDaOutra = outra();
+        await new Promise((resolver) => setTimeout(resolver, 300));
+        return original.apply(alvo, argumentos);
+    });
+
+    return {
+        // O status da outra requisição, depois de a principal terminar
+        async outra() {
+            if (statusDaOutra === undefined) throw new Error("A pausa não aconteceu: o método não foi chamado.");
+            return statusDaOutra;
+        },
+    };
+}
+
 // Os quatro perfis do fluxo e uma NC publicada, com o aprovador designado
 export async function ncPublicada() {
     const editor = await loginComo("editor");
@@ -69,6 +98,21 @@ export async function ncPublicada() {
 }
 
 export type Cenario = Awaited<ReturnType<typeof ncPublicada>>;
+
+// Uma segunda NC, publicada e ainda sem aprovador: a "outra NC" dos filtros e a NC sem aprovador da RN-46. Publicada
+// porque só a NC aberta recebe filhos (RN-51)
+export async function ncAbertaSemAprovador(quem: Quem, titulo: string) {
+    const nc = await chamar(quem, "POST", "/api/nc", 201, {
+        titulo,
+        descricao: "Diâmetro externo medido acima da tolerância em lote inspecionado na linha 3.",
+        requisitoViolado: "Desenho 1234, cota A",
+        processoAfetado: "Linha de Produção 3",
+        setorId: quem.usuario.setorId,
+        detectadoEm: "2026-09-10",
+        origem: "OPERACAO",
+    });
+    return chamar(quem, "POST", `/api/nc/${nc.id}/publicar`, 200);
+}
 
 // Os perfis que não participam de item nenhum: sem papel de negócio (admin), só leitura (visualizador) e sem papel
 export async function perfisDeFora() {

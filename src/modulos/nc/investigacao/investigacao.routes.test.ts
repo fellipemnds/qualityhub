@@ -1,10 +1,46 @@
 import { describe, expect, it } from "vitest";
-import { chamar, investigacaoAberta, ncPublicada } from "../../../testes/cenarios.js";
+import type { EstadoRegistro } from "../../../compartilhado/entidades/estados.js";
+import { prisma } from "../../../compartilhado/prisma/cliente.js";
+import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
+import {
+    aprovarPlano,
+    chamar,
+    investigacaoAberta,
+    ncAbertaSemAprovador,
+    ncPublicada,
+    pausarNoMeio,
+    statusDe,
+} from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
 import { type DegrauAcaoCorretiva, levarAcaoCorretivaAte } from "../../../testes/levar-ate/acao-corretiva.js";
 import { levarInvestigacaoAte } from "../../../testes/levar-ate/investigacao.js";
+import { levarNCAte } from "../../../testes/levar-ate/nc.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
+
+// Filho novo só com a NC aberta (RN-51, B29): o rascunho pode nem chegar a existir; em aprovação, retira-se o envio;
+// fechada, reabre-se
+describe("POST /nc/:naoConformidadeId/investigacoes", () => {
+    it.each<EstadoRegistro>(["RASCUNHO", "EM_APROVACAO", "FECHADO", "CANCELADO"])(
+        "recusa com a NC em %s, e nada nasce (RN-51, B29)",
+        async (estado) => {
+            // Prepara
+            const { editor, nc } = await levarNCAte(estado);
+            const antes = await prisma.investigacao.count({ where: { naoConformidadeId: nc.id } });
+
+            // Chama
+            const resposta = await chamar(editor, "POST", `/api/nc/${nc.id}/investigacoes`, 409, {
+                realProblema: "Ruído anormal no redutor da esteira, percebido na mesma inspeção da linha 2.",
+            });
+
+            // Confere
+            expect(resposta).toEqual({
+                mensagem: "Só uma NC aberta recebe itens novos: publique, retire o envio ou reabra a NC.",
+            });
+            expect(await prisma.investigacao.count({ where: { naoConformidadeId: nc.id } })).toBe(antes);
+        },
+    );
+});
 
 describe("PATCH /investigacoes/:id", () => {
     it("recusa método fora da lista (só A3_SPS)", async () => {
@@ -166,6 +202,25 @@ describe("POST /investigacoes/:id/submeter, com ações ligadas", () => {
         },
     );
 
+    // O envio lê as ações e, antes de gravar, uma ação nova é criada: sem a trava da linha da investigação, as duas
+    // passavam, e a investigação ia para a aprovação com uma ação sem plano aprovado (B30)
+    it("criar uma ação no meio do envio: a ação espera o envio e é recusada (RN-24, B30)", async () => {
+        // Prepara
+        const cenario = await investigacaoAberta();
+        const { editor, nc, investigacao } = cenario;
+        await aprovarPlano(cenario);
+        const pausa = pausarNoMeio(cicloVidaService, "submeter", () =>
+            statusDe(editor, "POST", `/api/nc/${nc.id}/acoes-corretivas`, { investigacaoId: investigacao.id }),
+        );
+
+        // Chama
+        await chamar(editor, "POST", `/api/investigacoes/${investigacao.id}/submeter`, 200);
+
+        // Confere: a ação viu a investigação já em aprovação
+        expect(await pausa.outra()).toBe(400);
+        expect(await prisma.acaoCorretiva.count({ where: { investigacaoId: investigacao.id } })).toBe(1);
+    });
+
     it("aceita sem nenhuma ação (PRD Q17)", async () => {
         // Prepara
         const { editor, investigacao } = await investigacaoAberta();
@@ -223,6 +278,21 @@ describe("POST /investigacoes/:id/cancelar", () => {
         expect(resposta).toMatchObject({ estado: "CANCELADO" });
     });
 
+    it("criar uma ação no meio do cancelamento: a ação espera e é recusada (RN-50, B31)", async () => {
+        // Prepara
+        const { editor, aprovador, nc, investigacao } = await investigacaoAberta();
+        const pausa = pausarNoMeio(cicloVidaService, "cancelar", () =>
+            statusDe(editor, "POST", `/api/nc/${nc.id}/acoes-corretivas`, { investigacaoId: investigacao.id }),
+        );
+
+        // Chama
+        await chamar(aprovador, "POST", `/api/investigacoes/${investigacao.id}/cancelar`, 200, motivo);
+
+        // Confere: nunca uma investigação cancelada com uma ação viva
+        expect(await pausa.outra()).toBe(400);
+        expect(await prisma.acaoCorretiva.count({ where: { investigacaoId: investigacao.id } })).toBe(0);
+    });
+
     it("quem não pode cancelar recebe 403, e não a lista", async () => {
         // Prepara: com ação pendente, mas pedido pelo editor, que não é o aprovador nem GERENTE
         const { editor, investigacao } = await levarAcaoCorretivaAte("ABERTO");
@@ -236,7 +306,7 @@ describe("GET /investigacoes", () => {
     it("filtra por NC e por estado", async () => {
         // Prepara: dois itens na NC do cenário (um publicado) e um em outra NC
         const { editor, nc } = await ncPublicada();
-        const outraNC = await chamar(editor, "POST", "/api/nc", 201, { titulo: "Outra NC, com o seu item" });
+        const outraNC = await ncAbertaSemAprovador(editor, "Outra NC, com o seu item");
         const publicado = await chamar(editor, "POST", `/api/nc/${nc.id}/investigacoes`, 201, {
             realProblema: "Vedação da bomba hidráulica com desgaste prematuro.",
         });
