@@ -192,6 +192,17 @@ documento de arquitetura.
   aprovador dela; só escapa com a NC fechada e a verificação com outro
   aprovador, e o aprovador se troca pela rota. Primeiro uso da sessão na
   nuvem com a suíte inteira (`SETUP.md` §13).
+- **Revisão de concorrência da fase (2026-10-09), pedida por Matthew
+  depois do B28.** Varredura de toda conferência "confere e depois
+  grava" do repositório, com a `doubt-driven-development` e a
+  `security-and-hardening` do agent-skills (lidas do repositório público,
+  porque o plugin não vem na nuvem). A trava do B19 protege a linha do
+  próprio item; as regras que leem **outras linhas** não tinham trava.
+  Uma sonda de testes (descartada depois) confirmou cada caso, 5 de 5
+  rodadas: **B29–B36**. Decisões de Matthew: a A6 fecha com o B28, e os
+  oito vão para uma **fase nova, A7**, antes do portão; e o filho novo
+  **só nasce com a NC `ABERTO`** (RN-51, PRD Q24). O mecanismo
+  planejado, um só: travar antes de ler (plano, A7).
 
 ### Fase A5 — contrato da API (branch `fase/a5-contrato-api`, PR #8)
 

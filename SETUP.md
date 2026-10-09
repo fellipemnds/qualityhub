@@ -644,6 +644,8 @@ npm ci && npx --no-install prisma generate
 
 **Para não repetir a cada sessão:** as duas primeiras linhas (o Node) podem ir para o **script de configuração do ambiente** (no app: o menu do ambiente na barra de título da sessão → Edit), que roda no começo de toda sessão nova. O `dockerd` e o `npm ci` o Claude roda na sessão.
 
+**O Docker pode cair sozinho** entre uma rodada e outra (aconteceu em 2026-10-09: a suíte seguinte falhou com `Could not find a working container runtime strategy`). Antes de cada suíte, `docker info`; se falhar, ligar o `dockerd` de novo.
+
 Com o ambiente pronto, vale tudo do §4 do `CONSTRAINTS.md` e da `/verificar`, igual aos PCs: a suíte inteira rodou aqui pela primeira vez em 2026-10-09 (os mesmos 472 testes do trabalho). O npm é o que vem com o Node 24.20.0 (11.x), e não o 12 dos PCs: o `npm ci` não reescreve o `package-lock.json`, então não muda nada; o que **não** se faz na nuvem é `npm install` de dependência nova (o lockfile sairia de outra versão do npm), que fica para o PC.
 
 ### No fim da sessão e na volta ao PC

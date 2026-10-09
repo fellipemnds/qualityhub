@@ -51,6 +51,7 @@ flowchart TD
         A3 --> A4[A4 Sessão nova]
         A4 --> A5[A5 Contrato da API]
         A5 --> A6[A6 Usuários e setores]
+        A6 --> A7[A7 Travas entre linhas]
     end
 
     subgraph B[Bloco B — Design, em paralelo]
@@ -76,7 +77,7 @@ flowchart TD
         D2 --> D3[D3 Planilha aposentada]
     end
 
-    A6 --> C0
+    A7 --> C0
     B4 --> C0
     D0 -.-> C5
     C8 --> D1
@@ -270,10 +271,34 @@ do `{id}` precisa lidar com o `id` numérico do setor.
 (`interview-me` antes) · F4 inativar e reativar · F5 convite e senha (`doubt-driven-development` e
 `security-and-hardening` antes) · F6 setores · F7 pessoas.
 
+### A7 — Travas entre linhas · P
+
+**Objetivo:** as regras que conferem **outras linhas** (os filhos da NC, as ações da investigação, os outros
+`ADMIN`s, as pessoas do setor, os colaboradores) continuarem valendo com duas requisições ao mesmo tempo; e o
+filho novo só com a NC aberta (RN-51). Nasceu da revisão de concorrência da A6 (2026-10-09), que confirmou cada
+caso com teste.
+
+**O mecanismo, um só:** **travar antes de ler** (o mesmo do `garantirAdmin` e, por outro caminho, do B19). Antes de
+conferir uma regra que depende de outra linha, a transação trava essa linha; a requisição concorrente espera e,
+quando segue, lê o estado novo. Os dois lados da corrida travam a **mesma** linha (o pai, o item, a pessoa, o setor);
+o último `ADMIN`, em que cada lado mexe numa pessoa diferente, usa uma trava única (*advisory lock*).
+
+| Entrega | Quem |
+|---|---|
+| **B29** (filho só com a NC `ABERTO`, RN-51) e a trava da NC no `submeter` | 🤖 |
+| **B30** e **B31** (a trava da investigação: enviar, cancelar, criar e religar ação) | 🤖 |
+| **B32** (último `ADMIN`) e **B33** (revogar ou inativar × designar) | 🤖 |
+| **B34** (RN-12) e **B36** (a troca de aprovador que respondia 500): a trava do item nas atribuições | 🤖 |
+| **B35** (desativar o setor × escolher o setor) | 🤖 |
+
+**Quem escreve:** combinado em 2026-10-09, na sessão na nuvem (Matthew pelo iPad, sem como digitar código): Claude
+escreve, Matthew revisa os diffs. Cada bug começa por um teste de concorrência que falha (`abrirDuasConexoes`
+antes do `Promise.all`), como o da A2.
+
 ### ✅ Portão: fundação pronta
 
 Antes do Bloco C começar:
-- A0–A6 concluídas, CI verde na `main`.
+- A0–A7 concluídas, CI verde na `main`.
 - Nenhum bug aberto no `esquema-backend.md` §7.
 - OpenAPI completo, gerando sem erro.
 
@@ -355,6 +380,7 @@ Onde cada item dos documentos anteriores é feito:
 | Pendência 4 (login auditado) | A4 |
 | Pendência OpenAPI · RNF-04 (schema de resposta) · L7 (último motivo de reprovação) · B22 (dia de calendário na resposta) · B23 (`id` de outro tipo) · B24 (`atualizadoEm` na edição) · B25 (`finalizar-execucao` sem tipo) · B26 (e-mail sem teto) | A5 |
 | B27 (login em voo sobrevive à derrubada das sessões) · B28 (pessoa inativa recebe atribuição) | A6 |
+| B29–B36 (filho fora da NC aberta; as conferências entre linhas sem trava) · RN-51 | A7 |
 | RF-15 (usuários) · RF-20 (setores) · RN-43 · RN-44 | A6 (backend), C6 (telas) |
 | RF-01 (NC com colaboradores) · RF-16 (etapa) · L2, L5, L6 · R7 (código de erro para máquina) e R8 (`DELETE` com corpo), da revisão de design da A5 | C1 |
 | L1 (hipóteses) · L3 (plano aprovado) | C2 · A3 |
@@ -426,3 +452,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-08 | v1.23 — B27 entra na A6, junto da F5 |
 | 2026-10-08 | v1.24 — A6: a F6 em duas fatias (F6a ler, criar e renomear; F6b desativar e reativar, com a RN-44 detalhada) |
 | 2026-10-09 | v1.25 — B28 entra na A6 (revisão da fase) |
+| 2026-10-09 | v1.26 — fase A7 (travas entre linhas): B29–B36, da revisão de concorrência da A6; o portão passa a exigir A0–A7 |
