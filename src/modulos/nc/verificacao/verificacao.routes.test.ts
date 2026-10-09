@@ -250,6 +250,27 @@ describe("POST /verificacoes/:id/concluir com PARCIALMENTE_EFICAZ", () => {
         expect(await colaboradoresDe(nova.id)).toEqual([editor.usuario.id, gerente.usuario.id].sort());
     });
 
+    // Entre a execução e a verificação passam semanas: quem saiu da empresa nesse meio não volta como colaborador
+    it("a ação nova não recebe o colaborador que foi inativado (B28)", async () => {
+        // Prepara: o qa entra na ação e é inativado depois de ela fechar (não aprova nada: a trava da RN-43 deixa)
+        const cenario = await ncProntaParaFechar();
+        const { editor, gerente, qa, nc, acao } = cenario;
+        await chamar(gerente, "POST", `/api/registros/${acao.id}/colaboradores`, 200, {
+            colaboradores: [qa.usuario.id],
+        });
+        const { verificacao } = await executarAcao(cenario);
+        await chamar(await loginComo("admin"), "POST", `/api/usuarios/${qa.usuario.id}/inativar`, 200);
+
+        // Chama
+        await concluirVerificacao(cenario, verificacao.id, "PARCIALMENTE_EFICAZ");
+
+        // Confere
+        const [nova] = (
+            await chamar(editor, "GET", `/api/acoes-corretivas?naoConformidadeId=${nc.id}&estado=RASCUNHO`, 200)
+        ).itensDaPagina;
+        expect(await colaboradoresDe(nova.id)).toEqual([editor.usuario.id]);
+    });
+
     it("a ação nova nasce com o aprovador da NC (B13, RN-46)", async () => {
         // Prepara
         const cenario = await ncProntaParaFechar();

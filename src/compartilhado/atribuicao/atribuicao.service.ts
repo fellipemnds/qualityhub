@@ -38,10 +38,15 @@ export const atribuicaoService = {
 
             const colaboradoresIdUnicos = [...new Set(colaboradoresId)];
 
-            // Confere todos antes de inserir qualquer um: sem isso, a chave estrangeira do banco dava 500 (B16)
+            // Confere todos antes de inserir qualquer um: sem isso, a chave estrangeira do banco dava 500 (B16). Inativo
+            // também não entra: não entra no sistema para trabalhar no item (B28)
             for (const colaboradorId of colaboradoresIdUnicos) {
-                if ((await usuarioRepository.buscarPorId(tx, colaboradorId)) === null) {
+                const colaborador = await usuarioRepository.buscarPorId(tx, colaboradorId);
+                if (colaborador === null) {
                     throw new NaoEncontradoError("Um dos usuários a ser atribuído não foi encontrado.");
+                }
+                if (colaborador.desativadoEm !== null) {
+                    throw new TransicaoInvalidaError("Uma das pessoas a ser atribuída está inativa: escolha outra.");
                 }
             }
 
@@ -161,6 +166,12 @@ export const atribuicaoService = {
 
             if (dadosAprovador === null) {
                 throw new NaoEncontradoError("O usuário a ser atribuido não foi encontrado");
+            }
+
+            // Inativar não tira os papéis: sem esta recusa, a trava da RN-43 se contornava em dois passos, e o item
+            // ficava com um aprovador que não entra no sistema (B28)
+            if (dadosAprovador.desativadoEm !== null) {
+                throw new TransicaoInvalidaError("Esta pessoa está inativa: escolha outra.");
             }
 
             const temPapelAprovador = dadosAprovador.papeisRecebidos.some(

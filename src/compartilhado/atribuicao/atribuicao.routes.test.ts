@@ -130,6 +130,24 @@ describe("PUT /registros/:id/aprovador", () => {
 
         await chamar(gerente, "PUT", `/api/registros/${nc.id}/aprovador`, 404, { usuarioId: ID_INEXISTENTE });
     });
+
+    // Inativar não tira os papéis: sem esta recusa, a trava da RN-43 se contornava em dois passos (inativar quem não
+    // aprova nada, depois designá-lo), e o item ficava com um aprovador que não entra no sistema
+    it("recusa escolher uma pessoa inativa, mesmo com o papel APROVADOR (B28, RN-43)", async () => {
+        // Prepara (o qa é APROVADOR e não aprova nada: inativar passa pela trava)
+        const { gerente, aprovador, qa, nc } = await ncPublicada();
+        const { admin } = await perfisDeFora();
+        await chamar(admin, "POST", `/api/usuarios/${qa.usuario.id}/inativar`, 200);
+
+        // Chama
+        const resposta = await chamar(gerente, "PUT", `/api/registros/${nc.id}/aprovador`, 409, {
+            usuarioId: qa.usuario.id,
+        });
+
+        // Confere
+        expect(resposta).toEqual({ mensagem: "Esta pessoa está inativa: escolha outra." });
+        expect(await aprovadoresDe(nc.id)).toEqual([aprovador.usuario.id]);
+    });
 });
 
 // Cada filho criado pelo usuário: devolve o id. A ação corretiva precisa de uma investigação aberta (RN-49)
@@ -249,6 +267,23 @@ describe("POST /registros/:id/colaboradores", () => {
 
         // Confere: nem o que existe entrou (tudo ou nada)
         expect(resposta.mensagem).toEqual(expect.any(String));
+        const colaboradores = await prisma.atribuicao.findMany({ where: { registroId: nc.id, funcao: "COLABORADOR" } });
+        expect(colaboradores.map((atribuicao) => atribuicao.usuarioId)).toEqual([editor.usuario.id]);
+    });
+
+    it("recusa quando um dos usuários está inativo, e não adiciona nenhum (B28)", async () => {
+        // Prepara: um usuário ativo e um inativo
+        const { editor, gerente, qa, nc } = await ncPublicada();
+        const { admin } = await perfisDeFora();
+        await chamar(admin, "POST", `/api/usuarios/${qa.usuario.id}/inativar`, 200);
+
+        // Chama
+        const resposta = await chamar(editor, "POST", `/api/registros/${nc.id}/colaboradores`, 409, {
+            colaboradores: [gerente.usuario.id, qa.usuario.id],
+        });
+
+        // Confere: nem o ativo entrou (tudo ou nada, como no B16)
+        expect(resposta).toEqual({ mensagem: "Uma das pessoas a ser atribuída está inativa: escolha outra." });
         const colaboradores = await prisma.atribuicao.findMany({ where: { registroId: nc.id, funcao: "COLABORADOR" } });
         expect(colaboradores.map((atribuicao) => atribuicao.usuarioId)).toEqual([editor.usuario.id]);
     });
