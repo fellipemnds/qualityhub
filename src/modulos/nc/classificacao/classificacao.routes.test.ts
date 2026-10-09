@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { prisma } from "../../../compartilhado/prisma/cliente.js";
 import { chamar, ncPublicada } from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
 import { levarClassificacaoAte } from "../../../testes/levar-ate/classificacao.js";
+import { levarNCAte } from "../../../testes/levar-ate/nc.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
 
@@ -21,6 +23,23 @@ describe("POST /nc/:naoConformidadeId/classificacoes", () => {
             mensagem: "Dados inválidos",
             error: expect.arrayContaining([expect.objectContaining({ instancePath: "/justificativa" })]),
         });
+    });
+});
+
+describe("POST /nc/:naoConformidadeId/classificacoes, com a NC fora de ABERTO", () => {
+    it("recusa com a NC em aprovação (RN-51, B29)", async () => {
+        // Prepara
+        const { aprovador, nc } = await levarNCAte("EM_APROVACAO");
+        const antes = await prisma.classificacao.count({ where: { naoConformidadeId: nc.id } });
+
+        // Chama
+        await chamar(aprovador, "POST", `/api/nc/${nc.id}/classificacoes`, 409, {
+            valor: "MENOR",
+            justificativa: "Reclassificação pedida com a NC já em aprovação pelo aprovador.",
+        });
+
+        // Confere
+        expect(await prisma.classificacao.count({ where: { naoConformidadeId: nc.id } })).toBe(antes);
     });
 });
 

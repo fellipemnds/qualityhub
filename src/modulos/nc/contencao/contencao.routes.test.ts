@@ -5,6 +5,7 @@ import { loginComo } from "../../../testes/fabricas.js";
 import { levarAcaoCorretivaAte } from "../../../testes/levar-ate/acao-corretiva.js";
 import { levarClassificacaoAte } from "../../../testes/levar-ate/classificacao.js";
 import { levarContencaoAte } from "../../../testes/levar-ate/contencao.js";
+import { levarNCAte } from "../../../testes/levar-ate/nc.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
 
@@ -20,6 +21,20 @@ describe("POST /nc/:naoConformidadeId/contencoes", () => {
 
         // Confere
         expect(resposta).toEqual({ mensagem: "A Não Conformidade não existe ou não foi encontrada" });
+    });
+
+    it("recusa com a NC em aprovação (RN-51, B29)", async () => {
+        // Prepara
+        const { editor, nc } = await levarNCAte("EM_APROVACAO");
+        const antes = await prisma.contencao.count({ where: { naoConformidadeId: nc.id } });
+
+        // Chama
+        await chamar(editor, "POST", `/api/nc/${nc.id}/contencoes`, 409, {
+            descricao: "Segregação do lote seguinte, aberta com a NC já em aprovação.",
+        });
+
+        // Confere
+        expect(await prisma.contencao.count({ where: { naoConformidadeId: nc.id } })).toBe(antes);
     });
 });
 

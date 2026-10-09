@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { app } from "../../../app.js";
+import { prisma } from "../../../compartilhado/prisma/cliente.js";
+import { cicloVidaService } from "../../../compartilhado/registro/ciclo-vida.service.js";
 import {
     chamar,
     classificarNC,
@@ -7,7 +9,9 @@ import {
     diaDaquiA,
     ncProntaParaFechar,
     ncPublicada,
+    pausarNoMeio,
     perfisDeFora,
+    statusDe,
 } from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
 import { levarInvestigacaoAte } from "../../../testes/levar-ate/investigacao.js";
@@ -213,6 +217,26 @@ describe("POST /nc/:id/submeter", () => {
             }),
         ]);
         expect(await chamar(editor, "GET", `/api/nc/${nc.id}`, 200)).toMatchObject({ estado: "ABERTO" });
+    });
+
+    // O envio lê os filhos e, antes de gravar, uma investigação nova é criada: sem a trava da linha da NC, as duas
+    // passavam, e a NC ia para a aprovação com um filho em rascunho, por fora da guarda (B29)
+    it("criar um filho no meio do envio: o filho espera o envio e é recusado (RN-21, RN-51, B29)", async () => {
+        // Prepara
+        const { editor, nc } = await ncProntaParaFechar();
+        await chamar(editor, "PATCH", `/api/nc/${nc.id}`, 200, CAMPOS_DO_ENVIO);
+        const pausa = pausarNoMeio(cicloVidaService, "submeter", () =>
+            statusDe(editor, "POST", `/api/nc/${nc.id}/investigacoes`, {
+                realProblema: "Ruído anormal no redutor da esteira, percebido na mesma inspeção da linha 2.",
+            }),
+        );
+
+        // Chama
+        await chamar(editor, "POST", `/api/nc/${nc.id}/submeter`, 200);
+
+        // Confere
+        expect(await pausa.outra()).toBe(409);
+        expect(await prisma.investigacao.count({ where: { naoConformidadeId: nc.id } })).toBe(1);
     });
 
     // A investigação pode concluir sem ação corretiva, e a NC não confere as ações (PRD Q17)
