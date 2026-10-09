@@ -172,15 +172,18 @@ Docker Compose com **nginx**, **app**, **postgres** e **backup**, mais
 5. **A cada requisição**, o middleware `autenticar`:
    - verifica a assinatura e a validade do JWT;
    - busca no banco o usuário (**ativo?**), os **papéis atuais** e a
-     data `sessaoValidaDesde`;
-   - recusa o JWT se ele foi emitido **antes** de `sessaoValidaDesde`;
+     **versão das sessões** (`versaoSessao`, desde a A6, B27);
+   - recusa o JWT cuja versão (`sv`, gravada no login a partir da mesma
+     leitura que conferiu a senha) não é a atual, e o JWT sem versão;
    - monta `request.user: Ator` com esses dados.
 
    Usuário inativo → 401. Papel revogado → deixa de valer **na hora**
    (RN-43). Custo: uma consulta por requisição, por chave primária —
    irrelevante neste volume.
-6. **Desconectar de todos os aparelhos:** atualizar `sessaoValidaDesde`
-   para "agora" invalida toda sessão já emitida daquela pessoa.
+6. **Desconectar de todos os aparelhos:** somar 1 à `versaoSessao`
+   invalida toda sessão já emitida daquela pessoa, inclusive a de um
+   login em voo naquele momento. Um número que só cresce, e não uma data:
+   não depende do relógio (B27; na A4 era a data `sessaoValidaDesde`).
    Acontece automaticamente ao **inativar**, ao **trocar a senha**, e
    quando a própria pessoa pede ("Sair de todos os aparelhos" — útil se
    perder o celular). Importante porque sessões de 30 dias existem.
@@ -620,7 +623,7 @@ Entram no Plano de Implementação:
 |---|---|---|---|
 | **ADR-33** | Frontend com **shadcn/ui** + Tailwind (substitui a parte "Mantine" do ADR-28) | Mantine | 2026-09-24 |
 | **ADR-34** | Anexos acessados **só pelo backend**; metadados no banco; 10 MB; JPEG/PNG/WebP/PDF validados pelo conteúdo. **Onde ficam** (disco, objetos do provedor ou MinIO) é decidido **junto com a hospedagem** | Arquivo dentro do banco; acesso direto do navegador ao armazenamento | 2026-09-24 |
-| **ADR-35** | Sessão em **cookie httpOnly** com JWT só com `id`; usuário, papéis e `sessaoValidaDesde` **conferidos a cada requisição**; "manter conectado" (30 dias) ou cookie de sessão (fecha com o navegador, teto de 12 h) | Papéis no token; token legível pelo JavaScript | 2026-09-24 |
+| **ADR-35** | Sessão em **cookie httpOnly** com JWT só com `id`; usuário, papéis e versão das sessões (`versaoSessao`, B27) **conferidos a cada requisição**; "manter conectado" (30 dias) ou cookie de sessão (fecha com o navegador, teto de 12 h) | Papéis no token; token legível pelo JavaScript | 2026-09-24 |
 | **ADR-36** | **Testes automáticos antes das correções** de regra no backend (Vitest + `app.inject()` + Testcontainers) | Testes só na Fase 4 | 2026-09-24 |
 | **ADR-37** | Contrato via **OpenAPI gerado + cliente Orval** (confirma o ADR-29) | Monorepo com schemas compartilhados, por ora | 2026-09-24 |
 | **ADR-38** | **Remover o barramento de eventos** sem uso; volta com o primeiro assinante real | Manter código sem uso "para o futuro" | 2026-09-24 |

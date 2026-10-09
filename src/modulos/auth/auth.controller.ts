@@ -28,7 +28,12 @@ export const authController = {
             throw erro;
         }
 
-        const token = await reply.jwtSign({ id: usuario.id }, { expiresIn: manterConectado ? "30d" : "12h" });
+        // A versão das sessões vem da mesma leitura que conferiu a senha: um "sair de todos" no meio do login já a deixa
+        // velha, e o token nasce sem valer (B27)
+        const token = await reply.jwtSign(
+            { id: usuario.id, sv: usuario.versaoSessao },
+            { expiresIn: manterConectado ? "30d" : "12h" },
+        );
 
         return reply
             .setCookie(COOKIE_SESSAO, token, {

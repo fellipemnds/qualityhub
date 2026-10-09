@@ -107,9 +107,11 @@ model Classificacao {
 
 // Setor
 model Setor {
-  id       Int      @id @default(autoincrement())
-  nome     String   @unique
-  criadoEm DateTime @default(now())
+  id           Int       @id @default(autoincrement())
+  nome         String    @unique
+  criadoEm     DateTime  @default(now())
+  // Setor em uso não se apaga: desativado, some das opções e continua nos itens que já o usam (RN-44, M2)
+  desativadoEm DateTime?
 
   usuarios         Usuario[]
   naoConformidades NaoConformidade[]
@@ -153,11 +155,13 @@ model Usuario {
   setorId Int
   setor   Setor @relation(fields: [setorId], references: [id])
 
-  criadoEm          DateTime     @default(now())
-  atualizadoEm      DateTime     @updatedAt
-  desativadoEm      DateTime?
-  sessaoValidaDesde DateTime     @default(now())
-  telaInicial       TelaInicial?
+  criadoEm     DateTime     @default(now())
+  atualizadoEm DateTime     @updatedAt
+  desativadoEm DateTime?
+  // A versão das sessões (B27): o JWT leva a versão lida no login, e derrubar as sessões soma 1. Um número que só
+  // cresce, e não uma data: não depende do relógio
+  versaoSessao Int          @default(0)
+  telaInicial  TelaInicial?
 
   registros Registro[]
 
@@ -176,13 +180,19 @@ enum TipoTokenAcesso {
 }
 
 model TokenAcesso {
-  id        String          @id @default(uuid(7))
-  usuarioId String
-  usuario   Usuario         @relation(fields: [usuarioId], references: [id])
-  tipo      TipoTokenAcesso
-  tokenHash String          @unique
-  expiraEm  DateTime
-  usadoEm   DateTime?
+  id         String          @id @default(uuid(7))
+  usuarioId  String
+  usuario    Usuario         @relation(fields: [usuarioId], references: [id])
+  tipo       TipoTokenAcesso
+  tokenHash  String          @unique
+  expiraEm   DateTime
+  // "Aceito": a pessoa definiu a senha com este convite
+  usadoEm    DateTime?
+  // Revogado por um convite novo ou pela inativação: um estado, e não uma data de expiração no passado, para não
+  // depender do relógio de quem revoga e de quem usa (F5)
+  revogadoEm DateTime?
+
+  @@index([usuarioId])
 }
 
 // Contador para os códigos

@@ -54,8 +54,11 @@ export const atribuicaoRepository = {
         return atribuicao;
     },
 
-    async listarColaboradores(cliente: ClientePrisma, registroId: string) {
-        return cliente.atribuicao.findMany({ where: { registroId, funcao: "COLABORADOR" } });
+    // Só os ativos: quem foi inativado não recebe atribuição nova, nem copiada de outro item (B28)
+    async listarColaboradoresAtivos(cliente: ClientePrisma, registroId: string) {
+        return cliente.atribuicao.findMany({
+            where: { registroId, funcao: "COLABORADOR", usuario: { desativadoEm: null } },
+        });
     },
 
     async contarColaboradores(cliente: ClientePrisma, registroId: string) {
@@ -77,6 +80,23 @@ export const atribuicaoRepository = {
             where: {
                 registroId,
                 funcao: "APROVADOR",
+            },
+        });
+    },
+
+    async listarItensAbertosDoAprovador(cliente: ClientePrisma, usuarioId: string) {
+        return cliente.atribuicao.findMany({
+            where: {
+                usuarioId,
+                funcao: "APROVADOR",
+                registro: {
+                    estado: { in: ["RASCUNHO", "ABERTO", "EM_APROVACAO"] },
+                },
+            },
+            select: {
+                registro: {
+                    select: { id: true, codigo: true, tipo: true, estado: true },
+                },
             },
         });
     },

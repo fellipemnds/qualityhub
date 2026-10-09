@@ -1,5 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { chamar, perfisDeFora } from "../../testes/cenarios.js";
+import { app } from "../../app.js";
+import { prisma } from "../../compartilhado/prisma/cliente.js";
+import {
+    abrirDuasConexoes,
+    chamar,
+    concluirVerificacao,
+    executarAcao,
+    fecharNC,
+    ncPublicada,
+    perfisDeFora,
+} from "../../testes/cenarios.js";
 import { loginComo } from "../../testes/fabricas.js";
 
 function novoUsuario(setorId: number, papeis: string[] = ["EDITOR"]) {
@@ -16,6 +26,17 @@ describe("POST /usuarios", () => {
 
         // Confere
         expect(resposta).toEqual({ id: expect.any(String), tokenConvite: expect.any(String) });
+    });
+
+    it("responde 404 quando o setor não existe, e não 500 (L6)", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+
+        // Chama
+        const resposta = await chamar(admin, "POST", "/api/usuarios", 404, novoUsuario(999999));
+
+        // Confere
+        expect(resposta).toEqual({ mensagem: "O setor não existe ou não foi encontrado." });
     });
 
     it("recusa quem não é ADMIN (403)", async () => {
@@ -46,5 +67,789 @@ describe("POST /usuarios", () => {
             mensagem: "Dados inválidos",
             error: expect.arrayContaining([expect.objectContaining({ instancePath: "/papeis" })]),
         });
+    });
+});
+
+describe("GET /usuarios", () => {
+    it("acha por parte do nome ou do e-mail, sem diferenciar maiúscula, e a busca vazia acha todos", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+        const maria = await chamar(admin, "POST", "/api/usuarios", 201, {
+            ...novoUsuario(admin.usuario.setorId),
+            nome: "Maria Souza",
+            email: "maria.souza@empresa.com",
+        });
+
+        // Chama
+        const porNome = await chamar(admin, "GET", "/api/usuarios?busca=MARIA", 200);
+        const porEmail = await chamar(admin, "GET", "/api/usuarios?busca=%40EMPRESA", 200);
+        const nenhum = await chamar(admin, "GET", "/api/usuarios?busca=ninguem", 200);
+        const vazia = await chamar(admin, "GET", "/api/usuarios?busca=", 200);
+
+        // Confere
+        expect(porNome.itensDaPagina.map((u: { id: string }) => u.id)).toEqual([maria.id]);
+        expect(porEmail.itensDaPagina.map((u: { id: string }) => u.id)).toEqual([maria.id]);
+        expect(nenhum).toEqual({ itensDaPagina: [], proximoCursor: null });
+        expect(vazia.itensDaPagina).toHaveLength(4);
+    });
+
+    it("filtra por situação: ativos e inativos", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/inativar`, 200);
+
+        // Chama
+        const ativos = await chamar(admin, "GET", "/api/usuarios?situacao=ATIVO", 200);
+        const inativos = await chamar(admin, "GET", "/api/usuarios?situacao=INATIVO", 200);
+        const todos = await chamar(admin, "GET", "/api/usuarios", 200);
+
+        // Confere
+        const ids = (pagina: { itensDaPagina: { id: string }[] }) => pagina.itensDaPagina.map((u) => u.id);
+        expect(ids(inativos)).toEqual([visualizador.usuario.id]);
+        expect(ids(ativos)).not.toContain(visualizador.usuario.id);
+        expect(ids(ativos)).toContain(admin.usuario.id);
+        expect(ids(todos)).toHaveLength(3);
+    });
+
+    it("pagina por cursor", async () => {
+        // Prepara: admin, visualizador e semPapel
+        const { admin } = await perfisDeFora();
+
+        // Chama
+        const primeira = await chamar(admin, "GET", "/api/usuarios?limit=2", 200);
+        const segunda = await chamar(admin, "GET", `/api/usuarios?limit=2&cursor=${primeira.proximoCursor}`, 200);
+
+        // Confere
+        expect(primeira.itensDaPagina).toHaveLength(2);
+        expect(segunda.itensDaPagina).toHaveLength(1);
+        expect(segunda.proximoCursor).toBeNull();
+    });
+
+    it("traz o setor e os papéis, e nunca o hash da senha", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+
+        // Chama
+        const resposta = await app.inject({ method: "GET", url: "/api/usuarios", headers: admin.autenticacao });
+
+        // Confere
+        expect(resposta.body).not.toContain("senhaHash");
+        expect(resposta.body).not.toContain("$2");
+        expect(resposta.json().itensDaPagina).toContainEqual({
+            id: admin.usuario.id,
+            nome: "admin",
+            email: "admin@teste.com",
+            setor: { id: admin.usuario.setorId, nome: "Qualidade" },
+            papeis: ["ADMIN"],
+            criadoEm: expect.any(String),
+            desativadoEm: null,
+        });
+    });
+
+    it("recusa quem não é ADMIN (403)", async () => {
+        // Prepara
+        const gerente = await loginComo("gerente");
+
+        // Chama e confere
+        await chamar(gerente, "GET", "/api/usuarios", 403);
+    });
+});
+
+describe("GET /usuarios/:id", () => {
+    it("traz o usuário com o setor e os papéis", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+        const qa = await loginComo("qa");
+
+        // Chama
+        const resposta = await chamar(admin, "GET", `/api/usuarios/${qa.usuario.id}`, 200);
+
+        // Confere
+        expect(resposta).toMatchObject({ id: qa.usuario.id, nome: "qa", papeis: ["EDITOR", "APROVADOR"] });
+        expect(resposta).not.toHaveProperty("senhaHash");
+    });
+
+    it("responde 404 quando o usuário não existe", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+
+        // Chama e confere
+        await chamar(admin, "GET", "/api/usuarios/00000000-0000-0000-0000-000000000000", 404);
+    });
+
+    it("recusa quem não é ADMIN antes de buscar: não revela se o usuário existe (403)", async () => {
+        // Prepara
+        const gerente = await loginComo("gerente");
+
+        // Chama e confere: o mesmo 403 para um id que existe e um que não existe
+        await chamar(gerente, "GET", `/api/usuarios/${gerente.usuario.id}`, 403);
+        await chamar(gerente, "GET", "/api/usuarios/00000000-0000-0000-0000-000000000000", 403);
+    });
+});
+
+describe("PATCH /usuarios/:id", () => {
+    it("o admin troca o nome e o setor, e a resposta sai no formato do detalhe", async () => {
+        // Prepara (a rota de setores vem na F6; até lá, direto no banco)
+        const { admin, visualizador } = await perfisDeFora();
+        const producao = await prisma.setor.create({ data: { nome: "Produção" } });
+
+        // Chama
+        const resposta = await chamar(admin, "PATCH", `/api/usuarios/${visualizador.usuario.id}`, 200, {
+            nome: "Visualizador Renomeado",
+            setorId: producao.id,
+        });
+
+        // Confere
+        expect(resposta).toMatchObject({
+            id: visualizador.usuario.id,
+            nome: "Visualizador Renomeado",
+            setor: { id: producao.id, nome: "Produção" },
+            papeis: ["VISUALIZADOR"],
+        });
+    });
+
+    it("registra na auditoria o antes e o depois, sem a senha", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+
+        // Chama
+        await chamar(admin, "PATCH", `/api/usuarios/${visualizador.usuario.id}`, 200, { nome: "Outro Nome" });
+
+        // Confere
+        const linhas = await prisma.auditoria.findMany({
+            where: { entidadeId: visualizador.usuario.id, acao: "EDITAR" },
+        });
+        expect(linhas).toMatchObject([
+            {
+                entidade: "USUARIO",
+                usuarioId: admin.usuario.id,
+                antes: { nome: "visualizador", setorId: visualizador.usuario.setorId },
+                depois: { nome: "Outro Nome", setorId: visualizador.usuario.setorId },
+            },
+        ]);
+        expect(JSON.stringify(linhas)).not.toContain("senhaHash");
+    });
+
+    it("edita também um usuário inativo: corrigir o cadastro de quem saiu não traz risco", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/inativar`, 200);
+
+        // Chama e confere
+        await chamar(admin, "PATCH", `/api/usuarios/${visualizador.usuario.id}`, 200, { nome: "Quem Saiu" });
+    });
+
+    it("responde 404 quando o setor não existe, e o usuário não muda (L6)", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+
+        // Chama
+        const resposta = await chamar(admin, "PATCH", `/api/usuarios/${visualizador.usuario.id}`, 404, {
+            nome: "Não Deveria Gravar",
+            setorId: 999999,
+        });
+
+        // Confere
+        expect(resposta).toEqual({ mensagem: "O setor não existe ou não foi encontrado." });
+        expect(await chamar(admin, "GET", `/api/usuarios/${visualizador.usuario.id}`, 200)).toMatchObject({
+            nome: "visualizador",
+        });
+    });
+
+    it("responde 404 quando o usuário não existe", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+
+        // Chama e confere
+        await chamar(admin, "PATCH", "/api/usuarios/00000000-0000-0000-0000-000000000000", 404, { nome: "Ninguém" });
+    });
+
+    it("recusa o e-mail: é o login da pessoa, e não se edita por aqui (400)", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+
+        // Chama e confere
+        await chamar(admin, "PATCH", `/api/usuarios/${visualizador.usuario.id}`, 400, { email: "novo@teste.com" });
+    });
+
+    it("recusa quem não é ADMIN antes de buscar (403)", async () => {
+        // Prepara
+        const gerente = await loginComo("gerente");
+
+        // Chama e confere
+        await chamar(gerente, "PATCH", `/api/usuarios/${gerente.usuario.id}`, 403, { nome: "Gerente" });
+    });
+});
+
+describe("POST /usuarios/:id/papeis", () => {
+    it("o admin concede um papel, e ele vale na próxima requisição da pessoa", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        await chamar(visualizador, "POST", "/api/nc", 403, { titulo: "Ainda sem poder" });
+
+        // Chama
+        const resposta = await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/papeis`, 200, {
+            papel: "EDITOR",
+        });
+
+        // Confere: a resposta traz os papéis atuais, e a sessão dela já enxerga o papel novo (B7)
+        expect(resposta.papeis).toEqual(["VISUALIZADOR", "EDITOR"]);
+        await chamar(visualizador, "POST", "/api/nc", 201, { titulo: "Agora pode" });
+    });
+
+    it("registra na auditoria os papéis de antes e de depois", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+
+        // Chama
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/papeis`, 200, { papel: "EDITOR" });
+
+        // Confere
+        expect(
+            await prisma.auditoria.findMany({ where: { entidadeId: visualizador.usuario.id, acao: "CONCEDER_PAPEL" } }),
+        ).toMatchObject([
+            {
+                entidade: "USUARIO",
+                usuarioId: admin.usuario.id,
+                antes: { papeis: ["VISUALIZADOR"] },
+                depois: { papeis: ["VISUALIZADOR", "EDITOR"] },
+            },
+        ]);
+    });
+
+    it("conceder um papel que a pessoa já tem não muda nada nem vai para a auditoria", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+
+        // Chama
+        const resposta = await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/papeis`, 200, {
+            papel: "VISUALIZADOR",
+        });
+
+        // Confere
+        expect(resposta.papeis).toEqual(["VISUALIZADOR"]);
+        expect(await prisma.auditoria.count({ where: { acao: "CONCEDER_PAPEL" } })).toBe(0);
+    });
+
+    it("recusa um papel que não existe (400)", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+
+        // Chama e confere
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/papeis`, 400, { papel: "SUPERUSUARIO" });
+    });
+
+    it("responde 404 quando o usuário não existe", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+
+        // Chama e confere
+        await chamar(admin, "POST", "/api/usuarios/00000000-0000-0000-0000-000000000000/papeis", 404, {
+            papel: "EDITOR",
+        });
+    });
+
+    it("recusa quem não é ADMIN, mesmo concedendo a si mesmo (403)", async () => {
+        // Prepara
+        const gerente = await loginComo("gerente");
+
+        // Chama e confere
+        await chamar(gerente, "POST", `/api/usuarios/${gerente.usuario.id}/papeis`, 403, { papel: "ADMIN" });
+    });
+});
+
+describe("DELETE /usuarios/:id/papeis/:papel", () => {
+    it("o admin revoga um papel, e ele deixa de valer na próxima requisição da pessoa", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+        const editor = await loginComo("editor");
+
+        // Chama
+        const resposta = await chamar(admin, "DELETE", `/api/usuarios/${editor.usuario.id}/papeis/EDITOR`, 200);
+
+        // Confere (B7: o papel é lido do banco a cada requisição)
+        expect(resposta.papeis).toEqual([]);
+        await chamar(editor, "POST", "/api/nc", 403, { titulo: "Já sem poder" });
+    });
+
+    it("revogar o APROVADOR de quem é aprovador só de itens FECHADO", async () => {
+        const cenario = await fecharNC();
+        const { verificacao } = await executarAcao(cenario);
+        await concluirVerificacao(cenario, verificacao.id, "EFICAZ");
+        const { admin } = await perfisDeFora();
+
+        // Chama
+        const resposta = await chamar(
+            admin,
+            "DELETE",
+            `/api/usuarios/${cenario.aprovador.usuario.id}/papeis/APROVADOR`,
+            200,
+        );
+
+        // Confere
+        expect(resposta.papeis).toEqual([]);
+    });
+
+    it("revogar o APROVADOR de quem é só colaborador de um item aberto passa: só o aprovador designado trava (RN-43)", async () => {
+        // Prepara
+        const { gerente, qa, nc } = await ncPublicada();
+        const { admin } = await perfisDeFora();
+        await chamar(gerente, "POST", `/api/registros/${nc.id}/colaboradores`, 200, { colaboradores: [qa.usuario.id] });
+
+        // Chama
+        const resposta = await chamar(admin, "DELETE", `/api/usuarios/${qa.usuario.id}/papeis/APROVADOR`, 200);
+
+        // Confere
+        expect(resposta.papeis).toEqual(["EDITOR"]);
+    });
+
+    it("revogar o EDITOR de quem é aprovador de item aberto passa: só o APROVADOR trava (RN-43)", async () => {
+        // Prepara
+        const { gerente, qa, nc } = await ncPublicada();
+        const { admin } = await perfisDeFora();
+        await chamar(gerente, "PUT", `/api/registros/${nc.id}/aprovador`, 200, { usuarioId: qa.usuario.id });
+
+        // Chama
+        const resposta = await chamar(admin, "DELETE", `/api/usuarios/${qa.usuario.id}/papeis/EDITOR`, 200);
+
+        // Confere
+        expect(resposta.papeis).toEqual(["APROVADOR"]);
+    });
+
+    it("revogar um aprovador de uma NC aberta falha e responde 409 com uma lista", async () => {
+        // Prepara
+        const { editor, aprovador, nc } = await ncPublicada();
+        const { admin } = await perfisDeFora();
+        const ncAtualizada = await chamar(editor, "GET", `/api/nc/${nc.id}`, 200);
+
+        // Chama
+        const resposta = await chamar(
+            admin,
+            "DELETE",
+            `/api/usuarios/${aprovador.usuario.id}/papeis/${"APROVADOR"}`,
+            409,
+        );
+
+        // Confere
+        expect(resposta.error).toEqual([
+            { id: ncAtualizada.id, codigo: ncAtualizada.codigo, tipo: ncAtualizada.tipo, estado: ncAtualizada.estado },
+        ]);
+        expect(await chamar(admin, "GET", `/api/usuarios/${aprovador.usuario.id}`, 200)).toMatchObject({
+            papeis: ["APROVADOR"],
+        });
+    });
+
+    it("o último ADMIN não revoga o próprio papel ADMIN (409, RN-43)", async () => {
+        // Prepara
+        const admin = await loginComo("admin");
+
+        // Chama
+        await chamar(admin, "DELETE", `/api/usuarios/${admin.usuario.id}/papeis/${"ADMIN"}`, 409);
+
+        // Confere
+        expect(await chamar(admin, "GET", `/api/usuarios/${admin.usuario.id}`, 200)).toMatchObject({
+            papeis: ["ADMIN"],
+        });
+    });
+
+    it("admin concede ADMIN a outro usuário e revoga o papel ADMIN de si mesmo e recebe 200", async () => {
+        // Prepara
+        const admin = await loginComo("admin");
+        const visualizador = await loginComo("visualizador");
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/papeis`, 200, { papel: "ADMIN" });
+
+        // Chama
+        await chamar(admin, "DELETE", `/api/usuarios/${admin.usuario.id}/papeis/${"ADMIN"}`, 200);
+
+        // Confere
+        expect(await chamar(visualizador, "GET", `/api/usuarios/${admin.usuario.id}`, 200)).toMatchObject({
+            papeis: [],
+        });
+        expect(await chamar(visualizador, "GET", `/api/usuarios/${visualizador.usuario.id}`, 200)).toMatchObject({
+            papeis: ["VISUALIZADOR", "ADMIN"],
+        });
+    });
+
+    it("registra na auditoria os papéis de antes e de depois", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+        const qa = await loginComo("qa");
+
+        // Chama
+        await chamar(admin, "DELETE", `/api/usuarios/${qa.usuario.id}/papeis/EDITOR`, 200);
+
+        // Confere
+        expect(
+            await prisma.auditoria.findMany({ where: { entidadeId: qa.usuario.id, acao: "REVOGAR_PAPEL" } }),
+        ).toMatchObject([{ antes: { papeis: ["EDITOR", "APROVADOR"] }, depois: { papeis: ["APROVADOR"] } }]);
+    });
+
+    it("revogar um papel que a pessoa não tem não muda nada nem vai para a auditoria", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+
+        // Chama
+        const resposta = await chamar(admin, "DELETE", `/api/usuarios/${visualizador.usuario.id}/papeis/GERENTE`, 200);
+
+        // Confere
+        expect(resposta.papeis).toEqual(["VISUALIZADOR"]);
+        expect(await prisma.auditoria.count({ where: { acao: "REVOGAR_PAPEL" } })).toBe(0);
+    });
+
+    it("recusa quem não é ADMIN (403)", async () => {
+        // Prepara
+        const gerente = await loginComo("gerente");
+        const editor = await loginComo("editor");
+
+        // Chama e confere
+        await chamar(gerente, "DELETE", `/api/usuarios/${editor.usuario.id}/papeis/EDITOR`, 403);
+    });
+});
+
+describe("GET /pessoas", () => {
+    it("acha pessoas ativas por parte do nome, sem diferenciar maiúscula", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+        const aprovador = await loginComo("aprovador");
+        const { admin } = await perfisDeFora();
+        await chamar(admin, "POST", `/api/usuarios/${aprovador.usuario.id}/inativar`, 200);
+
+        // Chama
+        const porNome = await chamar(editor, "GET", "/api/pessoas?busca=EDIT", 200);
+        const todas = await chamar(editor, "GET", "/api/pessoas", 200);
+
+        // Confere: quem foi inativado não aparece para ninguém escolher
+        expect(porNome.itensDaPagina.map((p: { id: string }) => p.id)).toEqual([editor.usuario.id]);
+        expect(todas.itensDaPagina.map((p: { id: string }) => p.id)).toContain(editor.usuario.id);
+        expect(todas.itensDaPagina.map((p: { id: string }) => p.id)).not.toContain(aprovador.usuario.id);
+    });
+
+    it("filtra por papel: o painel de atribuições pede só os aprovadores", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+        const aprovador = await loginComo("aprovador");
+        const qa = await loginComo("qa");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", "/api/pessoas?papel=APROVADOR", 200);
+
+        // Confere
+        expect(resposta.itensDaPagina.map((p: { id: string }) => p.id).sort()).toEqual(
+            [aprovador.usuario.id, qa.usuario.id].sort(),
+        );
+    });
+
+    it("traz só o id, o nome e o setor: e-mail e papéis são do ADMIN (E3)", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", "/api/pessoas", 200);
+
+        // Confere
+        expect(resposta.itensDaPagina).toEqual([
+            { id: editor.usuario.id, nome: "editor", setor: { id: editor.usuario.setorId, nome: "Qualidade" } },
+        ]);
+    });
+
+    it("não busca no e-mail: quem não é ADMIN não descobre o e-mail de ninguém tentando letra por letra", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+
+        // Chama
+        const resposta = await chamar(editor, "GET", "/api/pessoas?busca=%40teste.com", 200);
+
+        // Confere
+        expect(resposta.itensDaPagina).toEqual([]);
+    });
+
+    it("pagina por cursor", async () => {
+        // Prepara
+        const editor = await loginComo("editor");
+        await loginComo("aprovador");
+        await loginComo("gerente");
+
+        // Chama
+        const primeira = await chamar(editor, "GET", "/api/pessoas?limit=2", 200);
+        const segunda = await chamar(editor, "GET", `/api/pessoas?limit=2&cursor=${primeira.proximoCursor}`, 200);
+
+        // Confere
+        expect(primeira.itensDaPagina).toHaveLength(2);
+        expect(segunda.itensDaPagina).toHaveLength(1);
+        expect(segunda.proximoCursor).toBeNull();
+    });
+
+    it("o visualizador também busca; quem só é ADMIN, ou não tem papel, não (403)", async () => {
+        // Prepara
+        const { admin, visualizador, semPapel } = await perfisDeFora();
+
+        // Chama e confere
+        await chamar(visualizador, "GET", "/api/pessoas", 200);
+        await chamar(admin, "GET", "/api/pessoas", 403);
+        await chamar(semPapel, "GET", "/api/pessoas", 403);
+    });
+});
+
+describe("POST /usuarios/:id/inativar", () => {
+    it("o admin inativa, e a pessoa cai na próxima requisição", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        await chamar(visualizador, "GET", "/api/auth/eu", 200);
+
+        // Chama
+        const resposta = await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/inativar`, 200);
+
+        // Confere
+        expect(resposta.desativadoEm).toEqual(expect.any(String));
+        await chamar(visualizador, "GET", "/api/auth/eu", 401);
+    });
+
+    it("registra na auditoria, e inativar quem já está inativo não muda nada", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        const url = `/api/usuarios/${visualizador.usuario.id}/inativar`;
+        const primeira = await chamar(admin, "POST", url, 200);
+
+        // Chama
+        const segunda = await chamar(admin, "POST", url, 200);
+
+        // Confere: a data é a da primeira vez, e a auditoria tem uma linha só
+        expect(segunda.desativadoEm).toBe(primeira.desativadoEm);
+        expect(
+            await prisma.auditoria.findMany({
+                where: { entidadeId: visualizador.usuario.id, acao: "INATIVAR_USUARIO" },
+            }),
+        ).toMatchObject([{ entidade: "USUARIO", usuarioId: admin.usuario.id }]);
+    });
+
+    it("dois inativar ao mesmo tempo gravam uma vez só, e os dois respondem a mesma data (F5)", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        const url = `/api/usuarios/${visualizador.usuario.id}/inativar`;
+
+        // Chama
+        await abrirDuasConexoes();
+        const [primeira, segunda] = await Promise.all([
+            chamar(admin, "POST", url, 200),
+            chamar(admin, "POST", url, 200),
+        ]);
+
+        // Confere: o segundo esperou a trava do primeiro e encontrou a pessoa já inativa
+        expect(segunda.desativadoEm).toBe(primeira.desativadoEm);
+        expect(
+            await prisma.auditoria.count({ where: { entidadeId: visualizador.usuario.id, acao: "INATIVAR_USUARIO" } }),
+        ).toBe(1);
+    });
+
+    it("recusa inativar quem é aprovador de item aberto, com a lista, e a pessoa continua ativa (RN-43)", async () => {
+        // Prepara
+        const { editor, aprovador, nc } = await ncPublicada();
+        const { admin } = await perfisDeFora();
+        const ncAntes = await chamar(editor, "GET", `/api/nc/${nc.id}`, 200);
+
+        // Chama
+        const resposta = await chamar(admin, "POST", `/api/usuarios/${aprovador.usuario.id}/inativar`, 409);
+
+        // Confere: a mesma trava do revogar, e a pessoa segue entrando
+        expect(resposta.error).toEqual([
+            { id: ncAntes.id, codigo: ncAntes.codigo, tipo: ncAntes.tipo, estado: ncAntes.estado },
+        ]);
+        await chamar(aprovador, "GET", "/api/auth/eu", 200);
+    });
+
+    it("recusa inativar o último ADMIN ativo, inclusive a si mesmo (RN-43)", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+
+        // Chama e confere
+        await chamar(admin, "POST", `/api/usuarios/${admin.usuario.id}/inativar`, 409);
+        await chamar(admin, "GET", "/api/auth/eu", 200);
+    });
+
+    it("inativa um ADMIN quando sobra outro ADMIN ativo", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/papeis`, 200, { papel: "ADMIN" });
+
+        // Chama e confere
+        await chamar(visualizador, "POST", `/api/usuarios/${admin.usuario.id}/inativar`, 200);
+        await chamar(admin, "GET", "/api/auth/eu", 401);
+    });
+
+    it("responde 404 quando o usuário não existe, e 403 para quem não é ADMIN", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+        const gerente = await loginComo("gerente");
+
+        // Chama e confere
+        await chamar(admin, "POST", "/api/usuarios/00000000-0000-0000-0000-000000000000/inativar", 404);
+        await chamar(gerente, "POST", `/api/usuarios/${admin.usuario.id}/inativar`, 403);
+    });
+});
+
+describe("POST /usuarios/:id/reativar", () => {
+    it("o admin reativa, e a pessoa volta às opções de escolha (E2)", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        const editor = await loginComo("editor");
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/inativar`, 200);
+
+        // Chama
+        const resposta = await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/reativar`, 200);
+
+        // Confere
+        expect(resposta.desativadoEm).toBeNull();
+        const pessoas = await chamar(editor, "GET", "/api/pessoas", 200);
+        expect(pessoas.itensDaPagina.map((p: { id: string }) => p.id)).toContain(visualizador.usuario.id);
+    });
+
+    it("registra na auditoria, e reativar quem já está ativo não muda nada", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/inativar`, 200);
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/reativar`, 200);
+
+        // Chama
+        const resposta = await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/reativar`, 200);
+
+        // Confere
+        expect(resposta.desativadoEm).toBeNull();
+        expect(
+            await prisma.auditoria.count({ where: { entidadeId: visualizador.usuario.id, acao: "REATIVAR_USUARIO" } }),
+        ).toBe(1);
+    });
+
+    it("recusa quem não é ADMIN (403)", async () => {
+        // Prepara
+        const { visualizador } = await perfisDeFora();
+        const gerente = await loginComo("gerente");
+
+        // Chama e confere
+        await chamar(gerente, "POST", `/api/usuarios/${visualizador.usuario.id}/reativar`, 403);
+    });
+});
+
+describe("POST /usuarios/:id/convite", () => {
+    const definirSenha = (token: string) =>
+        app.inject({
+            method: "POST",
+            url: "/api/auth/definir-senha",
+            payload: { token, senha: "SenhaNovaDoTeste123!" },
+        });
+
+    it("gera um convite novo, e o anterior para de valer (F5)", async () => {
+        // Prepara: o primeiro convite nasce com o usuário
+        const { admin } = await perfisDeFora();
+        const criado = await chamar(admin, "POST", "/api/usuarios", 201, novoUsuario(admin.usuario.setorId));
+
+        // Chama
+        const resposta = await chamar(admin, "POST", `/api/usuarios/${criado.id}/convite`, 200);
+
+        // Confere: o link antigo não define a senha; o novo, sim
+        expect(resposta).toEqual({ tokenConvite: expect.any(String), expiraEm: expect.any(String) });
+        expect((await definirSenha(criado.tokenConvite)).statusCode).toBe(400);
+        expect((await definirSenha(resposta.tokenConvite)).statusCode).toBe(204);
+    });
+
+    it("derruba as sessões da pessoa: se o link vazou e alguém entrou, sai (F5)", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        await chamar(visualizador, "GET", "/api/auth/eu", 200);
+
+        // Chama
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/convite`, 200);
+
+        // Confere
+        await chamar(visualizador, "GET", "/api/auth/eu", 401);
+    });
+
+    it("um convite pendente não volta a valer depois de inativar e reativar a pessoa (F5)", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+        const criado = await chamar(admin, "POST", "/api/usuarios", 201, novoUsuario(admin.usuario.setorId));
+        await chamar(admin, "POST", `/api/usuarios/${criado.id}/inativar`, 200);
+        await chamar(admin, "POST", `/api/usuarios/${criado.id}/reativar`, 200);
+
+        // Chama
+        const resposta = await definirSenha(criado.tokenConvite);
+
+        // Confere
+        expect(resposta.statusCode).toBe(400);
+    });
+
+    it("não gera convite para quem está inativo (409)", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/inativar`, 200);
+
+        // Chama e confere
+        await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/convite`, 409);
+    });
+
+    it("registra na auditoria quem gerou, sem o token; e a resposta não fica em cache", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+
+        // Chama
+        const resposta = await app.inject({
+            method: "POST",
+            url: `/api/usuarios/${visualizador.usuario.id}/convite`,
+            headers: admin.autenticacao,
+        });
+
+        // Confere
+        const { tokenConvite } = resposta.json();
+        expect(resposta.headers["cache-control"]).toBe("no-store");
+        const linhas = await prisma.auditoria.findMany({
+            where: { entidadeId: visualizador.usuario.id, acao: "GERAR_CONVITE" },
+        });
+        expect(linhas).toMatchObject([{ entidade: "USUARIO", usuarioId: admin.usuario.id }]);
+        expect(JSON.stringify(linhas)).not.toContain(tokenConvite);
+    });
+
+    it("o criar usuário também registra o convite e não fica em cache", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+
+        // Chama
+        const resposta = await app.inject({
+            method: "POST",
+            url: "/api/usuarios",
+            headers: admin.autenticacao,
+            payload: novoUsuario(admin.usuario.setorId),
+        });
+
+        // Confere
+        const { id, tokenConvite } = resposta.json();
+        expect(resposta.headers["cache-control"]).toBe("no-store");
+        const linhas = await prisma.auditoria.findMany({ where: { entidadeId: id, acao: "GERAR_CONVITE" } });
+        expect(linhas).toHaveLength(1);
+        expect(JSON.stringify(linhas)).not.toContain(tokenConvite);
+    });
+
+    it("dois convites ao mesmo tempo deixam um só link valendo (F5)", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+        const criado = await chamar(admin, "POST", "/api/usuarios", 201, novoUsuario(admin.usuario.setorId));
+        const url = `/api/usuarios/${criado.id}/convite`;
+
+        // Chama
+        await abrirDuasConexoes();
+        await Promise.all([chamar(admin, "POST", url, 200), chamar(admin, "POST", url, 200)]);
+
+        // Confere: dos três convites (o do criar e os dois de agora), só um continua utilizável
+        expect(
+            await prisma.tokenAcesso.count({ where: { usuarioId: criado.id, usadoEm: null, revogadoEm: null } }),
+        ).toBe(1);
+    });
+
+    it("responde 404 quando o usuário não existe, e 403 para quem não é ADMIN", async () => {
+        // Prepara
+        const { admin, visualizador } = await perfisDeFora();
+        const gerente = await loginComo("gerente");
+
+        // Chama e confere
+        await chamar(admin, "POST", "/api/usuarios/00000000-0000-0000-0000-000000000000/convite", 404);
+        await chamar(gerente, "POST", `/api/usuarios/${visualizador.usuario.id}/convite`, 403);
     });
 });

@@ -12,4 +12,8 @@ export const usuarioPapelRepository = {
     ) {
         return tx.usuarioPapel.create({ data: dados });
     },
+
+    async revogarPapel(tx: ClientePrisma, usuarioId: string, papel: Papel) {
+        return tx.usuarioPapel.delete({ where: { usuarioId_papel: { usuarioId, papel } } });
+    },
 };

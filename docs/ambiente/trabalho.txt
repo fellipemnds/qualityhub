@@ -25,7 +25,7 @@ banco (docker): postgres:17-alpine
 migrations: em dia
 
 ## VS Code — extensões no WSL
-anthropic.claude-code@2.1.292
+anthropic.claude-code@2.1.295
 biomejs.biome@3.7.1
 eamodio.gitlens@19.3.0
 github.vscode-github-actions@0.32.3
@@ -35,12 +35,12 @@ miguelsolorio.symbols@0.0.26
 ms-azuretools.vscode-containers@2.5.2
 ms-azuretools.vscode-docker@2.0.0
 ms-ceintl.vscode-language-pack-pt-br@1.131.2026090407
-prisma.prisma@31.12.10
+prisma.prisma@31.12.15
 ritwickdey.liveserver@5.7.10
 usernamehw.errorlens@3.29.0
 
 ## VS Code — extensões no Windows
-anthropic.claude-code@2.1.292
+anthropic.claude-code@2.1.295
 biomejs.biome@3.7.1
 eamodio.gitlens@19.3.0
 esbenp.prettier-vscode@12.4.0
@@ -53,6 +53,6 @@ ms-azuretools.vscode-docker@2.0.0
 ms-ceintl.vscode-language-pack-pt-br@1.131.2026090407
 ms-vscode-remote.remote-containers@0.469.0
 ms-vscode-remote.remote-wsl@0.104.3
-prisma.prisma@31.12.10
+prisma.prisma@31.12.15
 ritwickdey.liveserver@5.7.10
 usernamehw.errorlens@3.29.0

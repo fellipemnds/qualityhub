@@ -9,7 +9,202 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
-### Fase A5 — contrato da API (branch `fase/a5-contrato-api`, em andamento)
+### Fase A6 — usuários, setores e pessoas (branch `fase/a6-usuarios-e-setores`, em andamento)
+
+- **Conferência do setor num lugar só** (2026-10-08, L6): o
+  `conferirSetor` (`modulos/setor/conferir-setor.ts`) responde 404 para
+  setor inexistente. A NC e o `POST /usuarios` usam; toda rota que
+  recebe setor também vai usar. Quando a RN-44 (setor desativado) entrar,
+  entra ali.
+- **Leitura de usuários (F1, 2026-10-08):** `GET /usuarios` e
+  `GET /usuarios/:id`, só do `ADMIN`, com a permissão antes de qualquer
+  busca (`exigirGerenciarUsuarios`, também no criar). A resposta é a lista
+  do que pode sair (`usuarioRespostaSchema`: sem senha nem datas da
+  sessão), a mesma na lista e no detalhe (D1). A situação é um enum
+  (`ATIVO`/`INATIVO`), não um booleano: na URL, `"false"` viraria `true`
+  num `z.coerce.boolean()`. A busca vazia acha todos, em vez de 400 (o
+  campo da tela pode ir em branco).
+- **Editar usuário (F2, 2026-10-08):** `PATCH /usuarios/:id` só com
+  nome e setor; o e-mail fica de fora (é o login da pessoa). Vale também
+  para o usuário inativo (Matthew: corrigir o cadastro de quem saiu não
+  traz risco). A auditoria grava só o que a edição muda (`nome`,
+  `setorId`): o usuário inteiro levaria o hash da senha para a trilha.
+- **Papéis (F3, 2026-10-08):** `POST /usuarios/:id/papeis` concede e
+  `DELETE /usuarios/:id/papeis/:papel` revoga, só do `ADMIN`. Conceder o
+  que a pessoa já tem, ou revogar o que ela não tem, responde 200 como
+  ela está, sem nada na auditoria (como os colaboradores, que respondem
+  `jaEramColaboradores`): a tela não trata um erro que não é erro. As
+  ações `CONCEDER_PAPEL` e `REVOGAR_PAPEL` gravam a lista de papéis de
+  antes e de depois. O papel muda na próxima requisição da pessoa (B7).
+  **A trava da RN-43** (escrita por Matthew, 2026-10-08): revogar o
+  `APROVADOR` de quem é aprovador de item em `RASCUNHO`, `ABERTO` ou
+  `EM_APROVACAO` responde 409 com a lista dos itens (`id`, `codigo`,
+  `tipo`, `estado`), pela consulta `listarItensAbertosDoAprovador`
+  (`atribuicao.repository.ts`), que atravessa a relação até o `Registro`.
+  **O último `ADMIN`:** revogar o `ADMIN` quando não sobra **outro**
+  `ADMIN` ativo responde 409 (`contarOutrosAdminsAtivos`): contar os
+  outros, e não o total, deixa revogar o `ADMIN` de um admin já inativo.
+  As duas conferências voltam no inativar (F4), que é a hora de tirá-las
+  para uma função só.
+- **Inativar e reativar (F4, 2026-10-08):** `POST /usuarios/:id/inativar`
+  preenche o `desativadoEm` e o `sessaoValidaDesde` (a pessoa cai na
+  próxima requisição); `/reativar` limpa o `desativadoEm` (E2), e as
+  sessões de antes continuam derrubadas. Repetir não é erro nem duplica a
+  auditoria (`INATIVAR_USUARIO`, `REATIVAR_USUARIO`). As travas da RN-43
+  foram extraídas por Matthew para o `conferirSaida`, que recebe **os
+  papéis que saem**: o revogar passa `[papel]`, e o inativar, todos os da
+  pessoa; a regra de quais papéis travam fica num lugar só. As rotas ficam
+  declaradas por extenso, como as outras (um laço montava a URL e
+  escondia o texto da busca).
+- **Pessoas (F7, 2026-10-08):** `GET /pessoas`, para o painel de
+  atribuições e o `@` do feed, aberta aos papéis de negócio
+  (`VISUALIZAR`) e não ao `ADMIN`. Só usuários ativos, só id, nome e
+  setor (E3), filtro `?papel=`. A busca é **só no nome**: no e-mail, quem
+  não é `ADMIN` descobriria o e-mail dos outros tentando letra por letra.
+  Fica no módulo de usuário (pessoas são usuários vistos de outro jeito).
+  Feita antes da F4–F6, enquanto a trava da RN-43 esperava Matthew.
+- **Convite e sessão sem depender do relógio (F5, 2026-10-08;
+  `security-and-hardening` e dois ciclos de `doubt-driven-development`,
+  um deles com o Gemini).** Decisões, todas aprovadas por Matthew:
+  - **Versão da sessão no lugar da data (B27).** O `Usuario` ganha
+    `versaoSessao` (inteiro) e perde o `sessaoValidaDesde`. O login lê a
+    senha e a versão **na mesma leitura** e grava a versão no JWT (`sv`); o
+    `autenticar` exige a **mesma** versão. Derrubar as sessões (sair de
+    todos, inativar, definir senha, gerar convite) soma 1. Com a data, um
+    login em voo durante a derrubada sobrevivia, todo token do mesmo
+    segundo passava, e um relógio que volta (NTP, WSL2) reabria sessões.
+  - **Revogar convite sem relógio.** O `TokenAcesso` ganha `revogadoEm`
+    (e um índice em `usuarioId`). Revogar marcando `expiraEm = agora`
+    dependia de o relógio de quem revoga estar antes do de quem usa: um
+    link revogado ainda definia a senha (a intercalação veio dos dois
+    revisores). O `usadoEm` continua querendo dizer "aceito".
+  - **Um lugar só para emitir convite** (`emitirConvite`): revoga os
+    pendentes e cria o novo; criar usuário, gerar convite e o script do
+    primeiro acesso passam por ele.
+  - **Travas sempre pelo `UPDATE` condicional, pelo `tx` e com o usuário
+    primeiro** (no gerar convite, no inativar e no definir senha): sem
+    `SELECT ... FOR UPDATE` (deadlock entre dois admins) e na mesma ordem
+    (deadlock entre convite e senha). O bcrypt do definir senha roda
+    **fora** da transação (não prende conexão).
+  - **Definir senha:** limite de tentativas, só token do tipo
+    `CONVITE`, uma mensagem única para todo link que não vale (inexistente,
+    aceito, revogado, expirado, usuário inativo). O limite ficou **por
+    link** (5 por minuto, a chave é o hash do token), e não por IP (o
+    desenho): o que pesa é o bcrypt de um link válido; por IP, juntaria
+    pessoas atrás da mesma rede e travaria a suíte, que chama tudo do mesmo
+    IP (ajuste na F5c, 2026-10-08).
+  - **Aceitos como concessão:** o tempo da resposta ainda distingue "link
+    válido, usuário inativo" (recusa depois do bcrypt); dois `ADMIN`s
+    inativando um ao outro ao mesmo tempo (write skew). **Para depois:** o
+    token na URL do frontend vai no `#fragmento` (C0), e o corpo das
+    respostas fora do APM (D).
+  - **Ruído descartado** (o código já tratava): login de quem não tem
+    senha, JWT sem expiração, senha acima de 72 bytes.
+  - **F5b feita** (2026-10-08): `revogadoEm` e o índice em `usuarioId`
+    (migration `convite_revogavel`); `emitirConvite`
+    (`modulos/auth/emitir-convite.ts`), usado pelo criar usuário e pelo
+    `POST /usuarios/:id/convite`, que trava o usuário (`travarAtivo`),
+    derruba as sessões e responde `{ tokenConvite, expiraEm }` com
+    `no-store` (o criar usuário também). `GERAR_CONVITE` grava o id do
+    convite, nunca o token. O inativar ficou condicional (dois ao mesmo
+    tempo gravam uma vez) e revoga os convites pendentes. Prova de quebra
+    do teste de concorrência: sem a trava, três rodadas vermelhas.
+  - **F5c feita** (2026-10-08): o `definirSenha` valida o convite numa
+    leitura, calcula o bcrypt fora da transação e grava numa transação
+    curta (o usuário ativo primeiro, somando 1 à versão; depois o convite
+    ainda valendo, tudo no `WHERE`). A auditoria `DEFINIR_SENHA` grava o
+    `conviteId`, o mesmo do `GERAR_CONVITE`.
+- **Setores, F6a (2026-10-08):** módulo `setor/` com `GET /setores`
+  (logado: os ativos, em ordem de nome; o `ADMIN` pede `?situacao=INATIVO`
+  ou `TODOS`), `POST /setores` e `PATCH /setores/:id` (renomear), só do
+  `ADMIN` (ação `GERENCIAR_SETORES`). O `GET` **não pagina**: lista curta e
+  inteira para o seletor da tela, exceção explícita na trava da paginação,
+  como o checklist. O nome é único **sem diferenciar maiúscula**
+  ("qualidade" e "Qualidade" seriam o mesmo setor para quem escolhe numa
+  lista); com o nome de um setor desativado, a recusa sugere reativá-lo. A
+  trava do `{id}` aprendeu o `id` numérico do setor (um número que não
+  existe) na função `idDeOutroTipo`. A RN-44 foi detalhada (PRD v1.8):
+  desativar exige o setor sem pessoas ativas — vem na F6b.
+- **Setores, F6b (2026-10-08):** `POST /setores/:id/desativar` recusa
+  (409, com a lista de id e nome) enquanto houver pessoa **ativa** no setor
+  (as inativas são histórico); `/reativar` devolve o setor às opções. Os
+  dois pelo `UPDATE` condicional: repetir não grava de novo. O
+  `conferirSetor` ganhou o setor atual: setor desativado não entra em
+  **escolha nova** (criar ou mudar o setor de NC ou de pessoa), mas mandar
+  o setor que o item já tem passa. Reativar uma pessoa de setor
+  desativado é recusado até mudar o setor dela. **Concessão:** desativar
+  o setor no mesmo instante em que se cria uma pessoa nele (cada lado
+  trava uma linha diferente; com um `ADMIN`, não acontece).
+- **A trava do `{id}` escolhe quem chama** (F1): as rotas de usuário são
+  chamadas pelo `ADMIN`, e as dos itens, pelo gerente. Com o gerente, o
+  `GET /usuarios/:id` respondia 403 (a permissão vem antes da busca), e a
+  trava não testava o 404.
+- **Script do primeiro acesso** (`npm run criar-admin`; direção do
+  `idea-refine` de 2026-10-08, aprovada por Matthew em 2026-10-09). Sem
+  ele, produção não começa: criar usuário exige um `ADMIN`, e todo
+  usuário exige um setor. Quem roda: Matthew e a TI, por um manual.
+  Serve também de **recuperação** (o único `ADMIN` perdeu a senha ou
+  saiu). Um caminho só, por perguntas no terminal: nome, e-mail e setor →
+  resumo → "confirma? (s/N)" → **garante que o e-mail seja um `ADMIN`
+  ativo** (rodar de novo não estraga nada). Pessoa nova é criada, e o
+  setor também, se o nome não existir; pessoa que já existe é reativada,
+  ganha o `ADMIN` e muda de setor se o informado for outro. Nos dois
+  casos, convite novo (`emitirConvite`, revoga os anteriores) e as
+  sessões derrubadas. Setor desativado é recusado (RN-44). Na auditoria,
+  a pessoa é autora de si mesma (também no `concedidoPorId` do papel),
+  com `origem: "criar-admin"`. O link sai uma vez só, com a
+  `URL_DO_SISTEMA` (opcional no `.env`), no formato
+  `/definir-senha#token=...` (o fragmento não vai para o servidor nem para
+  o log). **Estrutura:** o miolo `garantirAdmin(tx, dados)` testado com o
+  banco, como os services, e uma casca fina (perguntas, confirmação,
+  link) que recebe a entrada e a saída do terminal, para o teste
+  "digitar" as respostas (o `diff-cover` cobra as linhas novas). Fica em
+  `src/`, ao lado do `server.ts`: em produção roda o JavaScript
+  compilado. **Fora:** argumentos na linha de comando, e-mail, senha
+  digitada no script, menu de modos, como rodar em produção (D1).
+  **Feito (2026-10-09):** o miolo (`modulos/usuario/garantir-admin.ts`,
+  7 cenários) e a casca (`criar-admin-terminal.ts`, 4 cenários, com
+  entrada e saída falsas). O que mudou no caminho: o miolo **trava a
+  linha da pessoa antes de ler** (`encerrarSessoesPorEmail`, um `UPDATE`
+  pelo e-mail que derruba as sessões e trava) — lendo antes, duas rodadas
+  ao mesmo tempo deixavam dois convites valendo (o contrato do
+  `emitirConvite`), e uma inativação no meio passava despercebida; a
+  casca lê as linhas em fila (iterador do `readline`), porque o
+  `question()` perde as que chegam antes da pergunta; os dados digitados
+  passam pelo Zod com os tetos da rota; erro de regra (`AppError`) vira
+  mensagem e código 1, e o resto estoura. O ponto de entrada
+  (`src/criar-admin.ts`) só liga a casca ao teclado e à tela e fica fora
+  do `diff-cover` (exceção X5, `CONSTRAINTS.md` §5); conferido rodando o
+  script (pessoa nova, recuperação, desistência).
+- **Pessoa inativa não recebe atribuição nova (B28, 2026-10-09).**
+  Achado na revisão da fase (`/abrir-pr`): inativar não tira os papéis,
+  e as rotas de atribuição não olhavam o `desativadoEm`; a trava da
+  RN-43 se contornava em dois passos (inativar quem não aprova nada,
+  depois designá-lo aprovador). Definir o aprovador e adicionar
+  colaboradores recusam a pessoa inativa com **409**, como as outras
+  recusas por "pessoa inativa" da fase (gerar convite); a lista de
+  colaboradores continua tudo ou nada (B16). A cópia automática dos
+  colaboradores no `PARCIALMENTE_EFICAZ` (B6) **pula** os inativos, em
+  vez de recusar: ela não tem quem escolha outro, e a ação nova nasce do
+  mesmo jeito (sem nenhum colaborador, se todos saíram; qualquer `EDITOR`
+  se adiciona, RN-18). **Fora:** a herança do aprovador da NC
+  (`herdarAprovadorDaNC`). Com a NC aberta, a RN-43 já impede inativar o
+  aprovador dela; só escapa com a NC fechada e a verificação com outro
+  aprovador, e o aprovador se troca pela rota. Primeiro uso da sessão na
+  nuvem com a suíte inteira (`SETUP.md` §13).
+- **Revisão de concorrência da fase (2026-10-09), pedida por Matthew
+  depois do B28.** Varredura de toda conferência "confere e depois
+  grava" do repositório, com a `doubt-driven-development` e a
+  `security-and-hardening` do agent-skills (lidas do repositório público,
+  porque o plugin não vem na nuvem). A trava do B19 protege a linha do
+  próprio item; as regras que leem **outras linhas** não tinham trava.
+  Uma sonda de testes (descartada depois) confirmou cada caso, 5 de 5
+  rodadas: **B29–B36**. Decisões de Matthew: a A6 fecha com o B28, e os
+  oito vão para uma **fase nova, A7**, antes do portão; e o filho novo
+  **só nasce com a NC `ABERTO`** (RN-51, PRD Q24). O mecanismo
+  planejado, um só: travar antes de ler (plano, A7).
+
+### Fase A5 — contrato da API (branch `fase/a5-contrato-api`, PR #8)
 
 - **Prefixo `/api` num plugin só** (2026-10-06): as nove chamadas de
   rotas foram para dentro de um `app.register(..., { prefix: "/api" })`

@@ -86,7 +86,9 @@ ela mudou.
 2. **Commits:** código e documentação em commits separados (`feat:`/`fix:`/`refactor:` e
    `docs:`), formatação automática à parte. Mostre os arquivos e as mensagens, com o resumo da
    `/verificar`, e espere o ok.
-3. **PR:** se a descrição do PR da fase não fala do item, avise; o `/abrir-pr` atualiza.
+3. **PR:** depois do push, atualize a descrição do PR da fase com o item, sem pedir (pedido de
+   Matthew, 2026-10-08): "O que entra", a entrega marcada e a verificação, no formato do
+   `/abrir-pr` §5 (`gh pr edit <n> --body-file -`).
 
 ## 7. Próximo
 

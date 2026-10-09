@@ -14,6 +14,9 @@ nunca (`CONSTRAINTS.md` §6).
 - `source ~/.nvm/nvm.sh` antes de qualquer npm/npx (sem ele, cai no Node do Windows).
 - `npx --no-install`, nunca `npx biome`.
 - `export PATH="$HOME/.local/bin:$PATH"` (o CLI do Claude Code mora lá).
+- **Na sessão na nuvem** (`SETUP.md` §13): não há nvm nem Docker Desktop. Antes do primeiro check,
+  `node -v` (tem de ser 24) e `docker info` (se falhar, ligar o `dockerd`); faltando o Node 24 ou
+  as dependências, os passos de preparar do §13.
 - Todo check é conferido pelo **código de saída** (`&& echo OK`, ou `echo EXIT=$?`), nunca
   pela última linha da saída: o `-s` esconde o resumo, e o erro fica acima dela.
 
@@ -64,8 +67,13 @@ de um nível C verde, com o relatório **desta** rodada:
 
 ```bash
 git fetch -q origin
-uvx diff-cover==10.6.0 coverage/cobertura-coverage.xml --compare-branch=origin/main --fail-under=100
+git add -N $(git ls-files --others --exclude-standard src)   # arquivo novo ainda sem commit
+uvx diff-cover==10.6.0 coverage/cobertura-coverage.xml --compare-branch=origin/main --fail-under=100 --exclude "*/src/criar-admin.ts"   # X5
 ```
+
+O `diff-cover` só enxerga o que o Git rastreia: um arquivo **novo** ainda sem commit fica fora do
+diff e passa "100%" sem ser conferido (o `setor.service.ts` da F6a passou assim e o CI recusou,
+2026-10-08). O `git add -N` avisa o Git do arquivo sem pô-lo no commit. Ou rode depois do commit.
 
 Sem `uvx` (o Ubuntu vem sem `pip`): baixe o binário do `uv` para a pasta temporária da
 sessão, com o `UV_CACHE_DIR` lá também. Linha sem cobertura: um teste que a execute, ou

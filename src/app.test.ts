@@ -223,7 +223,8 @@ describe("Documentação da API (OpenAPI)", () => {
         // Confere: lista sem paginação devolve um array solto na resposta 200
         type Corpo = { content?: { "application/json"?: { schema?: { type?: string } } } };
         const listasSoltas = Object.entries(doc.paths)
-            .filter(([caminho]) => caminho !== "/api/nc/{id}/checklist-fechamento")
+            // O checklist tem tamanho fixo; os setores, uma lista curta e inteira para o seletor da tela (RN-44)
+            .filter(([caminho]) => caminho !== "/api/nc/{id}/checklist-fechamento" && caminho !== "/api/setores")
             .flatMap(([caminho, operacoes]) =>
                 Object.entries(operacoes)
                     .filter(
@@ -248,6 +249,9 @@ describe("Documentação da API (OpenAPI)", () => {
         // Prepara: uma NC e uma contenção; a rota de NC recebe o id da contenção, e as dos filhos, o da NC
         const doc = await documento();
         const { gerente, editor, nc } = await ncPublicada();
+        // Quem chama é quem pode agir na rota, para a permissão (conferida antes da busca) não responder 403 no lugar do
+        // 404: as de usuário são do ADMIN; as dos itens, do gerente
+        const admin = await loginComo("admin");
         const contencao = await chamar(editor, "POST", `/api/nc/${nc.id}/contencoes`, 201, {
             descricao: "Contenção para a trava do B23.",
         });
@@ -269,18 +273,29 @@ describe("Documentação da API (OpenAPI)", () => {
             cancelar: { motivo: "Trava do B23." },
             reabrir: { motivo: "Trava do B23." },
             "finalizar-execucao": { diasParaVerificar: 30 },
+            papeis: { papel: "EDITOR" },
+        };
+
+        // O "id de outro tipo" de cada rota: a de NC recebe o da contenção; a de setor, que tem id numérico, um número que
+        // não existe; as outras, o da NC
+        const idDeOutroTipo = (caminho: string) => {
+            if (caminho.startsWith("/api/setores/")) return "999999";
+            if (caminho.startsWith("/api/nc/")) return contencao.id;
+            return nc.id;
         };
 
         // Chama
         const fora404: string[] = [];
         for (const { metodo, caminho, operacao } of rotas) {
-            const outroTipo = caminho.startsWith("/api/nc/") ? contencao.id : nc.id;
+            const outroTipo = idDeOutroTipo(caminho);
             const acao = metodo === "PATCH" ? "PATCH" : caminho.split("/").at(-1);
             const comCorpo = (operacao as { requestBody?: { required?: boolean } }).requestBody?.required === true;
             const resposta = await app.inject({
                 method: metodo as Metodo,
-                url: caminho.replace("{id}", outroTipo),
-                headers: gerente.autenticacao,
+                // Os outros parâmetros ganham um valor válido, para a rota chegar à busca do {id}
+                url: caminho.replace("{id}", outroTipo).replace("{papel}", "EDITOR"),
+                headers: (caminho.startsWith("/api/usuarios/") || caminho.startsWith("/api/setores/") ? admin : gerente)
+                    .autenticacao,
                 body: comCorpo ? corpos[acao ?? ""] : undefined,
             });
             if (resposta.statusCode !== 404) {

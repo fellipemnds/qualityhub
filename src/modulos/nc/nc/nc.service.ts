@@ -14,6 +14,7 @@ import type { DecisaoInput } from "../../../compartilhado/registro/decidir.schem
 import { ESTADOS_EDITAVEIS } from "../../../compartilhado/registro/estados-editaveis.js";
 import { LIMITE_PADRAO_PAGINACAO, paginar } from "../../../compartilhado/registro/paginacao-cursor.js";
 import { registroRepository } from "../../../compartilhado/registro/registro.repository.js";
+import { conferirSetor } from "../../setor/conferir-setor.js";
 import { classificacaoRepository } from "../classificacao/classificacao.repository.js";
 import { contencaoRepository } from "../contencao/contencao.repository.js";
 import { investigacaoRepository } from "../investigacao/investigacao.repository.js";
@@ -58,6 +59,8 @@ export const ncService = {
                 throw new SemPermissaoError("Você não tem permissões suficientes para criar um novo rascunho.");
             }
 
+            await conferirSetor(tx, dados.setorId);
+
             const registro = await cicloVidaService.criarRascunho(tx, {
                 tipo: "NAO_CONFORMIDADE",
                 criadoPorId: ator.id,
@@ -87,6 +90,8 @@ export const ncService = {
             }
 
             const ncAntes = await ncRepository.buscarPorId(tx, registroId);
+            await conferirSetor(tx, dados.setorId, ncAntes?.setorId ?? undefined);
+
             const ncAtualizada = await ncRepository.atualizar(tx, registroId, dados);
             // A edição também é gravação no Registro: o atualizadoEm muda (B24), e a trava do B19 recusa editar um item
             // que mudou de estado no meio

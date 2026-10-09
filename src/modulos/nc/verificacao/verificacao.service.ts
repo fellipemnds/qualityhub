@@ -92,8 +92,8 @@ export const verificacaoService = {
                 });
                 await herdarAprovadorDaNC(tx, acaoCorretiva.naoConformidadeId, novoRegistro.id, ator.id);
 
-                // Todos os colaboradores da ação anterior continuam na nova (B6, PRD Q3)
-                for (const colaborador of await atribuicaoRepository.listarColaboradores(tx, acaoCorretiva.id)) {
+                // Todos os colaboradores da ação anterior continuam na nova (B6, PRD Q3), menos os inativados (B28)
+                for (const colaborador of await atribuicaoRepository.listarColaboradoresAtivos(tx, acaoCorretiva.id)) {
                     await atribuicaoRepository.inserirAtribuicao(
                         tx,
                         novoRegistro.id,

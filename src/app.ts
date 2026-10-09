@@ -23,6 +23,7 @@ import { contencaoRoutes } from "./modulos/nc/contencao/contencao.routes.js";
 import { investigacaoRoutes } from "./modulos/nc/investigacao/investigacao.routes.js";
 import { ncRoutes } from "./modulos/nc/nc/nc.routes.js";
 import { verificacaoRoutes } from "./modulos/nc/verificacao/verificacao.routes.js";
+import { setorRoutes } from "./modulos/setor/setor.routes.js";
 import { usuarioRoutes } from "./modulos/usuario/usuario.routes.js";
 
 const app = Fastify({
@@ -74,6 +75,7 @@ app.register(
         );
         api.register(authRoutes);
         api.register(usuarioRoutes);
+        api.register(setorRoutes);
         api.register(ncRoutes);
         api.register(atribuicaoRoutes);
         api.register(contencaoRoutes);

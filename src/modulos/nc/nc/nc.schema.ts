@@ -20,7 +20,7 @@ export const ncBaseSchema = z.object({
     descricao: z.string().min(20).max(TEXTO_LONGO),
     requisitoViolado: z.string().min(1).max(TEXTO_CURTO),
     processoAfetado: z.string().min(1).max(TEXTO_CURTO),
-    setorId: z.coerce.number().int().positive(),
+    setorId: z.number().int().positive(),
     detectadoEm: z.date().refine(naoNoFuturo, MENSAGEM_FUTURO).nullish(),
     origem: z.enum(OrigemNC),
     cliente: z.string().max(TEXTO_CURTO).nullish(),

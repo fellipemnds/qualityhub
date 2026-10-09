@@ -51,6 +51,7 @@ flowchart TD
         A3 --> A4[A4 Sessão nova]
         A4 --> A5[A5 Contrato da API]
         A5 --> A6[A6 Usuários e setores]
+        A6 --> A7[A7 Travas entre linhas]
     end
 
     subgraph B[Bloco B — Design, em paralelo]
@@ -76,7 +77,7 @@ flowchart TD
         D2 --> D3[D3 Planilha aposentada]
     end
 
-    A6 --> C0
+    A7 --> C0
     B4 --> C0
     D0 -.-> C5
     C8 --> D1
@@ -252,17 +253,52 @@ RF-20).
 
 | Entrega | Quem |
 |---|---|
-| Migration **M2** (`Setor.desativadoEm`) | 🤖 |
-| **Trava da RN-43**: não inativar/revogar `APROVADOR` de quem é aprovador de item aberto, devolvendo a lista | 🧑 |
-| Rotas de usuários, setores e `GET /pessoas` (`esquema-backend.md` §6.2), incluindo reativar (E2); convite novo invalida os anteriores; definir senha recusa usuário inativo e **atualiza o `sessaoValidaDesde`** (redefinir a senha derruba as sessões antigas, TRD §4.1; na A4 a senha só era definida no primeiro acesso, sem sessão a derrubar) | 🤖 seguindo o padrão; 🧑 revisa |
-| **Script do primeiro acesso** (`npm run criar-admin`): cria o primeiro setor e o primeiro `ADMIN` e mostra o link de convite. Sem ele, produção não tem como começar — criar usuário exige já ser `ADMIN`, e todo usuário exige um setor | 🧑 |
-| Testes das travas e das permissões de `ADMIN` | 🧑 |
-| Setor inexistente no `POST`/`PATCH` da NC responde 404, não 500 (auditoria L6 — confirmar antes com teste, como o B16). Junto: o `setorId` do `ncBaseSchema` sai do `z.coerce.number()` para `z.number()`, como no criar usuário (o coerce aceita `true`, `"1"` e `[1]` como setor 1; revisão da A5) | 🤖 |
+| Migration **M2** (`Setor.desativadoEm`). **Feito** (2026-10-08): migration `setor_desativacao`, só a coluna; quem a usa são as rotas de setores | 🤖 |
+| **Trava da RN-43**: não inativar/revogar `APROVADOR` de quem é aprovador de item aberto (`RASCUNHO`, `ABERTO`, `EM_APROVACAO`), devolvendo a lista; e não inativar/revogar o `ADMIN` do último `ADMIN` ativo (`interview-me`, 2026-10-08; PRD RN-43). **Feito** (2026-10-08): no revogar e no inativar, pelo `conferirSaida` | 🧑 |
+| Rotas de usuários, setores e `GET /pessoas` (`esquema-backend.md` §6.2), incluindo reativar (E2); convite novo invalida os anteriores; definir senha recusa usuário inativo e **derruba as sessões** (soma 1 à `versaoSessao`, B27) (redefinir a senha derruba as sessões antigas, TRD §4.1; na A4 a senha só era definida no primeiro acesso, sem sessão a derrubar). Em 7 fatias (F1–F7, abaixo da tabela). **F1 feita** (2026-10-08): `GET /usuarios` (busca, situação, paginado) e `GET /usuarios/:id`. **F2 feita** (2026-10-08): `PATCH /usuarios/:id` (nome e setor; vale para o inativo). **F3 feita** (2026-10-08): conceder e revogar papel, com a trava da RN-43 e a do último `ADMIN` (as travas, de Matthew). **F4 feita** (2026-10-08): inativar e reativar, com as travas extraídas para o `conferirSaida` (Matthew). **F5 feita** (2026-10-08, em três fatias: o B27, o convite que revoga os anteriores e o definir senha endurecido; desenho no changelog). **F6 feita** (2026-10-08, em duas fatias: listar, criar e renomear; desativar e reativar, com a RN-44 detalhada). **As rotas da A6 estão completas.** **F7 feita** (2026-10-08, antes da F4–F6): `GET /pessoas` | 🤖 seguindo o padrão; 🧑 revisa |
+| **Script do primeiro acesso** (`npm run criar-admin`): cria o primeiro setor e o primeiro `ADMIN` e mostra o link de convite. Sem ele, produção não tem como começar — criar usuário exige já ser `ADMIN`, e todo usuário exige um setor. **Feito** (2026-10-09, escrito por Matthew): o miolo `garantirAdmin` (garante que o e-mail seja um `ADMIN` ativo, com convite novo; serve também de recuperação; trava a linha da pessoa antes de ler) e a casca `criarAdminPeloTerminal` (perguntas, Zod, confirmação, link), com o ponto de entrada `src/criar-admin.ts` fora da cobertura (exceção X5); desenho no changelog | 🧑 |
+| Testes das travas e das permissões de `ADMIN`. **Feito** (2026-10-09, escrito por Matthew): os limites da RN-43, onde a trava **não** age (revogar o `APROVADOR` de quem é aprovador só de itens `FECHADO`, ou só colaborador de item aberto; revogar o `EDITOR` de quem é aprovador de item aberto), cada um com prova de quebra. As permissões de `ADMIN` já estavam cobertas pelas tabelas de permissões da A2 (`permissoes.*.test.ts`: o `admin` recusado nas ações de negócio das seis entidades) e pelo `GET /pessoas`: sem teste novo | 🧑 |
+| **B27** (login em voo sobrevive à derrubada das sessões): o JWT leva a versão da sessão (`sv`), e o `autenticar` exige igualdade. Junto da F5, que promete "redefinir a senha derruba as sessões"; começa por teste. **Feito** (2026-10-08, F5a): a `versaoSessao` no lugar da data | 🤖 |
+| **B28** (pessoa inativa designada aprovadora ou colaboradora; contornava a trava da RN-43), achado na revisão da fase (`/abrir-pr`, 2026-10-09). **Feito** (2026-10-09, na sessão na nuvem): as rotas de atribuição recusam a pessoa inativa com 409, e a cópia dos colaboradores do B6 a pula | 🤖 |
+| Setor inexistente no `POST`/`PATCH` da NC responde 404, não 500 (auditoria L6 — confirmar antes com teste, como o B16). Junto: o `setorId` do `ncBaseSchema` sai do `z.coerce.number()` para `z.number()`, como no criar usuário (o coerce aceita `true`, `"1"` e `[1]` como setor 1; revisão da A5). **Feito** (2026-10-08): o `conferirSetor` (`modulos/setor/conferir-setor.ts`) responde 404 no `POST`/`PATCH` da NC e também no `POST /usuarios`, que tinha o mesmo 500; as rotas novas que recebem setor o usam. NC num setor **desativado** (RN-44): decidir na fatia de setores | 🤖 |
+
+**Ordem** (combinada no começo da fase, 2026-10-08): M2 → L6 → as rotas, em fatias, com a trava da RN-43
+entrando na fatia de revogar papel e inativar (ela precisa dessas rotas) → o script do primeiro acesso → os testes
+de `ADMIN`. As travas da A5 valem para as rotas novas: o `GET /setores` pagina ou entra como exceção, e a trava
+do `{id}` precisa lidar com o `id` numérico do setor.
+
+**Fatias das rotas:** F1 leitura de usuários · F2 editar usuário · F3 papéis, com a trava da RN-43
+(`interview-me` antes) · F4 inativar e reativar · F5 convite e senha (`doubt-driven-development` e
+`security-and-hardening` antes) · F6 setores · F7 pessoas.
+
+### A7 — Travas entre linhas · P
+
+**Objetivo:** as regras que conferem **outras linhas** (os filhos da NC, as ações da investigação, os outros
+`ADMIN`s, as pessoas do setor, os colaboradores) continuarem valendo com duas requisições ao mesmo tempo; e o
+filho novo só com a NC aberta (RN-51). Nasceu da revisão de concorrência da A6 (2026-10-09), que confirmou cada
+caso com teste.
+
+**O mecanismo, um só:** **travar antes de ler** (o mesmo do `garantirAdmin` e, por outro caminho, do B19). Antes de
+conferir uma regra que depende de outra linha, a transação trava essa linha; a requisição concorrente espera e,
+quando segue, lê o estado novo. Os dois lados da corrida travam a **mesma** linha (o pai, o item, a pessoa, o setor);
+o último `ADMIN`, em que cada lado mexe numa pessoa diferente, usa uma trava única (*advisory lock*).
+
+| Entrega | Quem |
+|---|---|
+| **B29** (filho só com a NC `ABERTO`, RN-51) e a trava da NC no `submeter` | 🤖 |
+| **B30** e **B31** (a trava da investigação: enviar, cancelar, criar e religar ação) | 🤖 |
+| **B32** (último `ADMIN`) e **B33** (revogar ou inativar × designar) | 🤖 |
+| **B34** (RN-12) e **B36** (a troca de aprovador que respondia 500): a trava do item nas atribuições | 🤖 |
+| **B35** (desativar o setor × escolher o setor) | 🤖 |
+
+**Quem escreve:** combinado em 2026-10-09, na sessão na nuvem (Matthew pelo iPad, sem como digitar código): Claude
+escreve, Matthew revisa os diffs. Cada bug começa por um teste de concorrência que falha (`abrirDuasConexoes`
+antes do `Promise.all`), como o da A2.
 
 ### ✅ Portão: fundação pronta
 
 Antes do Bloco C começar:
-- A0–A6 concluídas, CI verde na `main`.
+- A0–A7 concluídas, CI verde na `main`.
 - Nenhum bug aberto no `esquema-backend.md` §7.
 - OpenAPI completo, gerando sem erro.
 
@@ -294,7 +330,7 @@ repetem o padrão, geradas.
 |---|---|---|---|
 | **C0 · Base do front** | Projeto Vite + Tailwind + shadcn/ui + Router + TanStack Query; cliente gerado pelo **Orval**; layout (menu lateral e barra inferior); login e definir senha (T-01, T-02); tela inicial por papel; estados de tela padrão (`fluxo-app.md` §8); mapa tipado de estados | — (já pronto no A4/A5) | G |
 | **C1 · NCs** | Lista (T-04), Nova NC (T-05), Detalhe da NC (T-06) com checklist | Etapa calculada (função pura, testada sem banco); filtros novos; NC criada com colaboradores; `GET /registros/:id/atribuicoes`; **o que a T-06 pedir no `GET /nc/:id`** (etapa, resumo dos filhos, aprovador, colaboradores; decidir aqui entre uma chamada só ou várias), acrescentado ao `ncSchema` da A5 sem tirar nada (decisão D5 da A5) | G |
-| **C2 · Itens filhos** | T-07 para os cinco tipos, barra de ações, `BotaoBloqueado`, `DialogoMotivo`, `DialogoEfeito`, Investigação A3 com índice e as **contramedidas** (ações vinculadas, com o selo do plano) | **Hipóteses** (L1); investigação com ações vinculadas; **rota de leitura da lista do envio** (a tela precisa dela antes do clique; hoje só a NC tem checklist): decidir entre uma rota por tipo ou uma genérica, `GET /<tipo>/:id/checklist-submissao` (TRD §5). Junto, o **aprovador entra na lista** dos seis tipos: a checagem genérica do `cicloVidaService.submeter` deixa de barrar antes da guarda (hoje, sem aprovador, o 409 vem sem a lista — esquema §4.3) | G |
+| **C2 · Itens filhos** | T-07 para os cinco tipos, barra de ações, `BotaoBloqueado`, `DialogoMotivo`, `DialogoEfeito`, Investigação A3 com índice e as **contramedidas** (ações vinculadas, com o selo do plano) | **Hipóteses** (L1); investigação com ações vinculadas; **rota de leitura da lista do envio** (a tela precisa dela antes do clique; hoje só a NC tem checklist): decidir entre uma rota por tipo ou uma genérica, `GET /<tipo>/:id/checklist-submissao` (TRD §5). Junto, o **aprovador entra na lista** dos seis tipos: a checagem genérica do `cicloVidaService.submeter` deixa de barrar antes da guarda (hoje, sem aprovador, o 409 vem sem a lista — esquema §4.3). Junto da Q22, a **Q23** (PRD): o colaborador (`EDITOR`) define o aprovador dos itens em que é colaborador — a regra de permissão do `definirAprovador` passa a combinar papel e atribuição (`podeExecutar`) | G |
 | **C3 · Pendências** | Minhas pendências (T-03), contador no menu, preferência de tela inicial | `GET /pendencias` (esquema §4.4) | M |
 | **C4 · Feed** | Feed em todo item, editor com `@`/`#` (Tiptap), pendência "mencionado". **Texto formatado guardado como o JSON do Tiptap, validado por schema no backend (só os nós permitidos), nunca como HTML** (XSS); o teto do campo é revisto junto (Matthew, 2026-10-07) | Migration **M4**; comentários, menções, `GET /registros/:id/feed`, `GET /registros/busca` | G |
 | **C5 · Anexos** | Anexos em todo item, câmera no celular | Migration **M3**; armazenamento (disco ou objetos, **conforme D0**); validação pelo conteúdo; limpeza de órfãos | M |
@@ -343,6 +379,8 @@ Onde cada item dos documentos anteriores é feito:
 | Pendência 1 (ações de auditoria) · pendência 5 (`ignoreTrailingSlash`) | A5 · A0 |
 | Pendência 4 (login auditado) | A4 |
 | Pendência OpenAPI · RNF-04 (schema de resposta) · L7 (último motivo de reprovação) · B22 (dia de calendário na resposta) · B23 (`id` de outro tipo) · B24 (`atualizadoEm` na edição) · B25 (`finalizar-execucao` sem tipo) · B26 (e-mail sem teto) | A5 |
+| B27 (login em voo sobrevive à derrubada das sessões) · B28 (pessoa inativa recebe atribuição) | A6 |
+| B29–B36 (filho fora da NC aberta; as conferências entre linhas sem trava) · RN-51 | A7 |
 | RF-15 (usuários) · RF-20 (setores) · RN-43 · RN-44 | A6 (backend), C6 (telas) |
 | RF-01 (NC com colaboradores) · RF-16 (etapa) · L2, L5, L6 · R7 (código de erro para máquina) e R8 (`DELETE` com corpo), da revisão de design da A5 | C1 |
 | L1 (hipóteses) · L3 (plano aprovado) | C2 · A3 |
@@ -408,3 +446,10 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-08 | v1.18 — B25 entra na A5, achado pela trava do B23 no lote 5 |
 | 2026-10-08 | v1.19 — A5, lote 5: as funções repetidas dos services ficam, com a trava do B23 |
 | 2026-10-08 | v1.20 — B26 entra na A5 (revisão de segurança da fase); A6: o `setorId` sem coerce, junto da L6 |
+| 2026-10-08 | **A5 concluída** (branch `fase/a5-contrato-api`, PR #8): prefixo `/api`, schema de resposta em todas as rotas (D1–D5), OpenAPI 3.1 só em desenvolvimento, `GET /api/saude`, catálogo de auditoria, L4, L5, L7, B22–B26 e cinco travas sobre o OpenAPI no `app.test.ts`; as funções repetidas dos services ficam (lote 5). 374 testes. R7 e R8 ficam para a C1 |
+| 2026-10-08 | v1.21 — A6: a ordem das entregas (a trava da RN-43 junto das rotas de revogar e inativar) e as travas da A5 nas rotas novas |
+| 2026-10-08 | v1.22 — A6: a RN-43 detalhada e o último `ADMIN`; C2: a Q23 (o colaborador escolhe o aprovador) |
+| 2026-10-08 | v1.23 — B27 entra na A6, junto da F5 |
+| 2026-10-08 | v1.24 — A6: a F6 em duas fatias (F6a ler, criar e renomear; F6b desativar e reativar, com a RN-44 detalhada) |
+| 2026-10-09 | v1.25 — B28 entra na A6 (revisão da fase) |
+| 2026-10-09 | v1.26 — fase A7 (travas entre linhas): B29–B36, da revisão de concorrência da A6; o portão passa a exigir A0–A7 |

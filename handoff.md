@@ -5,32 +5,32 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-08 (retomada no **trabalho**: ambiente sem alertas, só o GitLens 19.2 → 19.3 na foto; descrição do PR #8 atualizada). Antes, 2026-10-07 (fim do dia, no trabalho). A A5 avançou quase toda: B22, B23 e B24 corrigidos (nenhum bug aberto), schema de resposta em todas as rotas, OpenAPI 3.1 com `/api/docs` só em desenvolvimento, `GET /api/saude`, catálogo de auditoria, L5, L7 e o lote 4 (L4: tetos, corpo estrito, paginação dos filhos). Falta o **lote 5** (§6). Decisões de produto com a analista no PRD (Q19–Q22). O PC de casa continua sem foto (`casa.txt`).
+**Última atualização:** 2026-10-09, fim do dia (no **trabalho**, `/trocar-pc`). **Todas as entregas da A6 estão feitas**: o script do primeiro acesso (`npm run criar-admin`) e o item 6, escritos por Matthew. Falta o CI do PR #9 ficar verde (parado no Docker Hub, fora do ar; não é o código) e fechar a fase (§6). Antes, 2026-10-09, chegada no **trabalho** (`/retomar`: branch em dia com a remota, CI do PR #9 verde, ambiente sem alertas; a foto só mudou as extensões do Claude Code e do Prisma no VS Code). Antes, 2026-10-08, fim do dia (no **trabalho**). A A6 avançou: **todas as rotas prontas** (F1–F7, com a F5 de convite e senha e o B27 corrigido); falta o script do primeiro acesso, o item 6 e fechar a fase. Antes, 2026-10-08 (no **trabalho**). A **A5 foi fechada** (PR #8, merge `b4aa14e`) e a branch `fase/a6-usuarios-e-setores` foi aberta. O PC de casa continua sem foto (`casa.txt`).
 
 ## 1. Objetivo
 
-Fase **A5 — Contrato da API** (`docs/plano-implementacao.md`), na branch
-`fase/a5-contrato-api` (PR #8, em rascunho). Falta só o lote 5 e o
-fechamento da fase (§6). O passeio guiado pelo código fica para um
-momento tranquilo em casa, sem bloquear a fase.
+Fase **A6 — Usuários, setores e pessoas** (`docs/plano-implementacao.md`),
+na branch `fase/a6-usuarios-e-setores`. Antes do `/comecar-fase`, o
+passeio guiado pelo código (§6), de preferência em casa, sem bloquear a
+fase.
 
 ## 2. Estado atual
 
-- **A5, feito em 2026-10-06 e 2026-10-07** (o detalhe de cada decisão
-  está no changelog, "Fase A5"): prefixo `/api`; schema de resposta em
-  **todas** as rotas (D1–D5; o `planoAprovado` em todas as rotas da ação
-  corretiva; o schema como lista do que pode sair no `/auth/eu` e no
-  `POST /usuarios`); OpenAPI 3.1 (`/api/docs` e o JSON só com
-  `NODE_ENV=development`); `GET /api/saude`; catálogo `AcaoAuditada`
-  (só tipo); L5; L7 (`ultimoMotivoReprovacao` no detalhe); L4 (tetos
-  `TEXTO_CURTO`/`TEXTO_LONGO`, senha até 72 bytes, corpo estrito, as
-  cinco listas dos filhos paginadas). Quatro **travas no documento**, no
-  `app.test.ts`: toda rota declara a resposta, todo texto e toda lista
-  de entrada têm teto, todo corpo recusa campo desconhecido, toda lista
-  é paginada (menos o checklist).
-- **B22, B23 e B24 corrigidos**; nenhum bug aberto.
-- Suíte: **374 passando** (2026-10-08); cobertura 97,03% das linhas (trava em 94,66%); o
-  `diff-cover` local em 100% antes de todo push. Lint e typecheck limpos.
+- **A5 fechada em 2026-10-08** (PR #8; o detalhe está no changelog,
+  "Fase A5", e na descrição do PR): prefixo `/api`, schema de resposta
+  em todas as rotas, OpenAPI 3.1 só em desenvolvimento, `GET
+  /api/saude`, catálogo de auditoria, L4, L5, L7, **B22–B26** e cinco
+  travas sobre o OpenAPI no `app.test.ts` (resposta declarada, teto,
+  corpo estrito, lista paginada, `{id}` de outro tipo responde 404). O
+  lote 5 decidiu que as funções repetidas dos services ficam.
+- **Skills novas** (2026-10-08): `/item` (o ciclo de um item, com a
+  revisão do diff) e `/verificar` (a verificação local, com o
+  `diff-cover` antes do push). **Claude dá o push** depois da
+  `/verificar` (`CLAUDE.md`, "Ambiente").
+- Nenhum bug aberto.
+- Suíte: **472 passando** (2026-10-09, depois do item 6 da A6;
+  cobertura 97,42% das linhas (trava em 94,66%). Com a máquina carregada (VS Code, pouca
+  memória livre), chegou a 473 s.
 - O que Matthew aprendeu na A5: `prefix` do Fastify e `Path` do
   cookie; schema de resposta (filtra o que sai, vigia o código: tipo
   errado vira 500); codec do Zod (`decode`/`encode`); *arrow function*;
@@ -38,11 +38,37 @@ momento tranquilo em casa, sem bloquear a fase.
   de caracterização; a conferência negativa precisa de uma positiva
   junto; função genérica (`<T extends z.ZodType>`); `.nullable()` ×
   `.optional()`; supertipo e o `id` que não diz o tipo (B23, a busca
-  com tipo escrita por ele); "expandir e contrair"; o que é OpenAPI.
-- **A4** fechada em 2026-10-06 (PR #6).
-- Tempo da suíte: 240 s a 330 s. Fechar o **Apple Music** na web antes
-  de rodar (o player consome a máquina). Se passar de ~5 min sem isso,
-  olhar o Docker Desktop e o `free -h` antes de mexer nos testes.
+  com tipo escrita por ele); "expandir e contrair"; o que é OpenAPI; o
+  `idea-refine` numa decisão de arquitetura (lote 5). Na A6 (F3, a trava da RN-43): filtro por relação no
+  Prisma (`registro: { estado: { in: [...] } }`), `select` aninhado,
+  `some` em relação de lista, `count`, `not`, desembrulhar com `.map`, e
+  contar "os outros" em vez do total; na F4, refatorar com os testes
+  como rede (extrair o `conferirSaida`, que recebe os papéis que saem). No "pronto
+  quando", as respostas tiveram lacunas, já explicadas: o OpenAPI diz
+  também o que cada rota recebe e devolve (é daí que o Orval gera o
+  cliente); o schema de resposta também vigia o nosso código; o B26 era
+  teto **máximo** (254), e a trava liberava todo texto com `format`.
+  No script do primeiro acesso (2026-10-09): receita em comentários antes
+  do código; `??` para "achei ou crio"; `?.` devolve `undefined`, não
+  `null` (a armadilha do `!== null`); `.includes`; *spread* de lista
+  (`[...lista, "ADMIN"]`) × de data (não espalha nada); desestruturação
+  no parâmetro; `safeParse` e `prettifyError`; `try`/`catch` com
+  `instanceof AppError`; *streams* e o `readline` em fila; `.rejects` no
+  Vitest; ordem de enum no Postgres (declaração, não alfabeto); o teste
+  que falha pelo motivo errado (o `await` esquecido, o `depois` no
+  objeto errado); prova de quebra; travar antes de ler (o B19 de novo).
+  Os `await` do Prisma esquecidos foram três: o `noFloatingPromises` não
+  os pega (só as funções `async` nossas).
+  No item 6: teste de **limite** (onde a trava não age) e a prova de
+  quebra dele; o cenário precisa ser exato ("NC fechada" não é "nenhum
+  item aberto": a ação volta a `ABERTO` depois do plano, e a verificação
+  nasce com o aprovador); 401 × 403 × 409; o `it.todo` não roda o corpo;
+  procurar o teste que já existe antes de escrever outro (as tabelas da A2
+  já cobriam o `ADMIN`).
+- Tempo da suíte: 240 s a 330 s. Fechar **qualquer player no
+  navegador** (Apple Music, YouTube) antes de rodar: com o YouTube
+  aberto, a suíte levou 481 s (2026-10-08). Se passar de ~5 min sem
+  isso, olhar o Docker Desktop e o `free -h` antes de mexer nos testes.
 
 ## 3. Arquivos no meio de uma mudança
 
@@ -50,12 +76,18 @@ Nenhum.
 
 ## 4. O que foi alterado nesta sessão
 
-`git log fc33c06~22..HEAD` na branch: B23 (7 fatias), B24, os schemas de
-resposta dos filhos, da sessão, dos usuários e das atribuições, o
-OpenAPI, a saúde, o catálogo de auditoria, L5, L7 e L4. **Duas
-dependências novas** (`@fastify/swagger`, declarado, e
-`@fastify/swagger-ui`, de desenvolvimento): em casa, `npm run preparar`.
-Nenhuma migration nem chave nova no `.env`.
+Na A5 (`git log fc33c06..b4aa14e`): o lote 5, o B25, o B26, as
+convenções da A5 no TRD §7.1 e a descrição do PR #8. Fora do código: as
+skills `/item` e `/verificar`, a `/retomar` conferindo o PR e se o
+handoff está em dia, a revisão por item na `/item`, o push pelo Claude e
+a colinha §6 (`understand-anything` e `Explore`).
+
+Em 2026-10-09 (no trabalho): o script do primeiro acesso, o `fast-jwt`
+6.3.4 (alerta do `osv-scanner`), a regra `noFloatingPromises` no Biome e
+a exceção X5. **Chave nova no `.env`: `URL_DO_SISTEMA`** (opcional; o
+`npm run ambiente` acusa a falta dela no outro PC: copiar a linha do
+`.env.example`). Sem migration nem dependência nova (o `fast-jwt` só
+subiu de versão: o `npm run preparar` resolve).
 
 ## 5. Falhas (e o porquê)
 
@@ -85,6 +117,9 @@ Nenhuma migration nem chave nova no `.env`.
 | Janela do VS Code no WSL não abria depois da atualização (2026-10-07) | O `npm run ambiente` chamou o `code` do WSL no meio da atualização: o servidor novo ficou descompactado numa pasta temporária, sem o último passo da instalação, e a versão antiga já tinha sido apagada | Resolvido: a pasta da versão em `~/.vscode-server/bin/` tirada do caminho, e o VS Code reinstalou ao reconectar. Claude: **não tirar a foto com o VS Code atualizando** |
 | Commit da fatia 7 do B23 entrou com a suíte vermelha (2026-10-07) | O comando lia o resultado da suíte e commitava em seguida, sem conferir o código de saída; e o `Confere` do teste novo comparava com o objeto do cenário, que já tinha sido editado (o vermelho parou no 500 antes de chegar nele) | Corrigido antes do push (`--amend`, local). Claude: o commit só roda **depois de conferir** o código de saída da suíte (`if [ $r -eq 0 ]`); e a conferência de "não mudou" compara com uma leitura feita **antes** da chamada, nunca com o objeto do cenário |
 | CI do lote 3 vermelho no `diff-cover` (2026-10-07) | O catálogo `AcaoAuditada` era um objeto que ninguém carregava (só o tipo era importado): a linha ficou sem cobertura, e o `diff-cover` só roda no CI | Resolvido: o catálogo virou só um tipo. Claude: rodar o `diff-cover` **antes de todo push** (`uvx diff-cover==10.6.0 coverage/cobertura-coverage.xml --compare-branch=origin/main --fail-under=100`, com o `uv` na pasta temporária da sessão) |
+| CI vermelho no `verificar` sem nenhum teste rodar (2026-10-09, três vezes) | O Testcontainers baixa o Postgres e o `ryuk` do Docker Hub: primeiro o limite de downloads sem login (as máquinas do GitHub dividem endereços), depois erros 500 e timeout do próprio Docker Hub | Login no CI (`1ee4df0`); a instabilidade é do Docker Hub, e não há o que consertar no código: rodar de novo depois. **Sintoma:** "No test files found" e cobertura 0% — ler o erro de baixo (o `Unhandled Error`) antes de mexer nos testes |
+| CI vermelho no `osv-scanner` depois do push do handoff (2026-10-09), e ninguém viu até Matthew avisar | Alerta novo publicado de um dia para o outro (`fast-jwt` 6.3.3, GHSA-x937-hj6v-793p, média); o Claude conferiu o CI no `/retomar` **antes** do push, e não depois | Resolvido: `npm update fast-jwt` (6.3.4, dentro da faixa do `@fastify/jwt`). Claude: conferir o CI (`gh pr checks`) depois de **todo** push, até o fim, inclusive o de documentação |
+| CI da F6a vermelho no `diff-cover` (2026-10-08): uma linha do `setor.service.ts` sem teste | O `diff-cover` local deu 100% porque o arquivo era **novo e ainda sem commit**: o Git não o rastreava, e ele ficou fora do diff | Resolvido com o teste. Claude: `git add -N` nos arquivos novos antes do `diff-cover` (na `/verificar` §4), ou rodar depois do commit |
 
 **Pendências anotadas:**
 - **Classificação, reincidência e segregação** (2026-10-07, com a
@@ -153,13 +188,7 @@ Nenhuma migration nem chave nova no `.env`.
 
 ## 6. Próximo passo
 
-1. ~~Lote 5 da A5~~ **feito em 2026-10-08**: as funções repetidas
-   ficam, com a trava do B23 sobre o OpenAPI, que achou e corrigiu o
-   **B25** (changelog, "Fase A5"). Reavaliar a junção na C2.
-2. **Fechar a A5:** `/abrir-pr` (revisões da fase e o "pronto quando",
-   que inclui Matthew explicar o que é OpenAPI e por que o schema de
-   resposta importa tanto quanto o de entrada) → merge → `/fechar-fase`.
-3. **Passeio guiado pelo código** (em casa, num momento tranquilo). Antes dele, rodar o `/understand-anything:understand` (uma vez, em português, só `src/` sem os testes) e usar o `understand-onboard` como roteiro; depois, decidir se o grafo fica (colinha §6).
+1. **Passeio guiado pelo código** (em casa, num momento tranquilo). Antes dele, rodar o `/understand-anything:understand` (uma vez, em português, só `src/` sem os testes) e usar o `understand-onboard` como roteiro; depois, decidir se o grafo fica (colinha §6).
    **Inclui o último item do "pronto quando" da A4**, adiado no merge:
    Matthew explicar o B19 ("confere e depois age", o `UPDATE`
    condicionado ao estado lido) e o que o `SameSite=Strict` bloqueia e
@@ -167,10 +196,43 @@ Nenhuma migration nem chave nova no `.env`.
    controller → service → `cicloVidaService` → `buscarRegistroDoTipoOuFalhar`
    → `aplicarTransicao` → `registroRepository.atualizar` → banco →
    auditoria → resposta), com Matthew dizendo o que cada parte faz antes
-   de Claude explicar. Ajuda também a reconhecer o código depois do B23.
-4. **Depois, a A6** (usuários e setores): os itens de Matthew, no passo
-   a passo, são a trava da RN-43, o script do primeiro acesso e os
-   testes das permissões de `ADMIN`.
+   de Claude explicar.
+2. **A6, pela `/item`** (`/comecar-fase` feito em 2026-10-08, PR #9 em
+   rascunho; a ordem e as 7 fatias das rotas estão no plano, abaixo da tabela
+   da A6). **Feitas:** M2, L6 (o `conferirSetor`, usado pela NC e pelo
+   `POST /usuarios`), F1 (leitura de usuários), F2 (editar), **F3** (papéis,
+   com a trava da RN-43 e a do último `ADMIN`, escritas por Matthew), F4 (inativar
+   e reativar, com as travas extraídas por Matthew para o `conferirSaida`) e
+   F7 (`GET /pessoas`). A Q23 (o colaborador escolhe o aprovador) vai para a C2.
+   **F5 feita** (2026-10-08, três fatias; o desenho, das revisões de segurança e
+   dos dois ciclos de `doubt-driven`, está no changelog): o B27 (a `versaoSessao`),
+   o convite que revoga os anteriores e o definir senha endurecido. **Em casa,
+   `npm run preparar` (duas migrations novas) e entrar de novo** (os tokens
+   antigos não valem). **F6 feita** (setores: listar, criar, renomear, desativar sem pessoas
+   ativas, reativar; setor desativado fora das escolhas novas). **As rotas da A6
+   estão completas.** **Script do primeiro acesso feito** (2026-10-09, escrito
+   por Matthew; `npm run criar-admin`, desenho e o que mudou no changelog,
+   exceção X5 no `CONSTRAINTS.md` §5). **Item 6 feito** (2026-10-09: os
+   limites da RN-43, com prova de quebra; as permissões de `ADMIN` já eram
+   cobertas pelas tabelas da A2). **Todas as entregas da A6 estão feitas.**
+
+   **Começar por aqui na próxima conversa:**
+   1. **O CI do PR #9 verde.** Caiu por causa do Docker Hub (limite de
+      downloads sem login; depois, erros 500 e timeout do próprio Docker
+      Hub, também daqui do PC). O login no Docker Hub já está no CI
+      (*secrets* `DOCKERHUB_USERNAME` e `DOCKERHUB_TOKEN`, token só de
+      leitura, criados por Matthew). Rodar de novo (`gh run rerun <id>
+      --failed`) quando o Docker Hub voltar; o código está verificado aqui
+      (472 testes, `diff-cover` 100%). Com o CI verde, atualizar a
+      descrição do PR com o script e o item 6.
+   2. **Fechar a A6** (`/abrir-pr`): as revisões da fase, o "pronto quando"
+      (Matthew explica o que a fase mudou) e a decisão sobre o que foi
+      anotado sem tratar: duas revogações de `ADMIN` ao mesmo tempo podem
+      passar as duas (concorrência, como o B19; o `revogarPapel` não trava a
+      linha do usuário). Depois, o merge de Matthew e o `/fechar-fase`.
+   3. **O portão "fundação pronta"** (fim do bloco A): o item adiado do
+      "pronto quando" da A4 (Matthew explicar o B19 e o `SameSite=Strict`,
+      no passeio guiado, passo 1) e o OpenAPI conferido.
 
 Da revisão de design das APIs (2026-10-07), anotados para a C1/C2:
 **R7**, o erro sem código para máquina (os 409 diferentes só se
@@ -181,7 +243,7 @@ ainda barato de mudar). Sugestões antigas sem prazo: o `logout` sem
 no `buscarPorEmail` sobrou; o `gitleaks detect` vira `gitleaks git` nas
 versões novas.
 
-**Chegando em casa:** rodar o **`/retomar`**. A A5 trouxe **duas dependências** (`@fastify/swagger`, declarado, e `@fastify/swagger-ui`, de desenvolvimento): o `npm run preparar` resolve. Sem migration nem chave nova no `.env`. Desde a última vez que a
+**Chegando em casa:** rodar o **`/retomar`**. Desde 2026-10-09: **chave nova no `.env`, a `URL_DO_SISTEMA`** (copiar a linha do `.env.example`; sem ela, o `npm run ambiente` acusa a falta) e o `fast-jwt` 6.3.4 (o `npm run preparar` resolve). A A5 trouxe **duas dependências** (`@fastify/swagger`, declarado, e `@fastify/swagger-ui`, de desenvolvimento): o `npm run preparar` resolve. Sem migration nem chave nova no `.env`. Desde a última vez que a
 branch foi usada em casa (antes da A3): as migrations da A3 e a **M1**
 (`sessao_e_preferencia_do_usuario`), e **dependências novas** (cookie,
 rate-limit, helmet, cobertura, Vitest 5.0.3). O `npm run preparar`
@@ -189,7 +251,7 @@ resolve as duas coisas. Os passos (`SETUP.md` §12.1 se o PC estiver
 parado há tempo):
 
 1. Docker Desktop aberto ("Engine running"), Ubuntu, pasta do projeto.
-2. `git fetch`, `git switch fase/a5-contrato-api`, `git pull`.
+2. `git fetch`, `git switch fase/a6-usuarios-e-setores`, `git pull`.
 3. **`npm run preparar`**: obrigatório. Se a migration do
    `investigacaoId` falhar (o banco de casa tem ações sem investigação),
    recriar o banco: `SETUP.md` §12, passos 6 e 7.
@@ -200,4 +262,4 @@ parado há tempo):
 6. **Primeira foto de casa:** `npm run ambiente -- casa` e depois
    `npm run ambiente -- comparar` (`SETUP.md` §12.5). Commitar o
    `docs/ambiente/casa.txt`.
-7. `npm run test:cobertura`: **374 passando**, cobertura acima de 94,66% (com o Apple Music fechado, para a suíte não passar de ~5 min).
+7. `npm run test:cobertura`: **472 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).

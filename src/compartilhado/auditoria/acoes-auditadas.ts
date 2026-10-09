@@ -23,6 +23,16 @@ export type AcaoAuditada =
     | "DEFINIR_APROVADOR"
     // Usuários e sessão
     | "CRIAR_USUARIO"
+    | "GERAR_CONVITE"
+    | "CONCEDER_PAPEL"
+    | "REVOGAR_PAPEL"
+    | "INATIVAR_USUARIO"
+    | "REATIVAR_USUARIO"
     | "DEFINIR_SENHA"
     | "LOGIN"
-    | "SAIR_DE_TODOS";
+    | "SAIR_DE_TODOS"
+    // Setores
+    | "CRIAR_SETOR"
+    | "RENOMEAR_SETOR"
+    | "DESATIVAR_SETOR"
+    | "REATIVAR_SETOR";

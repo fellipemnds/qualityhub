@@ -11,7 +11,8 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "preparar": "npm ci && prisma generate && prisma migrate deploy",
-    "ambiente": "bash scripts/ambiente.sh"
+    "ambiente": "bash scripts/ambiente.sh",
+    "criar-admin": "tsx src/criar-admin.ts"
   },
   "repository": {
     "type": "git",

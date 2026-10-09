@@ -22,8 +22,8 @@ próprio, com aprovação de Matthew (`CONSTRAINTS.md` §6).
 | `docs/fluxo-app.md` | Telas, navegação, etapa calculada da NC, jornadas, ações por estado, "Minhas pendências" |
 | `docs/ui-ux.md` | Fundações visuais, componentes (shadcn/ui), wireframes em texto, textos da tela |
 | `docs/trd.md` | Stack, sessão, API, anexos, testes, infraestrutura, hospedagem, ADR-33 a ADR-38 |
-| `docs/esquema-backend.md` | Modelo de dados, mudanças M1–M5, valores calculados, contrato da API, correções B1–B26 |
-| `docs/plano-implementacao.md` | **Ordem de execução**: fases A0–A6 (fundação do backend), B (design), C0–C8 (frontend em fatias), D (produção) |
+| `docs/esquema-backend.md` | Modelo de dados, mudanças M1–M5, valores calculados, contrato da API, correções B1–B36 |
+| `docs/plano-implementacao.md` | **Ordem de execução**: fases A0–A7 (fundação do backend), B (design), C0–C8 (frontend em fatias), D (produção) |
 | `docs/changelog-arquitetura.md` | Registro de toda decisão de arquitetura e divergência do documento original. **Leia antes de propor mudança estrutural** |
 | `docs/arquitetura.md` | Documento de design **original** (histórico). Onde diverge dos documentos acima, eles valem |
 
@@ -42,7 +42,7 @@ para os outros documentos em vez de repetir o que já está neles.
 Ainda pendente fora do código: hospedagem (TRD §10.6), identidade
 visual.
 
-**Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B26; os
+**Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B36; os
 corrigidos têm ✅). A A3 corrigiu B1–B6 e B8–B18, e a RN-48 entrou como
 regra nova (fase fechada em 2026-10-02, PR #4). A A4 corrigiu o B19
 (transições sem trava sob concorrência) e o B7 (papéis no token), os
@@ -55,8 +55,15 @@ mesmo dia, com os schemas de resposta. O B25 (o `finalizar-execucao`
 aceitava o `id` de outro tipo, a rota que escapou do B23) foi achado e
 corrigido em 2026-10-08, pela trava do B23 no `app.test.ts`, e o B26
 (e-mail sem teto, que deixava um anônimo encher a memória pela chave do
-limite de tentativas), no mesmo dia, na revisão de segurança da fase.
-**Nenhum bug aberto.**
+limite de tentativas), no mesmo dia, na revisão de segurança da fase
+(fase fechada em 2026-10-08, PR #8). A A6 corrigiu o B27 (um login feito
+durante a derrubada das sessões sobrevivia a ela; a data virou a
+`versaoSessao`), em 2026-10-08, e o B28 (uma pessoa inativa podia ser
+designada aprovadora ou colaboradora, o que contornava a trava da
+RN-43), em 2026-10-09, achado na revisão da fase. **Abertos: B29–B36**,
+na **A7** (a revisão de concorrência da A6, 2026-10-09): o filho novo
+nascia com a NC fora de `ABERTO` (RN-51) e sete regras que conferem
+outras linhas quebravam com duas requisições ao mesmo tempo.
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
@@ -75,6 +82,13 @@ passos estão nas skills (`.claude/skills/`, versionadas, as mesmas nos
 dois PCs). Memória e conversas do Claude **não** passam de uma máquina
 para a outra — o que precisa sobreviver vai para o `handoff.md`
 (estado), para este arquivo (regras) ou para uma skill (rotinas).
+
+**Sessão na nuvem** (desde 2026-10-09): Matthew também usa o Claude Code
+na web (pelo iPad), num computador da nuvem descartável. **No começo da
+sessão, Claude prepara o ambiente** (Node 24, Docker ligado, `npm ci`,
+`prisma generate`; `SETUP.md` §13); depois disso, as mesmas regras dos
+PCs (`/verificar`, push só na branch de trabalho). No fim, o
+`handoff.md` atualizado e o push — o que não for enviado se perde.
 
 ## Como trabalhamos (workflow com Claude)
 
@@ -127,7 +141,10 @@ completa com a trava da cobertura, `CONSTRAINTS.md` §2; é o que o CI roda) · 
 (`tsc --noEmit`) · `npm run lint` (Biome: formatação + lint + ordem dos
 imports + regras de arquitetura) · `npm run lint:fix` (corrige o que é automático) ·
 `npm run preparar` (`npm ci` + `prisma generate` + `prisma migrate
-deploy` — deixa a máquina em dia depois de um `git pull`). O Biome
+deploy` — deixa a máquina em dia depois de um `git pull`) · `npm run
+criar-admin` (o primeiro `ADMIN`, ou a recuperação dele: pergunta no
+terminal e mostra o link de convite; a `URL_DO_SISTEMA` do `.env` vai no
+link). O Biome
 (2.5.14, versão exata) usa 4 espaços e 120 colunas; JSON com 2 espaços.
 Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
 `npm run lint` precisa passar antes de todo commit de código.
@@ -195,8 +212,9 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   no tipo do `request.user` (`types/fastify-jwt.d.ts`).
 - **Sessão (B7, TRD §4.1)**: o login grava o cookie `qh_sessao`
   (`HttpOnly`, `Secure`, `SameSite=Strict`) com um JWT que carrega **só
-  o `id`**. O middleware `autenticar` busca o usuário no banco **a cada
-  requisição** (existe? ativo? token posterior ao `sessaoValidaDesde`?)
+  o `id` e a versão das sessões**. O middleware `autenticar` busca o usuário no banco **a cada
+  requisição** (existe? ativo? a versão das sessões do token, `sv`, é a
+  atual, `versaoSessao`? — B27)
   e monta o `request.user` com os **papéis atuais**. O cabeçalho
   `Authorization` não vale. Nos testes, o `loginComo` devolve o cookie
   pronto em `autenticacao`; papel revogado direto no banco vale na

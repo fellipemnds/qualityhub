@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import bcrypt from "bcrypt";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { app } from "../../app.js";
@@ -171,6 +172,10 @@ describe("POST /auth/login", () => {
     });
 });
 
+// Toda recusa de link sai com a mesma mensagem: inexistente, usado, revogado, expirado, de outro tipo ou de pessoa
+// inativa (F5). Quem tenta não descobre qual foi o caso
+const LINK_NAO_VALE = "Este link não vale mais. Peça um novo ao administrador.";
+
 describe("POST /auth/definir-senha", () => {
     // O bcrypt só usa os primeiros 72 bytes, e letra com acento ocupa 2: 36 "á" cabem, 37 não, mesmo tendo menos de 72
     // caracteres. Sem o teto, duas senhas que começam igual valeriam a mesma
@@ -188,7 +193,7 @@ describe("POST /auth/definir-senha", () => {
             mensagem: "Dados inválidos",
             error: expect.arrayContaining([expect.objectContaining({ instancePath: "/senha" })]),
         });
-        expect(noTeto.json()).toEqual({ mensagem: "Não foi possível processar a solicitação." });
+        expect(noTeto.json()).toEqual({ mensagem: LINK_NAO_VALE });
     });
 
     // O admin cria a pessoa pela API e devolve o convite
@@ -249,7 +254,118 @@ describe("POST /auth/definir-senha", () => {
 
         // Confere
         expect(resultado.statusCode).toBe(400);
-        expect(resultado.json()).toEqual({ mensagem: "Este token já foi utilizado" });
+        expect(resultado.json()).toEqual({ mensagem: LINK_NAO_VALE });
+    });
+
+    it("definir a senha derruba as sessões abertas da pessoa (F5)", async () => {
+        // Prepara: o admin gera um convite, e a pessoa entra de novo com a senha antiga antes de usá-lo
+        const { admin, visualizador } = await perfisDeFora();
+        const { tokenConvite } = await chamar(admin, "POST", `/api/usuarios/${visualizador.usuario.id}/convite`, 200);
+        const login = await app.inject({
+            method: "POST",
+            url: "/api/auth/login",
+            payload: { email: visualizador.usuario.email, senha: "SenhaDeTeste123!" },
+        });
+        const sessao = { cookie: `qh_sessao=${login.cookies.find((c) => c.name === "qh_sessao")?.value}` };
+        expect((await app.inject({ method: "GET", url: "/api/auth/eu", headers: sessao })).statusCode).toBe(200);
+
+        // Chama
+        await app.inject({
+            method: "POST",
+            url: "/api/auth/definir-senha",
+            payload: { token: tokenConvite, senha: "SenhaNovaDoTeste123!" },
+        });
+
+        // Confere
+        expect((await app.inject({ method: "GET", url: "/api/auth/eu", headers: sessao })).statusCode).toBe(401);
+    });
+
+    it("recusa o convite de quem foi inativado, e a senha não é gravada (F5)", async () => {
+        // Prepara
+        const { admin } = await perfisDeFora();
+        const { id, tokenConvite } = await chamar(admin, "POST", "/api/usuarios", 201, {
+            nome: "Pessoa Que Saiu",
+            email: "saiu@teste.com",
+            papeis: ["EDITOR"],
+            setorId: admin.usuario.setorId,
+        });
+        await prisma.usuario.update({ where: { id }, data: { desativadoEm: new Date() } });
+
+        // Chama
+        const resultado = await app.inject({
+            method: "POST",
+            url: "/api/auth/definir-senha",
+            payload: { token: tokenConvite, senha: "SenhaDaQueSaiu123!" },
+        });
+
+        // Confere (direto no banco: o inativar pela rota revogaria o convite, e o teste seria o do revogado)
+        expect(resultado.json()).toEqual({ mensagem: LINK_NAO_VALE });
+        expect((await prisma.usuario.findUniqueOrThrow({ where: { id } })).senhaHash).toBeNull();
+    });
+
+    it("recusa o convite expirado e o token de outro tipo, com a mesma mensagem (F5)", async () => {
+        // Prepara: um convite que expirou e um token de recuperação (nenhuma rota cria esse tipo ainda)
+        const { tokenConvite } = await convidar();
+        await prisma.tokenAcesso.updateMany({ data: { expiraEm: new Date(Date.now() - 1000) } });
+        const editor = await loginComo("editor");
+        const outroTipo = "a".repeat(64);
+        await prisma.tokenAcesso.create({
+            data: {
+                usuarioId: editor.usuario.id,
+                tipo: "RECUPERACAO_SENHA",
+                tokenHash: crypto.createHash("sha256").update(outroTipo).digest("hex"),
+                expiraEm: new Date(Date.now() + 60_000),
+            },
+        });
+        const definir = (token: string) =>
+            app.inject({
+                method: "POST",
+                url: "/api/auth/definir-senha",
+                payload: { token, senha: "SenhaDeTeste456!" },
+            });
+
+        // Chama
+        const expirado = await definir(tokenConvite);
+        const deOutroTipo = await definir(outroTipo);
+
+        // Confere
+        expect(expirado.json()).toEqual({ mensagem: LINK_NAO_VALE });
+        expect(deOutroTipo.json()).toEqual({ mensagem: LINK_NAO_VALE });
+    });
+
+    it("registra na auditoria o convite usado, ligando ao GERAR_CONVITE (F5)", async () => {
+        // Prepara
+        const { tokenConvite } = await convidar();
+        const gerado = await prisma.auditoria.findFirstOrThrow({ where: { acao: "GERAR_CONVITE" } });
+
+        // Chama
+        await app.inject({
+            method: "POST",
+            url: "/api/auth/definir-senha",
+            payload: { token: tokenConvite, senha: "SenhaDaConvidada123!" },
+        });
+
+        // Confere
+        const definida = await prisma.auditoria.findFirstOrThrow({ where: { acao: "DEFINIR_SENHA" } });
+        expect(definida.depois).toEqual({ conviteId: (gerado.depois as { conviteId: string }).conviteId });
+    });
+
+    it("o mesmo link tem 5 tentativas por minuto: na 6ª, 429 (F5)", async () => {
+        // Prepara: o limite é por link (o bcrypt de um link válido é o que pesa), e não por IP
+        const { tokenConvite } = await convidar();
+        const definir = () =>
+            app.inject({
+                method: "POST",
+                url: "/api/auth/definir-senha",
+                payload: { token: tokenConvite, senha: "SenhaDaConvidada123!" },
+            });
+
+        // Chama
+        const status = [];
+        for (let i = 0; i < 6; i++) status.push((await definir()).statusCode);
+
+        // Confere: a 1ª define, as 4 seguintes recusam o link já usado, a 6ª nem chega a conferir
+        expect(status).toEqual([204, 400, 400, 400, 400, 429]);
     });
 
     // B19 (esquema-backend.md §7): as duas leem o convite sem uso antes de qualquer uma marcar, e as duas definem a senha
@@ -286,15 +402,9 @@ describe("POST /auth/logout", () => {
 });
 
 describe("POST /auth/sair-de-todos", () => {
-    afterEach(() => {
-        vi.useRealTimers();
-    });
-
     it("derruba toda sessão já emitida, e um login novo volta a funcionar", async () => {
-        // Prepara: o login agora; o pedido, alguns segundos depois (a comparação com o sessaoValidaDesde é em segundos)
+        // Prepara: o login e o pedido no mesmo instante; a versão das sessões não depende do relógio (B27)
         const editor = await loginComo("editor");
-        vi.useFakeTimers({ toFake: ["Date"] });
-        vi.setSystemTime(Date.now() + 5000);
 
         // Chama
         await chamar(editor, "POST", "/api/auth/sair-de-todos", 204);
