@@ -275,7 +275,7 @@ do `{id}` precisa lidar com o `id` numérico do setor.
 
 **Objetivo:** as regras que conferem **outras linhas** (os filhos da NC, as ações da investigação, os outros
 `ADMIN`s, as pessoas do setor, os colaboradores) continuarem valendo com duas requisições ao mesmo tempo; e o
-filho novo só com a NC em rascunho ou aberta (RN-51). Nasceu da revisão de concorrência da A6 (2026-10-09), que confirmou cada
+filho novo só com a NC aberta (RN-51). Nasceu da revisão de concorrência da A6 (2026-10-09), que confirmou cada
 caso com teste.
 
 **O mecanismo, um só:** **travar antes de ler** (o mesmo do `garantirAdmin` e, por outro caminho, do B19). Antes de
@@ -285,7 +285,7 @@ o último `ADMIN`, em que cada lado mexe numa pessoa diferente, usa uma trava ú
 
 | Entrega | Quem |
 |---|---|
-| **B29** (filho novo só com a NC em rascunho ou aberta, RN-51) e a trava da NC no `submeter` **Feito** (2026-10-09) | 🤖 |
+| **B29** (filho novo só com a NC aberta, RN-51) e a trava da NC no `submeter` **Feito** (2026-10-09) | 🤖 |
 | **B30** e **B31** (a trava da investigação: enviar, cancelar, criar e religar ação) **Feito** (2026-10-09) | 🤖 |
 | **B32** (último `ADMIN`) e **B33** (revogar ou inativar × designar) **Feito** (2026-10-09) | 🤖 |
 | **B34** (RN-12) e **B36** (a troca de aprovador que respondia 500): a trava do item nas atribuições **Feito** (2026-10-09) | 🤖 |

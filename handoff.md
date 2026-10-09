@@ -20,9 +20,8 @@ origin/main` (sem rebase). Depois da A7, o portão "fundação pronta".
   diffs):** B29–B36 corrigidos por **travar antes de ler** (o
   `registroRepository.travar`, as travas da pessoa e do setor e a trava
   única da saída de ADMIN), sempre `FOR NO KEY UPDATE`; filho novo só
-  com a NC em rascunho ou aberta (**RN-51: Matthew confere se o rascunho
-  fica**; ele disse "só em `ABERTO`", e o rascunho foi mantido por causa
-  da decisão da A3). Os testes de corrida usam o `pausarNoMeio`
+  com a NC aberta, nem em rascunho (RN-51, decisão de Matthew, que revê a
+  da A3). Os testes de corrida usam o `pausarNoMeio`
   (`testes/cenarios.ts`). Detalhe no changelog, "Fase A7".
 - **A6, revisão da fase (2026-10-09, na nuvem):** o **B28** (pessoa
   inativa designada aprovadora ou colaboradora) e a revisão de
@@ -200,11 +199,7 @@ dependência nem chave nova no `.env`**: no PC, só `git pull` (e o
 1. **Matthew: merge do PR #9 (A6)** pelo site, com a mensagem que o
    Claude entregou na conversa (o padrão de sempre: `Merge pull request
    #9 from fellipemnds/fase/a6-usuarios-e-setores`).
-2. **Matthew: revisar os diffs da A7** (o PR da A7, em rascunho) e
-   responder: **o rascunho da NC continua recebendo filhos?** (RN-51,
-   PRD Q24). Se não, é tirar `"RASCUNHO"` do `RECEBEM_FILHO_NOVO`
-   (`nc/nc/travar-nc-para-filho-novo.ts`) e ajustar os testes que criam
-   filho numa NC em rascunho.
+2. **Matthew: revisar os diffs da A7** (o PR #10, em rascunho).
 3. Depois do merge da A6: `/fechar-fase` (sem abrir branch nova: a da A7
    já existe; trazer a `main` nela com `git merge origin/main`).
 4. Fechar a A7 (`/abrir-pr`) e o **portão "fundação pronta"**: o item
