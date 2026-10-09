@@ -1,7 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { app } from "../../app.js";
 import { prisma } from "../../compartilhado/prisma/cliente.js";
-import { abrirDuasConexoes, chamar, ncPublicada, perfisDeFora } from "../../testes/cenarios.js";
+import {
+    abrirDuasConexoes,
+    chamar,
+    concluirVerificacao,
+    executarAcao,
+    fecharNC,
+    ncPublicada,
+    perfisDeFora,
+} from "../../testes/cenarios.js";
 import { loginComo } from "../../testes/fabricas.js";
 
 function novoUsuario(setorId: number, papeis: string[] = ["EDITOR"]) {
@@ -362,6 +370,50 @@ describe("DELETE /usuarios/:id/papeis/:papel", () => {
         // Confere (B7: o papel é lido do banco a cada requisição)
         expect(resposta.papeis).toEqual([]);
         await chamar(editor, "POST", "/api/nc", 403, { titulo: "Já sem poder" });
+    });
+
+    it("revogar o APROVADOR de quem é aprovador só de itens FECHADO", async () => {
+        const cenario = await fecharNC();
+        const { verificacao } = await executarAcao(cenario);
+        await concluirVerificacao(cenario, verificacao.id, "EFICAZ");
+        const { admin } = await perfisDeFora();
+
+        // Chama
+        const resposta = await chamar(
+            admin,
+            "DELETE",
+            `/api/usuarios/${cenario.aprovador.usuario.id}/papeis/APROVADOR`,
+            200,
+        );
+
+        // Confere
+        expect(resposta.papeis).toEqual([]);
+    });
+
+    it("revogar o APROVADOR de quem é só colaborador de um item aberto passa: só o aprovador designado trava (RN-43)", async () => {
+        // Prepara
+        const { gerente, qa, nc } = await ncPublicada();
+        const { admin } = await perfisDeFora();
+        await chamar(gerente, "POST", `/api/registros/${nc.id}/colaboradores`, 200, { colaboradores: [qa.usuario.id] });
+
+        // Chama
+        const resposta = await chamar(admin, "DELETE", `/api/usuarios/${qa.usuario.id}/papeis/APROVADOR`, 200);
+
+        // Confere
+        expect(resposta.papeis).toEqual(["EDITOR"]);
+    });
+
+    it("revogar o EDITOR de quem é aprovador de item aberto passa: só o APROVADOR trava (RN-43)", async () => {
+        // Prepara
+        const { gerente, qa, nc } = await ncPublicada();
+        const { admin } = await perfisDeFora();
+        await chamar(gerente, "PUT", `/api/registros/${nc.id}/aprovador`, 200, { usuarioId: qa.usuario.id });
+
+        // Chama
+        const resposta = await chamar(admin, "DELETE", `/api/usuarios/${qa.usuario.id}/papeis/EDITOR`, 200);
+
+        // Confere
+        expect(resposta.papeis).toEqual(["APROVADOR"]);
     });
 
     it("revogar um aprovador de uma NC aberta falha e responde 409 com uma lista", async () => {
