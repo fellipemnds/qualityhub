@@ -31,7 +31,8 @@ export async function garantirAdmin(tx: ClientePrisma, dados: { nome: string; em
     // O setor, pelo nome (sem diferenciar maiúscula): o que existe é reaproveitado, e o desativado não entra em escolha
     // nova (RN-44). O setorBuscado nulo é o "criei agora", usado na auditoria lá embaixo
     const setorBuscado = await setorRepository.buscarPorNome(tx, dados.setor);
-    if (setorBuscado !== null && setorBuscado.desativadoEm !== null) {
+    // Relido com a trava de escolha: um desativar no meio espera, ou é esperado (B35)
+    if (setorBuscado !== null && (await setorRepository.travarParaEscolha(tx, setorBuscado.id))?.desativadoEm != null) {
         throw new TransicaoInvalidaError("Este setor está desativado: escolha outro.");
     }
     const setor = setorBuscado ?? (await setorRepository.criar(tx, dados.setor));

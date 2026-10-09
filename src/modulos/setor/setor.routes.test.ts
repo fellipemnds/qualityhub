@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { prisma } from "../../compartilhado/prisma/cliente.js";
-import { chamar, perfisDeFora } from "../../testes/cenarios.js";
+import { chamar, pausarNoMeio, perfisDeFora, statusDe } from "../../testes/cenarios.js";
 import { loginComo } from "../../testes/fabricas.js";
+import { setorRepository } from "./setor.repository.js";
 
 // O setor "Qualidade" nasce com os usuários das fábricas; os outros, pela rota
 async function criarSetores() {
@@ -146,6 +147,28 @@ describe("PATCH /setores/:id", () => {
 });
 
 describe("POST /setores/:id/desativar", () => {
+    // O desativar conferiu que não há pessoa ativa; no meio, uma pessoa é criada no setor (B35). Sem a trava da linha
+    // do setor, ela ficava ativa num setor desativado
+    it("criar uma pessoa no setor no meio da desativação: a criação espera e é recusada (RN-44, B35)", async () => {
+        // Prepara
+        const { admin, producao } = await criarSetores();
+        const pausa = pausarNoMeio(setorRepository, "desativar", () =>
+            statusDe(admin, "POST", "/api/usuarios", {
+                nome: "Pessoa da Produção",
+                email: "producao@teste.com",
+                papeis: ["EDITOR"],
+                setorId: producao.id,
+            }),
+        );
+
+        // Chama
+        await chamar(admin, "POST", `/api/setores/${producao.id}/desativar`, 200);
+
+        // Confere: ninguém ativo no setor desativado
+        expect(await pausa.outra()).toBe(409);
+        expect(await prisma.usuario.count({ where: { setorId: producao.id, desativadoEm: null } })).toBe(0);
+    });
+
     it("recusa enquanto houver pessoa ativa no setor, com a lista, e o setor continua ativo (RN-44)", async () => {
         // Prepara
         const { admin, producao } = await criarSetores();

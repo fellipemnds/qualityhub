@@ -90,6 +90,8 @@ export const setorService = {
         exigirGerenciarSetores(ator);
 
         return prisma.$transaction(async (tx) => {
+            // Trava o setor antes de listar as pessoas: quem escolhe este setor no meio espera e o vê desativado (B35)
+            await setorRepository.travar(tx, id);
             const antes = await buscarOuFalhar(tx, id);
 
             const pessoasAtivas = await setorRepository.listarPessoasAtivas(tx, id);

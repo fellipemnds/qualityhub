@@ -9,7 +9,8 @@ import { setorRepository } from "./setor.repository.js";
 export async function conferirSetor(tx: ClientePrisma, setorId: number | undefined, setorAtual?: number) {
     if (setorId === undefined || setorId === setorAtual) return;
 
-    const setor = await setorRepository.buscarPorId(tx, setorId);
+    // Lido com a trava de escolha: um desativar no meio espera esta transação, ou esta espera o desativar (B35)
+    const setor = await setorRepository.travarParaEscolha(tx, setorId);
     if (setor === null) {
         throw new NaoEncontradoError("O setor não existe ou não foi encontrado.");
     }

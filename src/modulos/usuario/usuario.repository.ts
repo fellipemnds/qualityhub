@@ -66,6 +66,27 @@ export const usuarioRepository = {
         });
     },
 
+    // Trava a linha da pessoa até o fim da transação, para quem muda os papéis ou a situação dela (A7, B33): quem a
+    // escolhe para um item (travarParaEscolha) espera, e lê o que mudou. FOR NO KEY UPDATE, a trava do UPDATE: o FOR
+    // UPDATE seguraria também a chave estrangeira da auditoria que aponta para a pessoa, e dois ADMINs agindo um no
+    // outro se travavam (deadlock)
+    async travar(tx: ClientePrisma, id: string) {
+        await tx.$queryRaw`SELECT "id" FROM "Usuario" WHERE "id" = ${id} FOR NO KEY UPDATE`;
+    },
+
+    // A trava de quem escolhe pessoas para um item (aprovador, colaboradores): compartilhada, então duas escolhas da mesma
+    // pessoa não esperam uma pela outra, mas esperam quem muda a pessoa (travar), e vice-versa (A7, B33)
+    async travarParaEscolha(tx: ClientePrisma, ids: string[]) {
+        await tx.$queryRaw`SELECT "id" FROM "Usuario" WHERE "id" = ANY(${ids}) FOR SHARE`;
+    },
+
+    // Uma trava só para "tirar um ADMIN" (revogar o papel ou inativar), até o fim da transação (A7, B32). Cada lado mexe
+    // numa pessoa diferente, então a trava da linha da pessoa não basta: com esta, quem chega depois espera e conta os
+    // outros ADMINs de novo. O número só identifica a trava no PostgreSQL
+    async travarSaidaDeAdmin(tx: ClientePrisma) {
+        await tx.$queryRaw`SELECT 1 FROM pg_advisory_xact_lock(7001)`;
+    },
+
     async buscarPorId(tx: ClientePrisma, id: string) {
         return tx.usuario.findUnique({
             where: { id },

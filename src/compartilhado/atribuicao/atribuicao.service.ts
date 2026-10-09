@@ -22,6 +22,8 @@ function conferirEstadoDasAtribuicoes(estado: EstadoRegistro) {
 export const atribuicaoService = {
     async adicionarColaboradores(registroId: string, colaboradoresId: string[], ator: Ator) {
         return prisma.$transaction(async (tx) => {
+            // Trava o item antes de ler as atribuições dele (B34, B36)
+            await registroRepository.travar(tx, registroId);
             const registro = await registroRepository.buscarPorId(tx, registroId);
 
             if (registro === null) {
@@ -37,6 +39,8 @@ export const atribuicaoService = {
             }
 
             const colaboradoresIdUnicos = [...new Set(colaboradoresId)];
+            // Trava as pessoas escolhidas antes de conferi-las: um revogar ou inativar no meio espera (B33)
+            await usuarioRepository.travarParaEscolha(tx, colaboradoresIdUnicos);
 
             // Confere todos antes de inserir qualquer um: sem isso, a chave estrangeira do banco dava 500 (B16). Inativo
             // também não entra: não entra no sistema para trabalhar no item (B28)
@@ -84,6 +88,8 @@ export const atribuicaoService = {
 
     async removerColaboradores(registroId: string, colaboradoresId: string[], ator: Ator) {
         return prisma.$transaction(async (tx) => {
+            // Trava o item antes de contar os colaboradores: uma remoção no meio espera e conta de novo (RN-12, B34)
+            await registroRepository.travar(tx, registroId);
             const registro = await registroRepository.buscarPorId(tx, registroId);
 
             if (registro === null) {
@@ -147,6 +153,8 @@ export const atribuicaoService = {
                 throw new SemPermissaoError("Você não tem permissões suficientes para gerenciar aprovadores.");
             }
 
+            // Trava o item antes de ler o aprovador atual: uma troca no meio espera e troca de novo (B36)
+            await registroRepository.travar(tx, registroId);
             const registro = await registroRepository.buscarPorId(tx, registroId);
 
             if (registro === null) {
@@ -162,6 +170,8 @@ export const atribuicaoService = {
                 conferirEstadoDasAtribuicoes(registro.estado);
             }
 
+            // Trava a pessoa escolhida antes de conferi-la: um revogar ou inativar no meio espera (B33)
+            await usuarioRepository.travarParaEscolha(tx, [aprovadorId]);
             const dadosAprovador = await usuarioRepository.buscarPorId(tx, aprovadorId);
 
             if (dadosAprovador === null) {

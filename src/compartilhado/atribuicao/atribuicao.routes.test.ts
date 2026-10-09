@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { type Cenario, chamar, ncPublicada, perfisDeFora } from "../../testes/cenarios.js";
+import { type Cenario, chamar, ncPublicada, pausarNoMeio, perfisDeFora, statusDe } from "../../testes/cenarios.js";
 import { levarContencaoAte } from "../../testes/levar-ate/contencao.js";
 import { prisma } from "../prisma/cliente.js";
+import { atribuicaoRepository } from "./atribuicao.repository.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
 
@@ -12,6 +13,23 @@ async function aprovadoresDe(registroId: string) {
 }
 
 describe("PUT /registros/:id/aprovador", () => {
+    // As duas leem o aprovador atual e tentam apagá-lo; sem a trava da linha do item, a segunda não achava a linha e
+    // respondia 500 (B36). A pausa vem depois de a primeira ler o aprovador e antes de apagá-lo
+    it("duas trocas de aprovador ao mesmo tempo: a segunda espera e troca de novo, sem 500 (B36)", async () => {
+        // Prepara
+        const { gerente, qa, nc } = await ncPublicada();
+        const pausa = pausarNoMeio(atribuicaoRepository, "removerAtribuicao", () =>
+            statusDe(gerente, "PUT", `/api/registros/${nc.id}/aprovador`, { usuarioId: gerente.usuario.id }),
+        );
+
+        // Chama
+        await chamar(gerente, "PUT", `/api/registros/${nc.id}/aprovador`, 200, { usuarioId: qa.usuario.id });
+
+        // Confere: a segunda chegou depois e venceu; um aprovador só
+        expect(await pausa.outra()).toBe(200);
+        expect(await aprovadoresDe(nc.id)).toEqual([gerente.usuario.id]);
+    });
+
     it("o gerente define o aprovador", async () => {
         // Prepara (o ncPublicada já define o aprovador pelo gerente)
         const { aprovador, nc } = await ncPublicada();
@@ -343,6 +361,26 @@ describe("POST /registros/:id/colaboradores", () => {
 });
 
 describe("DELETE /registros/:id/colaboradores", () => {
+    // Cada remoção conta os colaboradores (2) e apaga o seu: sem a trava da linha do item, o item ficava sem nenhum
+    // (B34). A pausa vem depois da contagem da primeira e antes de ela apagar
+    it("remover dois colaboradores diferentes ao mesmo tempo: a segunda espera e é recusada (RN-12, B34)", async () => {
+        // Prepara: o editor (que criou) e o qa
+        const { editor, gerente, qa, nc } = await ncPublicada();
+        await chamar(editor, "POST", `/api/registros/${nc.id}/colaboradores`, 200, { colaboradores: [qa.usuario.id] });
+        const pausa = pausarNoMeio(atribuicaoRepository, "removerAtribuicao", () =>
+            statusDe(gerente, "DELETE", `/api/registros/${nc.id}/colaboradores`, { colaboradores: [qa.usuario.id] }),
+        );
+
+        // Chama
+        await chamar(gerente, "DELETE", `/api/registros/${nc.id}/colaboradores`, 200, {
+            colaboradores: [editor.usuario.id],
+        });
+
+        // Confere: sobra um colaborador
+        expect(await pausa.outra()).toBe(409);
+        expect(await prisma.atribuicao.count({ where: { registroId: nc.id, funcao: "COLABORADOR" } })).toBe(1);
+    });
+
     it("a remoção fica na auditoria como REMOVER_COLABORADORES, o par do ADICIONAR_COLABORADORES", async () => {
         // Prepara
         const { editor, qa, nc } = await ncPublicada();

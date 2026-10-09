@@ -64,6 +64,7 @@ async function conferirSaida(tx: ClientePrisma, id: string, papeisQueSaem: Papel
     }
 
     if (papeisQueSaem.includes("ADMIN")) {
+        await usuarioRepository.travarSaidaDeAdmin(tx);
         const outrosAdmins = await usuarioRepository.contarOutrosAdminsAtivos(tx, id);
         if (outrosAdmins === 0) {
             throw new TransicaoInvalidaError(
@@ -149,6 +150,8 @@ export const usuarioService = {
         exigirGerenciarUsuarios(ator);
 
         return prisma.$transaction(async (tx) => {
+            // Trava a pessoa antes de ler: quem a designa para um item no meio espera e vê o papel já revogado (B33)
+            await usuarioRepository.travar(tx, id);
             const antes = await buscarParaAdminOuFalhar(tx, id);
             if (!antes.papeisRecebidos.some((recebido) => recebido.papel === papel)) {
                 return comPapeis(antes);
@@ -196,6 +199,8 @@ export const usuarioService = {
         exigirGerenciarUsuarios(ator);
 
         return prisma.$transaction(async (tx) => {
+            // Trava a pessoa antes de ler, como no revogar (B33)
+            await usuarioRepository.travar(tx, id);
             const antes = await buscarParaAdminOuFalhar(tx, id);
             if (antes.desativadoEm !== null) {
                 return comPapeis(antes);
@@ -203,10 +208,9 @@ export const usuarioService = {
 
             await conferirSaida(tx, id, comPapeis(antes).papeis);
 
-            // Outro inativar chegou antes (a trava esperou por ele): responde como a pessoa está, sem gravar de novo
-            if (!(await usuarioRepository.inativar(tx, id))) {
-                return comPapeis(await buscarParaAdminOuFalhar(tx, id));
-            }
+            // Dois inativar ao mesmo tempo não chegam aqui juntos: o segundo espera a trava da pessoa e sai pelo "já
+            // inativa" lá em cima (B33)
+            await usuarioRepository.inativar(tx, id);
             // Um convite pendente não pode voltar a valer se a pessoa for reativada (F5)
             await tokenAcessoRepository.revogarPendentes(tx, id);
             const depois = await buscarParaAdminOuFalhar(tx, id);
@@ -233,8 +237,9 @@ export const usuarioService = {
             if (antes.desativadoEm === null) {
                 return comPapeis(antes);
             }
-            // A pessoa voltaria para um setor que saiu das opções (RN-44): muda-se o setor dela antes
-            if ((await setorRepository.buscarPorId(tx, antes.setor.id))?.desativadoEm != null) {
+            // A pessoa voltaria para um setor que saiu das opções (RN-44): muda-se o setor dela antes. A trava do setor
+            // faz um desativar no meio esperar (B35)
+            if ((await setorRepository.travarParaEscolha(tx, antes.setor.id))?.desativadoEm != null) {
                 throw new TransicaoInvalidaError(
                     "O setor desta pessoa está desativado: mude o setor dela antes de reativar.",
                 );
