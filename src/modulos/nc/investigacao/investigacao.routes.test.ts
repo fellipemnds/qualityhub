@@ -6,6 +6,7 @@ import {
     aprovarPlano,
     chamar,
     investigacaoAberta,
+    ncAbertaSemAprovador,
     ncPublicada,
     pausarNoMeio,
     statusDe,
@@ -17,9 +18,10 @@ import { levarNCAte } from "../../../testes/levar-ate/nc.js";
 
 const ID_INEXISTENTE = "00000000-0000-0000-0000-000000000000";
 
-// Filho novo só com a NC em rascunho ou aberta (RN-51, B29): em aprovação, retira-se o envio; fechada, reabre-se
+// Filho novo só com a NC aberta (RN-51, B29): o rascunho pode nem chegar a existir; em aprovação, retira-se o envio;
+// fechada, reabre-se
 describe("POST /nc/:naoConformidadeId/investigacoes", () => {
-    it.each<EstadoRegistro>(["EM_APROVACAO", "FECHADO", "CANCELADO"])(
+    it.each<EstadoRegistro>(["RASCUNHO", "EM_APROVACAO", "FECHADO", "CANCELADO"])(
         "recusa com a NC em %s, e nada nasce (RN-51, B29)",
         async (estado) => {
             // Prepara
@@ -33,7 +35,7 @@ describe("POST /nc/:naoConformidadeId/investigacoes", () => {
 
             // Confere
             expect(resposta).toEqual({
-                mensagem: "Só uma NC em rascunho ou aberta recebe itens novos: retire o envio ou reabra a NC.",
+                mensagem: "Só uma NC aberta recebe itens novos: publique, retire o envio ou reabra a NC.",
             });
             expect(await prisma.investigacao.count({ where: { naoConformidadeId: nc.id } })).toBe(antes);
         },
@@ -304,7 +306,7 @@ describe("GET /investigacoes", () => {
     it("filtra por NC e por estado", async () => {
         // Prepara: dois itens na NC do cenário (um publicado) e um em outra NC
         const { editor, nc } = await ncPublicada();
-        const outraNC = await chamar(editor, "POST", "/api/nc", 201, { titulo: "Outra NC, com o seu item" });
+        const outraNC = await ncAbertaSemAprovador(editor, "Outra NC, com o seu item");
         const publicado = await chamar(editor, "POST", `/api/nc/${nc.id}/investigacoes`, 201, {
             realProblema: "Vedação da bomba hidráulica com desgaste prematuro.",
         });

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { prisma } from "../../../compartilhado/prisma/cliente.js";
-import { chamar, ncPublicada } from "../../../testes/cenarios.js";
+import { chamar, ncAbertaSemAprovador, ncPublicada } from "../../../testes/cenarios.js";
 import { loginComo } from "../../../testes/fabricas.js";
 import { levarClassificacaoAte } from "../../../testes/levar-ate/classificacao.js";
 import { levarNCAte } from "../../../testes/levar-ate/nc.js";
@@ -82,7 +82,7 @@ describe("GET /classificacoes", () => {
     it("filtra por NC e por estado", async () => {
         // Prepara: dois itens na NC do cenário (um publicado) e um em outra NC. Classificar é do APROVADOR (RN-20)
         const { editor, aprovador, nc } = await ncPublicada();
-        const outraNC = await chamar(editor, "POST", "/api/nc", 201, { titulo: "Outra NC, com o seu item" });
+        const outraNC = await ncAbertaSemAprovador(editor, "Outra NC, com o seu item");
         const publicado = await chamar(aprovador, "POST", `/api/nc/${nc.id}/classificacoes`, 201, {
             valor: "MAIOR",
             justificativa: "Vazamento afeta a segurança operacional da linha 2.",

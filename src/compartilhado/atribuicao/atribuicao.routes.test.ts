@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { type Cenario, chamar, ncPublicada, pausarNoMeio, perfisDeFora, statusDe } from "../../testes/cenarios.js";
+import {
+    type Cenario,
+    chamar,
+    ncAbertaSemAprovador,
+    ncPublicada,
+    pausarNoMeio,
+    perfisDeFora,
+    statusDe,
+} from "../../testes/cenarios.js";
 import { levarContencaoAte } from "../../testes/levar-ate/contencao.js";
 import { prisma } from "../prisma/cliente.js";
 import { atribuicaoRepository } from "./atribuicao.repository.js";
@@ -228,9 +236,9 @@ describe("Criação de um filho da NC", () => {
     });
 
     it.each(FILHOS)("$tipo nasce sem aprovador quando a NC não tem um (RN-46)", async ({ criar }) => {
-        // Prepara: uma NC em rascunho, ainda sem aprovador
+        // Prepara: uma NC aberta, ainda sem aprovador
         const cenario = await ncPublicada();
-        const nc = await chamar(cenario.editor, "POST", "/api/nc", 201, { titulo: "NC ainda sem aprovador" });
+        const nc = await ncAbertaSemAprovador(cenario.editor, "NC ainda sem aprovador");
 
         // Chama
         const filhoId = await criar({ ...cenario, nc });

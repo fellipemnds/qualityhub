@@ -99,6 +99,21 @@ export async function ncPublicada() {
 
 export type Cenario = Awaited<ReturnType<typeof ncPublicada>>;
 
+// Uma segunda NC, publicada e ainda sem aprovador: a "outra NC" dos filtros e a NC sem aprovador da RN-46. Publicada
+// porque só a NC aberta recebe filhos (RN-51)
+export async function ncAbertaSemAprovador(quem: Quem, titulo: string) {
+    const nc = await chamar(quem, "POST", "/api/nc", 201, {
+        titulo,
+        descricao: "Diâmetro externo medido acima da tolerância em lote inspecionado na linha 3.",
+        requisitoViolado: "Desenho 1234, cota A",
+        processoAfetado: "Linha de Produção 3",
+        setorId: quem.usuario.setorId,
+        detectadoEm: "2026-09-10",
+        origem: "OPERACAO",
+    });
+    return chamar(quem, "POST", `/api/nc/${nc.id}/publicar`, 200);
+}
+
 // Os perfis que não participam de item nenhum: sem papel de negócio (admin), só leitura (visualizador) e sem papel
 export async function perfisDeFora() {
     const admin = await loginComo("admin");
