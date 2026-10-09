@@ -36,7 +36,10 @@ export async function garantirAdmin(tx: ClientePrisma, dados: { nome: string; em
     }
     const setor = setorBuscado ?? (await setorRepository.criar(tx, dados.setor));
 
-    // A pessoa, pelo e-mail: a nova é criada; a que existe mantém o nome (corrigir cadastro é pela tela)
+    // A pessoa, pelo e-mail. Antes de ler, as sessões dela caem (na recuperação, quem entrou com a senha antiga sai), e o
+    // UPDATE trava a linha até o fim da transação: quem chegar ao mesmo tempo (outra rodada, uma rota) espera, e o que se
+    // lê não muda no meio. A nova é criada; a que existe mantém o nome (corrigir cadastro é pela tela)
+    await usuarioRepository.encerrarSessoesPorEmail(tx, dados.email);
     const pessoaExistente = await usuarioRepository.buscarPorEmail(tx, dados.email);
     const pessoa = pessoaExistente ?? (await criarPessoa(tx, dados, setor.id));
     const papeisAntes = pessoaExistente ? pessoaExistente.papeisRecebidos.map((recebido) => recebido.papel) : [];
@@ -98,8 +101,7 @@ export async function garantirAdmin(tx: ClientePrisma, dados: { nome: string; em
         });
     }
 
-    // Sempre um convite novo (revoga os anteriores) e as sessões derrubadas: na recuperação, quem entrou com a senha
-    // antiga sai. Na trilha, o id do convite, nunca o token
+    // Sempre um convite novo (revoga os anteriores). Na trilha, o id do convite, nunca o token
     const { token, convite } = await emitirConvite(tx, pessoa.id);
     await auditoriaRepository.registrar(tx, {
         entidade: EntidadeAuditada.USUARIO,
@@ -109,7 +111,6 @@ export async function garantirAdmin(tx: ClientePrisma, dados: { nome: string; em
         antes: undefined,
         depois: { conviteId: convite.id, expiraEm: convite.expiraEm, origem: ORIGEM },
     });
-    await usuarioRepository.encerrarSessoes(tx, pessoa.id);
 
     // O token em claro só existe aqui: a casca o põe no link, uma vez só
     return { token, expiraEm: convite.expiraEm };

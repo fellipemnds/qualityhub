@@ -154,4 +154,13 @@ export const usuarioRepository = {
             },
         });
     },
+
+    // Esta função derruba as sessões e, como todo UPDATE, trava a linha até o fim da transação, e é para isso
+    // que ela é chamada antes de ler a pessoa.
+    async encerrarSessoesPorEmail(tx: ClientePrisma, email: string) {
+        return tx.usuario.updateMany({
+            where: { email },
+            data: { versaoSessao: { increment: 1 } },
+        });
+    },
 };

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { prisma } from "../../compartilhado/prisma/cliente.js";
-import { chamar } from "../../testes/cenarios.js";
+import { abrirDuasConexoes, chamar } from "../../testes/cenarios.js";
 import { criarUsuario, loginComo } from "../../testes/fabricas.js";
 import { garantirAdmin } from "./garantir-admin.js";
 
@@ -162,5 +162,24 @@ describe("garantirAdmin", () => {
         );
         expect(await prisma.usuario.count()).toBe(0);
         expect(await prisma.auditoria.count()).toBe(0);
+    });
+
+    it("duas rodadas ao mesmo tempo deixam um convite só valendo", async () => {
+        // Prepara:
+        const admin = await loginComo("admin");
+
+        // Chama
+        await abrirDuasConexoes();
+        await Promise.all([
+            prisma.$transaction((tx) =>
+                garantirAdmin(tx, { nome: admin.usuario.nome, email: admin.usuario.email, setor: "Qualidade" }),
+            ),
+            prisma.$transaction((tx) =>
+                garantirAdmin(tx, { nome: admin.usuario.nome, email: admin.usuario.email, setor: "Qualidade" }),
+            ),
+        ]);
+
+        // Confere
+        expect(await prisma.tokenAcesso.count({ where: { usuarioId: admin.usuario.id, revogadoEm: null } })).toBe(1);
     });
 });
