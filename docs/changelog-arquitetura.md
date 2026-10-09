@@ -176,6 +176,22 @@ documento de arquitetura.
   (`src/criar-admin.ts`) só liga a casca ao teclado e à tela e fica fora
   do `diff-cover` (exceção X5, `CONSTRAINTS.md` §5); conferido rodando o
   script (pessoa nova, recuperação, desistência).
+- **Pessoa inativa não recebe atribuição nova (B28, 2026-10-09).**
+  Achado na revisão da fase (`/abrir-pr`): inativar não tira os papéis,
+  e as rotas de atribuição não olhavam o `desativadoEm`; a trava da
+  RN-43 se contornava em dois passos (inativar quem não aprova nada,
+  depois designá-lo aprovador). Definir o aprovador e adicionar
+  colaboradores recusam a pessoa inativa com **409**, como as outras
+  recusas por "pessoa inativa" da fase (gerar convite); a lista de
+  colaboradores continua tudo ou nada (B16). A cópia automática dos
+  colaboradores no `PARCIALMENTE_EFICAZ` (B6) **pula** os inativos, em
+  vez de recusar: ela não tem quem escolha outro, e a ação nova nasce do
+  mesmo jeito (sem nenhum colaborador, se todos saíram; qualquer `EDITOR`
+  se adiciona, RN-18). **Fora:** a herança do aprovador da NC
+  (`herdarAprovadorDaNC`). Com a NC aberta, a RN-43 já impede inativar o
+  aprovador dela; só escapa com a NC fechada e a verificação com outro
+  aprovador, e o aprovador se troca pela rota. Primeiro uso da sessão na
+  nuvem com a suíte inteira (`SETUP.md` §13).
 
 ### Fase A5 — contrato da API (branch `fase/a5-contrato-api`, PR #8)
 

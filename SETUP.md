@@ -610,3 +610,48 @@ npm run ambiente -- comparar
 - A foto **não tem data nem hora** de propósito (senão toda comparação acusaria diferença); a data fica no commit.
 
 O Claude Code roda isso sozinho ao trocar de computador (regra no `CLAUDE.md`) e registra as diferenças no `handoff.md`.
+
+## 13. Sessão na nuvem (Claude Code na web, pelo iPad)
+
+Um **terceiro lugar** de trabalho, além dos dois PCs: o Claude Code roda num computador da nuvem, com uma cópia do repositório, e Matthew acompanha pelo app ou pelo navegador (iPad, celular). Usado pela primeira vez em 2026-10-09 (revisões da A6 e o B28).
+
+### O que é e o que não é
+
+- O computador da nuvem é **descartável**: quando a sessão acaba, ele é apagado. O que sobrevive é só o que foi **commitado e enviado** (`git push`) para o GitHub — a mesma regra dos dois PCs (§12), com uma diferença: lá a pasta continua no disco, aqui não.
+- Não tem `.env`, nvm, VS Code nem o banco de desenvolvimento. Os **testes não precisam** de nenhum deles: o Testcontainers sobe o Postgres de teste, e o `setup-ambiente.ts` põe a `DATABASE_URL` e o `JWT_SECRET` de teste. O `npm run dev` precisaria do `.env`, e não é para a nuvem.
+- O Claude não tem o `gh` autenticado; fala com o GitHub (PR, CI, logs) pelas ferramentas próprias da sessão. O `git push` funciona, na branch de trabalho, com a mesma regra do `CLAUDE.md` ("Ambiente").
+
+### Quando vale a pena
+
+- **Sim:** revisões (de item ou de fase), documentos, investigar um CI vermelho, consertos pequenos que seguem um padrão que Matthew já escreveu, e o que der para adiantar longe do PC.
+- **Não:** item 🧑 que ensina conceito novo. Digitar código no iPad é ruim, e o combinado é Matthew escrever esses itens (`CLAUDE.md`, "Itens 🧑"). Se for preciso, Matthew guia e o Claude digita, um passo por vez.
+
+### Preparar o ambiente (o Claude faz, no começo da sessão)
+
+O computador vem com o Node 22 e com o Docker **desligado**. O projeto pede o **Node 24** (o mesmo dos PCs, §12.4) e o Docker ligado (Testcontainers):
+
+```bash
+# Node 24.20.0, na frente do Node 22 no PATH (o ~/.local/bin vem antes)
+curl -fsSL https://nodejs.org/dist/v24.20.0/node-v24.20.0-linux-x64.tar.xz | tar -xJ -C /opt
+mkdir -p "$HOME/.local/bin" && ln -sf /opt/node-v24.20.0-linux-x64/bin/{node,npm,npx} "$HOME/.local/bin/"
+# Docker: o programa já vem instalado, só precisa ser ligado
+(dockerd > /tmp/dockerd.log 2>&1 &)
+# Conferir: v24.20.0 e o Docker respondendo
+node -v && docker info > /dev/null && echo DOCKER_OK
+# O projeto: dependências e o client do Prisma (sem migrate: não há banco de desenvolvimento)
+npm ci && npx --no-install prisma generate
+```
+
+**Para não repetir a cada sessão:** as duas primeiras linhas (o Node) podem ir para o **script de configuração do ambiente** (no app: o menu do ambiente na barra de título da sessão → Edit), que roda no começo de toda sessão nova. O `dockerd` e o `npm ci` o Claude roda na sessão.
+
+Com o ambiente pronto, vale tudo do §4 do `CONSTRAINTS.md` e da `/verificar`, igual aos PCs: a suíte inteira rodou aqui pela primeira vez em 2026-10-09 (os mesmos 472 testes do trabalho). O npm é o que vem com o Node 24.20.0 (11.x), e não o 12 dos PCs: o `npm ci` não reescreve o `package-lock.json`, então não muda nada; o que **não** se faz na nuvem é `npm install` de dependência nova (o lockfile sairia de outra versão do npm), que fica para o PC.
+
+### No fim da sessão e na volta ao PC
+
+- No fim: o `handoff.md` atualizado (como no `/trocar-pc`, sem a foto do ambiente: a nuvem não é um PC e não entra no `docs/ambiente/`), commit e push.
+- No PC: o `/retomar` de sempre (`git pull` e `npm run preparar`).
+
+### E o VS Code no navegador?
+
+- O **github.dev** (no GitHub, abrir o repositório e apertar `.`, ou trocar `github.com` por `github.dev` no endereço) abre o VS Code no navegador, também no iPad: dá para **ler o código, ver o diff do PR e editar** com commit direto, mas **não tem terminal**: nada roda (nem lint, nem testes). Bom para revisar o que o Claude fez na nuvem.
+- Rodar código no navegador seria o **GitHub Codespaces**, que é outro produto (um computador da nuvem do GitHub, com cota mensal), e não está configurado no projeto.

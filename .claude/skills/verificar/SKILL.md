@@ -14,6 +14,9 @@ nunca (`CONSTRAINTS.md` §6).
 - `source ~/.nvm/nvm.sh` antes de qualquer npm/npx (sem ele, cai no Node do Windows).
 - `npx --no-install`, nunca `npx biome`.
 - `export PATH="$HOME/.local/bin:$PATH"` (o CLI do Claude Code mora lá).
+- **Na sessão na nuvem** (`SETUP.md` §13): não há nvm nem Docker Desktop. Antes do primeiro check,
+  `node -v` (tem de ser 24) e `docker info` (se falhar, ligar o `dockerd`); faltando o Node 24 ou
+  as dependências, os passos de preparar do §13.
 - Todo check é conferido pelo **código de saída** (`&& echo OK`, ou `echo EXIT=$?`), nunca
   pela última linha da saída: o `-s` esconde o resumo, e o erro fica acima dela.
 

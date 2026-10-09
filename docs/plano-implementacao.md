@@ -258,6 +258,7 @@ RF-20).
 | **Script do primeiro acesso** (`npm run criar-admin`): cria o primeiro setor e o primeiro `ADMIN` e mostra o link de convite. Sem ele, produção não tem como começar — criar usuário exige já ser `ADMIN`, e todo usuário exige um setor. **Feito** (2026-10-09, escrito por Matthew): o miolo `garantirAdmin` (garante que o e-mail seja um `ADMIN` ativo, com convite novo; serve também de recuperação; trava a linha da pessoa antes de ler) e a casca `criarAdminPeloTerminal` (perguntas, Zod, confirmação, link), com o ponto de entrada `src/criar-admin.ts` fora da cobertura (exceção X5); desenho no changelog | 🧑 |
 | Testes das travas e das permissões de `ADMIN`. **Feito** (2026-10-09, escrito por Matthew): os limites da RN-43, onde a trava **não** age (revogar o `APROVADOR` de quem é aprovador só de itens `FECHADO`, ou só colaborador de item aberto; revogar o `EDITOR` de quem é aprovador de item aberto), cada um com prova de quebra. As permissões de `ADMIN` já estavam cobertas pelas tabelas de permissões da A2 (`permissoes.*.test.ts`: o `admin` recusado nas ações de negócio das seis entidades) e pelo `GET /pessoas`: sem teste novo | 🧑 |
 | **B27** (login em voo sobrevive à derrubada das sessões): o JWT leva a versão da sessão (`sv`), e o `autenticar` exige igualdade. Junto da F5, que promete "redefinir a senha derruba as sessões"; começa por teste. **Feito** (2026-10-08, F5a): a `versaoSessao` no lugar da data | 🤖 |
+| **B28** (pessoa inativa designada aprovadora ou colaboradora; contornava a trava da RN-43), achado na revisão da fase (`/abrir-pr`, 2026-10-09). **Feito** (2026-10-09, na sessão na nuvem): as rotas de atribuição recusam a pessoa inativa com 409, e a cópia dos colaboradores do B6 a pula | 🤖 |
 | Setor inexistente no `POST`/`PATCH` da NC responde 404, não 500 (auditoria L6 — confirmar antes com teste, como o B16). Junto: o `setorId` do `ncBaseSchema` sai do `z.coerce.number()` para `z.number()`, como no criar usuário (o coerce aceita `true`, `"1"` e `[1]` como setor 1; revisão da A5). **Feito** (2026-10-08): o `conferirSetor` (`modulos/setor/conferir-setor.ts`) responde 404 no `POST`/`PATCH` da NC e também no `POST /usuarios`, que tinha o mesmo 500; as rotas novas que recebem setor o usam. NC num setor **desativado** (RN-44): decidir na fatia de setores | 🤖 |
 
 **Ordem** (combinada no começo da fase, 2026-10-08): M2 → L6 → as rotas, em fatias, com a trava da RN-43
@@ -353,7 +354,7 @@ Onde cada item dos documentos anteriores é feito:
 | Pendência 1 (ações de auditoria) · pendência 5 (`ignoreTrailingSlash`) | A5 · A0 |
 | Pendência 4 (login auditado) | A4 |
 | Pendência OpenAPI · RNF-04 (schema de resposta) · L7 (último motivo de reprovação) · B22 (dia de calendário na resposta) · B23 (`id` de outro tipo) · B24 (`atualizadoEm` na edição) · B25 (`finalizar-execucao` sem tipo) · B26 (e-mail sem teto) | A5 |
-| B27 (login em voo sobrevive à derrubada das sessões) | A6 |
+| B27 (login em voo sobrevive à derrubada das sessões) · B28 (pessoa inativa recebe atribuição) | A6 |
 | RF-15 (usuários) · RF-20 (setores) · RN-43 · RN-44 | A6 (backend), C6 (telas) |
 | RF-01 (NC com colaboradores) · RF-16 (etapa) · L2, L5, L6 · R7 (código de erro para máquina) e R8 (`DELETE` com corpo), da revisão de design da A5 | C1 |
 | L1 (hipóteses) · L3 (plano aprovado) | C2 · A3 |
@@ -424,3 +425,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-08 | v1.22 — A6: a RN-43 detalhada e o último `ADMIN`; C2: a Q23 (o colaborador escolhe o aprovador) |
 | 2026-10-08 | v1.23 — B27 entra na A6, junto da F5 |
 | 2026-10-08 | v1.24 — A6: a F6 em duas fatias (F6a ler, criar e renomear; F6b desativar e reativar, com a RN-44 detalhada) |
+| 2026-10-09 | v1.25 — B28 entra na A6 (revisão da fase) |
