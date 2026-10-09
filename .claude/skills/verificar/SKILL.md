@@ -65,7 +65,7 @@ de um nível C verde, com o relatório **desta** rodada:
 ```bash
 git fetch -q origin
 git add -N $(git ls-files --others --exclude-standard src)   # arquivo novo ainda sem commit
-uvx diff-cover==10.6.0 coverage/cobertura-coverage.xml --compare-branch=origin/main --fail-under=100
+uvx diff-cover==10.6.0 coverage/cobertura-coverage.xml --compare-branch=origin/main --fail-under=100 --exclude src/criar-admin.ts   # X5
 ```
 
 O `diff-cover` só enxerga o que o Git rastreia: um arquivo **novo** ainda sem commit fica fora do

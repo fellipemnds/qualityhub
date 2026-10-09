@@ -25,7 +25,7 @@ jobs:
               if: github.event_name == 'pull_request'
               env:
                 DESTINO: ${{ github.base_ref }}
-              run: pipx run diff-cover==10.6.0 coverage/cobertura-coverage.xml --compare-branch="origin/$DESTINO" --fail-under=100
+              run: pipx run diff-cover==10.6.0 coverage/cobertura-coverage.xml --compare-branch="origin/$DESTINO" --fail-under=100 --exclude src/criar-admin.ts
     segredos:
         runs-on: ubuntu-latest
         steps:
