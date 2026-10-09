@@ -139,6 +139,29 @@ documento de arquitetura.
   chamadas pelo `ADMIN`, e as dos itens, pelo gerente. Com o gerente, o
   `GET /usuarios/:id` respondia 403 (a permissão vem antes da busca), e a
   trava não testava o 404.
+- **Script do primeiro acesso** (`npm run criar-admin`; direção do
+  `idea-refine` de 2026-10-08, aprovada por Matthew em 2026-10-09). Sem
+  ele, produção não começa: criar usuário exige um `ADMIN`, e todo
+  usuário exige um setor. Quem roda: Matthew e a TI, por um manual.
+  Serve também de **recuperação** (o único `ADMIN` perdeu a senha ou
+  saiu). Um caminho só, por perguntas no terminal: nome, e-mail e setor →
+  resumo → "confirma? (s/N)" → **garante que o e-mail seja um `ADMIN`
+  ativo** (rodar de novo não estraga nada). Pessoa nova é criada, e o
+  setor também, se o nome não existir; pessoa que já existe é reativada,
+  ganha o `ADMIN` e muda de setor se o informado for outro. Nos dois
+  casos, convite novo (`emitirConvite`, revoga os anteriores) e as
+  sessões derrubadas. Setor desativado é recusado (RN-44). Na auditoria,
+  a pessoa é autora de si mesma (também no `concedidoPorId` do papel),
+  com `origem: "criar-admin"`. O link sai uma vez só, com a
+  `URL_DO_SISTEMA` (opcional no `.env`), no formato
+  `/definir-senha#token=...` (o fragmento não vai para o servidor nem para
+  o log). **Estrutura:** o miolo `garantirAdmin(tx, dados)` testado com o
+  banco, como os services, e uma casca fina (perguntas, confirmação,
+  link) que recebe a entrada e a saída do terminal, para o teste
+  "digitar" as respostas (o `diff-cover` cobra as linhas novas). Fica em
+  `src/`, ao lado do `server.ts`: em produção roda o JavaScript
+  compilado. **Fora:** argumentos na linha de comando, e-mail, senha
+  digitada no script, menu de modos, como rodar em produção (D1).
 
 ### Fase A5 — contrato da API (branch `fase/a5-contrato-api`, PR #8)
 
