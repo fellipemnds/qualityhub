@@ -66,8 +66,9 @@ RN-43), em 2026-10-09, achado na revisão da fase (fase fechada em
 B30–B36 (sete regras que conferem outras linhas quebravam com duas
 requisições ao mesmo tempo), em 2026-10-09, achados na revisão de
 concorrência da A6, e o B37 (o OpenAPI tinha `$ref` sem destino no
-`conteudo` da investigação), no mesmo dia, ao conferir o portão.
-**Nenhum bug aberto.**
+`conteudo` da investigação), no mesmo dia, ao conferir o portão (fase
+fechada em 2026-10-09, PR #10). **Nenhum bug aberto.** O bloco A fecha
+com o portão "fundação pronta", depois do passeio guiado (`handoff.md`).
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com

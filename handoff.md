@@ -5,19 +5,18 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-09, noite (**sessão na nuvem**, Matthew pelo iPad; a primeira, `SETUP.md` §13). **A6 fechada** (PR #9, merge `e441212`; a `main` já entrou na branch da A7 por merge). **A7 aberta e feita** na branch `fase/a7-travas-entre-linhas` (B29–B36 corrigidos), **esperando a revisão dos diffs por Matthew**. Antes, 2026-10-09, fim do dia (no **trabalho**, `/trocar-pc`): o script do primeiro acesso e o item 6. O PC de casa continua sem foto (`casa.txt`).
+**Última atualização:** 2026-10-09, noite (**sessão na nuvem**, Matthew pelo iPad; a primeira, `SETUP.md` §13). **A6 fechada** (PR #9, merge `e441212`) e **A7 fechada** (PR #10, merge `aae403f`). Branch nova, `docs/fechamento-bloco-a`, para fechar o bloco A depois do passeio guiado. Antes, 2026-10-09, fim do dia (no **trabalho**, `/trocar-pc`): o script do primeiro acesso e o item 6. O PC de casa continua sem foto (`casa.txt`).
 
 ## 1. Objetivo
 
-Fase **A7 — Travas entre linhas** (`docs/plano-implementacao.md`), na
-branch `fase/a7-travas-entre-linhas` (PR #10, em rascunho; a `main` com
-a A6 já mesclada entrou nela por merge). Depois da A7, o portão
-"fundação pronta".
+**Fechar o bloco A** pelo portão "fundação pronta" (plano, fim da
+seção 3), na branch `docs/fechamento-bloco-a` (só documentos; um PR,
+mesclado quando o portão fechar). Falta o **passeio guiado**, em casa.
 
 ## 2. Estado atual
 
-- **A7 (2026-10-09, na nuvem; Claude escreveu, Matthew revisa os
-  diffs):** B29–B36 corrigidos por **travar antes de ler** (o
+- **A7 (2026-10-09, na nuvem; Claude escreveu, Matthew revisou os
+  diffs pelo iPad; PR #10):** B29–B36 corrigidos por **travar antes de ler** (o
   `registroRepository.travar`, as travas da pessoa e do setor e a trava
   única da saída de ADMIN), sempre `FOR NO KEY UPDATE`; filho novo só
   com a NC aberta, nem em rascunho (RN-51, decisão de Matthew, que revê a
@@ -196,18 +195,20 @@ dependência nem chave nova no `.env`**: no PC, só `git pull` (e o
 
 ## 6. Próximo passo
 
-1. **Matthew: merge do PR #10 (A7)**, com a mensagem entregue na
-   conversa. Depois, o `/fechar-fase` da A7, que é a **última fase do
-   bloco A**: inclui o passo 5, rever as skills no fim do bloco.
+1. ~~Merge do PR #10 (A7) e o registro da A7~~ **feitos em 2026-10-09**
+   (o registro na branch `docs/fechamento-bloco-a`).
 2. **O portão "fundação pronta"** (plano, fim da seção 3):
    - ~~OpenAPI completo, gerando sem erro~~ **conferido em 2026-10-09**
      (Redocly sem erro; o B37 corrigido no caminho);
    - nenhum bug aberto: ok (B1–B37);
-   - A0–A7 concluídas, com o CI verde na `main`: falta o merge da A7;
-   - e o que ficou adiado dos "pronto quando": **Matthew explicar a A4
-     (o B19 e o `SameSite=Strict`), a A6 e a A7 (a trava entre
-     linhas)**, no **passeio guiado** (em casa, com o
-     `/understand-anything:understand` antes; roteiro no passo 3 abaixo).
+   - ~~A0–A7 concluídas, com o CI verde na `main`~~ **ok** (PR #10);
+   - falta o adiado dos "pronto quando": **Matthew explicar a A4 (o B19
+     e o `SameSite=Strict`), a A6 e a A7 (a trava entre linhas)**, no
+     **passeio guiado**, em casa (decisão de Matthew, 2026-10-09), com o
+     `/understand-anything:understand` antes; e o **passo 5 do
+     `/fechar-fase`** (rever as skills no fim do bloco), junto.
+   - Ao fechar: registrar na `docs/fechamento-bloco-a` (plano: o portão
+     cumprido; handoff), abrir o PR e Matthew mesclar.
 3. Roteiro do passeio: uma requisição de ponta a ponta (rota →
    controller → service → `cicloVidaService` →
    `buscarRegistroDoTipoOuFalhar` → `aplicarTransicao` →
@@ -234,7 +235,7 @@ resolve as duas coisas. Os passos (`SETUP.md` §12.1 se o PC estiver
 parado há tempo):
 
 1. Docker Desktop aberto ("Engine running"), Ubuntu, pasta do projeto.
-2. `git fetch`, `git switch fase/a7-travas-entre-linhas`, `git pull`.
+2. `git fetch`, `git switch docs/fechamento-bloco-a`, `git pull`.
 3. **`npm run preparar`**: obrigatório. Se a migration do
    `investigacaoId` falhar (o banco de casa tem ações sem investigação),
    recriar o banco: `SETUP.md` §12, passos 6 e 7.
