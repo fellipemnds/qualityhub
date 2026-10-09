@@ -129,7 +129,10 @@ completa com a trava da cobertura, `CONSTRAINTS.md` §2; é o que o CI roda) · 
 (`tsc --noEmit`) · `npm run lint` (Biome: formatação + lint + ordem dos
 imports + regras de arquitetura) · `npm run lint:fix` (corrige o que é automático) ·
 `npm run preparar` (`npm ci` + `prisma generate` + `prisma migrate
-deploy` — deixa a máquina em dia depois de um `git pull`). O Biome
+deploy` — deixa a máquina em dia depois de um `git pull`) · `npm run
+criar-admin` (o primeiro `ADMIN`, ou a recuperação dele: pergunta no
+terminal e mostra o link de convite; a `URL_DO_SISTEMA` do `.env` vai no
+link). O Biome
 (2.5.14, versão exata) usa 4 espaços e 120 colunas; JSON com 2 espaços.
 Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
 `npm run lint` precisa passar antes de todo commit de código.

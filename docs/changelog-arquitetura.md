@@ -162,6 +162,20 @@ documento de arquitetura.
   `src/`, ao lado do `server.ts`: em produção roda o JavaScript
   compilado. **Fora:** argumentos na linha de comando, e-mail, senha
   digitada no script, menu de modos, como rodar em produção (D1).
+  **Feito (2026-10-09):** o miolo (`modulos/usuario/garantir-admin.ts`,
+  7 cenários) e a casca (`criar-admin-terminal.ts`, 4 cenários, com
+  entrada e saída falsas). O que mudou no caminho: o miolo **trava a
+  linha da pessoa antes de ler** (`encerrarSessoesPorEmail`, um `UPDATE`
+  pelo e-mail que derruba as sessões e trava) — lendo antes, duas rodadas
+  ao mesmo tempo deixavam dois convites valendo (o contrato do
+  `emitirConvite`), e uma inativação no meio passava despercebida; a
+  casca lê as linhas em fila (iterador do `readline`), porque o
+  `question()` perde as que chegam antes da pergunta; os dados digitados
+  passam pelo Zod com os tetos da rota; erro de regra (`AppError`) vira
+  mensagem e código 1, e o resto estoura. O ponto de entrada
+  (`src/criar-admin.ts`) só liga a casca ao teclado e à tela e fica fora
+  do `diff-cover` (exceção X5, `CONSTRAINTS.md` §5); conferido rodando o
+  script (pessoa nova, recuperação, desistência).
 
 ### Fase A5 — contrato da API (branch `fase/a5-contrato-api`, PR #8)
 

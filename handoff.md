@@ -28,8 +28,8 @@ fase.
   `diff-cover` antes do push). **Claude dá o push** depois da
   `/verificar` (`CLAUDE.md`, "Ambiente").
 - Nenhum bug aberto.
-- Suíte: **457 passando** (2026-10-08, depois da F6); cobertura 97,52%
-  das linhas (trava em 94,66%). Com a máquina carregada (VS Code, pouca
+- Suíte: **469 passando** (2026-10-09, depois do script do primeiro
+  acesso); cobertura 97,42% das linhas (trava em 94,66%). Com a máquina carregada (VS Code, pouca
   memória livre), chegou a 473 s.
 - O que Matthew aprendeu na A5: `prefix` do Fastify e `Path` do
   cookie; schema de resposta (filtra o que sai, vigia o código: tipo
@@ -48,6 +48,17 @@ fase.
   também o que cada rota recebe e devolve (é daí que o Orval gera o
   cliente); o schema de resposta também vigia o nosso código; o B26 era
   teto **máximo** (254), e a trava liberava todo texto com `format`.
+  No script do primeiro acesso (2026-10-09): receita em comentários antes
+  do código; `??` para "achei ou crio"; `?.` devolve `undefined`, não
+  `null` (a armadilha do `!== null`); `.includes`; *spread* de lista
+  (`[...lista, "ADMIN"]`) × de data (não espalha nada); desestruturação
+  no parâmetro; `safeParse` e `prettifyError`; `try`/`catch` com
+  `instanceof AppError`; *streams* e o `readline` em fila; `.rejects` no
+  Vitest; ordem de enum no Postgres (declaração, não alfabeto); o teste
+  que falha pelo motivo errado (o `await` esquecido, o `depois` no
+  objeto errado); prova de quebra; travar antes de ler (o B19 de novo).
+  Os `await` do Prisma esquecidos foram três: o `noFloatingPromises` não
+  os pega (só as funções `async` nossas).
 - Tempo da suíte: 240 s a 330 s. Fechar **qualquer player no
   navegador** (Apple Music, YouTube) antes de rodar: com o YouTube
   aberto, a suíte levou 481 s (2026-10-08). Se passar de ~5 min sem
@@ -63,8 +74,14 @@ Na A5 (`git log fc33c06..b4aa14e`): o lote 5, o B25, o B26, as
 convenções da A5 no TRD §7.1 e a descrição do PR #8. Fora do código: as
 skills `/item` e `/verificar`, a `/retomar` conferindo o PR e se o
 handoff está em dia, a revisão por item na `/item`, o push pelo Claude e
-a colinha §6 (`understand-anything` e `Explore`). Nenhuma dependência,
-migration nem chave nova no `.env` desde a última sessão.
+a colinha §6 (`understand-anything` e `Explore`).
+
+Em 2026-10-09 (no trabalho): o script do primeiro acesso, o `fast-jwt`
+6.3.4 (alerta do `osv-scanner`), a regra `noFloatingPromises` no Biome e
+a exceção X5. **Chave nova no `.env`: `URL_DO_SISTEMA`** (opcional; o
+`npm run ambiente` acusa a falta dela no outro PC: copiar a linha do
+`.env.example`). Sem migration nem dependência nova (o `fast-jwt` só
+subiu de versão: o `npm run preparar` resolve).
 
 ## 5. Falhas (e o porquê)
 
@@ -94,6 +111,7 @@ migration nem chave nova no `.env` desde a última sessão.
 | Janela do VS Code no WSL não abria depois da atualização (2026-10-07) | O `npm run ambiente` chamou o `code` do WSL no meio da atualização: o servidor novo ficou descompactado numa pasta temporária, sem o último passo da instalação, e a versão antiga já tinha sido apagada | Resolvido: a pasta da versão em `~/.vscode-server/bin/` tirada do caminho, e o VS Code reinstalou ao reconectar. Claude: **não tirar a foto com o VS Code atualizando** |
 | Commit da fatia 7 do B23 entrou com a suíte vermelha (2026-10-07) | O comando lia o resultado da suíte e commitava em seguida, sem conferir o código de saída; e o `Confere` do teste novo comparava com o objeto do cenário, que já tinha sido editado (o vermelho parou no 500 antes de chegar nele) | Corrigido antes do push (`--amend`, local). Claude: o commit só roda **depois de conferir** o código de saída da suíte (`if [ $r -eq 0 ]`); e a conferência de "não mudou" compara com uma leitura feita **antes** da chamada, nunca com o objeto do cenário |
 | CI do lote 3 vermelho no `diff-cover` (2026-10-07) | O catálogo `AcaoAuditada` era um objeto que ninguém carregava (só o tipo era importado): a linha ficou sem cobertura, e o `diff-cover` só roda no CI | Resolvido: o catálogo virou só um tipo. Claude: rodar o `diff-cover` **antes de todo push** (`uvx diff-cover==10.6.0 coverage/cobertura-coverage.xml --compare-branch=origin/main --fail-under=100`, com o `uv` na pasta temporária da sessão) |
+| CI vermelho no `osv-scanner` depois do push do handoff (2026-10-09), e ninguém viu até Matthew avisar | Alerta novo publicado de um dia para o outro (`fast-jwt` 6.3.3, GHSA-x937-hj6v-793p, média); o Claude conferiu o CI no `/retomar` **antes** do push, e não depois | Resolvido: `npm update fast-jwt` (6.3.4, dentro da faixa do `@fastify/jwt`). Claude: conferir o CI (`gh pr checks`) depois de **todo** push, até o fim, inclusive o de documentação |
 | CI da F6a vermelho no `diff-cover` (2026-10-08): uma linha do `setor.service.ts` sem teste | O `diff-cover` local deu 100% porque o arquivo era **novo e ainda sem commit**: o Git não o rastreava, e ele ficou fora do diff | Resolvido com o teste. Claude: `git add -N` nos arquivos novos antes do `diff-cover` (na `/verificar` §4), ou rodar depois do commit |
 
 **Pendências anotadas:**
@@ -185,32 +203,17 @@ migration nem chave nova no `.env` desde a última sessão.
    `npm run preparar` (duas migrations novas) e entrar de novo** (os tokens
    antigos não valem). **F6 feita** (setores: listar, criar, renomear, desativar sem pessoas
    ativas, reativar; setor desativado fora das escolhas novas). **As rotas da A6
-   estão completas.** **Faltam:** o **script do primeiro
-   acesso** (Matthew; **começar por aqui na próxima conversa**, ver abaixo) e o **item 6** (Matthew: os limites das travas — itens só
+   estão completas.** **Script do primeiro acesso feito** (2026-10-09, escrito
+   por Matthew; `npm run criar-admin`, desenho e o que mudou no changelog,
+   exceção X5 no `CONSTRAINTS.md` §5). **Falta o item 6** (Matthew; **começar
+   por aqui na próxima conversa**): os limites das travas — itens só
    `FECHADO`, só colaborador, revogar `EDITOR` de aprovador — e as permissões
-   de `ADMIN`). Anotado, sem tratar: duas revogações de `ADMIN` ao mesmo tempo
-   podem passar as duas (concorrência, como o B19).
-
-   **Script do primeiro acesso — o `idea-refine` foi feito (2026-10-08), falta
-   Matthew aprovar a direção e o nome da variável.** Respostas dele: quem roda
-   são **ele e a TI** (por um manual), o script **serve também de recuperação**
-   (o único `ADMIN` perdeu a senha ou saiu) e **pergunta no terminal**. Direção
-   proposta (um caminho só, `npm run criar-admin`): pergunta nome, e-mail e
-   setor → mostra um resumo → "confirma? (s/N)" → **garante que o e-mail seja
-   um `ADMIN` ativo**: pessoa nova é criada (e o setor, se o nome não existir);
-   pessoa que já existe é reativada, ganha `ADMIN` e muda de setor se o
-   informado for outro; nos dois casos, convite novo (`emitirConvite`, revoga
-   os anteriores) e as sessões derrubadas. Setor desativado é recusado (RN-44).
-   A auditoria grava a pessoa como autora de si mesma, com `origem:
-   "criar-admin"`. O link sai com a `URL_DO_SISTEMA` (opcional no `.env`), no
-   formato `/definir-senha#token=...`, uma vez só. Fora: argumentos na linha de
-   comando, e-mail, senha digitada no script, menu de modos, como rodar em
-   produção (D1). Estrutura: o miolo `garantirAdmin(tx, dados)` testado com o
-   banco, como os services, e uma casca fina (perguntas, confirmação, link). O
-   script fica em `src/` (o `tsx` é só de desenvolvimento; em produção roda o
-   JavaScript compilado). Ordem, no passo a passo: passeio pelo `emitirConvite`
-   e pelos repositórios de usuário, papel e setor → o teste do miolo → o miolo
-   → a casca. Na aprovação, a decisão vai para o changelog.
+   de `ADMIN`. Depois, fechar a fase (`/abrir-pr`), decidindo o que foi
+   anotado sem tratar: duas revogações de `ADMIN` ao mesmo tempo podem passar
+   as duas (concorrência, como o B19; o `revogarPapel` não trava a linha do
+   usuário). **Antes do portão "fundação pronta"**, o item adiado do "pronto
+   quando" da A4 (Matthew explicar o B19 e o `SameSite=Strict`, no passeio
+   guiado, passo 1).
 
 Da revisão de design das APIs (2026-10-07), anotados para a C1/C2:
 **R7**, o erro sem código para máquina (os 409 diferentes só se
@@ -240,4 +243,4 @@ parado há tempo):
 6. **Primeira foto de casa:** `npm run ambiente -- casa` e depois
    `npm run ambiente -- comparar` (`SETUP.md` §12.5). Commitar o
    `docs/ambiente/casa.txt`.
-7. `npm run test:cobertura`: **457 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).
+7. `npm run test:cobertura`: **469 passando**, cobertura acima de 94,66% (com os players do navegador fechados, para a suíte não passar de ~5 min).
