@@ -5,14 +5,14 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-09, noite (**sessão na nuvem**, Matthew pelo iPad; a primeira, `SETUP.md` §13). **A6 fechada do lado do Claude**: o B28 (revisão da fase), a revisão de concorrência (B29–B36), o PR #9 fora do rascunho, **esperando o merge de Matthew**. **A7 aberta e feita** na branch `fase/a7-travas-entre-linhas` (B29–B36 corrigidos), **esperando a revisão dos diffs por Matthew**. Antes, 2026-10-09, fim do dia (no **trabalho**, `/trocar-pc`): o script do primeiro acesso e o item 6. O PC de casa continua sem foto (`casa.txt`).
+**Última atualização:** 2026-10-09, noite (**sessão na nuvem**, Matthew pelo iPad; a primeira, `SETUP.md` §13). **A6 fechada** (PR #9, merge `e441212`; a `main` já entrou na branch da A7 por merge). **A7 aberta e feita** na branch `fase/a7-travas-entre-linhas` (B29–B36 corrigidos), **esperando a revisão dos diffs por Matthew**. Antes, 2026-10-09, fim do dia (no **trabalho**, `/trocar-pc`): o script do primeiro acesso e o item 6. O PC de casa continua sem foto (`casa.txt`).
 
 ## 1. Objetivo
 
 Fase **A7 — Travas entre linhas** (`docs/plano-implementacao.md`), na
-branch `fase/a7-travas-entre-linhas`, criada a partir da A6 **antes do
-merge do PR #9**: depois do merge, trazer a `main` com `git merge
-origin/main` (sem rebase). Depois da A7, o portão "fundação pronta".
+branch `fase/a7-travas-entre-linhas` (PR #10, em rascunho; a `main` com
+a A6 já mesclada entrou nela por merge). Depois da A7, o portão
+"fundação pronta".
 
 ## 2. Estado atual
 
@@ -196,13 +196,9 @@ dependência nem chave nova no `.env`**: no PC, só `git pull` (e o
 
 ## 6. Próximo passo
 
-1. **Matthew: merge do PR #9 (A6)** pelo site, com a mensagem que o
-   Claude entregou na conversa (o padrão de sempre: `Merge pull request
-   #9 from fellipemnds/fase/a6-usuarios-e-setores`).
+1. ~~Merge do PR #9 (A6) e `/fechar-fase`~~ **feitos em 2026-10-09**.
 2. **Matthew: revisar os diffs da A7** (o PR #10, em rascunho).
-3. Depois do merge da A6: `/fechar-fase` (sem abrir branch nova: a da A7
-   já existe; trazer a `main` nela com `git merge origin/main`).
-4. Fechar a A7 (`/abrir-pr`) e o **portão "fundação pronta"**: o item
+3. Fechar a A7 (`/abrir-pr`) e o **portão "fundação pronta"**: o item
    adiado do "pronto quando" da A4 e da A6 (Matthew explicar o B19, o
    `SameSite=Strict` e, agora, a trava entre linhas), no **passeio
    guiado** (em casa, com o `/understand-anything:understand` antes),

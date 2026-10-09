@@ -454,3 +454,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-08 | v1.24 — A6: a F6 em duas fatias (F6a ler, criar e renomear; F6b desativar e reativar, com a RN-44 detalhada) |
 | 2026-10-09 | v1.25 — B28 entra na A6 (revisão da fase) |
 | 2026-10-09 | v1.26 — fase A7 (travas entre linhas): B29–B36, da revisão de concorrência da A6; o portão passa a exigir A0–A7 |
+| 2026-10-09 | **A6 concluída** (branch `fase/a6-usuarios-e-setores`, PR #9): usuários, setores e `GET /pessoas` (F1–F7), as travas da RN-43 e do último `ADMIN`, a RN-44 detalhada, o script do primeiro acesso, B27 e B28; a revisão de concorrência levou B29–B36 para a A7. 475 testes. O "pronto quando" de Matthew explicar a fase fica para o passeio guiado |

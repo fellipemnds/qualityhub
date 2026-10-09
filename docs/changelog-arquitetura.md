@@ -47,7 +47,7 @@ documento de arquitetura.
   requisição ali e espera 300 ms: sem a trava, a outra grava por baixo
   (vermelho sempre); com ela, espera e é recusada (verde sempre).
 
-### Fase A6 — usuários, setores e pessoas (branch `fase/a6-usuarios-e-setores`, em andamento)
+### Fase A6 — usuários, setores e pessoas (branch `fase/a6-usuarios-e-setores`, PR #9)
 
 - **Conferência do setor num lugar só** (2026-10-08, L6): o
   `conferirSetor` (`modulos/setor/conferir-setor.ts`) responde 404 para

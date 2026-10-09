@@ -60,7 +60,8 @@ limite de tentativas), no mesmo dia, na revisão de segurança da fase
 durante a derrubada das sessões sobrevivia a ela; a data virou a
 `versaoSessao`), em 2026-10-08, e o B28 (uma pessoa inativa podia ser
 designada aprovadora ou colaboradora, o que contornava a trava da
-RN-43), em 2026-10-09, achado na revisão da fase. A A7 corrigiu o B29
+RN-43), em 2026-10-09, achado na revisão da fase (fase fechada em
+2026-10-09, PR #9). A A7 corrigiu o B29
 (o filho novo nascia com a NC em aprovação ou fechada; RN-51) e o
 B30–B36 (sete regras que conferem outras linhas quebravam com duas
 requisições ao mesmo tempo), em 2026-10-09, achados na revisão de
