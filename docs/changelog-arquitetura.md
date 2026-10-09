@@ -9,6 +9,40 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Fase A7 — travas entre linhas (branch `fase/a7-travas-entre-linhas`, em andamento)
+
+- **Travar antes de ler (2026-10-09, B29–B36).** A trava do B19 (o
+  `UPDATE` condicionado ao estado lido) protege a linha do próprio item,
+  mas age só na gravação, depois da conferência. As regras que leem
+  **outras linhas** ganharam uma trava pega **antes** da leitura, na
+  mesma linha pelos dois lados da corrida: o pai (`registroRepository
+  .travar`: a NC para os filhos e o envio, a investigação para as ações,
+  o envio e o cancelar), o item (as atribuições), a pessoa
+  (`usuarioRepository.travar` para quem a muda × `travarParaEscolha`,
+  compartilhada, para quem a escolhe) e o setor (o mesmo par). O último
+  `ADMIN` usa uma trava só (`pg_advisory_xact_lock`), porque cada lado
+  mexe numa pessoa diferente. **`FOR NO KEY UPDATE`, nunca `FOR
+  UPDATE`:** o primeiro teste do B32 deu *deadlock*. O `FOR UPDATE`
+  bloqueia também quem só aponta para a linha (a chave estrangeira da
+  auditoria, que pega `FOR KEY SHARE`), e dois ADMINs agindo um no outro
+  se esperavam. O `FOR NO KEY UPDATE` é a trava que um `UPDATE` comum já
+  pega, e era o aviso do comentário do `travarAtivo` (A6). **Alternativa
+  descartada:** transações `SERIALIZABLE`, que acham a corrida sozinhas,
+  mas devolvem erro de serialização a ser repetido em toda rota.
+- **Filho novo com a NC em rascunho ou aberta (RN-51, B29).** Matthew
+  decidiu "só em `ABERTO`" respondendo à proposta que falava de em
+  aprovação e fechada; na implementação, o rascunho foi mantido, porque a
+  A3 decidiu e testou a NC em rascunho com filhos (a contenção começa
+  antes de a NC ser formalizada; excluir o rascunho leva os filhos), e o
+  rascunho não abre brecha (publicar não confere os filhos). Matthew
+  confere na revisão.
+- **Teste de corrida sem sorte: o `pausarNoMeio`** (`testes/cenarios.ts`).
+  Com o `Promise.all`, a corrida do envio da NC aconteceu em 1 de 4
+  rodadas, e o teste passaria sem a trava. A pausa espiona o método que
+  vem entre a conferência e a gravação (`vi.spyOn`), dispara a outra
+  requisição ali e espera 300 ms: sem a trava, a outra grava por baixo
+  (vermelho sempre); com ela, espera e é recusada (verde sempre).
+
 ### Fase A6 — usuários, setores e pessoas (branch `fase/a6-usuarios-e-setores`, em andamento)
 
 - **Conferência do setor num lugar só** (2026-10-08, L6): o
@@ -201,7 +235,8 @@ documento de arquitetura.
   Uma sonda de testes (descartada depois) confirmou cada caso, 5 de 5
   rodadas: **B29–B36**. Decisões de Matthew: a A6 fecha com o B28, e os
   oito vão para uma **fase nova, A7**, antes do portão; e o filho novo
-  **só nasce com a NC `ABERTO`** (RN-51, PRD Q24). O mecanismo
+  **não nasce com a NC em aprovação, fechada ou cancelada** (RN-51, PRD
+  Q24; o rascunho continua recebendo filhos, como desde a A3). O mecanismo
   planejado, um só: travar antes de ler (plano, A7).
 
 ### Fase A5 — contrato da API (branch `fase/a5-contrato-api`, PR #8)

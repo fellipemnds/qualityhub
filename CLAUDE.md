@@ -60,10 +60,11 @@ limite de tentativas), no mesmo dia, na revisão de segurança da fase
 durante a derrubada das sessões sobrevivia a ela; a data virou a
 `versaoSessao`), em 2026-10-08, e o B28 (uma pessoa inativa podia ser
 designada aprovadora ou colaboradora, o que contornava a trava da
-RN-43), em 2026-10-09, achado na revisão da fase. **Abertos: B29–B36**,
-na **A7** (a revisão de concorrência da A6, 2026-10-09): o filho novo
-nascia com a NC fora de `ABERTO` (RN-51) e sete regras que conferem
-outras linhas quebravam com duas requisições ao mesmo tempo.
+RN-43), em 2026-10-09, achado na revisão da fase. A A7 corrigiu o B29
+(o filho novo nascia com a NC em aprovação ou fechada; RN-51) e o
+B30–B36 (sete regras que conferem outras linhas quebravam com duas
+requisições ao mesmo tempo), em 2026-10-09, achados na revisão de
+concorrência da A6. **Nenhum bug aberto.**
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
@@ -185,6 +186,18 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   preferência pelo `aplicarTransicao`. Teste de concorrência chama o
   `abrirDuasConexoes()` antes do `Promise.all`, senão a corrida pode não
   acontecer e o teste passa sem provar nada.
+- **Trava entre linhas (A7)**: a trava do B19 cobre só a linha do
+  próprio item. Regra que confere **outras linhas** (os filhos da NC, as
+  ações da investigação, os outros ADMINs, as pessoas do setor, os
+  colaboradores) **trava a linha de que depende antes de ler**, e os dois
+  lados da corrida travam a mesma: `registroRepository.travar` (o pai ou
+  o item), `usuarioRepository.travar` (quem muda a pessoa) ×
+  `travarParaEscolha` (quem a escolhe), `setorRepository.travar` ×
+  `travarParaEscolha`, e o `travarSaidaDeAdmin` (*advisory lock*: cada
+  lado mexe numa pessoa diferente). Sempre `FOR NO KEY UPDATE`, nunca
+  `FOR UPDATE` (ele segura a chave estrangeira da auditoria, e dois
+  ADMINs agindo um no outro davam *deadlock*). Teste de corrida pelo
+  `pausarNoMeio` (pausa entre conferir e gravar), não pelo `Promise.all`.
 - **Permissões em três camadas**: papel (`temPapel`) → estado do registro
   → atribuição (`Atribuicao`, com `funcao: COLABORADOR | APROVADOR`).
   `podeExecutar` combina as três; algumas transições usam checagem
