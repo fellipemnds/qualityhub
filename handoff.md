@@ -5,7 +5,7 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-08, fim do dia (no **trabalho**). A A6 avançou: **todas as rotas prontas** (F1–F7, com a F5 de convite e senha e o B27 corrigido); falta o script do primeiro acesso, o item 6 e fechar a fase. Antes, 2026-10-08 (no **trabalho**). A **A5 foi fechada** (PR #8, merge `b4aa14e`) e a branch `fase/a6-usuarios-e-setores` foi aberta. O PC de casa continua sem foto (`casa.txt`).
+**Última atualização:** 2026-10-09, chegada no **trabalho** (`/retomar`: branch em dia com a remota, CI do PR #9 verde, ambiente sem alertas; a foto só mudou as extensões do Claude Code e do Prisma no VS Code). Antes, 2026-10-08, fim do dia (no **trabalho**). A A6 avançou: **todas as rotas prontas** (F1–F7, com a F5 de convite e senha e o B27 corrigido); falta o script do primeiro acesso, o item 6 e fechar a fase. Antes, 2026-10-08 (no **trabalho**). A **A5 foi fechada** (PR #8, merge `b4aa14e`) e a branch `fase/a6-usuarios-e-setores` foi aberta. O PC de casa continua sem foto (`casa.txt`).
 
 ## 1. Objetivo
 
