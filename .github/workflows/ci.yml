@@ -20,6 +20,14 @@ jobs:
             - run: npx prisma generate
             - run: npm run lint
             - run: npm run typecheck
+            # O Testcontainers baixa o Postgres e o ryuk do Docker Hub. Sem login, o limite de downloads é por endereço, e
+            # as máquinas do GitHub dividem endereços: a suíte caía sem rodar nenhum teste (2026-10-09). O token é só de
+            # leitura de imagens públicas; entra por env e pela entrada do comando, nunca como argumento
+            - name: Login no Docker Hub
+              env:
+                DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+                DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+              run: echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             - run: npm run test:cobertura
             - name: Cobertura das linhas novas (CONSTRAINTS §2)
               if: github.event_name == 'pull_request'
