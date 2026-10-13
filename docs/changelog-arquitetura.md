@@ -45,6 +45,13 @@ documento de arquitetura.
   valores e o que evitar (halo colorido, gradiente atrás de texto, orbe de
   enfeite) estão no `docs/marca.md`; no Figma, a coleção "Tema" com quatro
   modos.
+- **A fonte: Figtree (2026-10-13, sessão 3).** Cinco candidatas conferidas
+  no arquivo da fonte (licença OFL, acentos, números tabulares); três no
+  Figma, cada uma com a Inter embaixo, com texto real do sistema. Claude
+  recomendou a Instrument Sans (mais neutra para tela densa, eixo de
+  largura); Matthew escolheu a Figtree, a que mais veste *humana* e
+  *luminosa*. A Inter ficou de fora por ser o padrão de tudo (o Linear
+  usa a `InterVariable`). Resolve a U3 do `ui-ux.md`.
 
 ### Fase A7 — travas entre linhas (branch `fase/a7-travas-entre-linhas`, PR #10)
 

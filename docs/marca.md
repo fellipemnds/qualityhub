@@ -108,6 +108,20 @@ Dusk · Escuro, e o nome do CSS em cada uma.
   poucos lugares (login, tela vazia), e o desenho dele é da sessão 3.
 - Pintar a superfície com a cor da face: o fundo é sempre neutro.
 
+## Fonte (sessão 3)
+
+**Figtree** (licença OFL), uma só para tudo, servida pelo nosso servidor.
+É a que mais veste *humana* e *luminosa*, e as formas redondas conversam
+com o "sol" da marca. Comparada no Figma (página "Fonte") com a Instrument
+Sans, a Atkinson Hyperlegible Next e a Inter, com texto real do sistema.
+
+- **Números:** `font-variant-numeric: tabular-nums` em tabela, código, data
+  e indicador (a Figtree tem o recurso, mas não o usa por padrão).
+- **O cuidado:** geométrica arredondada perde um pouco de nitidez em 12 a
+  13 px. Na B3, conferir a lista e a tabela em 100% antes de fixar a escala.
+- **Por que não a Inter:** é a fonte do Linear e da maioria das
+  referências, e por isso não diferencia nada.
+
 ## Arquitetura
 
 **Uma marca só** (o "branded house" do livro, p. 18–19): os módulos levam

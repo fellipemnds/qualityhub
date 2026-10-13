@@ -109,11 +109,12 @@ competiria com os badges.
 
 ### 3.2 Tipografia
 
-- **Fonte:** **decidida junto com a identidade visual** (U3). Até lá,
-  **Inter** como provisória. Seja qual for, é servida pelo **nosso
-  próprio servidor**, porque o sistema roda *on-premise* e pode não ter
-  acesso a serviços externos de fonte. Requisito para a escolha final:
-  ter números tabulares (alinhados em coluna).
+- **Fonte:** **Figtree** (decidida na B1, 2026-10-13; `docs/marca.md`).
+  Servida pelo **nosso próprio servidor**, porque o sistema roda
+  *on-premise* e pode não ter acesso a serviços externos de fonte.
+  Números tabulares por `font-variant-numeric: tabular-nums` (a Figtree
+  tem o recurso `tnum`, mas os dígitos não são tabulares por padrão):
+  obrigatório em tabelas, códigos, datas e indicadores.
 - **Escala** (Tailwind): `text-xs` 12 · `text-sm` 14 (**padrão** de
   tabelas e formulários) · `text-base` 16 (texto corrido, feed) ·
   `text-lg` 18 · `text-xl` 20 (título de seção) · `text-2xl` 24 (título
@@ -547,7 +548,7 @@ Com Matthew, em 2026-09-24 (além das da §1).
 |---|---|---|
 | **U1** | Textos dos botões e das atribuições | **"Enviar para aprovação"** e **"Responsável"** na tela; código e banco mantêm os nomes atuais → §10.2 |
 | **U2** | Navegação no celular | **Barra inferior**: Pendências, NCs, ＋ Nova NC, Menu → §6.1 |
-| **U3** | Fonte | **Decidida com a identidade visual**; Inter como provisória; sempre servida pelo nosso servidor → §3.2 |
+| **U3** | Fonte | **Figtree** (B1, 2026-10-13); sempre servida pelo nosso servidor; `tabular-nums` nos números → §3.2 |
 | **U4** | Salvar | **Botão explícito** + cópia local no navegador → §8.1 |
 | **U5** | Quem monta o Figma | **Claude cria os wireframes** (a partir da §7) no Figma de Matthew; **Matthew faz os mockups** |
 
