@@ -5,13 +5,14 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-13, chegada no **trabalho** (`/retomar`). Este PC estava parado no `fase/a6` de 2026-10-09: `main` atualizada, branch `docs/fechamento-bloco-a` criada daqui e a `fase/a6` local apagada (mesclada). Em 2026-10-10 entrou a **primeira foto de casa** (`casa.txt`, commit `de11205`), sem `/trocar-pc` (este handoff não foi atualizado lá). Sem dependência, migration nem chave nova desde 2026-10-09. A foto daqui só mudou a extensão do Claude Code (2.1.296). Comparando com casa: lá o `gh` é o do apt (2.46.0, escopos ok), o Prettier ainda está no WSL e a foto acusa `claude code: não instalado` (provavelmente o `PATH`, §5). Antes, 2026-10-09, noite (**sessão na nuvem**, Matthew pelo iPad; a primeira, `SETUP.md` §13). **A6 fechada** (PR #9, merge `e441212`) e **A7 fechada** (PR #10, merge `aae403f`). Branch nova, `docs/fechamento-bloco-a`, para fechar o bloco A depois do passeio guiado. Antes, 2026-10-09, fim do dia (no **trabalho**, `/trocar-pc`): o script do primeiro acesso e o item 6. O PC de casa continua sem foto (`casa.txt`).
+**Última atualização:** 2026-10-13 (no **trabalho**). **Bloco A fechado nos documentos** (portão "fundação pronta"; o passeio guiado vai em três sessões curtas durante o Bloco B, como condição para o C0, porque em casa Matthew chega cansado) e as skills revistas (`/retomar` com branch já mesclada; colinha do Bloco B). O PR da `docs/fechamento-bloco-a` espera: Matthew quer ver outras skills antes. Antes, no mesmo dia, a chegada (`/retomar`). Este PC estava parado no `fase/a6` de 2026-10-09: `main` atualizada, branch `docs/fechamento-bloco-a` criada daqui e a `fase/a6` local apagada (mesclada). Em 2026-10-10 entrou a **primeira foto de casa** (`casa.txt`, commit `de11205`), sem `/trocar-pc` (este handoff não foi atualizado lá). Sem dependência, migration nem chave nova desde 2026-10-09. A foto daqui só mudou a extensão do Claude Code (2.1.296). Comparando com casa: lá o `gh` é o do apt (2.46.0, escopos ok), o Prettier ainda está no WSL e a foto acusa `claude code: não instalado` (provavelmente o `PATH`, §5). Antes, 2026-10-09, noite (**sessão na nuvem**, Matthew pelo iPad; a primeira, `SETUP.md` §13). **A6 fechada** (PR #9, merge `e441212`) e **A7 fechada** (PR #10, merge `aae403f`). Branch nova, `docs/fechamento-bloco-a`, para fechar o bloco A depois do passeio guiado. Antes, 2026-10-09, fim do dia (no **trabalho**, `/trocar-pc`): o script do primeiro acesso e o item 6. O PC de casa continua sem foto (`casa.txt`).
 
 ## 1. Objetivo
 
-**Fechar o bloco A** pelo portão "fundação pronta" (plano, fim da
-seção 3), na branch `docs/fechamento-bloco-a` (só documentos; um PR,
-mesclado quando o portão fechar). Falta o **passeio guiado**, em casa.
+**Ir para o Bloco B (design).** O bloco A está fechado nos documentos,
+na branch `docs/fechamento-bloco-a` (só documentos); falta o PR dela e o
+merge de Matthew. O **passeio guiado** vai em sessões curtas durante o B,
+aqui no trabalho, e é condição para o C0.
 
 ## 2. Estado atual
 
@@ -195,28 +196,24 @@ dependência nem chave nova no `.env`**: no PC, só `git pull` (e o
 
 ## 6. Próximo passo
 
-1. ~~Merge do PR #10 (A7) e o registro da A7~~ **feitos em 2026-10-09**
-   (o registro na branch `docs/fechamento-bloco-a`).
-2. **O portão "fundação pronta"** (plano, fim da seção 3):
-   - ~~OpenAPI completo, gerando sem erro~~ **conferido em 2026-10-09**
-     (Redocly sem erro; o B37 corrigido no caminho);
-   - nenhum bug aberto: ok (B1–B37);
-   - ~~A0–A7 concluídas, com o CI verde na `main`~~ **ok** (PR #10);
-   - falta o adiado dos "pronto quando": **Matthew explicar a A4 (o B19
-     e o `SameSite=Strict`), a A6 e a A7 (a trava entre linhas)**, no
-     **passeio guiado**, em casa (decisão de Matthew, 2026-10-09), com o
-     `/understand-anything:understand` antes; e o **passo 5 do
-     `/fechar-fase`** (rever as skills no fim do bloco), junto.
-   - Ao fechar: registrar na `docs/fechamento-bloco-a` (plano: o portão
-     cumprido; handoff), abrir o PR e Matthew mesclar.
-3. Roteiro do passeio: uma requisição de ponta a ponta (rota →
-   controller → service → `cicloVidaService` →
+1. **Matthew olha outras skills** que podem ajudar no Bloco B (pedido
+   dele, 2026-10-13), antes do PR.
+2. **PR da `docs/fechamento-bloco-a`** (`/abrir-pr`), merge de Matthew e
+   `/fechar-fase` (o passo 5, rever as skills, já foi feito).
+3. **`/comecar-fase` do Bloco B.** A B1 (identidade visual) depende da
+   empresa; a B2 (wireframes no Figma, pelo conector) não depende, e dá
+   para começar por ela.
+4. **Passeio guiado, em três sessões curtas (20–30 min) durante o B**
+   (plano, portão "fundação pronta"; condição para o C0): A4 (o B19 e o
+   `SameSite=Strict`), A6 (a RN-43 e o convite) e A7 (a trava entre
+   linhas, um teste do `pausarNoMeio` linha a linha). Matthew diz o que
+   cada parte faz antes de Claude explicar. Roteiro da A4: uma requisição
+   de ponta a ponta (rota → controller → service → `cicloVidaService` →
    `buscarRegistroDoTipoOuFalhar` → `aplicarTransicao` →
-   `registroRepository.atualizar` → banco → auditoria → resposta), com
-   Matthew dizendo o que cada parte faz antes de Claude explicar; e, para
-   a A7, um teste com o `pausarNoMeio` lido linha a linha.
-4. Depois do portão: o Bloco B (design) e a C0 (com o `operationId`
-   antes do Orval, plano C0).
+   `registroRepository.atualizar` → banco → auditoria → resposta). O
+   `/understand-anything:understand` antes é opcional (colinha §6).
+5. Depois do B e do passeio: a C0 (com o `operationId` antes do Orval,
+   plano C0).
 
 Da revisão de design das APIs (2026-10-07), anotados para a C1/C2:
 **R7**, o erro sem código para máquina (os 409 diferentes só se

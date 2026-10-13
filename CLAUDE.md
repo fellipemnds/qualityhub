@@ -67,8 +67,9 @@ B30–B36 (sete regras que conferem outras linhas quebravam com duas
 requisições ao mesmo tempo), em 2026-10-09, achados na revisão de
 concorrência da A6, e o B37 (o OpenAPI tinha `$ref` sem destino no
 `conteudo` da investigação), no mesmo dia, ao conferir o portão (fase
-fechada em 2026-10-09, PR #10). **Nenhum bug aberto.** O bloco A fecha
-com o portão "fundação pronta", depois do passeio guiado (`handoff.md`).
+fechada em 2026-10-09, PR #10). **Nenhum bug aberto.** O bloco A fechou
+em 2026-10-13 (portão "fundação pronta"); o passeio guiado (Matthew explicar a
+A4, a A6 e a A7) vai em sessões curtas durante o Bloco B e é condição para o C0.
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com

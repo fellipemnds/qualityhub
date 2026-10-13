@@ -303,6 +303,10 @@ Antes do Bloco C começar:
 - A0–A7 concluídas, CI verde na `main`.
 - Nenhum bug aberto no `esquema-backend.md` §7.
 - OpenAPI completo, gerando sem erro.
+- O "pronto quando" adiado da A4, da A6 e da A7 (Matthew explicar a fase), no **passeio guiado**,
+  em três sessões curtas durante o Bloco B: A4 (o B19 e o `SameSite=Strict`), A6 (a RN-43 e o
+  convite) e A7 (a trava entre linhas, um teste do `pausarNoMeio` linha a linha). **Condição para o
+  C0** (decisão de Matthew, 2026-10-13).
 
 ---
 
@@ -459,3 +463,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-09 | v1.27 — revisão de segurança do repositório inteiro (`security-and-hardening`), sem conserto a fazer: a validade do link de redefinir senha vai para a C6 e a LGPD (retenção, base legal, pedido de exclusão) para a D0 |
 | 2026-10-09 | v1.28 — B37 na A7 (o OpenAPI conferido para o portão); C0: o `operationId` antes do Orval |
 | 2026-10-09 | **A7 concluída** (branch `fase/a7-travas-entre-linhas`, PR #10): travar antes de ler nas regras que conferem outras linhas (B29–B36, com a RN-51), o OpenAPI conferido (B37) e a revisão de segurança do repositório; o `pausarNoMeio` para os testes de corrida. 489 testes. Do portão "fundação pronta" falta o passeio guiado (Matthew explicar a A4, a A6 e a A7), na branch `docs/fechamento-bloco-a` |
+| 2026-10-13 | **Bloco A concluído** (branch `docs/fechamento-bloco-a`): o portão "fundação pronta" cumprido, com o passeio guiado (Matthew explicar a A4, a A6 e a A7) em três sessões curtas durante o Bloco B, como condição para o C0; as skills revistas no fim do bloco |
