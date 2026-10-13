@@ -139,6 +139,12 @@ dois PCs, desde 2026-10-13): o que vier dele vai rotulado **🐴 Ponytail**
 na mensagem, separado do raciocínio do projeto. O `CONSTRAINTS.md` e as
 decisões do plano valem mais que ele.
 
+**Formato das respostas** (desde 2026-10-13, inspirado na skill
+`i-have-adhd`; Matthew chega cansado em casa): a próxima ação primeiro;
+passos numerados; uma linha de estado ("onde estamos") quando a tarefa
+tem várias etapas; listas de até 5 itens; terminar com **um** próximo
+passo. O "por quê" de um conceito novo nunca é cortado.
+
 ## Stack
 
 Node.js 24, TypeScript 7, Fastify 5 (com `fastify-type-provider-zod`),

@@ -318,7 +318,7 @@ Não depende de código. Detalhes em `docs/ui-ux.md` §2.
 |---|---|---|---|
 | **B1 · Identidade visual** | Cores, logo, fonte da empresa (ou decisão de seguir neutro) | 🧑 com a empresa | Decisão externa |
 | **B2 · Wireframes (G1)** | Frames cinzas no Figma a partir de `ui-ux.md` §7, uma tela por frame | 🤖 cria no Figma de Matthew; 🧑 ajusta | — |
-| **B3 · Fundações + mockups (G2, G4)** | Variables, componentes com variantes = enums, telas com cor e os estados vazio/carregando/erro/sem permissão | 🧑 (é onde mais se aprende Figma); 🤖 revisa | B1, B2 |
+| **B3 · Fundações + mockups (G2, G4)** | Variables, componentes com variantes = enums, telas com cor e os estados vazio/carregando/erro/sem permissão. Termina num **`DESIGN.md`** na raiz (o formato aberto do Google: os tokens com valores exatos e o porquê de cada um), que os agentes seguem na fase C em vez de inventar cor; o `impeccable` gera um a partir do que ficou pronto (2026-10-13) | 🧑 (é onde mais se aprende Figma); 🤖 revisa | B1, B2 |
 | **B4 · Protótipo + teste (G3)** | Protótipo HTML clicável; **3 colegas** completam sem ajuda: registrar NC com rascunho, aprovar item, comentar com menção | 🤖 o protótipo; 🧑 conduz o teste | B3 |
 
 O que o teste com colegas revelar volta para os documentos **antes** do
