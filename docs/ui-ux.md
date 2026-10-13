@@ -7,7 +7,8 @@
 > `docs/prd.md`.
 >
 > **Status:** v1 (2026-09-24). Decisões na §1 e na §12. Valores de cor
-> e fonte são provisórios até a identidade visual ser definida.
+> e fonte são provisórios até a identidade visual ser definida (fase B1:
+> a plataforma **Dusk & Dawn**, com identidade própria, decidida em 2026-10-13).
 
 ---
 
@@ -18,7 +19,7 @@ Com Matthew, em 2026-09-24:
 | Decisão | Escolha | Observação |
 |---|---|---|
 | Biblioteca de componentes | **shadcn/ui** (Radix + Tailwind) | **Diverge do `arquitetura.md`** (ADR-28 recomendava Mantine). Os componentes são copiados para dentro do projeto e viram código nosso |
-| Identidade visual | **Decidir depois** | Este documento define os tokens por **função** (`--perigo`, `--destaque`...); os valores são provisórios até a identidade chegar |
+| Identidade visual | **Própria da plataforma Dusk & Dawn**, com a **assinatura** da empresa (revisto em 2026-10-13; antes, "decidir depois") | A identidade oficial da empresa não combina com o app, e Matthew tem liberdade para decidir. **Dusk & Dawn** é o nome da **plataforma**, que vai ganhar módulos além das NCs (o roteiro no `README.md`); cada módulo mantém um nome que diz o que faz ("Dusk & Dawn · Qualidade"). O código continua `qualityhub`: o nome só aparece na tela. A plataforma tem **duas faces, divididas por pessoa e não por módulo**: **Dawn**, a do colaborador (pendências, abrir uma NC ou uma solicitação, fazer um treinamento), e **Dusk**, a da gestão (aprovar, relatórios, indicadores, administração). Um login só; a face Dusk aparece para quem tem papel de gestão (a tela inicial por papel da A4 e os papéis que se somam). A autoria de Matthew fica numa tela **"Sobre"** ("Criado por Matthew", com o aviso de copyright), não na marca. A empresa aparece só como assinatura, com o logo dela **monocromático** (cinza ou a cor do texto, nunca as cores originais): no login, no rodapé do menu lateral, no rodapé do e-mail de convite e no cabeçalho dos relatórios exportados. O ícone da aba, o topo das telas e os botões são da Dusk & Dawn. Os tokens continuam por **função** (`--perigo`, `--destaque`...); a B1 preenche os valores, e o `DESIGN.md` da B3 registra tudo |
 | Processo de design | **Documento → Figma → protótipo HTML** | Wireframes e mockups no Figma; protótipo HTML clicável quando o design fechar, para o teste do gate G3 |
 | Tema | **Só claro no MVP** | Cores em tokens, então o escuro entra depois sem refazer telas |
 

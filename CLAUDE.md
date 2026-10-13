@@ -39,8 +39,11 @@ onde vamos retomar.
 computador"), atualize o `handoff.md` — as mesmas 6 seções, apontando
 para os outros documentos em vez de repetir o que já está neles.
 
-Ainda pendente fora do código: hospedagem (TRD §10.6), identidade
-visual.
+Ainda pendente fora do código: hospedagem (TRD §10.6). A identidade
+visual deixou de ser da empresa: a plataforma se chama **Dusk & Dawn**
+(faces Dawn, do colaborador, e Dusk, da gestão; o código continua
+`qualityhub`), com a assinatura dela (fase B1, 2026-10-13;
+`docs/ui-ux.md` §1).
 
 **Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B37; os
 corrigidos têm ✅). A A3 corrigiu B1–B6 e B8–B18, e a RN-48 entrou como

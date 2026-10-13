@@ -5,14 +5,16 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-13 (no **trabalho**). **Bloco A fechado nos documentos** (portão "fundação pronta"; o passeio guiado vai em três sessões curtas durante o Bloco B, como condição para o C0, porque em casa Matthew chega cansado) e as skills revistas (`/retomar` com branch já mesclada; colinha do Bloco B). O PR da `docs/fechamento-bloco-a` espera: Matthew quer ver outras skills antes. Antes, no mesmo dia, a chegada (`/retomar`). Este PC estava parado no `fase/a6` de 2026-10-09: `main` atualizada, branch `docs/fechamento-bloco-a` criada daqui e a `fase/a6` local apagada (mesclada). Em 2026-10-10 entrou a **primeira foto de casa** (`casa.txt`, commit `de11205`), sem `/trocar-pc` (este handoff não foi atualizado lá). Sem dependência, migration nem chave nova desde 2026-10-09. A foto daqui só mudou a extensão do Claude Code (2.1.296). Comparando com casa: lá o `gh` é o do apt (2.46.0, escopos ok), o Prettier ainda está no WSL e a foto acusa `claude code: não instalado` (provavelmente o `PATH`, §5). Antes, 2026-10-09, noite (**sessão na nuvem**, Matthew pelo iPad; a primeira, `SETUP.md` §13). **A6 fechada** (PR #9, merge `e441212`) e **A7 fechada** (PR #10, merge `aae403f`). Branch nova, `docs/fechamento-bloco-a`, para fechar o bloco A depois do passeio guiado. Antes, 2026-10-09, fim do dia (no **trabalho**, `/trocar-pc`): o script do primeiro acesso e o item 6. O PC de casa continua sem foto (`casa.txt`).
+**Última atualização:** 2026-10-13, tarde (no **trabalho**). **Bloco A fechado** (PR #11, merge `df05b71`) e a **fase B1 aberta** (branch `fase/b1-identidade-visual`): a identidade da empresa chegou e não combina com o app, então a plataforma ganha nome e identidade próprios, **Dusk & Dawn**, com as faces **Dawn** (colaborador) e **Dusk** (gestão), divididas por pessoa, e a assinatura da empresa (`ui-ux.md` §1). A branch remota `docs/fechamento-bloco-a` ainda existe (apagar só com o pedido de Matthew). Antes, de manhã: **Bloco A fechado nos documentos** (portão "fundação pronta"; o passeio guiado vai em três sessões curtas durante o Bloco B, como condição para o C0, porque em casa Matthew chega cansado) e as skills revistas (`/retomar` com branch já mesclada; colinha do Bloco B). O PR da `docs/fechamento-bloco-a` espera: Matthew quer ver outras skills antes. Antes, no mesmo dia, a chegada (`/retomar`). Este PC estava parado no `fase/a6` de 2026-10-09: `main` atualizada, branch `docs/fechamento-bloco-a` criada daqui e a `fase/a6` local apagada (mesclada). Em 2026-10-10 entrou a **primeira foto de casa** (`casa.txt`, commit `de11205`), sem `/trocar-pc` (este handoff não foi atualizado lá). Sem dependência, migration nem chave nova desde 2026-10-09. A foto daqui só mudou a extensão do Claude Code (2.1.296). Comparando com casa: lá o `gh` é o do apt (2.46.0, escopos ok), o Prettier ainda está no WSL e a foto acusa `claude code: não instalado` (provavelmente o `PATH`, §5). Antes, 2026-10-09, noite (**sessão na nuvem**, Matthew pelo iPad; a primeira, `SETUP.md` §13). **A6 fechada** (PR #9, merge `e441212`) e **A7 fechada** (PR #10, merge `aae403f`). Branch nova, `docs/fechamento-bloco-a`, para fechar o bloco A depois do passeio guiado. Antes, 2026-10-09, fim do dia (no **trabalho**, `/trocar-pc`): o script do primeiro acesso e o item 6. O PC de casa continua sem foto (`casa.txt`).
 
 ## 1. Objetivo
 
-**Ir para o Bloco B (design).** O bloco A está fechado nos documentos,
-na branch `docs/fechamento-bloco-a` (só documentos); falta o PR dela e o
-merge de Matthew. O **passeio guiado** vai em sessões curtas durante o B,
-aqui no trabalho, e é condição para o C0.
+Fase **B1 — Identidade visual** (`docs/plano-implementacao.md`, Bloco B),
+na branch `fase/b1-identidade-visual`: a plataforma **Dusk & Dawn**
+(vai ganhar módulos além das NCs), com as faces **Dawn** (colaborador) e
+**Dusk** (gestão) e a assinatura da empresa. Limite de 4 sessões curtas. O
+**passeio guiado** vai em sessões curtas durante o B, aqui no trabalho,
+e é condição para o C0.
 
 ## 2. Estado atual
 
@@ -201,13 +203,16 @@ dependência nem chave nova no `.env`**: no PC, só `git pull` (e o
 
 ## 6. Próximo passo
 
-1. **Matthew olha outras skills** que podem ajudar no Bloco B (pedido
-   dele, 2026-10-13), antes do PR.
-2. **PR da `docs/fechamento-bloco-a`** (`/abrir-pr`), merge de Matthew e
-   `/fechar-fase` (o passo 5, rever as skills, já foi feito).
-3. **`/comecar-fase` do Bloco B.** A B1 (identidade visual) depende da
-   empresa; a B2 (wireframes no Figma, pelo conector) não depende, e dá
-   para começar por ela.
+1. **`/comecar-fase` da B1** (o PR nasce em rascunho).
+2. **A identidade, em até 4 sessões curtas**, com Claude conduzindo e
+   Matthew decidindo: direção (palavras e referências, pela entrevista do
+   `grilling`/`interview-me`), paleta (neutros, um destaque, as cores de
+   estado com contraste conferido), fonte, logo (o `brandkit` para
+   explorar) e a assinatura da empresa. Pensar na **plataforma**: o logo
+   não pode ser "de NC", e a dualidade Dawn/Dusk é o ponto de partida
+   (tons de amanhecer e de anoitecer).
+3. Depois, a B2 (wireframes no Figma, pelo conector) e a B3 (fundações e
+   o `DESIGN.md`).
 4. **Passeio guiado, em três sessões curtas (20–30 min) durante o B**
    (plano, portão "fundação pronta"; condição para o C0): A4 (o B19 e o
    `SameSite=Strict`), A6 (a RN-43 e o convite) e A7 (a trava entre

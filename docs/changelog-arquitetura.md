@@ -9,6 +9,24 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Fase B1 — identidade visual (branch `fase/b1-identidade-visual`)
+
+- **Identidade própria: a plataforma Dusk & Dawn (2026-10-13).** O plano
+  esperava a identidade da empresa (cores, logo, fonte) como decisão
+  externa. Ela chegou e não combina com o app; Matthew tem liberdade para
+  decidir. Decisão: a plataforma ganha nome e identidade **próprios**,
+  **Dusk & Dawn**, pensados para os módulos que virão depois das NCs
+  (cada um com um nome que diz o que faz, como "Dusk & Dawn · Qualidade";
+  o código continua `qualityhub`). Duas faces, divididas **por pessoa e
+  não por módulo** (o módulo de NC tem as duas): **Dawn**, a do
+  colaborador, e **Dusk**, a da gestão, com um login só. A autoria de
+  Matthew fica numa tela "Sobre", não na marca. A empresa aparece só como
+  **assinatura**: o logo dela monocromático no login, no
+  rodapé do menu, no e-mail de convite e nos relatórios exportados.
+  Custo baixo: o `ui-ux.md` já define as cores por função, e só os
+  valores mudam. Limite de 4 sessões curtas, para a identidade não virar
+  poço sem fundo. Detalhe em `ui-ux.md` §1 e no plano (B1).
+
 ### Fase A7 — travas entre linhas (branch `fase/a7-travas-entre-linhas`, PR #10)
 
 - **Travar antes de ler (2026-10-09, B29–B36).** A trava do B19 (o
