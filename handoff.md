@@ -206,11 +206,11 @@ dependência nem chave nova no `.env`**: no PC, só `git pull` (e o
 1. ~~`/comecar-fase` da B1~~ (PR #12, rascunho) e ~~a sessão 1, a
    direção~~ (2026-10-13): o **`docs/marca.md`** (brand brief) é a base
    de tudo daqui em diante.
-2. **As sessões 2 a 4**, com Claude conduzindo e Matthew decidindo: paleta (neutros, um destaque, as cores de
-   estado com contraste conferido), fonte, logo (o `brandkit` para
-   explorar) e a assinatura da empresa. Pensar na **plataforma**: o logo
-   não pode ser "de NC", e a dualidade Dawn/Dusk é o ponto de partida
-   (tons de amanhecer e de anoitecer).
+2. ~~Sessão 2, a paleta~~ (2026-10-13: `docs/marca.md`, a página
+   `docs/identidade/paleta.html` e o Figma "Dusk & Dawn — Identidade",
+   time Work, com a coleção "Tema" em quatro modos). **As sessões 3 e 4**, com Claude conduzindo e Matthew decidindo: a fonte,
+   o logo (o `brandkit` para explorar; o "sol" no horizonte é o ponto de
+   partida) e a assinatura da empresa. O logo não pode ser "de NC".
 3. Depois, a B2 (wireframes no Figma, pelo conector) e a B3 (fundações e
    o `DESIGN.md`).
 4. **Passeio guiado, em três sessões curtas (20–30 min) durante o B**

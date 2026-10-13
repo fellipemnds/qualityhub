@@ -35,6 +35,16 @@ documento de arquitetura.
   microinterações sutis), **Dawn azulada e Dusk quente**, e **claro e
   escuro nas duas faces**, o que revê a decisão "só claro no MVP" do
   `ui-ux.md` §1.
+- **A paleta: a face é a cor da luz (2026-10-13, sessão 2).** A primeira
+  versão tingia as superfícies com a cor da face; Matthew não gostou do
+  modo escuro "inteiro colorido" e trouxe referências (Linear, um app de
+  finanças escuro, Q2 Planning, Flowio). A paleta passou a ter superfícies
+  **neutras**, a face só como **luz** (o brilho no topo, a borda da
+  seleção, o link, o foco) e a cor forte como **informação** (o ícone do
+  estado ao lado do rótulo); o botão principal continua quase preto. Os
+  valores e o que evitar (halo colorido, gradiente atrás de texto, orbe de
+  enfeite) estão no `docs/marca.md`; no Figma, a coleção "Tema" com quatro
+  modos.
 
 ### Fase A7 — travas entre linhas (branch `fase/a7-travas-entre-linhas`, PR #10)
 
