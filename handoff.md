@@ -203,10 +203,10 @@ dependência nem chave nova no `.env`**: no PC, só `git pull` (e o
 
 ## 6. Próximo passo
 
-1. **`/comecar-fase` da B1** (o PR nasce em rascunho).
-2. **A identidade, em até 4 sessões curtas**, com Claude conduzindo e
-   Matthew decidindo: direção (palavras e referências, pela entrevista do
-   `grilling`/`interview-me`), paleta (neutros, um destaque, as cores de
+1. ~~`/comecar-fase` da B1~~ (PR #12, rascunho) e ~~a sessão 1, a
+   direção~~ (2026-10-13): o **`docs/marca.md`** (brand brief) é a base
+   de tudo daqui em diante.
+2. **As sessões 2 a 4**, com Claude conduzindo e Matthew decidindo: paleta (neutros, um destaque, as cores de
    estado com contraste conferido), fonte, logo (o `brandkit` para
    explorar) e a assinatura da empresa. Pensar na **plataforma**: o logo
    não pode ser "de NC", e a dualidade Dawn/Dusk é o ponto de partida

@@ -26,6 +26,15 @@ documento de arquitetura.
   Custo baixo: o `ui-ux.md` já define as cores por função, e só os
   valores mudam. Limite de 4 sessões curtas, para a identidade não virar
   poço sem fundo. Detalhe em `ui-ux.md` §1 e no plano (B1).
+- **A direção e o brand brief (2026-10-13, sessão 1).** A entrevista
+  (`interview-me`) e o livro *Designing Brand Identity* deram o
+  `docs/marca.md`: o propósito (sair das planilhas e e-mails, à altura de
+  uma empresa de tecnologia), a personalidade (calma, precisa, confiável,
+  humana, luminosa; "simples" virou regra de design), a base visual na linha do Linear com personalidade em
+  pontos pequenos (cor suave, avatares no estilo Blobatar,
+  microinterações sutis), **Dawn azulada e Dusk quente**, e **claro e
+  escuro nas duas faces**, o que revê a decisão "só claro no MVP" do
+  `ui-ux.md` §1.
 
 ### Fase A7 — travas entre linhas (branch `fase/a7-travas-entre-linhas`, PR #10)
 
