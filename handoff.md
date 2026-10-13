@@ -5,7 +5,7 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-13, tarde (no **trabalho**). **Bloco A fechado** (PR #11, merge `df05b71`) e a **fase B1 aberta** (branch `fase/b1-identidade-visual`): a identidade da empresa chegou e não combina com o app, então a plataforma ganha nome e identidade próprios, **Dusk & Dawn**, com as faces **Dawn** (colaborador) e **Dusk** (gestão), divididas por pessoa, e a assinatura da empresa (`ui-ux.md` §1). A branch remota `docs/fechamento-bloco-a` ainda existe (apagar só com o pedido de Matthew). Antes, de manhã: **Bloco A fechado nos documentos** (portão "fundação pronta"; o passeio guiado vai em três sessões curtas durante o Bloco B, como condição para o C0, porque em casa Matthew chega cansado) e as skills revistas (`/retomar` com branch já mesclada; colinha do Bloco B). O PR da `docs/fechamento-bloco-a` espera: Matthew quer ver outras skills antes. Antes, no mesmo dia, a chegada (`/retomar`). Este PC estava parado no `fase/a6` de 2026-10-09: `main` atualizada, branch `docs/fechamento-bloco-a` criada daqui e a `fase/a6` local apagada (mesclada). Em 2026-10-10 entrou a **primeira foto de casa** (`casa.txt`, commit `de11205`), sem `/trocar-pc` (este handoff não foi atualizado lá). Sem dependência, migration nem chave nova desde 2026-10-09. A foto daqui só mudou a extensão do Claude Code (2.1.296). Comparando com casa: lá o `gh` é o do apt (2.46.0, escopos ok), o Prettier ainda está no WSL e a foto acusa `claude code: não instalado` (provavelmente o `PATH`, §5). Antes, 2026-10-09, noite (**sessão na nuvem**, Matthew pelo iPad; a primeira, `SETUP.md` §13). **A6 fechada** (PR #9, merge `e441212`) e **A7 fechada** (PR #10, merge `aae403f`). Branch nova, `docs/fechamento-bloco-a`, para fechar o bloco A depois do passeio guiado. Antes, 2026-10-09, fim do dia (no **trabalho**, `/trocar-pc`): o script do primeiro acesso e o item 6. O PC de casa continua sem foto (`casa.txt`).
+**Última atualização:** 2026-10-13, fim do dia (no **trabalho**, `/trocar-pc`). **B1 em andamento** (PR #12, rascunho): sessão 1 (direção, `docs/marca.md`), sessão 2 (paleta: superfícies neutras, a face como luz) e metade da 3 (fonte: **Figtree**) feitas; o **logo** está nos primeiros conceitos, no Figma, e Matthew vai pensar em casa. Também hoje: as skills avulsas duplicadas apagadas deste PC (40), o Ponytail em `lite` e a regra de formato das respostas no `CLAUDE.md`. Antes, 2026-10-13, tarde (no **trabalho**). **Bloco A fechado** (PR #11, merge `df05b71`) e a **fase B1 aberta** (branch `fase/b1-identidade-visual`): a identidade da empresa chegou e não combina com o app, então a plataforma ganha nome e identidade próprios, **Dusk & Dawn**, com as faces **Dawn** (colaborador) e **Dusk** (gestão), divididas por pessoa, e a assinatura da empresa (`ui-ux.md` §1). A branch remota `docs/fechamento-bloco-a` ainda existe (apagar só com o pedido de Matthew). Antes, de manhã: **Bloco A fechado nos documentos** (portão "fundação pronta"; o passeio guiado vai em três sessões curtas durante o Bloco B, como condição para o C0, porque em casa Matthew chega cansado) e as skills revistas (`/retomar` com branch já mesclada; colinha do Bloco B). O PR da `docs/fechamento-bloco-a` espera: Matthew quer ver outras skills antes. Antes, no mesmo dia, a chegada (`/retomar`). Este PC estava parado no `fase/a6` de 2026-10-09: `main` atualizada, branch `docs/fechamento-bloco-a` criada daqui e a `fase/a6` local apagada (mesclada). Em 2026-10-10 entrou a **primeira foto de casa** (`casa.txt`, commit `de11205`), sem `/trocar-pc` (este handoff não foi atualizado lá). Sem dependência, migration nem chave nova desde 2026-10-09. A foto daqui só mudou a extensão do Claude Code (2.1.296). Comparando com casa: lá o `gh` é o do apt (2.46.0, escopos ok), o Prettier ainda está no WSL e a foto acusa `claude code: não instalado` (provavelmente o `PATH`, §5). Antes, 2026-10-09, noite (**sessão na nuvem**, Matthew pelo iPad; a primeira, `SETUP.md` §13). **A6 fechada** (PR #9, merge `e441212`) e **A7 fechada** (PR #10, merge `aae403f`). Branch nova, `docs/fechamento-bloco-a`, para fechar o bloco A depois do passeio guiado. Antes, 2026-10-09, fim do dia (no **trabalho**, `/trocar-pc`): o script do primeiro acesso e o item 6. O PC de casa continua sem foto (`casa.txt`).
 
 ## 1. Objetivo
 
@@ -89,12 +89,14 @@ Nenhum.
 
 ## 4. O que foi alterado nesta sessão
 
-Na nuvem (2026-10-09, noite): na **A6** (`git log e29265d..ca93de8`), o
-B28, a `SETUP.md` §13 (a sessão na nuvem), o registro do B29–B36, da
-RN-51 e da fase A7, e o PR #9 fora do rascunho. Na **A7** (a branch
-nova): os consertos do B29–B36 e os documentos. **Sem migration,
-dependência nem chave nova no `.env`**: no PC, só `git pull` (e o
-`npm run preparar` de sempre).
+Em 2026-10-13 (no trabalho): o bloco A fechado (PR #11) e a B1 aberta
+(PR #12), com o `docs/marca.md` (brand brief, paleta, fonte, o que
+evitar), o `docs/identidade/paleta.html` e os registros no `ui-ux.md`
+(identidade, tema claro e escuro, a fonte U3), no plano e no changelog
+("Fase B1"). Fora do Git: o arquivo do Figma **"Dusk & Dawn —
+Identidade"** (time Work; https://www.figma.com/design/t0wty21KOea7v0juDLcxGG),
+com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
+"Logo". **Sem migration, dependência nem chave nova no `.env`.**
 
 ## 5. Falhas (e o porquê)
 
@@ -208,9 +210,20 @@ dependência nem chave nova no `.env`**: no PC, só `git pull` (e o
    de tudo daqui em diante.
 2. ~~Sessão 2, a paleta~~ (2026-10-13: `docs/marca.md`, a página
    `docs/identidade/paleta.html` e o Figma "Dusk & Dawn — Identidade",
-   time Work, com a coleção "Tema" em quatro modos). **As sessões 3 e 4**, com Claude conduzindo e Matthew decidindo: a fonte,
-   o logo (o `brandkit` para explorar; o "sol" no horizonte é o ponto de
-   partida) e a assinatura da empresa. O logo não pode ser "de NC".
+   time Work, com a coleção "Tema" em quatro modos). ~~Sessão 3, a
+   fonte~~: **Figtree** (`docs/marca.md`, `ui-ux.md` §3.2).
+   **Começar por aqui: o logo** (sessão 3, segunda metade). Três
+   conceitos na página "Logo" do Figma, a partir do "sol no horizonte":
+   **A · Horizonte** (o sol sobre a linha; hoje parece um chapéu: sol
+   mais alto, linha mais curta), **B · Dois D** (o círculo partido pelo
+   horizonte, cada face acende a sua metade; o mais próprio e o melhor em
+   16 px, mas na versão de uma cor lembra a placa de "proibido entrar":
+   faixa mais fina, metades deslocadas ou a de baixo em contorno) e
+   **C · Reflexo** (o sol e três faixas na água; o "pôr do sol retrô"
+   batido, e as faixas se fundem em 16 px). Claude recomenda refinar o B;
+   **Matthew vai pensar em casa** e decide. Depois, a **sessão 4**: a
+   assinatura da empresa (o logo dela monocromático) e o fechamento da B1
+   (`/abrir-pr`).
 3. Depois, a B2 (wireframes no Figma, pelo conector) e a B3 (fundações e
    o `DESIGN.md`).
 4. **Passeio guiado, em três sessões curtas (20–30 min) durante o B**
@@ -234,7 +247,7 @@ ainda barato de mudar). Sugestões antigas sem prazo: o `logout` sem
 no `buscarPorEmail` sobrou; o `gitleaks detect` vira `gitleaks git` nas
 versões novas.
 
-**Chegando em casa:** rodar o **`/retomar`**. **Desde 2026-10-13: criar o `~/.config/ponytail/config.json` com `{ "defaultMode": "lite" }`** (o Ponytail vem em `full` sem ele; regra no `CLAUDE.md`). Desde 2026-10-09: **chave nova no `.env`, a `URL_DO_SISTEMA`** (copiar a linha do `.env.example`; sem ela, o `npm run ambiente` acusa a falta) e o `fast-jwt` 6.3.4 (o `npm run preparar` resolve). A A5 trouxe **duas dependências** (`@fastify/swagger`, declarado, e `@fastify/swagger-ui`, de desenvolvimento): o `npm run preparar` resolve. Sem migration nem chave nova no `.env`. Desde a última vez que a
+**Chegando em casa:** rodar o **`/retomar`**, e **`git switch fase/b1-identidade-visual`** (a branch nova; a `docs/fechamento-bloco-a` já foi mesclada). Se o `npx skills` também instalou cópias das skills do agent-skills e do taste-skill em casa, dá para apagá-las como foi feito aqui (os plugins já trazem as mesmas). **Desde 2026-10-13: criar o `~/.config/ponytail/config.json` com `{ "defaultMode": "lite" }`** (o Ponytail vem em `full` sem ele; regra no `CLAUDE.md`). Desde 2026-10-09: **chave nova no `.env`, a `URL_DO_SISTEMA`** (copiar a linha do `.env.example`; sem ela, o `npm run ambiente` acusa a falta) e o `fast-jwt` 6.3.4 (o `npm run preparar` resolve). A A5 trouxe **duas dependências** (`@fastify/swagger`, declarado, e `@fastify/swagger-ui`, de desenvolvimento): o `npm run preparar` resolve. Sem migration nem chave nova no `.env`. Desde a última vez que a
 branch foi usada em casa (antes da A3): as migrations da A3 e a **M1**
 (`sessao_e_preferencia_do_usuario`), e **dependências novas** (cookie,
 rate-limit, helmet, cobertura, Vitest 5.0.3). O `npm run preparar`
