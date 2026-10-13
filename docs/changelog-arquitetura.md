@@ -9,7 +9,7 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
-### Fase A7 — travas entre linhas (branch `fase/a7-travas-entre-linhas`, em andamento)
+### Fase A7 — travas entre linhas (branch `fase/a7-travas-entre-linhas`, PR #10)
 
 - **Travar antes de ler (2026-10-09, B29–B36).** A trava do B19 (o
   `UPDATE` condicionado ao estado lido) protege a linha do próprio item,

@@ -5,19 +5,19 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-09, noite (**sessão na nuvem**, Matthew pelo iPad; a primeira, `SETUP.md` §13). **A6 fechada** (PR #9, merge `e441212`; a `main` já entrou na branch da A7 por merge). **A7 aberta e feita** na branch `fase/a7-travas-entre-linhas` (B29–B36 corrigidos), **esperando a revisão dos diffs por Matthew**. Antes, 2026-10-09, fim do dia (no **trabalho**, `/trocar-pc`): o script do primeiro acesso e o item 6. O PC de casa continua sem foto (`casa.txt`).
+**Última atualização:** 2026-10-13 (no **trabalho**). **Bloco A fechado nos documentos** (portão "fundação pronta"; o passeio guiado vai em três sessões curtas durante o Bloco B, como condição para o C0, porque em casa Matthew chega cansado) e as skills revistas (`/retomar` com branch já mesclada; colinha do Bloco B). O PR da `docs/fechamento-bloco-a` espera: Matthew quer ver outras skills antes. Antes, no mesmo dia, a chegada (`/retomar`). Este PC estava parado no `fase/a6` de 2026-10-09: `main` atualizada, branch `docs/fechamento-bloco-a` criada daqui e a `fase/a6` local apagada (mesclada). Em 2026-10-10 entrou a **primeira foto de casa** (`casa.txt`, commit `de11205`), sem `/trocar-pc` (este handoff não foi atualizado lá). Sem dependência, migration nem chave nova desde 2026-10-09. A foto daqui só mudou a extensão do Claude Code (2.1.296). Comparando com casa: lá o `gh` é o do apt (2.46.0, escopos ok), o Prettier ainda está no WSL e a foto acusa `claude code: não instalado` (provavelmente o `PATH`, §5). Antes, 2026-10-09, noite (**sessão na nuvem**, Matthew pelo iPad; a primeira, `SETUP.md` §13). **A6 fechada** (PR #9, merge `e441212`) e **A7 fechada** (PR #10, merge `aae403f`). Branch nova, `docs/fechamento-bloco-a`, para fechar o bloco A depois do passeio guiado. Antes, 2026-10-09, fim do dia (no **trabalho**, `/trocar-pc`): o script do primeiro acesso e o item 6. O PC de casa continua sem foto (`casa.txt`).
 
 ## 1. Objetivo
 
-Fase **A7 — Travas entre linhas** (`docs/plano-implementacao.md`), na
-branch `fase/a7-travas-entre-linhas` (PR #10, em rascunho; a `main` com
-a A6 já mesclada entrou nela por merge). Depois da A7, o portão
-"fundação pronta".
+**Ir para o Bloco B (design).** O bloco A está fechado nos documentos,
+na branch `docs/fechamento-bloco-a` (só documentos); falta o PR dela e o
+merge de Matthew. O **passeio guiado** vai em sessões curtas durante o B,
+aqui no trabalho, e é condição para o C0.
 
 ## 2. Estado atual
 
-- **A7 (2026-10-09, na nuvem; Claude escreveu, Matthew revisa os
-  diffs):** B29–B36 corrigidos por **travar antes de ler** (o
+- **A7 (2026-10-09, na nuvem; Claude escreveu, Matthew revisou os
+  diffs pelo iPad; PR #10):** B29–B36 corrigidos por **travar antes de ler** (o
   `registroRepository.travar`, as travas da pessoa e do setor e a trava
   única da saída de ADMIN), sempre `FOR NO KEY UPDATE`; filho novo só
   com a NC aberta, nem em rascunho (RN-51, decisão de Matthew, que revê a
@@ -164,6 +164,11 @@ dependência nem chave nova no `.env`**: no PC, só `git pull` (e o
   `Temporal.Now.plainDateISO("America/Sao_Paulo").toString()` (os testes
   da função provam a troca). O Node 24 tem segurança até 30/04/2028.
 - Na D1: excluir `**/*.test.ts` e `src/testes/` do build.
+- **Auditoria do Ponytail** (2026-10-13): o código morto vai no começo do
+  C0 e o `dotenv` na D1 (os dois anotados no plano). Ficaram de fora,
+  anotados aqui: o portão `EXECUCAO` sem uso (tirar valor de enum no
+  Postgres pede recriar o tipo; fazer junto de outra migration no enum) e
+  o `export` dos `*BaseSchema` usados só no próprio arquivo (opcional).
 - **Suíte em ~140–160 s.** Medir antes de otimizar; um banco por worker
   é a opção de maior ganho. **Não** montar cenário direto no banco.
   Os testes de função pura também sobem o Postgres (~15 s): um "projeto"
@@ -196,26 +201,24 @@ dependência nem chave nova no `.env`**: no PC, só `git pull` (e o
 
 ## 6. Próximo passo
 
-1. **Matthew: merge do PR #10 (A7)**, com a mensagem entregue na
-   conversa. Depois, o `/fechar-fase` da A7, que é a **última fase do
-   bloco A**: inclui o passo 5, rever as skills no fim do bloco.
-2. **O portão "fundação pronta"** (plano, fim da seção 3):
-   - ~~OpenAPI completo, gerando sem erro~~ **conferido em 2026-10-09**
-     (Redocly sem erro; o B37 corrigido no caminho);
-   - nenhum bug aberto: ok (B1–B37);
-   - A0–A7 concluídas, com o CI verde na `main`: falta o merge da A7;
-   - e o que ficou adiado dos "pronto quando": **Matthew explicar a A4
-     (o B19 e o `SameSite=Strict`), a A6 e a A7 (a trava entre
-     linhas)**, no **passeio guiado** (em casa, com o
-     `/understand-anything:understand` antes; roteiro no passo 3 abaixo).
-3. Roteiro do passeio: uma requisição de ponta a ponta (rota →
-   controller → service → `cicloVidaService` →
+1. **Matthew olha outras skills** que podem ajudar no Bloco B (pedido
+   dele, 2026-10-13), antes do PR.
+2. **PR da `docs/fechamento-bloco-a`** (`/abrir-pr`), merge de Matthew e
+   `/fechar-fase` (o passo 5, rever as skills, já foi feito).
+3. **`/comecar-fase` do Bloco B.** A B1 (identidade visual) depende da
+   empresa; a B2 (wireframes no Figma, pelo conector) não depende, e dá
+   para começar por ela.
+4. **Passeio guiado, em três sessões curtas (20–30 min) durante o B**
+   (plano, portão "fundação pronta"; condição para o C0): A4 (o B19 e o
+   `SameSite=Strict`), A6 (a RN-43 e o convite) e A7 (a trava entre
+   linhas, um teste do `pausarNoMeio` linha a linha). Matthew diz o que
+   cada parte faz antes de Claude explicar. Roteiro da A4: uma requisição
+   de ponta a ponta (rota → controller → service → `cicloVidaService` →
    `buscarRegistroDoTipoOuFalhar` → `aplicarTransicao` →
-   `registroRepository.atualizar` → banco → auditoria → resposta), com
-   Matthew dizendo o que cada parte faz antes de Claude explicar; e, para
-   a A7, um teste com o `pausarNoMeio` lido linha a linha.
-4. Depois do portão: o Bloco B (design) e a C0 (com o `operationId`
-   antes do Orval, plano C0).
+   `registroRepository.atualizar` → banco → auditoria → resposta). O
+   `/understand-anything:understand` antes é opcional (colinha §6).
+5. Depois do B e do passeio: a C0 (com o `operationId` antes do Orval,
+   plano C0).
 
 Da revisão de design das APIs (2026-10-07), anotados para a C1/C2:
 **R7**, o erro sem código para máquina (os 409 diferentes só se
@@ -226,7 +229,7 @@ ainda barato de mudar). Sugestões antigas sem prazo: o `logout` sem
 no `buscarPorEmail` sobrou; o `gitleaks detect` vira `gitleaks git` nas
 versões novas.
 
-**Chegando em casa:** rodar o **`/retomar`**. Desde 2026-10-09: **chave nova no `.env`, a `URL_DO_SISTEMA`** (copiar a linha do `.env.example`; sem ela, o `npm run ambiente` acusa a falta) e o `fast-jwt` 6.3.4 (o `npm run preparar` resolve). A A5 trouxe **duas dependências** (`@fastify/swagger`, declarado, e `@fastify/swagger-ui`, de desenvolvimento): o `npm run preparar` resolve. Sem migration nem chave nova no `.env`. Desde a última vez que a
+**Chegando em casa:** rodar o **`/retomar`**. **Desde 2026-10-13: criar o `~/.config/ponytail/config.json` com `{ "defaultMode": "lite" }`** (o Ponytail vem em `full` sem ele; regra no `CLAUDE.md`). Desde 2026-10-09: **chave nova no `.env`, a `URL_DO_SISTEMA`** (copiar a linha do `.env.example`; sem ela, o `npm run ambiente` acusa a falta) e o `fast-jwt` 6.3.4 (o `npm run preparar` resolve). A A5 trouxe **duas dependências** (`@fastify/swagger`, declarado, e `@fastify/swagger-ui`, de desenvolvimento): o `npm run preparar` resolve. Sem migration nem chave nova no `.env`. Desde a última vez que a
 branch foi usada em casa (antes da A3): as migrations da A3 e a **M1**
 (`sessao_e_preferencia_do_usuario`), e **dependências novas** (cookie,
 rate-limit, helmet, cobertura, Vitest 5.0.3). O `npm run preparar`
@@ -234,7 +237,7 @@ resolve as duas coisas. Os passos (`SETUP.md` §12.1 se o PC estiver
 parado há tempo):
 
 1. Docker Desktop aberto ("Engine running"), Ubuntu, pasta do projeto.
-2. `git fetch`, `git switch fase/a7-travas-entre-linhas`, `git pull`.
+2. `git fetch`, `git switch docs/fechamento-bloco-a`, `git pull`.
 3. **`npm run preparar`**: obrigatório. Se a migration do
    `investigacaoId` falhar (o banco de casa tem ações sem investigação),
    recriar o banco: `SETUP.md` §12, passos 6 e 7.

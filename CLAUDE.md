@@ -66,8 +66,10 @@ RN-43), em 2026-10-09, achado na revisão da fase (fase fechada em
 B30–B36 (sete regras que conferem outras linhas quebravam com duas
 requisições ao mesmo tempo), em 2026-10-09, achados na revisão de
 concorrência da A6, e o B37 (o OpenAPI tinha `$ref` sem destino no
-`conteudo` da investigação), no mesmo dia, ao conferir o portão.
-**Nenhum bug aberto.**
+`conteudo` da investigação), no mesmo dia, ao conferir o portão (fase
+fechada em 2026-10-09, PR #10). **Nenhum bug aberto.** O bloco A fechou
+em 2026-10-13 (portão "fundação pronta"); o passeio guiado (Matthew explicar a
+A4, a A6 e a A7) vai em sessões curtas durante o Bloco B e é condição para o C0.
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
@@ -131,6 +133,17 @@ A partir do plano de implementação:
   dá depois do commit (regra em "Ambiente").
 - Commit de formatação automática sempre **separado** das mudanças de
   código, para o diff de lógica ficar legível.
+
+**Ponytail** (plugin, nível `lite`, `~/.config/ponytail/config.json` nos
+dois PCs, desde 2026-10-13): o que vier dele vai rotulado **🐴 Ponytail**
+na mensagem, separado do raciocínio do projeto. O `CONSTRAINTS.md` e as
+decisões do plano valem mais que ele.
+
+**Formato das respostas** (desde 2026-10-13, inspirado na skill
+`i-have-adhd`; Matthew chega cansado em casa): a próxima ação primeiro;
+passos numerados; uma linha de estado ("onde estamos") quando a tarefa
+tem várias etapas; listas de até 5 itens; terminar com **um** próximo
+passo. O "por quê" de um conceito novo nunca é cortado.
 
 ## Stack
 
