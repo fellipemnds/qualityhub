@@ -17,7 +17,7 @@ do `CLAUDE.md` (carregado sozinho) e do código, lido quando o item começar.
 
 ## 2. Máquina e Git
 
-- Máquina pelo `hostname` (como no `/trocar-pc`).
+- Máquina pelo `hostname` (como no `/encerrar`).
 - `git fetch`, `git status -sb`. A branch atual é a do handoff? A remota está à frente?
   Diga, e sugira o `git pull`.
 - **A branch já foi mesclada** (o PR dela está `MERGED`, ou a remota sumiu no `git fetch --prune`):
@@ -26,7 +26,7 @@ do `CLAUDE.md` (carregado sozinho) e do código, lido quando o item começar.
   e leia o `handoff.md` **dela** (`git show origin/<branch>:handoff.md`). Com o tree limpo:
   atualize a `main`, troque para ela e apague a local mesclada (`git branch -d`, nunca `-D`).
 - **O handoff está em dia?** `git log --since="<data da Última atualização>" --oneline`: commits
-  depois dela (o PC desligou antes do `/trocar-pc`, por exemplo) querem dizer que o handoff
+  depois dela (o PC desligou antes do `/encerrar`, por exemplo) querem dizer que o handoff
   descreve um estado velho. Diga quais, e confie no `git log` onde os dois divergirem.
 - **O PR da branch:** `gh pr view --json number,isDraft,body` e `gh pr checks`. CI vermelho
   vai para os alertas; descrição que não fala do que os commits fizeram, também (o

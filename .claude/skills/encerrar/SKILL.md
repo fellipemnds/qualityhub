@@ -1,9 +1,9 @@
 ---
-name: trocar-pc
-description: Rotina de saída quando Matthew vai trocar de computador (trabalho ↔ casa) — verificações, foto do ambiente, handoff e commit proposto. Use quando ele disser "vou trocar de computador" ou chamar /trocar-pc.
+name: encerrar
+description: Rotina de fim de sessão — verificações, foto do ambiente, handoff e commit proposto; quando Matthew vai trocar de computador (trabalho ↔ casa), também o que o outro PC vai precisar. Use quando ele disser "vou encerrar", "fim do dia", "vou parar por hoje", "vou trocar de computador", ou chamar /encerrar.
 ---
 
-# Trocar de computador (saída)
+# Encerrar (fim de sessão ou troca de computador)
 
 Nunca dê merge: é de Matthew. Peça antes de cada commit; o push, Claude dá (`CLAUDE.md`,
 "Ambiente").
@@ -38,7 +38,7 @@ o diff-cover da `/verificar` §4 antes do push.
 ## 5. Handoff
 
 Atualize o `handoff.md`, com as mesmas 6 seções, apontando para os documentos em vez de repetir.
-Em "Chegando no outro PC", diga o que ele vai precisar:
+Se Matthew vai **trocar de computador**, diga em "Chegando no outro PC" o que ele vai precisar (sem troca, pule esta lista):
 
 - migrations novas desde a última foto do outro PC
   (`git log --format=%h -1 -- docs/ambiente/<outro>.txt`, depois

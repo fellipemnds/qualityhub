@@ -650,7 +650,7 @@ Com o ambiente pronto, vale tudo do §4 do `CONSTRAINTS.md` e da `/verificar`, i
 
 ### No fim da sessão e na volta ao PC
 
-- No fim: o `handoff.md` atualizado (como no `/trocar-pc`, sem a foto do ambiente: a nuvem não é um PC e não entra no `docs/ambiente/`), commit e push.
+- No fim: o `handoff.md` atualizado (como no `/encerrar`, sem a foto do ambiente: a nuvem não é um PC e não entra no `docs/ambiente/`), commit e push.
 - No PC: o `/retomar` de sempre (`git pull` e `npm run preparar`).
 
 ### E o VS Code no navegador?

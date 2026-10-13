@@ -28,7 +28,7 @@ mostrada antes) e `code-review-and-quality` (por fatia, acima de ~400 linhas); v
 entrada ou CI) e `documentation-and-adrs` no diff da fase, confere o "pronto quando" (§1.1),
 tira o PR do rascunho e entrega a mensagem do merge. Você faz o merge → `/fechar-fase`.
 
-**Saída:** `/trocar-pc`.
+**Saída** (fim do dia ou troca de PC): `/encerrar`.
 
 ## 2. Por fase do nosso plano
 
@@ -122,7 +122,7 @@ O plugin também traz quatro agentes (`code-reviewer`, `security-auditor`, `test
 | Skill | Quando |
 |---|---|
 | `/retomar` | Chegou no PC (início do dia, ou depois de trocar de máquina) |
-| `/trocar-pc` | Vai sair deste PC |
+| `/encerrar` | Vai parar por hoje ou sair deste PC |
 | `/abrir-pr` | Abrir ou atualizar o PR, acompanhar o CI e, no fim da fase, as revisões e a mensagem do merge |
 | `/comecar-fase` | Começo de fase: ler a fase, as skills de cada entrega, PR em rascunho |
 | `/fechar-fase` | Depois do merge: voltar para a `main`, abrir a próxima branch e, no fim de cada bloco (A, B, C, D), rever as skills |
