@@ -164,6 +164,11 @@ dependência nem chave nova no `.env`**: no PC, só `git pull` (e o
   `Temporal.Now.plainDateISO("America/Sao_Paulo").toString()` (os testes
   da função provam a troca). O Node 24 tem segurança até 30/04/2028.
 - Na D1: excluir `**/*.test.ts` e `src/testes/` do build.
+- **Auditoria do Ponytail** (2026-10-13): o código morto vai no começo do
+  C0 e o `dotenv` na D1 (os dois anotados no plano). Ficaram de fora,
+  anotados aqui: o portão `EXECUCAO` sem uso (tirar valor de enum no
+  Postgres pede recriar o tipo; fazer junto de outra migration no enum) e
+  o `export` dos `*BaseSchema` usados só no próprio arquivo (opcional).
 - **Suíte em ~140–160 s.** Medir antes de otimizar; um banco por worker
   é a opção de maior ganho. **Não** montar cenário direto no banco.
   Os testes de função pura também sobem o Postgres (~15 s): um "projeto"
@@ -224,7 +229,7 @@ ainda barato de mudar). Sugestões antigas sem prazo: o `logout` sem
 no `buscarPorEmail` sobrou; o `gitleaks detect` vira `gitleaks git` nas
 versões novas.
 
-**Chegando em casa:** rodar o **`/retomar`**. Desde 2026-10-09: **chave nova no `.env`, a `URL_DO_SISTEMA`** (copiar a linha do `.env.example`; sem ela, o `npm run ambiente` acusa a falta) e o `fast-jwt` 6.3.4 (o `npm run preparar` resolve). A A5 trouxe **duas dependências** (`@fastify/swagger`, declarado, e `@fastify/swagger-ui`, de desenvolvimento): o `npm run preparar` resolve. Sem migration nem chave nova no `.env`. Desde a última vez que a
+**Chegando em casa:** rodar o **`/retomar`**. **Desde 2026-10-13: criar o `~/.config/ponytail/config.json` com `{ "defaultMode": "lite" }`** (o Ponytail vem em `full` sem ele; regra no `CLAUDE.md`). Desde 2026-10-09: **chave nova no `.env`, a `URL_DO_SISTEMA`** (copiar a linha do `.env.example`; sem ela, o `npm run ambiente` acusa a falta) e o `fast-jwt` 6.3.4 (o `npm run preparar` resolve). A A5 trouxe **duas dependências** (`@fastify/swagger`, declarado, e `@fastify/swagger-ui`, de desenvolvimento): o `npm run preparar` resolve. Sem migration nem chave nova no `.env`. Desde a última vez que a
 branch foi usada em casa (antes da A3): as migrations da A3 e a **M1**
 (`sessao_e_preferencia_do_usuario`), e **dependências novas** (cookie,
 rate-limit, helmet, cobertura, Vitest 5.0.3). O `npm run preparar`

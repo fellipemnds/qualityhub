@@ -134,6 +134,11 @@ A partir do plano de implementação:
 - Commit de formatação automática sempre **separado** das mudanças de
   código, para o diff de lógica ficar legível.
 
+**Ponytail** (plugin, nível `lite`, `~/.config/ponytail/config.json` nos
+dois PCs, desde 2026-10-13): o que vier dele vai rotulado **🐴 Ponytail**
+na mensagem, separado do raciocínio do projeto. O `CONSTRAINTS.md` e as
+decisões do plano valem mais que ele.
+
 ## Stack
 
 Node.js 24, TypeScript 7, Fastify 5 (com `fastify-type-provider-zod`),
