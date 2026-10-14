@@ -1,25 +1,68 @@
-# Marca — Dusk & Dawn
+# Marca — nome em aberto
 
 > O brand brief da plataforma: uma página, para toda decisão visual
 > voltar a ela. Saiu da sessão 1 da fase B1 (2026-10-13), com a estrutura
 > do livro *Designing Brand Identity* (Alina Wheeler; brand brief,
 > p. 146–147). Os valores exatos (cores, fonte, logo) vêm nas próximas
 > sessões e terminam no `DESIGN.md` da B3. Figma: https://www.figma.com/design/t0wty21KOea7v0juDLcxGG
+>
+> **Revisto em 2026-10-14:** a ideia nova (abaixo) saiu da história real do
+> processo; o **Dusk & Dawn** (nome, faces e a luz da paleta) fica
+> **suspenso**, não descartado, até o símbolo e o nome dizerem se volta.
+> As referências visuais estão em `docs/identidade/referencias.md`.
 
 ## Propósito
 
-A Dusk & Dawn leva o trabalho do dia a dia das planilhas e e-mails para
-uma plataforma digital à altura de uma empresa de tecnologia: do começo
-ao fim do dia, nada se perde, cada um sabe o que é seu, e a gestão
-enxerga o todo.
+A plataforma leva o trabalho do dia a dia das planilhas e e-mails para
+uma ferramenta digital à altura de uma empresa de tecnologia: nada se
+perde, cada um sabe o que é seu, e a gestão enxerga o todo.
 
 ## Público
 
 - **Principal:** o pessoal de escritório, no computador.
 - **Também:** quem está no chão de fábrica, pelo celular, registrando na
-  hora. A face Dawn precisa funcionar bem para essa pessoa.
+  hora. A plataforma precisa funcionar bem para essa pessoa.
 
-## A grande ideia: o dia inteiro, em duas luzes
+## A ideia (2026-10-14)
+
+**A origem.** A analista de qualidade pediu ajuda para consertar a
+planilha de não conformidades, que vivia dando erro de cálculo. Ao
+refazê-la, Matthew viu que havia **52 NCs registradas à mão** por ela,
+sozinha: o processo inteiro dependia das mãos de uma pessoa.
+
+**O depois.** A analista cuida só do que é dela; as outras pessoas
+entendem o processo (e a ISO 9001) e resolvem os próprios problemas com
+um método confiável; e a empresa, de tecnologia mas com ferramentas
+primitivas, dá o primeiro passo de digitalização. O centro é o segundo:
+os outros dois são consequência e contexto.
+
+> **O processo sai da mão de uma pessoa e fica claro para todos.**
+
+**O território: Palpável.** O que era invisível para os outros passa a
+existir: dá para ver, tocar e fazer funcionar. Junta as duas famílias de
+sinônimos da palavra:
+
+| Palavra | Origem | Família | O paralelo |
+|---|---|---|---|
+| Tangível | *tangere*, tocar | tocar | dá para pôr a mão |
+| Concreto | *concrescere*, crescer junto | tocar | endurece porque várias partes cresceram juntas: do um para todos |
+| Evidente | *videre*, ver | ver | todos veem |
+| Patente | *patere*, estar aberto | ver | aberto a todos, nada escondido |
+| **Palpável** | *palpare*, tocar de leve | as duas | o que se toca e, por isso, fica claro |
+| **Manifesto** | *manus*, mão (provável; não é consenso) | as duas | "tão óbvio que parece pego com a mão": a história inteira numa palavra |
+
+**Para a forma:** o palpável vem da **massa** (forma cheia, grossa, poucas
+peças, muita tinta, legível em 16 px), não de efeito: nada de 3D falso,
+sombra ou vidro. "Mão" é o caminho óbvio e clichê; a ideia é o peso que
+se distribui, não a mão. Como nome, "Palpável" e "Manifesto" não servem
+(adjetivo com acento; "manifesto" soa político): o nome sai do território
+sem ser a palavra dele.
+
+## Suspenso: o dia inteiro, em duas luzes (Dusk & Dawn)
+
+A direção de 2026-10-13, guardada como estava. Motivo da suspensão: a
+metáfora do dia foi encaixada no produto, não vivida, e cada passo dela
+(o sol, a estrela-d'alva) ficou mais longe de algo real.
 
 Uma plataforma, um login, **duas faces divididas por pessoa** (não por
 módulo: o módulo de NC tem as duas).
@@ -44,7 +87,11 @@ Cada palavra exclui alguma coisa; é isso que a torna útil para decidir.
 | **Precisa** | Cada coisa no lugar | O visual "solto" | Alinhamento, espaçamento constante, números e datas exatos |
 | **Confiável** | O que está na tela é verdade, com rastro | Mostrar o que não é real | O estado na tela é sempre o do banco; quem fez o quê, quando |
 | **Humana** | Quem está ali são pessoas, não números | O "sistema corporativo" frio | Avatares, nomes, textos em linguagem de gente |
-| **Luminosa** | A clareza do amanhecer: o novo jeito de trabalhar | O pesado e o escuro sem motivo | Superfícies arejadas, a luz como tema, inclusive no modo escuro |
+| **Palpável** | O que era invisível passa a existir: dá para ver, tocar e fazer funcionar | O etéreo, o efeito sem substância, o enfeite | Formas cheias e firmes; cada NC com estado, dono e prazo à vista; nada que só uma pessoa saiba |
+
+A **Palpável** entrou no lugar da **Luminosa** em 2026-10-14: a Luminosa
+descartava "o pesado", e a direção nova pede peso. A clareza que ela
+trazia continua, dentro da Palpável ("à vista").
 
 ## Direção visual
 
@@ -58,6 +105,12 @@ Cada palavra exclui alguma coisa; é isso que a torna útil para decidir.
   modos).
 
 ## Paleta (sessão 2)
+
+> **Em parte suspensa (2026-10-14):** a paleta das faces (`--destaque`,
+> `--brilho`, `--luz-*`) e a regra "a face é a cor da luz" nasceram da
+> Luminosa e do Dusk & Dawn, e ficam suspensas até o símbolo pedir a cor
+> dele. Continuam valendo as superfícies neutras, as cores de estado e o
+> contraste conferido.
 
 **A face é a cor da luz, não da tinta.** As superfícies são neutras nas duas
 faces; a face aparece só como luz (o brilho no topo da tela, a borda da
@@ -112,7 +165,8 @@ Dusk · Escuro, e o nome do CSS em cada uma.
 
 **Figtree** (licença OFL), uma só para tudo, servida pelo nosso servidor.
 É a que mais veste *humana* e *luminosa*, e as formas redondas conversam
-com o "sol" da marca. Comparada no Figma (página "Fonte") com a Instrument
+com o "sol" da marca. (Escolhida antes da troca da Luminosa pela
+Palpável: conferir de novo ao lado do símbolo.) Comparada no Figma (página "Fonte") com a Instrument
 Sans, a Atkinson Hyperlegible Next e a Inter, com texto real do sistema.
 
 - **Números:** `font-variant-numeric: tabular-nums` em tabela, código, data
@@ -125,7 +179,7 @@ Sans, a Atkinson Hyperlegible Next e a Inter, com texto real do sistema.
 ## Arquitetura
 
 **Uma marca só** (o "branded house" do livro, p. 18–19): os módulos levam
-o nome da plataforma e uma descrição, como "Dusk & Dawn · Qualidade". O
+o nome da plataforma e uma descrição, como "<nome> · Qualidade". O
 logo não pode ser "de NC": ele precisa servir aos módulos que virão.
 
 A empresa aparece só como **assinatura**, com o logo dela monocromático
