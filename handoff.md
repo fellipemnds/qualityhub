@@ -5,7 +5,7 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-13, fim do dia (no **trabalho**, `/trocar-pc`). **B1 em andamento** (PR #12, rascunho): sessão 1 (direção, `docs/marca.md`), sessão 2 (paleta: superfícies neutras, a face como luz) e metade da 3 (fonte: **Figtree**) feitas; o **logo** está nos primeiros conceitos, no Figma, e Matthew vai pensar em casa. Também hoje: as skills avulsas duplicadas apagadas deste PC (40), o Ponytail em `lite` e a regra de formato das respostas no `CLAUDE.md`. Antes, 2026-10-13, tarde (no **trabalho**). **Bloco A fechado** (PR #11, merge `df05b71`) e a **fase B1 aberta** (branch `fase/b1-identidade-visual`): a identidade da empresa chegou e não combina com o app, então a plataforma ganha nome e identidade próprios, **Dusk & Dawn**, com as faces **Dawn** (colaborador) e **Dusk** (gestão), divididas por pessoa, e a assinatura da empresa (`ui-ux.md` §1). A branch remota `docs/fechamento-bloco-a` ainda existe (apagar só com o pedido de Matthew). Antes, de manhã: **Bloco A fechado nos documentos** (portão "fundação pronta"; o passeio guiado vai em três sessões curtas durante o Bloco B, como condição para o C0, porque em casa Matthew chega cansado) e as skills revistas (`/retomar` com branch já mesclada; colinha do Bloco B). O PR da `docs/fechamento-bloco-a` espera: Matthew quer ver outras skills antes. Antes, no mesmo dia, a chegada (`/retomar`). Este PC estava parado no `fase/a6` de 2026-10-09: `main` atualizada, branch `docs/fechamento-bloco-a` criada daqui e a `fase/a6` local apagada (mesclada). Em 2026-10-10 entrou a **primeira foto de casa** (`casa.txt`, commit `de11205`), sem `/trocar-pc` (este handoff não foi atualizado lá). Sem dependência, migration nem chave nova desde 2026-10-09. A foto daqui só mudou a extensão do Claude Code (2.1.296). Comparando com casa: lá o `gh` é o do apt (2.46.0, escopos ok), o Prettier ainda está no WSL e a foto acusa `claude code: não instalado` (provavelmente o `PATH`, §5). Antes, 2026-10-09, noite (**sessão na nuvem**, Matthew pelo iPad; a primeira, `SETUP.md` §13). **A6 fechada** (PR #9, merge `e441212`) e **A7 fechada** (PR #10, merge `aae403f`). Branch nova, `docs/fechamento-bloco-a`, para fechar o bloco A depois do passeio guiado. Antes, 2026-10-09, fim do dia (no **trabalho**, `/trocar-pc`): o script do primeiro acesso e o item 6. O PC de casa continua sem foto (`casa.txt`).
+**Última atualização:** 2026-10-14, fim do dia (no **trabalho**, `/encerrar`). **O nome da plataforma está em aberto de novo** (§6, item 2): Matthew quer um nome só, em vez de "Dusk & Dawn", e a direção do logo mudou junto. Nada mudou nos documentos ainda. Antes, de manhã, a chegada (`/retomar`): branch em dia com a remota, nenhum commit de casa desde 2026-10-13, plugins completos, CI do PR #12 verde. Antes, 2026-10-13, fim do dia (no **trabalho**, `/trocar-pc`). **B1 em andamento** (PR #12, rascunho): sessão 1 (direção, `docs/marca.md`), sessão 2 (paleta: superfícies neutras, a face como luz) e metade da 3 (fonte: **Figtree**) feitas; o **logo** está nos primeiros conceitos, no Figma, e Matthew vai pensar em casa. Também hoje: as skills avulsas duplicadas apagadas deste PC (40), o Ponytail em `lite` e a regra de formato das respostas no `CLAUDE.md`. Antes, 2026-10-13, tarde (no **trabalho**). **Bloco A fechado** (PR #11, merge `df05b71`) e a **fase B1 aberta** (branch `fase/b1-identidade-visual`): a identidade da empresa chegou e não combina com o app, então a plataforma ganha nome e identidade próprios, **Dusk & Dawn**, com as faces **Dawn** (colaborador) e **Dusk** (gestão), divididas por pessoa, e a assinatura da empresa (`ui-ux.md` §1). A branch remota `docs/fechamento-bloco-a` ainda existe (apagar só com o pedido de Matthew). Antes, de manhã: **Bloco A fechado nos documentos** (portão "fundação pronta"; o passeio guiado vai em três sessões curtas durante o Bloco B, como condição para o C0, porque em casa Matthew chega cansado) e as skills revistas (`/retomar` com branch já mesclada; colinha do Bloco B). O PR da `docs/fechamento-bloco-a` espera: Matthew quer ver outras skills antes. Antes, no mesmo dia, a chegada (`/retomar`). Este PC estava parado no `fase/a6` de 2026-10-09: `main` atualizada, branch `docs/fechamento-bloco-a` criada daqui e a `fase/a6` local apagada (mesclada). Em 2026-10-10 entrou a **primeira foto de casa** (`casa.txt`, commit `de11205`), sem `/trocar-pc` (este handoff não foi atualizado lá). Sem dependência, migration nem chave nova desde 2026-10-09. A foto daqui só mudou a extensão do Claude Code (2.1.296). Comparando com casa: lá o `gh` é o do apt (2.46.0, escopos ok), o Prettier ainda está no WSL e a foto acusa `claude code: não instalado` (provavelmente o `PATH`, §5). Antes, 2026-10-09, noite (**sessão na nuvem**, Matthew pelo iPad; a primeira, `SETUP.md` §13). **A6 fechada** (PR #9, merge `e441212`) e **A7 fechada** (PR #10, merge `aae403f`). Branch nova, `docs/fechamento-bloco-a`, para fechar o bloco A depois do passeio guiado. Antes, 2026-10-09, fim do dia (no **trabalho**, `/trocar-pc`): o script do primeiro acesso e o item 6. O PC de casa continua sem foto (`casa.txt`).
 
 ## 1. Objetivo
 
@@ -88,6 +88,8 @@ e é condição para o C0.
 Nenhum.
 
 ## 4. O que foi alterado nesta sessão
+
+Em 2026-10-14 (no trabalho): só conversa sobre o nome e o logo (§6, item 2) e a foto do trabalho (o Docker Compose foi para a 5.6.0). Nenhum documento de marca mudou.
 
 Em 2026-10-13 (no trabalho): o bloco A fechado (PR #11) e a B1 aberta
 (PR #12), com o `docs/marca.md` (brand brief, paleta, fonte, o que
@@ -212,7 +214,31 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
    `docs/identidade/paleta.html` e o Figma "Dusk & Dawn — Identidade",
    time Work, com a coleção "Tema" em quatro modos). ~~Sessão 3, a
    fonte~~: **Figtree** (`docs/marca.md`, `ui-ux.md` §3.2).
-   **Começar por aqui: o logo** (sessão 3, segunda metade). Três
+   **Começar por aqui: o nome e o logo** (2026-10-14). Matthew quer
+   **um nome só**: o "&" faz parecer dois produtos, e nomes em inglês
+   só fazem sentido para ele. As faces continuam, mas só como cor da
+   paleta, sem nome na tela. Descartados: "Amper" (o "&" escondido,
+   lido como ampère) e "Arrebol" (ele achou feio). Ele gosta do traço
+   **luminosa** (cromatismo, iridescência, prisma). Na conversa, a
+   metáfora da iridescência: **a cor muda com o ângulo de quem olha**,
+   como as faces divididas por pessoa. Candidatos: **Nácar** (Claude
+   recomenda), Íris, Lume, Opala (lembra o carro); "Prisma" fora (é o
+   ORM), "Claro" fora (a operadora). Matthew ia dizer os nomes em voz
+   alta ("abre no ___ e aprova lá") e escolher; depois, a busca no INPI.
+   **O logo:** as referências dele (estúdio softriver.co no Instagram;
+   vídeos em `C:\Users\felli\Downloads`, 1 a 4, e o print do Nodus)
+   têm em comum: inicial em formas sólidas, com a letra no espaço vazio;
+   diagonal; neutro e uma cor; nome curto num grotesco. O "Ontology" é
+   um sol em laranja e marrom. Direção conversada: o **sol sólido
+   partido em duas metades** (o conceito B sem o "D"), as metades
+   separadas ou deslocadas (nem horizontal, nem diagonal inteira, para
+   não virar placa), com o corte no **perfil dos dois montes** de
+   Montes Claros, que é o que o faz dele. O N da Nortetel fica fora (a
+   empresa é só assinatura). Usar das referências o princípio, não a
+   forma (é tendência; o critério da longevidade). Próxima ação de
+   Matthew: esboçar no Figma, página "Logo". Com o nome decidido, Claude
+   atualiza `marca.md`, `ui-ux.md` §1, plano, changelog e `CLAUDE.md`.
+   Os três conceitos de 2026-10-13, para referência: Três
    conceitos na página "Logo" do Figma, a partir do "sol no horizonte":
    **A · Horizonte** (o sol sobre a linha; hoje parece um chapéu: sol
    mais alto, linha mais curta), **B · Dois D** (o círculo partido pelo

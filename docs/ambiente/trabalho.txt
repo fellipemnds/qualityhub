@@ -9,7 +9,7 @@ node: v24.20.0
 npm: 12.0.2
 git: git version 2.53.0
 docker: Docker version 29.8.2, build 7fc2dff
-docker compose: Docker Compose version v5.5.1
+docker compose: Docker Compose version v5.6.0
 gh: gh version 2.101.0 (2026-09-15)
 claude code: 2.1.280 (Claude Code)
 
