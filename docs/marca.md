@@ -1,4 +1,4 @@
-# Marca — nome em aberto
+# Marca — Andon
 
 > O brand brief da plataforma: uma página, para toda decisão visual
 > voltar a ela. Saiu da sessão 1 da fase B1 (2026-10-13), com a estrutura
@@ -57,6 +57,38 @@ sombra ou vidro. "Mão" é o caminho óbvio e clichê; a ideia é o peso que
 se distribui, não a mão. Como nome, "Palpável" e "Manifesto" não servem
 (adjetivo com acento; "manifesto" soa político): o nome sai do território
 sem ser a palavra dele.
+
+## O nome: Andon (2026-10-15)
+
+No Sistema Toyota de Produção, de onde vem a gestão da qualidade moderna,
+o **andon** é o sinal que deixa um problema **à vista de todos** na
+linha: **qualquer** operador puxa a corda, e a equipe vem ajudar. Em
+japonês, "lanterna de papel". É a frase da ideia em uma palavra: o
+problema sai da mão de uma pessoa e fica claro para todos, e qualquer um
+pode agir (o centro do "depois"). Forte no som (duas sílabas, "an-DON",
+uma pronúncia só) e reconhecido por quem é da qualidade.
+
+**Como se chegou nele.** O critério do nome passou a ser "forte" (curto,
+consoante dura, uma pronúncia só, raiz na ideia), sem exigir português.
+Descartados no caminho: Brilliance (a Luminosa de volta e eco do ETQ
+Reliance), Quantum (genérico), Brio (clichê) e as listas em português
+(Lavra, Esteio, Lastro, Aval, Marco...).
+
+**A busca de marca (2026-10-15).** No INPI, "Andon" exato só tem o
+processo **912228504** (Andon Solutions Tecnologia Eletrônica, classe 9,
+painéis e quadros eletrônicos de aviso): deferido em 2018 e **arquivado
+de vez** em 2019, por falta do pagamento da concessão. Por radical, nas
+classes 9 e 42, o mais perto foi **Randon** (a fabricante de implementos
+rodoviários, outro ramo). Na web, "andon" é nome de categoria em
+software de lean (Andonix, o "Andon Management" do Tulip, o eAndon).
+
+**Os riscos aceitos.** (1) A palavra não é exclusiva: outros produtos de
+qualidade a usam. Para o uso interno, não pesa; para vender um dia,
+pediria um nome composto ou o registro nas classes 9 e 42 (o deferimento
+de 2018 indica que o INPI não o tratou como genérico). (2) A Andon
+Solutions pode seguir usando o nome em placas eletrônicas (uso anterior,
+LPI art. 129 §1), outro ramo. (3) Se a empresa tiver um andon de verdade
+no chão de fábrica, "registrar no Andon" pode confundir os dois.
 
 ## Suspenso: o dia inteiro, em duas luzes (Dusk & Dawn)
 
@@ -179,7 +211,7 @@ Sans, a Atkinson Hyperlegible Next e a Inter, com texto real do sistema.
 ## Arquitetura
 
 **Uma marca só** (o "branded house" do livro, p. 18–19): os módulos levam
-o nome da plataforma e uma descrição, como "<nome> · Qualidade". O
+o nome da plataforma e uma descrição, como "Andon · Qualidade". O
 logo não pode ser "de NC": ele precisa servir aos módulos que virão.
 
 A empresa aparece só como **assinatura**, com o logo dela monocromático

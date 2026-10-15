@@ -11,6 +11,19 @@ documento de arquitetura.
 
 ### Fase B1 — identidade visual (branch `fase/b1-identidade-visual`)
 
+- **A ideia, o território e o nome: Andon (2026-10-14 e 15).** As
+  direções de logo da Dusk & Dawn (o sol, a estrela-d'alva) pareciam
+  genéricas a Matthew: a metáfora do dia foi encaixada no produto, não
+  vivida. A marca recomeçou pela história real (a analista registrava
+  sozinha, à mão, 52 NCs numa planilha que quebrava), que deu a ideia
+  *"o processo sai da mão de uma pessoa e fica claro para todos"* e o
+  território **Palpável**, que também substitui a Luminosa na
+  personalidade (ela descartava "o pesado", e a direção pede peso). O
+  nome passa a ser **Andon** (o sinal do Sistema Toyota que deixa o
+  problema à vista de todos; busca no INPI e riscos no `docs/marca.md`).
+  O Dusk & Dawn, com as faces e a luz da paleta, fica **suspenso**, não
+  apagado; a decisão abaixo continua como histórico. Cai o limite de 4
+  sessões. O símbolo vem depois do nome, desenhado por Matthew.
 - **Identidade própria: a plataforma Dusk & Dawn (2026-10-13).** O plano
   esperava a identidade da empresa (cores, logo, fonte) como decisão
   externa. Ela chegou e não combina com o app; Matthew tem liberdade para
