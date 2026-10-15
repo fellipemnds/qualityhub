@@ -590,6 +590,25 @@ for ext in biomejs.biome prisma.prisma usernamehw.errorlens ms-azuretools.vscode
 
 **Versões das ferramentas no trabalho** (2026-09-30), para comparar: Ubuntu 26.04.1 LTS · nvm 0.40.7 · Node 24.20.0 · npm 12.0.2 · Git 2.53.0 · Docker 29.8.0 · Docker Compose 5.5.1 · gh 2.101.0 · Claude Code 2.1.280. O que precisa bater é o **Node 24** (o `npm run preparar` cuida das dependências do projeto); as outras podem estar em versões próximas.
 
+**Claude Code e plugins (no WSL)** — levantados em casa em 2026-10-15. O CLI vem do instalador oficial e mora em `~/.local/bin`, que precisa estar no `PATH` do `~/.bashrc`:
+
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+Os plugins ligados no `.claude/settings.json` do projeto vêm destas marketplaces (cada uma é o repositório do GitHub cujo `.claude-plugin/marketplace.json` tem o nome da esquerda):
+
+| Plugin | Marketplace (GitHub) |
+|---|---|
+| `agent-skills@addy-agent-skills` | `addyosmani/agent-skills` |
+| `taste-skill@taste-skill` | `Leonxlnx/taste-skill` |
+| `understand-anything@understand-anything` | `Egonex-AI/Understand-Anything` |
+| `frontend-slides@frontend-slides` | `zarazhangrui/frontend-slides` |
+| `ponytail@ponytail` | `DietrichGebert/ponytail` |
+| `diagram-design@diagram-design` | `cathrynlavery/diagram-design` |
+
+Para cada linha: `claude plugin marketplace add <marketplace>` e depois `claude plugin install <plugin>`. O Ponytail precisa também do `~/.config/ponytail/config.json` com `{ "defaultMode": "lite" }` (regra no `CLAUDE.md`). O `/retomar` confere se algum faltou.
+
 ### 12.5 Foto do ambiente: comparando os dois PCs
 
 Um script tira uma "foto" do ambiente desta máquina e a guarda no Git, em `docs/ambiente/`: versões do Ubuntu, nvm, Node (e o padrão do nvm), npm, Git, Docker, gh e Claude Code; nome e e-mail do Git; conta e escopos do `gh`; se o `.env` tem todas as chaves do `.env.example` (só os **nomes**, nunca os valores); se o banco está no ar e com as migrations em dia; e as extensões do VS Code nos dois lados (WSL e Windows).
