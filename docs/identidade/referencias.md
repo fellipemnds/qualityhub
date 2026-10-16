@@ -2,9 +2,35 @@
 
 > O moodboard em texto da fase B1: o que cada referência é, o que Matthew
 > gostou e o que tirar dela. As imagens ficam no Figma, página
-> **"Moodboard"** (arquivo "Dusk & Dawn — Identidade"), e **não** neste
+> **"Moodboard"** (arquivo "Andon" no Figma), e **não** neste
 > repositório: são trabalho de outros autores. Daqui se tira o princípio,
 > nunca a forma (`docs/marca.md`, critério da longevidade).
+
+## 2026-10-15/16 · Karave, o R de vidro e os símbolos listrados (casa)
+
+Imagens na página "Logo" do Figma, ao lado dos Frames 7 e 8 de Matthew.
+
+1. **Karave** (Dribbble): um K num quadrado em quadrantes, verde e preto,
+   com uma **estrela de quatro pontas de curvas para dentro** no encontro
+   das peças. Achado depois do A circulado do caderno (cruzamento escuro, de
+   lados retos), e **antes** dos desenhos com estrela: o desenho 3 do
+   caderno quadriculado e o Frame 7 (a estrela que "aconteceu ao
+   arredondar"). **O que evitar:** a estrela curva (a assinatura dele, e o
+   ícone de IA), o quadrado em quadrantes e as duas cores divididas.
+2. **Um R em forma de coração**, de vidro, com gradiente rosa e laranja e
+   *outer glow*. **O que tirar:** só as bordas redondas. O gradiente e o
+   brilho estão no "o que evitar" do `docs/marca.md`.
+3. **Oito símbolos em fichas coloridas:** círculos e quadrados cortados por
+   **listras retas**, com o vazio virando desenho. **O que tirar:** a forma
+   sólida simples cortada por frestas, o mesmo gesto da fenda do Frame 8. A
+   lanterna andon de papel tem costelas horizontais com a luz entre elas:
+   a ponte entre as listras e o nome.
+
+**Os estudos de Matthew** (Figma, página "Logo"): o **Frame 8** (um quadrado
+cortado por uma fenda diagonal reta) é o mais dele até agora; o Frame 7 é o
+mesmo com a estrela. O A cruzado do caderno, passado a limpo pelo Claude
+(um SVG de peças separadas, descartado), lê mais como cavalete que como A,
+e a luz some em 32 px.
 
 ## 2026-10-14 · Jord Riekwel, "Unused Space Symbols" (abril de 2026)
 

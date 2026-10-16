@@ -178,8 +178,9 @@ azul no topo), Q2 Planning e Flowio (a luz ambiente no claro).
 | Vencida | `#D12E2E` | `#FF7B73` |
 
 Contraste conferido em 2026-10-13: texto ≥ 4,5:1 e ícone ≥ 3:1 nas quatro
-combinações (`docs/identidade/paleta.html`, gerada sem script). No Figma
-(arquivo "Dusk & Dawn — Identidade", time Work), as cores são *Variables*
+combinações (a página `docs/identidade/paleta.html`, que mostrava a conferência,
+saiu em 2026-10-16: o visual da marca fica só no Figma). No Figma
+(arquivo "Andon", time Work; antes "Dusk & Dawn — Identidade"), as cores são *Variables*
 na coleção "Tema", com os modos Dawn · Claro, Dawn · Escuro, Dusk · Claro e
 Dusk · Escuro, e o nome do CSS em cada uma.
 
