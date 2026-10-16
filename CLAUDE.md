@@ -35,12 +35,15 @@ meio de uma mudança, o que falhou e o próximo passo. Depois de ler,
 confira a branch (`git status`) e diga a Matthew, em poucas linhas, de
 onde vamos retomar.
 
-**No fim de toda sessão** (ou quando Matthew disser "vou trocar de
-computador"), atualize o `handoff.md` — as mesmas 6 seções, apontando
+**No fim de toda sessão** (skill `/encerrar`, também quando Matthew
+disser "vou trocar de computador"), atualize o `handoff.md` — as mesmas 6 seções, apontando
 para os outros documentos em vez de repetir o que já está neles.
 
-Ainda pendente fora do código: hospedagem (TRD §10.6), identidade
-visual.
+Ainda pendente fora do código: hospedagem (TRD §10.6). A identidade
+visual deixou de ser da empresa: a plataforma se chama **Andon** (o
+sinal que deixa o problema à vista de todos, no Sistema Toyota; o código
+continua `qualityhub`), com a assinatura dela (fase B1; nome de
+2026-10-15, antes Dusk & Dawn; `docs/marca.md`).
 
 **Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B37; os
 corrigidos têm ✅). A A3 corrigiu B1–B6 e B8–B18, e a RN-48 entrou como
@@ -82,7 +85,7 @@ trabalho, nunca na `main` e nunca com `--force`. O merge é de Matthew.
 
 **Dois computadores:** Matthew alterna entre o do trabalho e o de casa
 (mesmo ambiente: Windows + WSL2 + Docker Desktop + nvm; `SETUP.md` §12).
-**Saindo** ("vou trocar de computador"): skill **`/trocar-pc`**.
+**Saindo** ou **encerrando o dia** ("vou trocar de computador", "vou encerrar"): skill **`/encerrar`**.
 **Chegando** ("continuar de onde parei"): skill **`/retomar`**. Os
 passos estão nas skills (`.claude/skills/`, versionadas, as mesmas nos
 dois PCs). Memória e conversas do Claude **não** passam de uma máquina

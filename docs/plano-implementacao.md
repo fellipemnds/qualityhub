@@ -316,7 +316,7 @@ Não depende de código. Detalhes em `docs/ui-ux.md` §2.
 
 | Fase | Entrega | Quem | Depende de |
 |---|---|---|---|
-| **B1 · Identidade visual** | Cores, logo, fonte da empresa (ou decisão de seguir neutro) | 🧑 com a empresa | Decisão externa |
+| **B1 · Identidade visual** | Identidade **própria da plataforma Andon** (decisão de 2026-10-13: a da empresa não combina com o app; o nome é de 2026-10-15, antes Dusk & Dawn), que vai ganhar módulos além das NCs, com duas faces por pessoa, **Dawn** (colaborador) e **Dusk** (gestão; as faces estão suspensas desde 2026-10-14, `docs/marca.md`), e a autoria de Matthew numa tela "Sobre" (`ui-ux.md` §1): direção, paleta (neutros, um destaque, as cores de estado com o contraste conferido), fonte, logo, e a assinatura da empresa (o logo dela monocromático no login, no menu, no e-mail de convite e nos relatórios; `ui-ux.md` §1). Sem limite de sessões (Matthew, 2026-10-14: antes uma marca forte que uma rápida) | 🧑 Matthew decide, 🤖 Claude conduz e gera as opções | — |
 | **B2 · Wireframes (G1)** | Frames cinzas no Figma a partir de `ui-ux.md` §7, uma tela por frame | 🤖 cria no Figma de Matthew; 🧑 ajusta | — |
 | **B3 · Fundações + mockups (G2, G4)** | Variables, componentes com variantes = enums, telas com cor e os estados vazio/carregando/erro/sem permissão. Termina num **`DESIGN.md`** na raiz (o formato aberto do Google: os tokens com valores exatos e o porquê de cada um), que os agentes seguem na fase C em vez de inventar cor; o `impeccable` gera um a partir do que ficou pronto (2026-10-13) | 🧑 (é onde mais se aprende Figma); 🤖 revisa | B1, B2 |
 | **B4 · Protótipo + teste (G3)** | Protótipo HTML clicável; **3 colegas** completam sem ajuda: registrar NC com rascunho, aprovar item, comentar com menção | 🤖 o protótipo; 🧑 conduz o teste | B3 |
@@ -366,7 +366,7 @@ garantidos pelos testes de API do backend.
 | Decisão | Quem decide | Precisa estar pronta antes de |
 |---|---|---|
 | Hospedagem (dados fora da empresa? orçamento?) | Matthew, com a empresa | **C5** (anexos) e **D1** |
-| Identidade visual | Empresa | **B3** (mockups) |
+| ~~Identidade visual~~ — decidido: **própria da plataforma Andon** (nome de 2026-10-15; antes, Dusk & Dawn), com a assinatura da empresa (2026-10-13); vira a fase B1 | — | — |
 | 3 colegas disponíveis para o teste | Matthew | **B4** |
 | Período do piloto e data de corte | Matthew + analista | **D2**, **D3** |
 | ~~NCs da planilha: migrar ou não~~ — decidido: **nenhuma** (P1) | — | — |
@@ -464,3 +464,5 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-09 | v1.28 — B37 na A7 (o OpenAPI conferido para o portão); C0: o `operationId` antes do Orval |
 | 2026-10-09 | **A7 concluída** (branch `fase/a7-travas-entre-linhas`, PR #10): travar antes de ler nas regras que conferem outras linhas (B29–B36, com a RN-51), o OpenAPI conferido (B37) e a revisão de segurança do repositório; o `pausarNoMeio` para os testes de corrida. 489 testes. Do portão "fundação pronta" falta o passeio guiado (Matthew explicar a A4, a A6 e a A7), na branch `docs/fechamento-bloco-a` |
 | 2026-10-13 | **Bloco A concluído** (branch `docs/fechamento-bloco-a`): o portão "fundação pronta" cumprido, com o passeio guiado (Matthew explicar a A4, a A6 e a A7) em três sessões curtas durante o Bloco B, como condição para o C0; as skills revistas no fim do bloco |
+| 2026-10-13 | v1.29 — B1 deixa de ser decisão externa: a plataforma ganha nome e identidade próprios, **Dusk & Dawn**, com as faces Dawn (colaborador) e Dusk (gestão) e a assinatura da empresa (logo monocromático em quatro lugares); limite de 4 sessões. Branch `fase/b1-identidade-visual` |
+| 2026-10-15 | v1.30 — B1: a marca recomeçou pela ideia (as 52 NCs à mão; "o processo sai da mão de uma pessoa e fica claro para todos"), com o território **Palpável**; o nome passa a ser **Andon**; o Dusk & Dawn (faces e luz da paleta) fica suspenso; cai o limite de 4 sessões (`docs/marca.md`) |

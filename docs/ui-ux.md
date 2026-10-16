@@ -7,7 +7,9 @@
 > `docs/prd.md`.
 >
 > **Status:** v1 (2026-09-24). Decisões na §1 e na §12. Valores de cor
-> e fonte são provisórios até a identidade visual ser definida.
+> e fonte são provisórios até a identidade visual ser definida (fase B1:
+> a plataforma **Andon**, com identidade própria, decidida em 2026-10-13;
+> o nome, em 2026-10-15, no `docs/marca.md`).
 
 ---
 
@@ -18,9 +20,9 @@ Com Matthew, em 2026-09-24:
 | Decisão | Escolha | Observação |
 |---|---|---|
 | Biblioteca de componentes | **shadcn/ui** (Radix + Tailwind) | **Diverge do `arquitetura.md`** (ADR-28 recomendava Mantine). Os componentes são copiados para dentro do projeto e viram código nosso |
-| Identidade visual | **Decidir depois** | Este documento define os tokens por **função** (`--perigo`, `--destaque`...); os valores são provisórios até a identidade chegar |
+| Identidade visual | **Própria da plataforma Andon**, com a **assinatura** da empresa (revisto em 2026-10-13; antes, "decidir depois"; o nome Andon é de 2026-10-15 e substitui "Dusk & Dawn" no texto ao lado, onde as **faces Dawn e Dusk estão suspensas** desde 2026-10-14, `docs/marca.md`) | A identidade oficial da empresa não combina com o app, e Matthew tem liberdade para decidir. **Andon** é o nome da **plataforma**, que vai ganhar módulos além das NCs (o roteiro no `README.md`); cada módulo mantém um nome que diz o que faz ("Andon · Qualidade"). O código continua `qualityhub`: o nome só aparece na tela. A plataforma tem **duas faces, divididas por pessoa e não por módulo**: **Dawn**, a do colaborador (pendências, abrir uma NC ou uma solicitação, fazer um treinamento), e **Dusk**, a da gestão (aprovar, relatórios, indicadores, administração). Um login só; a face Dusk aparece para quem tem papel de gestão (a tela inicial por papel da A4 e os papéis que se somam). A autoria de Matthew fica numa tela **"Sobre"** ("Criado por Matthew", com o aviso de copyright), não na marca. A empresa aparece só como assinatura, com o logo dela **monocromático** (cinza ou a cor do texto, nunca as cores originais): no login, no rodapé do menu lateral, no rodapé do e-mail de convite e no cabeçalho dos relatórios exportados. O ícone da aba, o topo das telas e os botões são do Andon. Os tokens continuam por **função** (`--perigo`, `--destaque`...); a B1 preenche os valores, e o `DESIGN.md` da B3 registra tudo |
 | Processo de design | **Documento → Figma → protótipo HTML** | Wireframes e mockups no Figma; protótipo HTML clicável quando o design fechar, para o teste do gate G3 |
-| Tema | **Só claro no MVP** | Cores em tokens, então o escuro entra depois sem refazer telas |
+| Tema | **Claro e escuro, nas duas faces** (revisto em 2026-10-13; antes, "só claro no MVP") | Decidido na entrevista da B1 (`docs/marca.md`). As cores já são tokens, então o escuro não refaz telas; o custo fica na B3, com o contraste conferido nas quatro combinações (Dawn e Dusk, claro e escuro) |
 
 ### 1.1 O que a escolha do shadcn/ui traz junto
 
@@ -108,11 +110,12 @@ competiria com os badges.
 
 ### 3.2 Tipografia
 
-- **Fonte:** **decidida junto com a identidade visual** (U3). Até lá,
-  **Inter** como provisória. Seja qual for, é servida pelo **nosso
-  próprio servidor**, porque o sistema roda *on-premise* e pode não ter
-  acesso a serviços externos de fonte. Requisito para a escolha final:
-  ter números tabulares (alinhados em coluna).
+- **Fonte:** **Figtree** (decidida na B1, 2026-10-13; `docs/marca.md`).
+  Servida pelo **nosso próprio servidor**, porque o sistema roda
+  *on-premise* e pode não ter acesso a serviços externos de fonte.
+  Números tabulares por `font-variant-numeric: tabular-nums` (a Figtree
+  tem o recurso `tnum`, mas os dígitos não são tabulares por padrão):
+  obrigatório em tabelas, códigos, datas e indicadores.
 - **Escala** (Tailwind): `text-xs` 12 · `text-sm` 14 (**padrão** de
   tabelas e formulários) · `text-base` 16 (texto corrido, feed) ·
   `text-lg` 18 · `text-xl` 20 (título de seção) · `text-2xl` 24 (título
@@ -546,7 +549,7 @@ Com Matthew, em 2026-09-24 (além das da §1).
 |---|---|---|
 | **U1** | Textos dos botões e das atribuições | **"Enviar para aprovação"** e **"Responsável"** na tela; código e banco mantêm os nomes atuais → §10.2 |
 | **U2** | Navegação no celular | **Barra inferior**: Pendências, NCs, ＋ Nova NC, Menu → §6.1 |
-| **U3** | Fonte | **Decidida com a identidade visual**; Inter como provisória; sempre servida pelo nosso servidor → §3.2 |
+| **U3** | Fonte | **Figtree** (B1, 2026-10-13); sempre servida pelo nosso servidor; `tabular-nums` nos números → §3.2 |
 | **U4** | Salvar | **Botão explícito** + cópia local no navegador → §8.1 |
 | **U5** | Quem monta o Figma | **Claude cria os wireframes** (a partir da §7) no Figma de Matthew; **Matthew faz os mockups** |
 

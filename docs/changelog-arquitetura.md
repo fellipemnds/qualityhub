@@ -9,6 +9,63 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Fase B1 — identidade visual (branch `fase/b1-identidade-visual`)
+
+- **A ideia, o território e o nome: Andon (2026-10-14 e 15).** As
+  direções de logo da Dusk & Dawn (o sol, a estrela-d'alva) pareciam
+  genéricas a Matthew: a metáfora do dia foi encaixada no produto, não
+  vivida. A marca recomeçou pela história real (a analista registrava
+  sozinha, à mão, 52 NCs numa planilha que quebrava), que deu a ideia
+  *"o processo sai da mão de uma pessoa e fica claro para todos"* e o
+  território **Palpável**, que também substitui a Luminosa na
+  personalidade (ela descartava "o pesado", e a direção pede peso). O
+  nome passa a ser **Andon** (o sinal do Sistema Toyota que deixa o
+  problema à vista de todos; busca no INPI e riscos no `docs/marca.md`).
+  O Dusk & Dawn, com as faces e a luz da paleta, fica **suspenso**, não
+  apagado; a decisão abaixo continua como histórico. Cai o limite de 4
+  sessões. O símbolo vem depois do nome, desenhado por Matthew.
+- **Identidade própria: a plataforma Dusk & Dawn (2026-10-13).** O plano
+  esperava a identidade da empresa (cores, logo, fonte) como decisão
+  externa. Ela chegou e não combina com o app; Matthew tem liberdade para
+  decidir. Decisão: a plataforma ganha nome e identidade **próprios**,
+  **Dusk & Dawn**, pensados para os módulos que virão depois das NCs
+  (cada um com um nome que diz o que faz, como "Dusk & Dawn · Qualidade";
+  o código continua `qualityhub`). Duas faces, divididas **por pessoa e
+  não por módulo** (o módulo de NC tem as duas): **Dawn**, a do
+  colaborador, e **Dusk**, a da gestão, com um login só. A autoria de
+  Matthew fica numa tela "Sobre", não na marca. A empresa aparece só como
+  **assinatura**: o logo dela monocromático no login, no
+  rodapé do menu, no e-mail de convite e nos relatórios exportados.
+  Custo baixo: o `ui-ux.md` já define as cores por função, e só os
+  valores mudam. Limite de 4 sessões curtas, para a identidade não virar
+  poço sem fundo. Detalhe em `ui-ux.md` §1 e no plano (B1).
+- **A direção e o brand brief (2026-10-13, sessão 1).** A entrevista
+  (`interview-me`) e o livro *Designing Brand Identity* deram o
+  `docs/marca.md`: o propósito (sair das planilhas e e-mails, à altura de
+  uma empresa de tecnologia), a personalidade (calma, precisa, confiável,
+  humana, luminosa; "simples" virou regra de design), a base visual na linha do Linear com personalidade em
+  pontos pequenos (cor suave, avatares no estilo Blobatar,
+  microinterações sutis), **Dawn azulada e Dusk quente**, e **claro e
+  escuro nas duas faces**, o que revê a decisão "só claro no MVP" do
+  `ui-ux.md` §1.
+- **A paleta: a face é a cor da luz (2026-10-13, sessão 2).** A primeira
+  versão tingia as superfícies com a cor da face; Matthew não gostou do
+  modo escuro "inteiro colorido" e trouxe referências (Linear, um app de
+  finanças escuro, Q2 Planning, Flowio). A paleta passou a ter superfícies
+  **neutras**, a face só como **luz** (o brilho no topo, a borda da
+  seleção, o link, o foco) e a cor forte como **informação** (o ícone do
+  estado ao lado do rótulo); o botão principal continua quase preto. Os
+  valores e o que evitar (halo colorido, gradiente atrás de texto, orbe de
+  enfeite) estão no `docs/marca.md`; no Figma, a coleção "Tema" com quatro
+  modos.
+- **A fonte: Figtree (2026-10-13, sessão 3).** Cinco candidatas conferidas
+  no arquivo da fonte (licença OFL, acentos, números tabulares); três no
+  Figma, cada uma com a Inter embaixo, com texto real do sistema. Claude
+  recomendou a Instrument Sans (mais neutra para tela densa, eixo de
+  largura); Matthew escolheu a Figtree, a que mais veste *humana* e
+  *luminosa*. A Inter ficou de fora por ser o padrão de tudo (o Linear
+  usa a `InterVariable`). Resolve a U3 do `ui-ux.md`.
+
 ### Fase A7 — travas entre linhas (branch `fase/a7-travas-entre-linhas`, PR #10)
 
 - **Travar antes de ler (2026-10-09, B29–B36).** A trava do B19 (o
