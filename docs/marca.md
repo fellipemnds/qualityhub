@@ -90,6 +90,22 @@ Solutions pode seguir usando o nome em placas eletrônicas (uso anterior,
 LPI art. 129 §1), outro ramo. (3) Se a empresa tiver um andon de verdade
 no chão de fábrica, "registrar no Andon" pode confundir os dois.
 
+## O símbolo (em andamento, 2026-10-16)
+
+**As regras** (escolhidas no instinto, uma de cada par): massa cheia ·
+abstrato, sem letra · reto com cantos macios · em movimento (diagonal).
+**A história:** a luz à vista.
+
+> **A ficha:** uma massa cheia, de cantos macios, aberta por um corte
+> diagonal por onde a luz passa. Sem letra, uma cor, legível em 16 px.
+
+**A direção:** os Frames 13, 14 e 15 de Matthew (página "Logo" do Figma),
+a barra de cantos redondos com a estrela. A estrela de 5 pontas lembrou o
+símbolo do PT a todos no teste: ela fica **arredondada** (o raio da barra),
+**inclinada** na diagonal, de **miolo gordo** e **nunca vermelha**, e o teste
+se repete. O caminho e os testes: `docs/identidade/referencias.md`,
+"2026-10-16".
+
 ## Suspenso: o dia inteiro, em duas luzes (Dusk & Dawn)
 
 A direção de 2026-10-13, guardada como estava. Motivo da suspensão: a

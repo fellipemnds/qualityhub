@@ -6,6 +6,43 @@
 > repositório: são trabalho de outros autores. Daqui se tira o princípio,
 > nunca a forma (`docs/marca.md`, critério da longevidade).
 
+## 2026-10-16 · A exploração guiada e a estrela (trabalho)
+
+Matthew estava se perdendo entre as referências; a sessão parou de desenhar
+logo e foi atrás de **regras** primeiro.
+
+1. **Este ou aquele** (escolhas no instinto): massa cheia · abstrato, sem
+   letra · reto com cantos macios · em movimento (diagonal). Bate com o que
+   ele já tinha gostado (Frame 8, o N do softriver, o "//." do Monty, as
+   bordas do R de vidro); o sol, a estrela-d'alva e o A cruzado eram desvios.
+2. **A história:** a luz à vista. **A ficha:** uma massa cheia, de cantos
+   macios, aberta por um corte diagonal por onde a luz passa; sem letra, uma
+   cor, legível em 16 px.
+3. **Miniaturas:** a estrela voltou pela terceira vez (Karave, Frame 7 e,
+   agora, o álbum *Sunglasses*, da Tinashe, com a ideia de popstar): uma
+   barra inclinada com uma estrela escapando dela. Daí saíram, com o Claude,
+   a **estrela na trave** (o contorno no vazio, as faixas que engrossam como
+   as costelas da lanterna, o A na segunda olhada; página **"Símbolo"** do
+   Figma) e, de Matthew, os **Frames 12 a 18** (página "Logo"): a barra de
+   cantos redondos com a estrela grande na frente (13), o nome "andon" ao
+   lado (14) e a barra partida por uma rachadura em forma de estrela (15),
+   que passa no teste do carimbo.
+4. **Os testes:** com estrela e faixas horizontais, lembra a bandeira dos
+   EUA; **com qualquer estrela de 5 pontas, todo mundo viu o símbolo do PT**
+   (em todos os frames; véspera do segundo turno de 2026). Sem a estrela, a
+   barra partida virou **cápsula de remédio** ("Rachadura · degrau" e
+   "· raio"); o quadrado do Frame 8 com os mesmos cortes ("Quadrado · degrau"
+   e "· raio") tirou o remédio, mas puxa "tela rachada".
+5. **A decisão de Matthew:** voltar aos **Frames 13, 14 e 15** ("é
+   basicamente o logo") e tirar da estrela o que é do PT: pontas
+   arredondadas com o raio da barra, inclinada na diagonal, miolo mais gordo
+   e nunca vermelha. Depois, o mesmo teste ("o que isso te lembra?"), de
+   preferência depois de 25/10.
+
+**O que evitar, aprendido aqui:** a estrela de 5 pontas em pé, afiada e
+vermelha (PT); estrela com faixas horizontais (EUA); barra comprida de pontas
+redondas partida ao meio (remédio).
+
 ## 2026-10-15/16 · Karave, o R de vidro e os símbolos listrados (casa)
 
 Imagens na página "Logo" do Figma, ao lado dos Frames 7 e 8 de Matthew.
