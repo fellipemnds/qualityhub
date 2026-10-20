@@ -155,6 +155,12 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
 | CI da F6a vermelho no `diff-cover` (2026-10-08): uma linha do `setor.service.ts` sem teste | O `diff-cover` local deu 100% porque o arquivo era **novo e ainda sem commit**: o Git não o rastreava, e ele ficou fora do diff | Resolvido com o teste. Claude: `git add -N` nos arquivos novos antes do `diff-cover` (na `/verificar` §4), ou rodar depois do commit |
 
 **Pendências anotadas:**
+- **Ideia para refinar (`idea-refine`) antes da C3: a atividade recente
+  na tela inicial** (2026-10-20, da referência do Flowio,
+  `docs/identidade/referencias-interface.md`). O que aconteceu nas NCs que
+  a pessoa acompanha, mesmo sem ser pendência dela, ao lado da lista da
+  Pendências (no computador). **Escopo novo:** o feed é por item (RF-11)
+  e não há rota que junte vários itens; mexe no backend e no PRD.
 - **Figma na conta pessoal (2026-10-20):** o arquivo saiu do time Work
   (motivo de Matthew: separar do trabalho) e está no time "Designing"
   (`docs/marca.md`). No plano Starter, o conector do Claude parou depois
