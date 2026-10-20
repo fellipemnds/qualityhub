@@ -11,6 +11,12 @@ documento de arquitetura.
 
 ### Fase B1 — identidade visual (branch `fase/b1-identidade-visual`)
 
+- **O nome fica provisório (2026-10-20).** Matthew ainda não quer fechar
+  a marca: **Andon** passa a ser nome provisório, e o nome e o símbolo
+  viram uma pendência só, sem prazo. A B1 fecha com a fundação visual,
+  que não depende do nome (o Grafite, a Figtree, a regra do logotipo e a
+  assinatura). No front, o nome é uma constante só, e trocar depois é
+  mudar uma linha e um SVG. O porquê do Andon fica no `docs/marca.md`.
 - **A assinatura da empresa (2026-10-20).** A versão horizontal do logo,
   monocromática por máscara de CSS (a transparência do PNG pintada na cor
   do tema, sem editar o arquivo): texto de apoio no login e no menu, cor

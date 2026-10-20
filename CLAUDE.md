@@ -21,6 +21,7 @@ próprio, com aprovação de Matthew (`CONSTRAINTS.md` §6).
 | `docs/prd.md` | O quê e por quê: escopo do MVP, regras de negócio RN-xx, permissões, decisões com a analista |
 | `docs/fluxo-app.md` | Telas, navegação, etapa calculada da NC, jornadas, ações por estado, "Minhas pendências" |
 | `docs/ui-ux.md` | Fundações visuais, componentes (shadcn/ui), wireframes em texto, textos da tela |
+| `docs/marca.md` | A marca Andon: ideia, nome, paleta (o **Grafite**, sem cor de destaque), fonte (Figtree), logotipo provisório e a assinatura da empresa |
 | `docs/trd.md` | Stack, sessão, API, anexos, testes, infraestrutura, hospedagem, ADR-33 a ADR-38 |
 | `docs/esquema-backend.md` | Modelo de dados, mudanças M1–M5, valores calculados, contrato da API, correções B1–B37 |
 | `docs/plano-implementacao.md` | **Ordem de execução**: fases A0–A7 (fundação do backend), B (design), C0–C8 (frontend em fatias), D (produção) |
@@ -40,10 +41,11 @@ disser "vou trocar de computador"), atualize o `handoff.md` — as mesmas 6 seç
 para os outros documentos em vez de repetir o que já está neles.
 
 Ainda pendente fora do código: hospedagem (TRD §10.6). A identidade
-visual deixou de ser da empresa: a plataforma se chama **Andon** (o
-sinal que deixa o problema à vista de todos, no Sistema Toyota; o código
-continua `qualityhub`), com a assinatura dela (fase B1; nome de
-2026-10-15, antes Dusk & Dawn; `docs/marca.md`).
+visual deixou de ser da empresa: é própria da plataforma, com a
+assinatura dela (fase B1, `docs/marca.md`). O nome **Andon** é
+**provisório** desde 2026-10-20 (Matthew ainda não quer fechar a marca):
+o nome e o símbolo são uma pendência só, sem prazo. No front, o nome é
+uma constante só; o código continua `qualityhub`.
 
 **Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B37; os
 corrigidos têm ✅). A A3 corrigiu B1–B6 e B8–B18, e a RN-48 entrou como

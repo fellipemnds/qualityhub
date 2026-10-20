@@ -10,7 +10,7 @@
 ## 1. Objetivo
 
 Fase **B1 — Identidade visual** (`docs/plano-implementacao.md`, Bloco B),
-na branch `fase/b1-identidade-visual`: a plataforma (nome em aberto; vai
+na branch `fase/b1-identidade-visual`: a plataforma (nome **provisório**, Andon; vai
 ganhar módulos além das NCs), com a ideia e o território **Palpável** do
 `docs/marca.md` e a assinatura da empresa. O limite de 4 sessões caiu:
 Matthew prefere mais sessões a uma marca genérica (2026-10-14). O
@@ -258,7 +258,8 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
    destaque~~: **Grafite, sem cor** (2026-10-20, `docs/marca.md`); (b)
    ~~conferir a Figtree~~: **confirmada** (2026-10-20); (c) ~~o logotipo provisório~~:
    **"andon" em Figtree 600** (2026-10-20, `docs/marca.md`); (d) ~~a assinatura da empresa~~: **definida** (2026-10-20, `docs/marca.md`, "Arquitetura"; o PNG fica fora do repositório); (e) o
-   fechamento da B1 (`/abrir-pr`). A **B2** (wireframes em cinza) não
+   fechamento da B1 (`/abrir-pr`). **O nome também ficou provisório** (2026-10-20): o nome e o
+   símbolo são uma pendência só, sem prazo (`docs/marca.md`, "O nome"). A **B2** (wireframes em cinza) não
    depende da B1 e pode começar junto.
    (O arquivo do Figma já se chama **Andon**, e os conceitos antigos de
    logo foram apagados por Matthew.)

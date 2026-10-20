@@ -1,10 +1,10 @@
-# Marca — Andon
+# Marca — Andon (nome provisório)
 
 > O brand brief da plataforma: uma página, para toda decisão visual
 > voltar a ela. Saiu da sessão 1 da fase B1 (2026-10-13), com a estrutura
 > do livro *Designing Brand Identity* (Alina Wheeler; brand brief,
-> p. 146–147). Os valores exatos (cores, fonte, logo) vêm nas próximas
-> sessões e terminam no `DESIGN.md` da B3. Figma: https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K (conta pessoal, time "Designing", desde 2026-10-20; o antigo, do time Work, era o `t0wty21KOea7v0juDLcxGG`)
+> p. 146–147). Os valores exatos (cores, fonte, logotipo) foram definidos
+> até 2026-10-20 e terminam no `DESIGN.md` da B3. Figma: https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K (conta pessoal, time "Designing", desde 2026-10-20; o antigo, do time Work, era o `t0wty21KOea7v0juDLcxGG`)
 >
 > **Revisto em 2026-10-14:** a ideia nova (abaixo) saiu da história real do
 > processo; o **Dusk & Dawn** (nome, faces e a luz da paleta) fica
@@ -58,7 +58,14 @@ se distribui, não a mão. Como nome, "Palpável" e "Manifesto" não servem
 (adjetivo com acento; "manifesto" soa político): o nome sai do território
 sem ser a palavra dele.
 
-## O nome: Andon (2026-10-15)
+## O nome: Andon (2026-10-15; provisório desde 2026-10-20)
+
+> **Provisório.** Em 2026-10-20, Matthew decidiu não fechar a marca ainda:
+> o nome e o símbolo viram uma pendência só, sem prazo, como o símbolo
+> já era. Nada da B1 depende do nome: a paleta, a fonte, a assinatura e a
+> regra do logotipo (o nome em minúsculas, Figtree 600, o favicon com a
+> primeira letra) servem para qualquer um. O que está abaixo fica como o
+> porquê do Andon, caso ele volte.
 
 No Sistema Toyota de Produção, de onde vem a gestão da qualidade moderna,
 o **andon** é o sinal que deixa um problema **à vista de todos** na
@@ -169,8 +176,7 @@ trazia continua, dentro da Palpável ("à vista").
   expressivos gerados pelo nome (no estilo do **Blobatar**) e
   **microinterações** sutis, de 150 a 250 ms, sempre com uma função e
   desligadas quando o sistema pede para reduzir o movimento.
-- **Contraste:** 4,5:1 para texto nas quatro combinações (2 faces × 2
-  modos).
+- **Contraste:** 4,5:1 para texto nos dois modos (claro e escuro).
 
 ## Paleta (sessão 2)
 
@@ -248,8 +254,7 @@ Dusk · Escuro, e o nome do CSS em cada uma.
   seleção é uma **borda sólida** na cor do brilho.
 - Gradiente atrás de texto ou de tabela: a luz fica **só no topo**, como
   ambiente, e se dissolve antes do conteúdo.
-- O orbe com gradiente girando como enfeite: o "sol" da marca aparece em
-  poucos lugares (login, tela vazia), e o desenho dele é da sessão 3.
+- O orbe com gradiente girando como enfeite.
 - Pintar a superfície com a cor da face: o fundo é sempre neutro.
 
 ## Fonte (sessão 3)
@@ -300,7 +305,7 @@ no login, no menu e no relatório, nos dois modos):
 
 Os ideais do livro (p. 26–45) que mais pesam aqui:
 
-- **Coerência:** as duas faces parecem uma plataforma só?
+- **Coerência:** os módulos e os dois modos parecem uma plataforma só?
 - **Flexibilidade:** aguenta módulos que ainda não existem?
 - **Longevidade:** continua bonita daqui a cinco anos, sem depender de moda?
 

@@ -20,9 +20,9 @@ Com Matthew, em 2026-09-24:
 | Decisão | Escolha | Observação |
 |---|---|---|
 | Biblioteca de componentes | **shadcn/ui** (Radix + Tailwind) | **Diverge do `arquitetura.md`** (ADR-28 recomendava Mantine). Os componentes são copiados para dentro do projeto e viram código nosso |
-| Identidade visual | **Própria da plataforma Andon**, com a **assinatura** da empresa (revisto em 2026-10-13; antes, "decidir depois"; o nome Andon é de 2026-10-15 e substitui "Dusk & Dawn" no texto ao lado, onde as **faces Dawn e Dusk estão suspensas** desde 2026-10-14, `docs/marca.md`) | A identidade oficial da empresa não combina com o app, e Matthew tem liberdade para decidir. **Andon** é o nome da **plataforma**, que vai ganhar módulos além das NCs (o roteiro no `README.md`); cada módulo mantém um nome que diz o que faz ("Andon · Qualidade"). O código continua `qualityhub`: o nome só aparece na tela. A plataforma tem **duas faces, divididas por pessoa e não por módulo**: **Dawn**, a do colaborador (pendências, abrir uma NC ou uma solicitação, fazer um treinamento), e **Dusk**, a da gestão (aprovar, relatórios, indicadores, administração). Um login só; a face Dusk aparece para quem tem papel de gestão (a tela inicial por papel da A4 e os papéis que se somam). A autoria de Matthew fica numa tela **"Sobre"** ("Criado por Matthew", com o aviso de copyright), não na marca. A empresa aparece só como assinatura, com o logo dela **monocromático** (cinza ou a cor do texto, nunca as cores originais): no login, no rodapé do menu lateral, no rodapé do e-mail de convite e no cabeçalho dos relatórios exportados. O ícone da aba, o topo das telas e os botões são do Andon. Os tokens continuam por **função** (`--perigo`, `--destaque`...); a B1 preenche os valores, e o `DESIGN.md` da B3 registra tudo |
+| Identidade visual | **Própria da plataforma Andon** (nome **provisório** desde 2026-10-20, `docs/marca.md`), com a **assinatura** da empresa (revisto em 2026-10-13; antes, "decidir depois"; o nome Andon é de 2026-10-15 e substitui "Dusk & Dawn" no texto ao lado, onde as **faces Dawn e Dusk estão suspensas** desde 2026-10-14, `docs/marca.md`) | A identidade oficial da empresa não combina com o app, e Matthew tem liberdade para decidir. **Andon** é o nome da **plataforma**, que vai ganhar módulos além das NCs (o roteiro no `README.md`); cada módulo mantém um nome que diz o que faz ("Andon · Qualidade"). O código continua `qualityhub`: o nome só aparece na tela. A plataforma tem **duas faces, divididas por pessoa e não por módulo**: **Dawn**, a do colaborador (pendências, abrir uma NC ou uma solicitação, fazer um treinamento), e **Dusk**, a da gestão (aprovar, relatórios, indicadores, administração). Um login só; a face Dusk aparece para quem tem papel de gestão (a tela inicial por papel da A4 e os papéis que se somam). A autoria de Matthew fica numa tela **"Sobre"** ("Criado por Matthew", com o aviso de copyright), não na marca. A empresa aparece só como assinatura, com o logo dela **monocromático** (cinza ou a cor do texto, nunca as cores originais): no login, no rodapé do menu lateral, no rodapé do e-mail de convite e no cabeçalho dos relatórios exportados. O ícone da aba, o topo das telas e os botões são do Andon. Os tokens continuam por **função** (`--perigo`, `--primary`...); a B1 definiu os valores (`docs/marca.md`: o **Grafite**, sem cor de destaque; as faces não entram no tema), e o `DESIGN.md` da B3 registra tudo |
 | Processo de design | **Documento → Figma → protótipo HTML** | Wireframes e mockups no Figma; protótipo HTML clicável quando o design fechar, para o teste do gate G3 |
-| Tema | **Claro e escuro, nas duas faces** (revisto em 2026-10-13; antes, "só claro no MVP") | Decidido na entrevista da B1 (`docs/marca.md`). As cores já são tokens, então o escuro não refaz telas; o custo fica na B3, com o contraste conferido nas quatro combinações (Dawn e Dusk, claro e escuro) |
+| Tema | **Claro e escuro** (revisto em 2026-10-13; antes, "só claro no MVP"; as duas faces saíram com o Dusk & Dawn) | Decidido na entrevista da B1 (`docs/marca.md`). As cores já são tokens, então o escuro não refaz telas; o custo fica na B3, com o contraste conferido nos dois modos |
 
 ### 1.1 O que a escolha do shadcn/ui traz junto
 
@@ -77,8 +77,8 @@ um lugar onde acontece:
 ### 3.1 Cores
 
 Os nomes são **funções**, não cores. Os valores são **provisórios** (tons
-da paleta padrão do Tailwind) e serão ajustados quando a identidade
-visual chegar. O contraste é conferido no G2.
+da paleta padrão do Tailwind); os da marca, com o contraste conferido,
+estão no `docs/marca.md` (B1) e entram aqui na B3. O contraste é conferido no G2.
 
 **Base** (mapeiam direto nas variáveis do shadcn/ui):
 
@@ -553,9 +553,10 @@ Com Matthew, em 2026-09-24 (além das da §1).
 | **U4** | Salvar | **Botão explícito** + cópia local no navegador → §8.1 |
 | **U5** | Quem monta o Figma | **Claude cria os wireframes** (a partir da §7) no Figma de Matthew; **Matthew faz os mockups** |
 
-**Pendente fora deste documento:** identidade visual (cores da marca,
-logo, fonte) — quando chegar, atualiza os valores da §3 sem mudar os
-nomes dos tokens.
+**Identidade visual:** definida na B1 (2026-10-20, `docs/marca.md`): o
+Grafite, a Figtree, o logotipo provisório e a assinatura da empresa. A B3
+passa os valores para a §3 e para o `DESIGN.md`, sem mudar os nomes dos
+tokens.
 
 ---
 
