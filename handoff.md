@@ -254,8 +254,8 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
    `docs/identidade/referencias.md` ("2026-10-16"). **Em 2026-10-20, o
    símbolo saiu da B1** (decisão de Matthew, travado no logo; changelog e
    `docs/marca.md`): pendência à parte, sem prazo; os Frames 13 a 30 dele
-   (sem cor) ficam como material. **Começar por aqui:** (a) a **cor de
-   destaque**, a partir da Palpável (não espera mais o símbolo); (b)
+   (sem cor) ficam como material. **Começar por aqui:** (a) ~~a cor de
+   destaque~~: **Grafite, sem cor** (2026-10-20, `docs/marca.md`); (b)
    conferir a **Figtree** com a Palpável; (c) o **logotipo provisório**
    ("Andon" em Figtree, peso e espaçamento, e o favicon: o "A" num
    quadrado de cantos macios); (d) a **assinatura da empresa**; (e) o

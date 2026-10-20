@@ -88,9 +88,9 @@ visual chegar. O contraste é conferido no G2.
 | `--foreground` | Texto principal | `slate-900` |
 | `--muted` / `--muted-foreground` | Fundos secundários / texto de apoio | `slate-100` / `slate-600` |
 | `--border` | Bordas e divisórias | `slate-200` |
-| `--primary` | **Destaque**: ação principal de cada tela | `slate-900` (até a marca definir) |
+| `--primary` | **Destaque**: ação principal de cada tela | o **grafite** da marca, `#121214` / `#ECECEF` (definido em 2026-10-20: sem cor de destaque, `docs/marca.md`) |
 | `--destructive` | Ações destrutivas (excluir, cancelar, reprovar) | `red-600` |
-| `--ring` | Contorno de foco do teclado | `blue-600` |
+| `--ring` | Contorno de foco do teclado | o grafite, como o `--primary` (2026-10-20); o link é sublinhado |
 
 **Semânticas** (nossas, adicionadas ao tema):
 

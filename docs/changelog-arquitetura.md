@@ -11,6 +11,15 @@ documento de arquitetura.
 
 ### Fase B1 — identidade visual (branch `fase/b1-identidade-visual`)
 
+- **O destaque é o grafite: a interface não tem cor (2026-10-20).**
+  Entre quatro opções (grafite, ardósia, índigo e petróleo, todas com o
+  contraste conferido), Matthew escolheu a sem cor, na linha do Linear:
+  link, foco, seleção e botão principal na cor do texto (`#121214` /
+  `#ECECEF`), e a cor só nos estados e no prazo. É o argumento que o
+  `ui-ux.md` §3.1 já dava para o botão principal, levado até o fim. O
+  índigo do Linear ficou de fora por brigar com os estados **Aberta** e
+  **Em aprovação**. O link passa a ser sublinhado. Os tokens das faces
+  (`--destaque`, `--brilho`, `--luz-*`) não entram no tema.
 - **O símbolo sai da B1 (2026-10-20).** Depois de duas semanas de
   exploração (dos estudos do Claude aos Frames 13 a 30 de Matthew), as
   direções continuavam mudando, e o logo travava o resto. Decisão de

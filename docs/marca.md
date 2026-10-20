@@ -166,6 +166,28 @@ trazia continua, dentro da Palpável ("à vista").
 > destaque **não espera mais o símbolo**: sai da Palpável, na B1. Continuam valendo as superfícies neutras, as cores de estado e o
 > contraste conferido.
 
+### O destaque: Grafite, sem cor (2026-10-20)
+
+**A interface não tem cor de destaque.** Ela é toda em tons de cinza, e a
+cor só aparece onde informa: os estados e o prazo. Decisão de Matthew,
+na linha do Linear ("quanto menos cor, melhor"): o que dá a cara do Linear
+é a contenção, não o índigo. Comparada com a ardósia, o índigo e o
+petróleo; o índigo ficava entre o azul de **Aberta** e o violeta de **Em
+aprovação**, e um link azul-violeta ao lado de um ícone de estado
+azul-violeta confunde.
+
+| Uso | Claro | Escuro | Contraste (fundo / card) |
+|---|---|---|---|
+| Link, foco (`--ring`), seleção, botão principal | `#121214` | `#ECECEF` | 17,5 / 18,7 · 16,9 / 15,7 |
+| Fundo da seleção (menu, lista) | o texto a 7% sobre o card | o mesmo | — |
+
+- **O link é sublinhado**, porque sem cor ele não se distingue do texto
+  (e não depender só da cor é melhor para a acessibilidade).
+- **O foco** é um anel na cor do texto, com uma auréola clara dele
+  (22%), nunca um halo colorido.
+- Os tokens `--destaque`, `--brilho` e `--luz-*` das faces abaixo ficam
+  como histórico do Dusk & Dawn: **não entram no tema**.
+
 **A face é a cor da luz, não da tinta.** As superfícies são neutras nas duas
 faces; a face aparece só como luz (o brilho no topo da tela, a borda da
 seleção, o link e o foco), e a cor forte é informação (o ícone do estado,
