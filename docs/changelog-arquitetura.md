@@ -11,6 +11,17 @@ documento de arquitetura.
 
 ### Fase B1 — identidade visual (branch `fase/b1-identidade-visual`)
 
+- **A assinatura da empresa (2026-10-20).** A versão horizontal do logo,
+  monocromática por máscara de CSS (a transparência do PNG pintada na cor
+  do tema, sem editar o arquivo): texto de apoio no login e no menu, cor
+  do texto no relatório, no mínimo 96 px. Só há PNG; o vetor fica para a
+  C7, e o arquivo, fora do repositório público até a C0.
+- **A Figtree fica, e o logotipo provisório é "andon" em Figtree 600
+  (2026-10-20).** A fonte foi conferida contra a Geist e a Schibsted
+  Grotesk: sem cor na interface, é ela que carrega o traço *humana*. O
+  logotipo, em minúsculas e no seminegrito (entre os pesos 500 a 800),
+  com o favicon "a" num quadrado de cantos macios que inverte no
+  escuro. Detalhe no `docs/marca.md`, "O logotipo provisório".
 - **O destaque é o grafite: a interface não tem cor (2026-10-20).**
   Entre quatro opções (grafite, ardósia, índigo e petróleo, todas com o
   contraste conferido), Matthew escolheu a sem cor, na linha do Linear:

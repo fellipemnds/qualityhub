@@ -256,9 +256,8 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
    `docs/marca.md`): pendência à parte, sem prazo; os Frames 13 a 30 dele
    (sem cor) ficam como material. **Começar por aqui:** (a) ~~a cor de
    destaque~~: **Grafite, sem cor** (2026-10-20, `docs/marca.md`); (b)
-   conferir a **Figtree** com a Palpável; (c) o **logotipo provisório**
-   ("Andon" em Figtree, peso e espaçamento, e o favicon: o "A" num
-   quadrado de cantos macios); (d) a **assinatura da empresa**; (e) o
+   ~~conferir a Figtree~~: **confirmada** (2026-10-20); (c) ~~o logotipo provisório~~:
+   **"andon" em Figtree 600** (2026-10-20, `docs/marca.md`); (d) ~~a assinatura da empresa~~: **definida** (2026-10-20, `docs/marca.md`, "Arquitetura"; o PNG fica fora do repositório); (e) o
    fechamento da B1 (`/abrir-pr`). A **B2** (wireframes em cinza) não
    depende da B1 e pode começar junto.
    (O arquivo do Figma já se chama **Andon**, e os conceitos antigos de

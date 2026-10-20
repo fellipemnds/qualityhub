@@ -90,6 +90,20 @@ Solutions pode seguir usando o nome em placas eletrônicas (uso anterior,
 LPI art. 129 §1), outro ramo. (3) Se a empresa tiver um andon de verdade
 no chão de fábrica, "registrar no Andon" pode confundir os dois.
 
+## O logotipo provisório (2026-10-20)
+
+**"andon"**, sempre em minúsculas, em **Figtree 600** (seminegrito), na cor
+do texto (o grafite). Escolhido por Matthew entre os pesos 500 a 800,
+vistos grande, no topo do menu e como favicon. Em texto corrido, o nome
+continua "Andon".
+
+- **Espaçamento:** -0,02em nos tamanhos grandes (login), -0,01em no menu.
+- **Favicon:** o "a" no mesmo peso, num quadrado de cantos macios (raio de
+  24% do lado). Grafite com o "a" branco no claro, invertido no escuro: o
+  SVG troca sozinho pelo `prefers-color-scheme`.
+- **Onde aparece:** login, topo do menu lateral e aba do navegador. Quando
+  o símbolo sair, ele entra à esquerda do nome, sem mudar o resto.
+
 ## O símbolo (fora da B1 desde 2026-10-20)
 
 > **Pendência à parte, sem prazo.** Até ele sair, o logo é o **logotipo
@@ -242,8 +256,11 @@ Dusk · Escuro, e o nome do CSS em cada uma.
 
 **Figtree** (licença OFL), uma só para tudo, servida pelo nosso servidor.
 É a que mais veste *humana* e *luminosa*, e as formas redondas conversam
-com o "sol" da marca. (Escolhida antes da troca da Luminosa pela
-Palpável: conferir de novo ao lado do símbolo.) Comparada no Figma (página "Fonte") com a Instrument
+com o "sol" da marca. **Confirmada em 2026-10-20** (sem o símbolo, ao lado
+da Grafite), contra a Geist e a Schibsted Grotesk: sem cor na interface,
+é a fonte que carrega o traço *humana*; a Palpável fica no peso do
+logotipo. A Geist saiu pelo motivo da Inter (é a da Vercel e de meio mundo
+de ferramenta de desenvolvedor); a Schibsted puxava para o editorial. Comparada no Figma (página "Fonte") com a Instrument
 Sans, a Atkinson Hyperlegible Next e a Inter, com texto real do sistema.
 
 - **Números:** `font-variant-numeric: tabular-nums` em tabela, código, data
@@ -262,6 +279,22 @@ logo não pode ser "de NC": ele precisa servir aos módulos que virão.
 A empresa aparece só como **assinatura**, com o logo dela monocromático
 (login, rodapé do menu, e-mail de convite, relatórios exportados). A
 autoria fica na tela "Sobre".
+
+**A assinatura, definida em 2026-10-20** (testada ao lado do "andon",
+no login, no menu e no relatório, nos dois modos):
+
+- **A versão horizontal** do logo da empresa (símbolo + nome + linha de
+  apoio) nos quatro lugares; o símbolo sozinho não identifica a empresa e
+  competiria com o favicon.
+- **Monocromático por máscara:** o CSS usa o desenho do logo (a
+  transparência do PNG) como máscara e pinta na cor do tema, sem editar o
+  arquivo. No login e no menu, a cor do **texto de apoio**; no relatório,
+  a **cor do texto**.
+- **No mínimo 96 px de largura** (com menos, a linha de apoio some).
+- **O arquivo:** só há PNG (500 px, com transparência), que basta para a
+  tela. Para o PDF dos relatórios e o e-mail, o vetor: pedir à empresa ou
+  vetorizar (C7). O arquivo **não entra no repositório** por enquanto
+  (repositório público, marca da empresa): decidir na C0.
 
 ## Como escolher entre as direções
 
