@@ -4,7 +4,7 @@
 > voltar a ela. Saiu da sessão 1 da fase B1 (2026-10-13), com a estrutura
 > do livro *Designing Brand Identity* (Alina Wheeler; brand brief,
 > p. 146–147). Os valores exatos (cores, fonte, logo) vêm nas próximas
-> sessões e terminam no `DESIGN.md` da B3. Figma: https://www.figma.com/design/t0wty21KOea7v0juDLcxGG
+> sessões e terminam no `DESIGN.md` da B3. Figma: https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K (conta pessoal, time "Designing", desde 2026-10-20; o antigo, do time Work, era o `t0wty21KOea7v0juDLcxGG`)
 >
 > **Revisto em 2026-10-14:** a ideia nova (abaixo) saiu da história real do
 > processo; o **Dusk & Dawn** (nome, faces e a luz da paleta) fica
@@ -90,7 +90,13 @@ Solutions pode seguir usando o nome em placas eletrônicas (uso anterior,
 LPI art. 129 §1), outro ramo. (3) Se a empresa tiver um andon de verdade
 no chão de fábrica, "registrar no Andon" pode confundir os dois.
 
-## O símbolo (em andamento, 2026-10-16)
+## O símbolo (fora da B1 desde 2026-10-20)
+
+> **Pendência à parte, sem prazo.** Até ele sair, o logo é o **logotipo
+> provisório**: "Andon" em Figtree, com um favicon simples (o "A" num
+> quadrado de cantos macios). O símbolo se adapta à paleta, e não o
+> contrário. As regras e a ficha abaixo continuam valendo para quando
+> ele voltar.
 
 **As regras** (escolhidas no instinto, uma de cada par): massa cheia ·
 abstrato, sem letra · reto com cantos macios · em movimento (diagonal).
@@ -156,8 +162,8 @@ trazia continua, dentro da Palpável ("à vista").
 
 > **Em parte suspensa (2026-10-14):** a paleta das faces (`--destaque`,
 > `--brilho`, `--luz-*`) e a regra "a face é a cor da luz" nasceram da
-> Luminosa e do Dusk & Dawn, e ficam suspensas até o símbolo pedir a cor
-> dele. Continuam valendo as superfícies neutras, as cores de estado e o
+> Luminosa e do Dusk & Dawn, e ficam suspensas. Desde 2026-10-20, o
+> destaque **não espera mais o símbolo**: sai da Palpável, na B1. Continuam valendo as superfícies neutras, as cores de estado e o
 > contraste conferido.
 
 **A face é a cor da luz, não da tinta.** As superfícies são neutras nas duas
@@ -196,7 +202,7 @@ azul no topo), Q2 Planning e Flowio (a luz ambiente no claro).
 Contraste conferido em 2026-10-13: texto ≥ 4,5:1 e ícone ≥ 3:1 nas quatro
 combinações (a página `docs/identidade/paleta.html`, que mostrava a conferência,
 saiu em 2026-10-16: o visual da marca fica só no Figma). No Figma
-(arquivo "Andon", time Work; antes "Dusk & Dawn — Identidade"), as cores são *Variables*
+(arquivo "Andon — Identidade", time "Designing" desde 2026-10-20; antes no time Work, e antes "Dusk & Dawn — Identidade"), as cores são *Variables*
 na coleção "Tema", com os modos Dawn · Claro, Dawn · Escuro, Dusk · Claro e
 Dusk · Escuro, e o nome do CSS em cada uma.
 

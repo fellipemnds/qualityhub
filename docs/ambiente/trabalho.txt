@@ -25,14 +25,14 @@ banco (docker): postgres:17-alpine
 migrations: em dia
 
 ## VS Code — extensões no WSL
-anthropic.claude-code@2.1.301
+anthropic.claude-code@2.1.304
 biomejs.biome@3.7.1
 eamodio.gitlens@19.3.0
 github.vscode-github-actions@0.32.3
 github.vscode-pull-request-github@0.170.0
 humao.rest-client@0.25.1
 miguelsolorio.symbols@0.0.26
-ms-azuretools.vscode-containers@2.5.2
+ms-azuretools.vscode-containers@2.5.3
 ms-azuretools.vscode-docker@2.0.0
 ms-ceintl.vscode-language-pack-pt-br@1.131.2026090407
 prisma.prisma@31.13.0
@@ -40,18 +40,18 @@ ritwickdey.liveserver@5.7.10
 usernamehw.errorlens@3.29.0
 
 ## VS Code — extensões no Windows
-anthropic.claude-code@2.1.301
+anthropic.claude-code@2.1.304
 biomejs.biome@3.7.1
 eamodio.gitlens@19.3.0
 github.vscode-github-actions@0.32.3
 github.vscode-pull-request-github@0.170.0
 humao.rest-client@0.25.1
 miguelsolorio.symbols@0.0.26
-ms-azuretools.vscode-containers@2.5.2
+ms-azuretools.vscode-containers@2.5.3
 ms-azuretools.vscode-docker@2.0.0
 ms-ceintl.vscode-language-pack-pt-br@1.131.2026090407
 ms-vscode-remote.remote-containers@0.469.0
-ms-vscode-remote.remote-wsl@0.104.3
+ms-vscode-remote.remote-wsl@0.104.4
 prisma.prisma@31.13.0
 ritwickdey.liveserver@5.7.10
 usernamehw.errorlens@3.29.0

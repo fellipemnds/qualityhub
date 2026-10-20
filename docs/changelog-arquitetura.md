@@ -11,6 +11,17 @@ documento de arquitetura.
 
 ### Fase B1 — identidade visual (branch `fase/b1-identidade-visual`)
 
+- **O símbolo sai da B1 (2026-10-20).** Depois de duas semanas de
+  exploração (dos estudos do Claude aos Frames 13 a 30 de Matthew), as
+  direções continuavam mudando, e o logo travava o resto. Decisão de
+  Matthew: a marca se define **sem o símbolo**. O front usa cor, fonte,
+  cantos, espaçamento e tom; o logo aparece em três lugares (login, topo
+  do menu, aba do navegador), e neles vai o **logotipo provisório**,
+  "Andon" em Figtree, com um favicon simples. O símbolo vira pendência
+  à parte, sem prazo; quando sair, troca um SVG num componente só. A
+  **ordem se inverte:** a cor de destaque, que esperava "o símbolo pedir
+  a cor dele", sai agora da Palpável, e o símbolo se adapta à paleta.
+  A B2 (wireframes, em cinza) não depende da B1 e pode correr junto.
 - **A ideia, o território e o nome: Andon (2026-10-14 e 15).** As
   direções de logo da Dusk & Dawn (o sol, a estrela-d'alva) pareciam
   genéricas a Matthew: a metáfora do dia foi encaixada no produto, não
