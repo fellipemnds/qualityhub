@@ -9,6 +9,100 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Fase B1 — identidade visual (branch `fase/b1-identidade-visual`)
+
+- **O nome fica provisório (2026-10-20).** Matthew ainda não quer fechar
+  a marca: **Andon** passa a ser nome provisório, e o nome e o símbolo
+  viram uma pendência só, sem prazo. A B1 fecha com a fundação visual,
+  que não depende do nome (o Grafite, a Figtree, a regra do logotipo e a
+  assinatura). No front, o nome é uma constante só, e trocar depois é
+  mudar uma linha e um SVG. O porquê do Andon fica no `docs/marca.md`.
+- **A assinatura da empresa (2026-10-20).** A versão horizontal do logo,
+  monocromática por máscara de CSS (a transparência do PNG pintada na cor
+  do tema, sem editar o arquivo): texto de apoio no login e no menu, cor
+  do texto no relatório, no mínimo 96 px. Só há PNG; o vetor fica para a
+  C7, e o arquivo, fora do repositório público até a C0.
+- **A Figtree fica, e o logotipo provisório é "andon" em Figtree 600
+  (2026-10-20).** A fonte foi conferida contra a Geist e a Schibsted
+  Grotesk: sem cor na interface, é ela que carrega o traço *humana*. O
+  logotipo, em minúsculas e no seminegrito (entre os pesos 500 a 800),
+  com o favicon "a" num quadrado de cantos macios que inverte no
+  escuro. Detalhe no `docs/marca.md`, "O logotipo provisório".
+- **O destaque é o grafite: a interface não tem cor (2026-10-20).**
+  Entre quatro opções (grafite, ardósia, índigo e petróleo, todas com o
+  contraste conferido), Matthew escolheu a sem cor, na linha do Linear:
+  link, foco, seleção e botão principal na cor do texto (`#121214` /
+  `#ECECEF`), e a cor só nos estados e no prazo. É o argumento que o
+  `ui-ux.md` §3.1 já dava para o botão principal, levado até o fim. O
+  índigo do Linear ficou de fora por brigar com os estados **Aberta** e
+  **Em aprovação**. O link passa a ser sublinhado. Os tokens das faces
+  (`--destaque`, `--brilho`, `--luz-*`) não entram no tema.
+- **O símbolo sai da B1 (2026-10-20).** Depois de duas semanas de
+  exploração (dos estudos do Claude aos Frames 13 a 30 de Matthew), as
+  direções continuavam mudando, e o logo travava o resto. Decisão de
+  Matthew: a marca se define **sem o símbolo**. O front usa cor, fonte,
+  cantos, espaçamento e tom; o logo aparece em três lugares (login, topo
+  do menu, aba do navegador), e neles vai o **logotipo provisório**,
+  "Andon" em Figtree, com um favicon simples. O símbolo vira pendência
+  à parte, sem prazo; quando sair, troca um SVG num componente só. A
+  **ordem se inverte:** a cor de destaque, que esperava "o símbolo pedir
+  a cor dele", sai agora da Palpável, e o símbolo se adapta à paleta.
+  A B2 (wireframes, em cinza) não depende da B1 e pode correr junto.
+- **A ideia, o território e o nome: Andon (2026-10-14 e 15).** As
+  direções de logo da Dusk & Dawn (o sol, a estrela-d'alva) pareciam
+  genéricas a Matthew: a metáfora do dia foi encaixada no produto, não
+  vivida. A marca recomeçou pela história real (a analista registrava
+  sozinha, à mão, 52 NCs numa planilha que quebrava), que deu a ideia
+  *"o processo sai da mão de uma pessoa e fica claro para todos"* e o
+  território **Palpável**, que também substitui a Luminosa na
+  personalidade (ela descartava "o pesado", e a direção pede peso). O
+  nome passa a ser **Andon** (o sinal do Sistema Toyota que deixa o
+  problema à vista de todos; busca no INPI e riscos no `docs/marca.md`).
+  O Dusk & Dawn, com as faces e a luz da paleta, fica **suspenso**, não
+  apagado; a decisão abaixo continua como histórico. Cai o limite de 4
+  sessões. O símbolo vem depois do nome, desenhado por Matthew.
+- **Identidade própria: a plataforma Dusk & Dawn (2026-10-13).** O plano
+  esperava a identidade da empresa (cores, logo, fonte) como decisão
+  externa. Ela chegou e não combina com o app; Matthew tem liberdade para
+  decidir. Decisão: a plataforma ganha nome e identidade **próprios**,
+  **Dusk & Dawn**, pensados para os módulos que virão depois das NCs
+  (cada um com um nome que diz o que faz, como "Dusk & Dawn · Qualidade";
+  o código continua `qualityhub`). Duas faces, divididas **por pessoa e
+  não por módulo** (o módulo de NC tem as duas): **Dawn**, a do
+  colaborador, e **Dusk**, a da gestão, com um login só. A autoria de
+  Matthew fica numa tela "Sobre", não na marca. A empresa aparece só como
+  **assinatura**: o logo dela monocromático no login, no
+  rodapé do menu, no e-mail de convite e nos relatórios exportados.
+  Custo baixo: o `ui-ux.md` já define as cores por função, e só os
+  valores mudam. Limite de 4 sessões curtas, para a identidade não virar
+  poço sem fundo. Detalhe em `ui-ux.md` §1 e no plano (B1).
+- **A direção e o brand brief (2026-10-13, sessão 1).** A entrevista
+  (`interview-me`) e o livro *Designing Brand Identity* deram o
+  `docs/marca.md`: o propósito (sair das planilhas e e-mails, à altura de
+  uma empresa de tecnologia), a personalidade (calma, precisa, confiável,
+  humana, luminosa; "simples" virou regra de design), a base visual na linha do Linear com personalidade em
+  pontos pequenos (cor suave, avatares no estilo Blobatar,
+  microinterações sutis), **Dawn azulada e Dusk quente**, e **claro e
+  escuro nas duas faces**, o que revê a decisão "só claro no MVP" do
+  `ui-ux.md` §1.
+- **A paleta: a face é a cor da luz (2026-10-13, sessão 2).** A primeira
+  versão tingia as superfícies com a cor da face; Matthew não gostou do
+  modo escuro "inteiro colorido" e trouxe referências (Linear, um app de
+  finanças escuro, Q2 Planning, Flowio). A paleta passou a ter superfícies
+  **neutras**, a face só como **luz** (o brilho no topo, a borda da
+  seleção, o link, o foco) e a cor forte como **informação** (o ícone do
+  estado ao lado do rótulo); o botão principal continua quase preto. Os
+  valores e o que evitar (halo colorido, gradiente atrás de texto, orbe de
+  enfeite) estão no `docs/marca.md`; no Figma, a coleção "Tema" com quatro
+  modos.
+- **A fonte: Figtree (2026-10-13, sessão 3).** Cinco candidatas conferidas
+  no arquivo da fonte (licença OFL, acentos, números tabulares); três no
+  Figma, cada uma com a Inter embaixo, com texto real do sistema. Claude
+  recomendou a Instrument Sans (mais neutra para tela densa, eixo de
+  largura); Matthew escolheu a Figtree, a que mais veste *humana* e
+  *luminosa*. A Inter ficou de fora por ser o padrão de tudo (o Linear
+  usa a `InterVariable`). Resolve a U3 do `ui-ux.md`.
+
 ### Fase A7 — travas entre linhas (branch `fase/a7-travas-entre-linhas`, PR #10)
 
 - **Travar antes de ler (2026-10-09, B29–B36).** A trava do B19 (o

@@ -28,7 +28,7 @@ mostrada antes) e `code-review-and-quality` (por fatia, acima de ~400 linhas); v
 entrada ou CI) e `documentation-and-adrs` no diff da fase, confere o "pronto quando" (§1.1),
 tira o PR do rascunho e entrega a mensagem do merge. Você faz o merge → `/fechar-fase`.
 
-**Saída:** `/trocar-pc`.
+**Saída** (fim do dia ou troca de PC): `/encerrar`.
 
 ## 2. Por fase do nosso plano
 
@@ -37,7 +37,7 @@ tira o PR do rascunho e entrega a mensagem do merge. Você faz o merge → `/fec
 | **A4** Sessão nova | `test-driven-development`, `code-simplification` (o `ciclo-vida`), `security-and-hardening` (cookie, `helmet`), `doubt-driven-development` (auth), `ci-cd-and-automation` (os checks do `CONSTRAINTS.md`) |
 | **A5** Contrato da API | `api-and-interface-design`, `documentation-and-adrs`, `source-driven-development` (`@fastify/swagger`), `security-and-hardening` (L4, L5, CSP da documentação), `idea-refine` (as funções repetidas dos services) |
 | **A6** Usuários e setores | `interview-me` (a trava da RN-43), `spec-driven-development`, `test-driven-development`, `security-and-hardening` (permissões de `ADMIN`, convite, inativação), `doubt-driven-development` (convite novo invalida os antigos, senha redefinida derruba as sessões), `idea-refine` (o script do primeiro acesso) |
-| **B** Design | B2/B3: o conector do **Figma** (Claude cria os frames no arquivo de Matthew; `get_figma_skill` antes). B4, o protótipo HTML: `impeccable` e `taste-skill` (fora do `agent-skills`) |
+| **B** Design | B1: `grilling` ou `interview-me` (a direção), `brandkit` (o logo), `impeccable` e `minimalist-ui` (conferir a direção). B2/B3: o conector do **Figma** (Claude cria os frames no arquivo de Matthew; `get_figma_skill` antes). B4, o protótipo HTML: `impeccable` e `taste-skill` (fora do `agent-skills`) |
 | **C** Frontend | `spec-driven-development` por fatia, `frontend-ui-engineering`, `browser-testing-with-devtools`, `performance-optimization` |
 | **D** Produção | `shipping-and-launch`, `ci-cd-and-automation`, `observability-and-instrumentation`, `security-and-hardening` |
 
@@ -122,7 +122,7 @@ O plugin também traz quatro agentes (`code-reviewer`, `security-auditor`, `test
 | Skill | Quando |
 |---|---|
 | `/retomar` | Chegou no PC (início do dia, ou depois de trocar de máquina) |
-| `/trocar-pc` | Vai sair deste PC |
+| `/encerrar` | Vai parar por hoje ou sair deste PC |
 | `/abrir-pr` | Abrir ou atualizar o PR, acompanhar o CI e, no fim da fase, as revisões e a mensagem do merge |
 | `/comecar-fase` | Começo de fase: ler a fase, as skills de cada entrega, PR em rascunho |
 | `/fechar-fase` | Depois do merge: voltar para a `main`, abrir a próxima branch e, no fim de cada bloco (A, B, C, D), rever as skills |

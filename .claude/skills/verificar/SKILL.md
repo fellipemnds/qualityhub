@@ -1,6 +1,6 @@
 ---
 name: verificar
-description: A verificação local do projeto, num lugar só — prepara o shell, escolhe o nível pelo CONSTRAINTS.md §4 (lint e typecheck, os testes do que mudou, ou a suíte completa com cobertura) e, antes do push, o diff-cover. Use antes de pedir um commit, antes do push, quando outra skill (/item, /abrir-pr, /trocar-pc) mandar, ou quando Matthew chamar /verificar.
+description: A verificação local do projeto, num lugar só — prepara o shell, escolhe o nível pelo CONSTRAINTS.md §4 (lint e typecheck, os testes do que mudou, ou a suíte completa com cobertura) e, antes do push, o diff-cover. Use antes de pedir um commit, antes do push, quando outra skill (/item, /abrir-pr, /encerrar) mandar, ou quando Matthew chamar /verificar.
 ---
 
 # Verificar

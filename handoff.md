@@ -5,14 +5,17 @@
 > computador". Aqui fica só o que muda de sessão para sessão; o que é
 > estável mora nos documentos apontados.
 
-**Última atualização:** 2026-10-13 (no **trabalho**). **Bloco A fechado nos documentos** (portão "fundação pronta"; o passeio guiado vai em três sessões curtas durante o Bloco B, como condição para o C0, porque em casa Matthew chega cansado) e as skills revistas (`/retomar` com branch já mesclada; colinha do Bloco B). O PR da `docs/fechamento-bloco-a` espera: Matthew quer ver outras skills antes. Antes, no mesmo dia, a chegada (`/retomar`). Este PC estava parado no `fase/a6` de 2026-10-09: `main` atualizada, branch `docs/fechamento-bloco-a` criada daqui e a `fase/a6` local apagada (mesclada). Em 2026-10-10 entrou a **primeira foto de casa** (`casa.txt`, commit `de11205`), sem `/trocar-pc` (este handoff não foi atualizado lá). Sem dependência, migration nem chave nova desde 2026-10-09. A foto daqui só mudou a extensão do Claude Code (2.1.296). Comparando com casa: lá o `gh` é o do apt (2.46.0, escopos ok), o Prettier ainda está no WSL e a foto acusa `claude code: não instalado` (provavelmente o `PATH`, §5). Antes, 2026-10-09, noite (**sessão na nuvem**, Matthew pelo iPad; a primeira, `SETUP.md` §13). **A6 fechada** (PR #9, merge `e441212`) e **A7 fechada** (PR #10, merge `aae403f`). Branch nova, `docs/fechamento-bloco-a`, para fechar o bloco A depois do passeio guiado. Antes, 2026-10-09, fim do dia (no **trabalho**, `/trocar-pc`): o script do primeiro acesso e o item 6. O PC de casa continua sem foto (`casa.txt`).
+**Última atualização:** 2026-10-20, manhã (chegada no **trabalho**, `/retomar`): branch em dia com a remota, nenhum commit desde o handoff de 2026-10-16, CI do PR #12 verde, plugins completos. A foto daqui só mudou extensões (Claude Code 2.1.304, Containers 2.5.3, Remote WSL 0.104.4); comparando com casa, nada novo (o `gh` e o CLI do Claude Code continuam diferentes). Antes, 2026-10-16, tarde (fim do dia no **trabalho**, `/encerrar`; Matthew continua de casa). **O símbolo tem direção** (§6, item 2): a exploração guiada deu as regras e a ficha (`docs/marca.md`, "O símbolo"), e Matthew escolheu os **Frames 13, 14 e 15** dele (a barra de cantos redondos com a estrela). A estrela lembrou o PT a todos no teste; ele está testando variações dela (arredondada, inclinada). O caminho inteiro: `docs/identidade/referencias.md`, "2026-10-16". A conexão do Claude com o Figma funcionou (leitura e escrita). Antes, de manhã (chegada no **trabalho**, `/retomar`): a branch estava 6 commits atrás (os de casa e da nuvem, de 2026-10-14 a 16), `git pull` sem conflito; CI do PR #12 verde; plugins completos. A foto daqui: o Prettier saiu do lado Windows (a pendência do §5 resolvida) e extensões novas (Claude Code 2.1.301, Prisma 31.13.0, GitHub PR 0.170.0); o CLI do Claude Code aqui é 2.1.280 (em casa, 2.1.301). Antes, 2026-10-16, madrugada (em **casa**, `/encerrar`). **O símbolo andou** (§6, item 2): o ponto de partida agora é a **fenda** do Frame 8 (um triângulo e um paralelogramo), e a estrela do Karave ficou de fora. O arquivo do Figma se chama **Andon**. A conexão do Claude com o Figma caiu no meio da sessão e só volta numa conversa nova. Antes, 2026-10-15, noite (chegada em **casa**, `/retomar`): este PC estava na `docs/fechamento-bloco-a` (já mesclada, PR #11); `main` atualizada, troca para a `fase/b1-identidade-visual` e a local mesclada apagada. CI do PR #12 verde. **Ambiente de casa configurado:** o `~/.claude` do WSL tinha sido recriado sem plugins nem marketplaces; o CLI do Claude Code foi instalado no WSL (2.1.301, `~/.local/bin` no `PATH` do `.bashrc`), Matthew instalou os 6 plugins (as marketplaces conferidas e anotadas no `SETUP.md` §12.4) e o `~/.config/ponytail/config.json` foi criado (`lite`). A foto: o Claude Code instalado, o Prettier saiu dos dois lados, o GitHub Actions entrou no WSL e versões novas de extensões. Comparando com o trabalho: aqui o Compose é 5.5.1 e o `gh` é o do apt (2.46.0, escopos ok). O `JWT_SECRET` daqui já tem 44 caracteres e o banco escuta só em `127.0.0.1`. Antes, 2026-10-15 (pelo celular, na nuvem): **o nome é Andon** (§6, item 2). Antes, 2026-10-14, noite (**sessão na nuvem**, Matthew pelo iPad, `/encerrar`). **A marca recomeçou pela ideia:** saiu da história real (as 52 NCs registradas à mão pela analista) a frase *"o processo sai da mão de uma pessoa e fica claro para todos"* e o território **Palpável**, que também entrou na personalidade no lugar da Luminosa; o **Dusk & Dawn** e a parte de luz da paleta ficaram **suspensos** (`docs/marca.md`, commit `7c41d58`). Os estudos de símbolo do Claude (estrela-d'alva e três do Palpável) foram recusados: "genéricos, sem força e feios". **Próximo: o nome, antes do símbolo** (§6, item 2). Antes, 2026-10-14, fim do dia (no **trabalho**, `/encerrar`). **O nome da plataforma está em aberto de novo** (§6, item 2): Matthew quer um nome só, em vez de "Dusk & Dawn", e a direção do logo mudou junto. Nada mudou nos documentos ainda. Antes, de manhã, a chegada (`/retomar`): branch em dia com a remota, nenhum commit de casa desde 2026-10-13, plugins completos, CI do PR #12 verde. Antes, 2026-10-13, fim do dia (no **trabalho**, `/trocar-pc`). **B1 em andamento** (PR #12, rascunho): sessão 1 (direção, `docs/marca.md`), sessão 2 (paleta: superfícies neutras, a face como luz) e metade da 3 (fonte: **Figtree**) feitas; o **logo** está nos primeiros conceitos, no Figma, e Matthew vai pensar em casa. Também hoje: as skills avulsas duplicadas apagadas deste PC (40), o Ponytail em `lite` e a regra de formato das respostas no `CLAUDE.md`. Antes, 2026-10-13, tarde (no **trabalho**). **Bloco A fechado** (PR #11, merge `df05b71`) e a **fase B1 aberta** (branch `fase/b1-identidade-visual`): a identidade da empresa chegou e não combina com o app, então a plataforma ganha nome e identidade próprios, **Dusk & Dawn**, com as faces **Dawn** (colaborador) e **Dusk** (gestão), divididas por pessoa, e a assinatura da empresa (`ui-ux.md` §1). A branch remota `docs/fechamento-bloco-a` ainda existe (apagar só com o pedido de Matthew). Antes, de manhã: **Bloco A fechado nos documentos** (portão "fundação pronta"; o passeio guiado vai em três sessões curtas durante o Bloco B, como condição para o C0, porque em casa Matthew chega cansado) e as skills revistas (`/retomar` com branch já mesclada; colinha do Bloco B). O PR da `docs/fechamento-bloco-a` espera: Matthew quer ver outras skills antes. Antes, no mesmo dia, a chegada (`/retomar`). Este PC estava parado no `fase/a6` de 2026-10-09: `main` atualizada, branch `docs/fechamento-bloco-a` criada daqui e a `fase/a6` local apagada (mesclada). Em 2026-10-10 entrou a **primeira foto de casa** (`casa.txt`, commit `de11205`), sem `/trocar-pc` (este handoff não foi atualizado lá). Sem dependência, migration nem chave nova desde 2026-10-09. A foto daqui só mudou a extensão do Claude Code (2.1.296). Comparando com casa: lá o `gh` é o do apt (2.46.0, escopos ok), o Prettier ainda está no WSL e a foto acusa `claude code: não instalado` (provavelmente o `PATH`, §5). Antes, 2026-10-09, noite (**sessão na nuvem**, Matthew pelo iPad; a primeira, `SETUP.md` §13). **A6 fechada** (PR #9, merge `e441212`) e **A7 fechada** (PR #10, merge `aae403f`). Branch nova, `docs/fechamento-bloco-a`, para fechar o bloco A depois do passeio guiado. Antes, 2026-10-09, fim do dia (no **trabalho**, `/trocar-pc`): o script do primeiro acesso e o item 6. O PC de casa continua sem foto (`casa.txt`).
 
 ## 1. Objetivo
 
-**Ir para o Bloco B (design).** O bloco A está fechado nos documentos,
-na branch `docs/fechamento-bloco-a` (só documentos); falta o PR dela e o
-merge de Matthew. O **passeio guiado** vai em sessões curtas durante o B,
-aqui no trabalho, e é condição para o C0.
+Fase **B1 — Identidade visual** (`docs/plano-implementacao.md`, Bloco B),
+na branch `fase/b1-identidade-visual`: a plataforma (nome **provisório**, Andon; vai
+ganhar módulos além das NCs), com a ideia e o território **Palpável** do
+`docs/marca.md` e a assinatura da empresa. O limite de 4 sessões caiu:
+Matthew prefere mais sessões a uma marca genérica (2026-10-14). O
+**passeio guiado** vai em sessões curtas durante o B, aqui no trabalho,
+e é condição para o C0.
 
 ## 2. Estado atual
 
@@ -87,17 +90,39 @@ Nenhum.
 
 ## 4. O que foi alterado nesta sessão
 
-Na nuvem (2026-10-09, noite): na **A6** (`git log e29265d..ca93de8`), o
-B28, a `SETUP.md` §13 (a sessão na nuvem), o registro do B29–B36, da
-RN-51 e da fase A7, e o PR #9 fora do rascunho. Na **A7** (a branch
-nova): os consertos do B29–B36 e os documentos. **Sem migration,
-dependência nem chave nova no `.env`**: no PC, só `git pull` (e o
-`npm run preparar` de sempre).
+Em 2026-10-16 (no trabalho): a exploração do símbolo (`docs/marca.md`, "O símbolo"; `docs/identidade/referencias.md`, "2026-10-16") e a foto do trabalho (sem mudança à tarde). No Figma (arquivo Andon): a página nova **"Símbolo"** (a estrela na trave do Claude, um componente com cópias em 96, 32 e 16 px) e, na página "Logo", os Frames 12 a 18 de Matthew e quatro estudos do Claude ("Rachadura · degrau", "Rachadura · raio", "Quadrado · degrau", "Quadrado · raio"). **Sem código, migration, dependência nem chave nova no `.env`.**
+
+Em 2026-10-15/16 (em casa): o ambiente de casa configurado (o CLI do Claude Code no WSL, os 6 plugins, a tabela das marketplaces no `SETUP.md` §12.4), a foto de casa (o Compose foi para a 5.6.0) e, na marca, o `docs/identidade/referencias.md` (as referências de hoje), o nome novo do arquivo do Figma no `docs/marca.md` e o `docs/identidade/paleta.html` apagado (decisão de Matthew: o visual da marca fica **só no Figma**; os valores continuam nas tabelas do `docs/marca.md`). No Figma: os três esboços do A do Claude (página "Logo") e os Frames 7 e 8 de Matthew, com as referências ao lado. **Sem código, migration, dependência nem chave nova no `.env`.**
+
+Em 2026-10-14, noite (na nuvem): `docs/identidade/referencias.md` (novo:
+o moodboard em texto; as imagens de outros autores ficam fora do
+repositório, que é público) e o `docs/marca.md` (a ideia, o território
+Palpável, a Palpável no lugar da Luminosa, o Dusk & Dawn e a luz da paleta
+suspensos). Fora do Git: a página **"Moodboard"** no Figma (vazia: o envio
+de imagem foi bloqueado, ver §5) e duas páginas privadas de estudo
+(estrela-d'alva: https://claude.ai/artifact/YDnRtR9nZRykjXUG5xhtwc;
+Palpável: https://claude.ai/artifact/7gTCKVdH89C4mmYg92QJsf). O
+`CLAUDE.md`, o `ui-ux.md` §1, o plano e o changelog ainda dizem "Dusk &
+Dawn": atualizar todos de uma vez quando o nome sair. **Sem código,
+migration, dependência nem chave nova no `.env`.**
+
+Em 2026-10-14 (no trabalho): só conversa sobre o nome e o logo (§6, item 2) e a foto do trabalho (o Docker Compose foi para a 5.6.0). Nenhum documento de marca mudou.
+
+Em 2026-10-13 (no trabalho): o bloco A fechado (PR #11) e a B1 aberta
+(PR #12), com o `docs/marca.md` (brand brief, paleta, fonte, o que
+evitar), o `docs/identidade/paleta.html` (apagado em 2026-10-16: o visual da marca fica só no Figma) e os registros no `ui-ux.md`
+(identidade, tema claro e escuro, a fonte U3), no plano e no changelog
+("Fase B1"). Fora do Git: o arquivo do Figma **"Dusk & Dawn —
+Identidade"** (time Work; https://www.figma.com/design/t0wty21KOea7v0juDLcxGG),
+com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
+"Logo". **Sem migration, dependência nem chave nova no `.env`.**
 
 ## 5. Falhas (e o porquê)
 
 | O que falhou | Por quê | Situação |
 |---|---|---|
+| Na nuvem, Dribbble, softriver.co e o envio de imagem ao Figma (`mcp.figma.com`) bloqueados (2026-10-14) | Política de rede do ambiente da nuvem | Referências por **captura anexada** no chat; no Figma, arrastar à mão ou liberar `mcp.figma.com` nas *Allowed domains* do ambiente |
+| Os símbolos desenhados pelo Claude foram recusados duas vezes (2026-10-14) | Ilustravam a frase da ideia com geometria em código: viraram ícones conhecidos (layout, usuário, "expandir") e sem acabamento | A forma final sai da mão de Matthew no Figma; Claude dá critério, crítica e o teste em 16 px |
 | Na nuvem, a suíte caiu com `Could not find a working container runtime strategy` (2026-10-09) | O `dockerd` da sessão morreu sozinho entre uma rodada e outra | Claude: `docker info` antes de cada suíte, e ligar o `dockerd` de novo (`SETUP.md` §13) |
 | O teste de corrida do envio da NC passou **sem** a trava (2026-10-09) | Com o `Promise.all`, a corrida acontece em 1 de 4 rodadas | Testes de corrida pelo `pausarNoMeio` (pausa entre conferir e gravar): vermelho sempre sem a trava, verde sempre com ela |
 | A primeira trava do B32 deu *deadlock* (500) | O `FOR UPDATE` segura também a chave estrangeira da auditoria que aponta para a pessoa (os dois ADMINs se esperavam) | `FOR NO KEY UPDATE`, a trava do `UPDATE` (no `CLAUDE.md`, "Trava entre linhas") |
@@ -130,6 +155,11 @@ dependência nem chave nova no `.env`**: no PC, só `git pull` (e o
 | CI da F6a vermelho no `diff-cover` (2026-10-08): uma linha do `setor.service.ts` sem teste | O `diff-cover` local deu 100% porque o arquivo era **novo e ainda sem commit**: o Git não o rastreava, e ele ficou fora do diff | Resolvido com o teste. Claude: `git add -N` nos arquivos novos antes do `diff-cover` (na `/verificar` §4), ou rodar depois do commit |
 
 **Pendências anotadas:**
+- **Figma na conta pessoal (2026-10-20):** o arquivo saiu do time Work
+  (motivo de Matthew: separar do trabalho) e está no time "Designing"
+  (`docs/marca.md`). No plano Starter, o conector do Claude parou depois
+  de ~15 chamadas. Matthew espera o SheerID aprovar a licença de
+  estudante; **sem ela, a B2 (wireframes pelo conector) fica limitada.**
 - **Classificação, reincidência e segregação** (2026-10-07, com a
   analista): PRD Q19–Q22, na C2 como proposta (a 3ª ocorrência aceita a
   Menor com justificativa; colaborador e aprovador excludentes por item;
@@ -194,20 +224,47 @@ dependência nem chave nova no `.env`**: no PC, só `git pull` (e o
   respondida pela analista em 2026-10-07 (PRD Q22). Fica técnica, para a
   C2: o `cicloVidaService.cancelar` confere `GERENTE` direto, sem o
   catálogo de permissões.
-- No trabalho, o Prettier ainda está instalado no lado Windows do VS
-  Code (inofensivo; pode desinstalar — `SETUP.md` §12.4). O Copilot
+- ~~No trabalho, o Prettier no lado Windows do VS Code~~ (desinstalado,
+  foto de 2026-10-16). O Copilot
   ficou desligado no projeto (`.vscode/settings.json`) e nas
   configurações do trabalho.
 
 ## 6. Próximo passo
 
-1. **Matthew olha outras skills** que podem ajudar no Bloco B (pedido
-   dele, 2026-10-13), antes do PR.
-2. **PR da `docs/fechamento-bloco-a`** (`/abrir-pr`), merge de Matthew e
-   `/fechar-fase` (o passo 5, rever as skills, já foi feito).
-3. **`/comecar-fase` do Bloco B.** A B1 (identidade visual) depende da
-   empresa; a B2 (wireframes no Figma, pelo conector) não depende, e dá
-   para começar por ela.
+1. ~~`/comecar-fase` da B1~~ (PR #12, rascunho) e ~~a sessão 1, a
+   direção~~ (2026-10-13): o **`docs/marca.md`** (brand brief) é a base
+   de tudo daqui em diante.
+2. ~~Sessão 2, a paleta~~ e ~~sessão 3, a fonte~~ (2026-10-13; a paleta
+   de luz ficou suspensa em 2026-10-14). **A marca recomeçou pela ideia
+   (2026-10-14, nuvem):** o passo 1 (a ideia) e o passo 2 (o território
+   **Palpável**) estão no `docs/marca.md`; o histórico das referências e
+   dos estudos, no `docs/identidade/referencias.md`. A ordem combinada:
+   **nome antes do símbolo** (o que pegou Matthew foi o N do Nucleus, e a
+   força dele vem de ser a letra do nome). **O nome saiu em 2026-10-15
+   (pelo celular): Andon** (`docs/marca.md`, "O nome", com a busca no
+   INPI e os riscos aceitos; já trocado no `CLAUDE.md`, `ui-ux.md` §1,
+   plano e changelog). **O símbolo, em 2026-10-15/16 (casa):** dos três
+   esboços do A do Claude, Matthew gostou do **círculo de luz dentro**; do
+   caderno saiu o **A de pernas cruzadas** com a luz no cruzamento, e no
+   Figma, a **fenda diagonal** (Frame 8). A estrela de curvas para dentro
+   (Frame 7) ficou de fora: é a do Karave e a da IA (o porquê e as
+   referências no `docs/identidade/referencias.md`, "2026-10-15/16").
+   **Em 2026-10-16 (trabalho), a exploração guiada:** regras, história e
+   ficha no `docs/marca.md` ("O símbolo"); o caminho e os testes no
+   `docs/identidade/referencias.md` ("2026-10-16"). **Em 2026-10-20, o
+   símbolo saiu da B1** (decisão de Matthew, travado no logo; changelog e
+   `docs/marca.md`): pendência à parte, sem prazo; os Frames 13 a 30 dele
+   (sem cor) ficam como material. **Começar por aqui:** (a) ~~a cor de
+   destaque~~: **Grafite, sem cor** (2026-10-20, `docs/marca.md`); (b)
+   ~~conferir a Figtree~~: **confirmada** (2026-10-20); (c) ~~o logotipo provisório~~:
+   **"andon" em Figtree 600** (2026-10-20, `docs/marca.md`); (d) ~~a assinatura da empresa~~: **definida** (2026-10-20, `docs/marca.md`, "Arquitetura"; o PNG fica fora do repositório); (e) o
+   fechamento da B1 (`/abrir-pr`). **O nome também ficou provisório** (2026-10-20): o nome e o
+   símbolo são uma pendência só, sem prazo (`docs/marca.md`, "O nome"). A **B2** (wireframes em cinza) não
+   depende da B1 e pode começar junto.
+   (O arquivo do Figma já se chama **Andon**, e os conceitos antigos de
+   logo foram apagados por Matthew.)
+3. Depois, a B2 (wireframes no Figma, pelo conector) e a B3 (fundações e
+   o `DESIGN.md`).
 4. **Passeio guiado, em três sessões curtas (20–30 min) durante o B**
    (plano, portão "fundação pronta"; condição para o C0): A4 (o B19 e o
    `SameSite=Strict`), A6 (a RN-43 e o convite) e A7 (a trava entre
@@ -229,7 +286,7 @@ ainda barato de mudar). Sugestões antigas sem prazo: o `logout` sem
 no `buscarPorEmail` sobrou; o `gitleaks detect` vira `gitleaks git` nas
 versões novas.
 
-**Chegando em casa:** rodar o **`/retomar`**. **Desde 2026-10-13: criar o `~/.config/ponytail/config.json` com `{ "defaultMode": "lite" }`** (o Ponytail vem em `full` sem ele; regra no `CLAUDE.md`). Desde 2026-10-09: **chave nova no `.env`, a `URL_DO_SISTEMA`** (copiar a linha do `.env.example`; sem ela, o `npm run ambiente` acusa a falta) e o `fast-jwt` 6.3.4 (o `npm run preparar` resolve). A A5 trouxe **duas dependências** (`@fastify/swagger`, declarado, e `@fastify/swagger-ui`, de desenvolvimento): o `npm run preparar` resolve. Sem migration nem chave nova no `.env`. Desde a última vez que a
+**Chegando em casa:** rodar o **`/retomar`**, e **`git switch fase/b1-identidade-visual`** (a branch nova; a `docs/fechamento-bloco-a` já foi mesclada). Se o `npx skills` também instalou cópias das skills do agent-skills e do taste-skill em casa, dá para apagá-las como foi feito aqui (os plugins já trazem as mesmas). **Desde 2026-10-13: criar o `~/.config/ponytail/config.json` com `{ "defaultMode": "lite" }`** (o Ponytail vem em `full` sem ele; regra no `CLAUDE.md`). Desde 2026-10-09: **chave nova no `.env`, a `URL_DO_SISTEMA`** (copiar a linha do `.env.example`; sem ela, o `npm run ambiente` acusa a falta) e o `fast-jwt` 6.3.4 (o `npm run preparar` resolve). A A5 trouxe **duas dependências** (`@fastify/swagger`, declarado, e `@fastify/swagger-ui`, de desenvolvimento): o `npm run preparar` resolve. Sem migration nem chave nova no `.env`. Desde a última vez que a
 branch foi usada em casa (antes da A3): as migrations da A3 e a **M1**
 (`sessao_e_preferencia_do_usuario`), e **dependências novas** (cookie,
 rate-limit, helmet, cobertura, Vitest 5.0.3). O `npm run preparar`
@@ -237,7 +294,7 @@ resolve as duas coisas. Os passos (`SETUP.md` §12.1 se o PC estiver
 parado há tempo):
 
 1. Docker Desktop aberto ("Engine running"), Ubuntu, pasta do projeto.
-2. `git fetch`, `git switch docs/fechamento-bloco-a`, `git pull`.
+2. `git fetch`, `git switch fase/b1-identidade-visual`, `git pull`.
 3. **`npm run preparar`**: obrigatório. Se a migration do
    `investigacaoId` falhar (o banco de casa tem ações sem investigação),
    recriar o banco: `SETUP.md` §12, passos 6 e 7.
