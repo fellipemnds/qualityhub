@@ -329,7 +329,7 @@ precisar estar atribuído.
 3. **Inativar** ou **revogar papel** (T-10): se a pessoa for aprovadora
    de itens abertos, o sistema recusa e lista os itens; um `GERENTE`
    reatribui e o ADMIN tenta de novo (RN-43).
-4. **Setores** (T-12): criar, renomear, desativar (RN-44).
+4. **Setores** (T-12): criar, renomear, desativar e reativar (RN-44).
 
 ### J12 — Acompanhar o processo (gestor) · RF-19
 
@@ -430,7 +430,7 @@ levam à lista de NCs filtrada.
   gerar novo convite. A recusa da RN-43 mostra a lista de itens a
   reatribuir.
 - **T-11 Novo usuário**: formulário → mostra o link de convite para copiar.
-- **T-12 Setores**: lista, criar, renomear, desativar.
+- **T-12 Setores**: lista, criar, renomear, desativar, reativar.
 
 ---
 
@@ -534,3 +534,4 @@ Com Matthew, em 2026-09-24.
 | 2026-09-24 | v1.1 — revisão cruzada: etapa "Pronta para fechamento" olha só os filhos; aprovador no checklist; herança do aprovador (RN-46); rascunho não se cancela; vínculo obrigatório da AC com investigação; prefixos reais dos códigos |
 | 2026-09-30 | v1.2 — atribuições só em `RASCUNHO`/`ABERTO` (RN-47); ação "Retirar da aprovação" (RN-48) |
 | 2026-10-01 | v1.3 — planos de ação conferidos pela Investigação (PRD Q17): etapa "Em plano de ação" removida (10 etapas), J4 com as contramedidas, J5 com o vínculo desde a criação (RN-49), checklist da J6 sem os planos |
+| 2026-10-21 | v1.4 — o reativar setor (RN-44, pronto desde a A6) na J11 e na T-12 |

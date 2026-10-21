@@ -492,8 +492,10 @@ empresa embaixo (§1), como texto de apoio.
 ```
 
 Aberta pelo link do convite (`/definir-senha?token=…`, válido por 72 h).
-A tela não mostra o nome nem o e-mail da pessoa: a API não tem rota que
-leia o convite sem usá-lo.
+A tela não mostra o nome nem o e-mail da pessoa (Matthew, 2026-10-21):
+mostrar exigiria uma rota pública que lê o convite sem usá-lo, mais uma
+porta sem login para proteger, e quem manda o link é o ADMIN, que já fala
+com a pessoa.
 
 - **Regra da senha:** 12 caracteres ou mais; o limite de 72 bytes só
   aparece se for atingido ("Senha longa demais"). "Repita a senha" é
@@ -715,14 +717,14 @@ Setores                                           [ ＋ Novo setor ]
  Nome          Situação
  Expedição     ● Ativo      [✎ Renomear]  [ Desativar ]
  Produção      ● Ativo      [✎ Renomear]  [ Desativar ]
- Almoxarifado  ○ Desativado
+ Almoxarifado  ○ Desativado              [ Reativar ]
 ```
 
 Criar e renomear acontecem na própria linha (o nome é o único campo).
 Desativar pede confirmação simples (§8.2), e a recusa da RN-44 lista
 quem ainda está no setor, com link para cada pessoa (T-10): "Mude o
-setor destas pessoas antes de desativar". Setor desativado não tem ação:
-a API não reativa setor.
+setor destas pessoas antes de desativar". Reativar devolve o setor
+às opções, sem confirmação (é reversível).
 
 ---
 
@@ -865,3 +867,4 @@ tokens.
 | 2026-10-01 | v1.2 — etapa "Em plano de ação" removida; checklist da NC sem os planos, que passam para a investigação (PRD Q17) |
 | 2026-10-21 | v1.3 — B2: os wireframes em texto que faltavam (§7.7 a §7.16): Login, Definir senha, Classificação, Contenção, Verificação, Relatórios e as quatro de administração |
 | 2026-10-21 | v1.4 — coerência com a B1: o §1 sem as faces Dawn e Dusk como se valessem (estão suspensas), e o tema escuro sai da §11 (é do MVP desde 2026-10-13) |
+| 2026-10-21 | v1.5 — o reativar setor no T-12 (a rota existe desde a A6; o wireframe dizia que não) e a decisão do T-02 sem o nome da pessoa |
