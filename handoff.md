@@ -138,6 +138,7 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
 | CI do PR #13 vermelho no `osv-scanner` (2026-10-21): 6 alertas novos no `vite` 8.3.2 (1 alto), de desenvolvimento, transitivo do Vitest | Alerta publicado depois do último CI; não é da mudança da B2 (a `main` também acusaria) | **Aberto.** Matthew roda `npm update vite` no PC (decisão: o lockfile não sai da nuvem, §13). Na nuvem, o teste deu `vite` 8.3.5, só a árvore dele no lockfile (6 pacotes, versões) e a suíte verde (489, 97,47%) |
 | Na nuvem, a suíte caiu com 0% de cobertura e `429 Too Many Requests` (2026-10-21) | O Docker Hub limitou o download da imagem do Postgres sem login | Claude: baixar pelo espelho do Google e dar o nome original (`docker pull mirror.gcr.io/library/postgres:17-alpine` e `docker tag ... postgres:17-alpine`; o mesmo para o `testcontainers/ryuk:0.14.0`) |
 | O wireframe T-12 afirmou que a API não reativa setor (2026-10-21), e a rota existia desde a A6 | A lista das rotas foi lida com `head`, que cortou a última | Corrigido no mesmo dia. Claude: ler a lista **inteira** (sem `head`) antes de afirmar que algo não existe |
+| No Figma, o menu da pessoa e as notas da casca saíram com 14 e 32 px de altura (2026-10-21) | O `resize()` depois do `primaryAxisSizingMode = "AUTO"` volta a altura para FIXED (a skill `figma-use`, regra 12c, avisa) | Corrigido no mesmo dia. Claude: no Figma, `resize()` **antes** dos modos de tamanho; e conferir as alturas na leitura de volta, não só na captura |
 | Aviso no CI: `ubuntu-latest` vira Ubuntu 26 em 19/10/2026 | Migração do GitHub | O CI da `main` passou em 2026-10-20, já no Ubuntu novo; se quebrar, começar por aqui |
 | `npx biome` rodou um pacote errado pelo Node do Windows | O shell do Claude não carrega o nvm | Claude: `source ~/.nvm/nvm.sh` antes de npm/npx, e `npx --no-install` |
 | `npm run -s lint \| tail -1` mostrou saída vazia com erro | O `-s` esconde o resumo, e o erro fica acima da última linha | Claude: conferir o lint pelo **código de saída** (`&& echo LINT_OK`) |
@@ -189,8 +190,8 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
   (`docs/marca.md`). No plano Starter, o conector do Claude parou depois
   de ~15 chamadas. O SheerID aprovou a licença de estudante (2026-10-21):
   o `whoami` do conector mostra o "Designing" no plano `student`, com
-  assento Full. O limite novo de chamadas ainda não foi medido (o item 3
-  da B2 mede).
+  assento Full. Na B2 (2026-10-21), umas 25 chamadas seguidas passaram sem
+  bloqueio (no Starter, parava em ~15).
 - **Classificação, reincidência e segregação** (2026-10-07, com a
   analista): PRD Q19–Q22, na C2 como proposta (a 3ª ocorrência aceita a
   Menor com justificativa; colaborador e aprovador excludentes por item;
@@ -278,9 +279,21 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
    push; o CI tem de ficar verde. (2) **O servidor de linguagem do
    TypeScript** (Matthew escreve o plugin de dois arquivos e faz o teste
    do erro de tipo pelo app desktop; o passo a passo está nas pendências
-   do §5). **Depois, o item 3:** a página "Wireframes" no Figma e a casca
-   (menu, barra inferior, logotipo provisório), que mede o limite de
-   chamadas do plano de estudante.
+   do §5). ~~O item 3~~ (2026-10-21, na nuvem): a página "Wireframes" e
+   a casca (https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=86-2).
+   ~~Itens 4 a 7~~ (2026-10-21, na nuvem, de uma vez, a pedido de
+   Matthew): **28 frames** no Figma, em 7 Sections (Componentes, Acesso,
+   NCs ×2, Itens filhos ×2, Gestão e administração), revistos pela skill
+   `design-taste-frontend` (regras de tela de app) e com um conjunto de
+   dados só (as 4 pendências batem com o contador, 38 NCs abertas na lista
+   e nos relatórios). **Agora: Matthew refina item por item.** Três
+   decisões dele antes: (a) a barra inferior de três destinos com o
+   avatar no topo (muda a U2; `ui-ux.md` §6.1); (b) as abas Resumo · Itens
+   · Feed no Detalhe da NC no celular (veio da referência do app de
+   mercado); (c) a Investigação desenhada pela visão do aprovador (Em
+   aprovação). **Depois, o item 8:** o G1 conferido, ação por ação do
+   `fluxo-app.md` §7 (Cancelar, Retirar, Reabrir e Excluir rascunho estão
+   só dentro do "Mais", sem desenho), e o `/abrir-pr`.
    **Referências de interface:** até 5 por dia, com uma frase de Matthew.
 4. **Passeio guiado, em três sessões curtas (20–30 min) durante o B**
    (plano, portão "fundação pronta"; condição para o C0): A4 (o B19 e o

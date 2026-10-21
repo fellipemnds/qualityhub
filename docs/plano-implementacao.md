@@ -331,11 +331,11 @@ frames: 12 telas, a T-07 com 5 variantes e o celular de T-01 a T-07, menos a Inv
 |---|---|---|
 | 1 | O registro da B1 concluída e o PR da B2 em rascunho **Feito** (2026-10-21) | 🤖 |
 | 2 | Os wireframes em texto que faltam no `ui-ux.md` §7: Login, Definir senha, Classificação, Contenção, Verificação, Relatórios e as 4 de administração **Feito** (2026-10-21): §7.7 a §7.16, com as recusas da RN-43 e da RN-44 e o diálogo da Verificação; a Classificação com a nota da Q21/Q22 para a C2 | 🤖 escreve; 🧑 revisa |
-| 3 | A página "Wireframes" no Figma e a casca (menu, barra inferior, logotipo provisório) | 🤖 |
-| 4 | Lote A: Nova NC (celular) e Detalhe da NC | 🤖 cria; 🧑 ajusta |
-| 5 | Lote B: Pendências e Lista; depois, **pausa para Matthew ajustar** antes do lote C | 🤖 cria; 🧑 ajusta |
-| 6 | Lote C: as 5 variantes da T-07 | 🤖 cria; 🧑 ajusta |
-| 7 | Lote D: Login, Definir senha, Relatórios e administração | 🤖 cria; 🧑 ajusta |
+| 3 | A página "Wireframes" no Figma e a casca (menu, barra inferior, logotipo provisório) **Feito** (2026-10-21): as cascas do computador (1440) e do celular (390) e quatro componentes (`Casca/Menu lateral`, `Casca/Menu da pessoa (aberto)`, `Casca/Barra superior (celular)`, `Casca/Barra inferior (celular)`), em cinza e Figtree, com as notas ao lado. Organizada em duas Sections (Casca e Componentes da casca). O limite do plano de estudante: 8 chamadas sem bloqueio (no Starter, parou em ~15); a medida segue no lote A | 🤖 |
+| 4 | Lote A: Nova NC (celular) e Detalhe da NC **Feito** (2026-10-21, junto dos lotes B a D) | 🤖 cria; 🧑 ajusta |
+| 5 | Lote B: Pendências e Lista **Feito** (2026-10-21). A pausa saiu: Matthew pediu todas as telas de uma vez e o refinamento item por item depois | 🤖 cria; 🧑 ajusta |
+| 6 | Lote C: as 5 variantes da T-07 **Feito** (2026-10-21), com o balão do botão bloqueado (Contenção) e o diálogo do efeito (Verificação) | 🤖 cria; 🧑 ajusta |
+| 7 | Lote D: Login, Definir senha, Relatórios e administração **Feito** (2026-10-21), com as recusas da RN-43 e da RN-44 e o convite gerado | 🤖 cria; 🧑 ajusta |
 | 8 | Conferir o G1 (`ui-ux.md` §2) e o `/abrir-pr` | 🤖 confere; 🧑 decide |
 
 O que o teste com colegas revelar volta para os documentos **antes** do
@@ -488,3 +488,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-20 | **B1 concluída** (branch `fase/b1-identidade-visual`, PR #12): a fundação visual da plataforma, com o Grafite sem cor de destaque, a Figtree, o logotipo provisório e a assinatura da empresa; o nome Andon e o símbolo ficam como uma pendência só, sem prazo. Só documentação; 489 testes |
 | 2026-10-21 | v1.33 — B2: a ordem em 8 itens (os dois primeiros sem o Figma), com uma pausa para Matthew ajustar depois do lote B; a linha da B1 em dia com o que ela fechou (sem as faces, o Grafite, o logotipo em minúsculas) |
 | 2026-10-21 | v1.34 — C0: decidir antes se os filhos ganham título (hoje só a NC tem), e o rótulo dos filhos numa função só |
+| 2026-10-21 | v1.35 — B2: os lotes A a D feitos de uma vez (pedido de Matthew), revistos pela skill `design-taste-frontend` (regras de tela de app); a pausa do lote B virou o refinamento item por item |

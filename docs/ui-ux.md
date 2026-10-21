@@ -285,6 +285,15 @@ navegação** (U2):
 O **＋** abre direto a Nova NC: registrar no chão de fábrica é o uso
 principal no celular (`fluxo-app.md` §1).
 
+**Proposta da B2 (2026-10-21), a confirmar com Matthew:** a barra
+inferior fica com **três** destinos, Pendências · ＋ Nova NC · NCs, para o
+＋ ficar no centro; o Menu sai dela e vira o **avatar** na barra de cima
+(abre o menu da pessoa: Tela inicial, Sair, Sair de todos os aparelhos).
+Muda a U2. No computador, **sem barra de topo**: o caminho de volta fica
+na linha do título, dentro da tela. Os grupos do menu em letra normal
+("Administração", não "ADMINISTRAÇÃO"), e o item ativo só com a pílula
+cinza. Os wireframes no Figma (página Wireframes) já seguem a proposta.
+
 ---
 
 ## 7. Wireframes das telas núcleo
@@ -892,3 +901,4 @@ tokens.
 | 2026-10-21 | v1.4 — coerência com a B1: o §1 sem as faces Dawn e Dusk como se valessem (estão suspensas), e o tema escuro sai da §11 (é do MVP desde 2026-10-13) |
 | 2026-10-21 | v1.5 — o reativar setor no T-12 (a rota existe desde a A6; o wireframe dizia que não) e a decisão do T-02 sem o nome da pessoa |
 | 2026-10-21 | v1.6 — como um item aparece (§10.3): os filhos não têm título, então o código + o começo do texto principal; os wireframes §7.1, §7.3, §7.4, §7.5, §7.9, §7.10 e §7.14 seguem a regra; o "Sair de todos os aparelhos" no menu da pessoa (§6.1) |
+| 2026-10-21 | v1.7 — B2: a proposta da barra inferior de três destinos e do avatar (muda a U2, a confirmar), o computador sem barra de topo e os grupos do menu em letra normal (§6.1) |
