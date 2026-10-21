@@ -256,15 +256,14 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
    três perguntas em aberto no `docs/identidade/referencias.md`
    ("2026-10-20"); só uma informação nova reabre uma decisão.
 3. **A B2, na ordem do plano** (seção "B2 — a ordem dos itens", 8
-   itens): ~~1. o registro da B1 e o PR em rascunho~~ (2026-10-21).
+   itens): ~~1. o registro da B1 e o PR em rascunho~~ e ~~2. os
+   wireframes em texto~~ (2026-10-21, `ui-ux.md` §7.7 a §7.16).
    **Antes, no PC: `npm update vite`** (o CI do #13 está vermelho no
    `osv-scanner`, §5), `npm run test:cobertura`, commit
    `chore: vite 8.3.5 (alertas do osv-scanner)` e push; o CI tem de ficar
-   verde. **Depois, o item 2**, os wireframes em texto que faltam no
-   `ui-ux.md` §7 (Login, Definir senha, Classificação, Contenção,
-   Verificação, Relatórios e as 4 de administração), sem Figma. Material:
-   o `docs/identidade/referencias-interface.md`. Do item 3 em diante, o
-   conector do Figma (o plano do time já é o de estudante, §5).
+   verde. **Depois, o item 3:** a página "Wireframes" no Figma e a casca
+   (menu, barra inferior, logotipo provisório), que mede o limite de
+   chamadas do plano de estudante.
    **Referências de interface:** até 5 por dia, com uma frase de Matthew.
 4. **Passeio guiado, em três sessões curtas (20–30 min) durante o B**
    (plano, portão "fundação pronta"; condição para o C0): A4 (o B19 e o

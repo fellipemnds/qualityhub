@@ -330,7 +330,7 @@ frames: 12 telas, a T-07 com 5 variantes e o celular de T-01 a T-07, menos a Inv
 | # | Entrega | Quem |
 |---|---|---|
 | 1 | O registro da B1 concluída e o PR da B2 em rascunho **Feito** (2026-10-21) | 🤖 |
-| 2 | Os wireframes em texto que faltam no `ui-ux.md` §7: Login, Definir senha, Classificação, Contenção, Verificação, Relatórios e as 4 de administração | 🤖 escreve; 🧑 revisa |
+| 2 | Os wireframes em texto que faltam no `ui-ux.md` §7: Login, Definir senha, Classificação, Contenção, Verificação, Relatórios e as 4 de administração **Feito** (2026-10-21): §7.7 a §7.16, com as recusas da RN-43 e da RN-44 e o diálogo da Verificação; a Classificação com a nota da Q21/Q22 para a C2 | 🤖 escreve; 🧑 revisa |
 | 3 | A página "Wireframes" no Figma e a casca (menu, barra inferior, logotipo provisório) | 🤖 |
 | 4 | Lote A: Nova NC (celular) e Detalhe da NC | 🤖 cria; 🧑 ajusta |
 | 5 | Lote B: Pendências e Lista; depois, **pausa para Matthew ajustar** antes do lote C | 🤖 cria; 🧑 ajusta |

@@ -286,7 +286,8 @@ principal no celular (`fluxo-app.md` §1).
 ## 7. Wireframes das telas núcleo
 
 Wireframes em texto: **posição e hierarquia**, não aparência. Viram
-frames no Figma no G1.
+frames no Figma no G1. As seis primeiras são as telas núcleo; da 7.7 em
+diante, as que completam o mapa (`fluxo-app.md` §2), escritas na B2.
 
 ### 7.1 T-03 Minhas pendências
 
@@ -428,6 +429,301 @@ O índice fica fixo ao rolar. ✓ preenchida · ◐ parcial · ○ vazia.
 "Detectada em" já vem com **hoje**. O botão de anexo abre a câmera no
 celular.
 
+### 7.7 T-01 Login
+
+```
+┌──────────────────────────────────────┐
+│                                      │
+│  andon                               │
+│                                      │
+│  Entrar                              │
+│                                      │
+│  E-mail                              │
+│  [                                 ] │
+│  Senha                               │
+│  [                             👁 ]  │
+│  [ ] Manter conectado                │
+│                                      │
+│  [            Entrar              ]  │
+│                                      │
+│  Esqueceu a senha? Peça um novo      │
+│  convite ao administrador.           │
+│                                      │
+│  ──────────────────────────────────  │
+│  [logo da empresa, monocromático]    │
+└──────────────────────────────────────┘
+```
+
+No computador, o cartão fica centralizado sobre o `--background`; no
+celular, ocupa a largura toda. É a única tela com a marca no centro
+(o logotipo provisório, `docs/marca.md`) e com a **assinatura** da
+empresa embaixo (§1), como texto de apoio.
+
+- **Erro de credencial:** uma mensagem só, no topo do formulário,
+  "E-mail ou senha incorretos." (a API não diz qual dos dois errou).
+- **Limite de tentativas** (5 por minuto, TRD §4.3): "Muitas tentativas.
+  Espere um minuto e tente de novo."
+- **Sem "esqueci minha senha"** no MVP (PRD §4.3): o caminho é o ADMIN
+  gerar um novo convite (T-10), que também serve para redefinir.
+- **Sessão expirada** (`fluxo-app.md` §8): volta para cá e, depois de
+  entrar, para onde a pessoa estava.
+
+### 7.8 T-02 Definir senha
+
+```
+┌──────────────────────────────────────┐
+│  andon                               │
+│                                      │
+│  Crie a sua senha                    │
+│  Ela vale para entrar no sistema     │
+│  daqui em diante.                    │
+│                                      │
+│  Nova senha                          │
+│  [                             👁 ]  │
+│  Mínimo de 12 caracteres             │
+│  Repita a senha                      │
+│  [                             👁 ]  │
+│                                      │
+│  [         Definir senha          ]  │
+│                                      │
+│  ──────────────────────────────────  │
+│  [logo da empresa, monocromático]    │
+└──────────────────────────────────────┘
+```
+
+Aberta pelo link do convite (`/definir-senha?token=…`, válido por 72 h).
+A tela não mostra o nome nem o e-mail da pessoa: a API não tem rota que
+leia o convite sem usá-lo.
+
+- **Regra da senha:** 12 caracteres ou mais; o limite de 72 bytes só
+  aparece se for atingido ("Senha longa demais"). "Repita a senha" é
+  conferido só na tela.
+- **Link vencido, já usado ou inválido:** uma mensagem só, "Este link
+  não vale mais. Peça um novo convite ao administrador." (F5).
+- **Sucesso:** vai para o Login, com o aviso "Senha definida. Entre com
+  o seu e-mail."
+
+### 7.9 T-07 Classificação
+
+```
+NC-2026-0042 › CL-2026-0011                               ● Aberta
+[ Enviar para aprovação (bloqueado ⓘ) ]  [ Salvar ]  [ Mais ▾ ]
+
+CLASSIFICAÇÃO
+  ( ) Maior     ( ) Menor
+  Justificativa
+  [ por que esta classificação                              ]
+  Mínimo de 20 caracteres
+─── atribuições · anexos · feed ───
+```
+
+Formulário curto. Só `APROVADOR` e `GERENTE` editam, publicam e enviam
+(RN-20); para o `EDITOR`, a tela é só leitura e a barra de ações some.
+**Não há Cancelar** (§7 do fluxo): quando a classificação muda, cria-se
+outra.
+
+**A conferir na C2** (PRD Q21 e Q22, propostas): ao escolher **Menor**,
+entra uma seção **Abrangência** (as NCs dos últimos 12 meses, para marcar
+as relacionadas, e a justificativa específica na 3ª ocorrência), e a
+Classificação perde o portão: "Enviar para aprovação" vira **"Concluir
+classificação"**, como na Verificação.
+
+### 7.10 T-07 Contenção
+
+```
+NC-2026-0042 › CT-2026-0019                               ● Aberta
+[ Enviar para aprovação (bloqueado ⓘ) ]  [ Salvar ]  [ Mais ▾ ]
+
+AÇÃO IMEDIATA
+  Descrição
+  [ o que foi feito para conter o problema                  ]
+EXECUÇÃO
+  Executada em  [ dd/mm/aaaa ]
+  Disposição    [ Aceito · Corrigido · Anulado · Em análise ▾ ]
+  Anexos        [ arraste fotos ou PDF aqui ]
+─── atribuições · feed ───
+```
+
+Publicada só com a descrição (mínimo de 20 caracteres); a data e a
+disposição vêm depois de executar. Sem elas, o "Enviar para aprovação"
+mostra a lista do que falta (J3). **Fechada**, a tela mostra embaixo do
+cabeçalho: "Não resolveu? Crie uma nova contenção na NC" (RN-42: a
+contenção não se reabre). No celular, a barra de ações vai para o rodapé,
+fixa, com a ação principal e o Salvar.
+
+### 7.11 T-07 Verificação
+
+```
+NC-2026-0042 › VE-2026-0002 · da AC-2026-0003             ● Aberta
+Prazo: Vence em 5 dias
+[ Concluir verificação ]  [ Salvar ]  [ Mais ▾ ]
+
+INSTRUÇÕES (do plano da AC-2026-0003 — só leitura)
+  Conferir 3 lotes seguidos sem vazamento na linha 3...
+RESULTADO
+  ( ) Eficaz
+  ( ) Parcialmente eficaz
+  ( ) Não eficaz
+  Conclusão           [ o que foi conferido e o que se viu    ]
+  Verificada em       [ dd/mm/aaaa ]
+  Anexos              [ arraste fotos ou PDF aqui ]
+─── atribuições · feed ───
+```
+
+Nasce sozinha ao finalizar a execução da ação (J5), já aberta, nunca em
+rascunho. O cabeçalho leva à ação de origem. "Concluir verificação" é só
+do responsável com papel `APROVADOR` (§7 do fluxo) e abre o
+`DialogoEfeito` com o efeito do resultado escolhido:
+
+```
+┌──────────────────────────────────────────────┐
+│ Concluir como Não eficaz?                    │
+│ A investigação IV-2026-0007 e a NC-2026-0042 │
+│ serão reabertas.                             │
+│                     [ Voltar ] [ Concluir ]  │
+└──────────────────────────────────────────────┘
+```
+
+Eficaz: "Nada mais acontece." Parcialmente eficaz: "Uma nova ação
+corretiva será criada em rascunho para os mesmos responsáveis."
+
+### 7.12 T-08 Relatórios
+
+```
+Relatórios                               Período: [ últimos 12 meses ▾ ]
+
+ NCs abertas      Tempo médio até fechar   Ações atrasadas   Eficácia
+ 14               23 dias                  3                 82%
+ ↑ 2 no período   ↓ 4 dias                 → ver quais       das verificações
+
+NCS ABERTAS                          [ por setor | por origem ]
+ Produção    ████████████  6
+ Expedição   ██████        3
+ Metrologia  ████          2  ...
+
+TEMPO MÉDIO DA DETECÇÃO AO FECHAMENTO
+ dias │      ╱‾‾╲            ── Maior
+      │ ‾‾‾‾╱    ‾‾‾‾        ┄┄ Menor
+      └──────────────────── meses
+
+ATRASADAS (ações e verificações)
+ Item          Com quem      Vencido há
+ AC-2026-0003  Fulana        2 dias     →
+ VE-2026-0001  Beltrana      9 dias     →
+
+EFICÁCIA E REINCIDÊNCIA
+ Eficaz 18 · Parcialmente eficaz 3 · Não eficaz 1
+ NCs reabertas: 2 →
+ Causas-raiz que se repetem: "junta ressecada" (3 NCs) →
+```
+
+Os quatro relatórios da RF-19, nessa ordem, todos com o mesmo filtro de
+período. **Todo número leva à lista de NCs já filtrada** (J12). Sem cor
+nas séries (Grafite): a classificação se distingue pelo traço, linha
+cheia e tracejada, e a variação da fileira de números leva seta e texto,
+não só cor. Só no computador.
+
+### 7.13 T-09 Usuários
+
+```
+Usuários                                          [ ＋ Novo usuário ]
+[🔍 nome ou e-mail        ] [ Situação: Ativos ▾ ]
+
+ Nome          E-mail                 Setor       Papéis              Situação
+ Beltrana      beltrana@empresa.com   Qualidade   Aprovador, Gerente  ● Ativa
+ Fulana        fulana@empresa.com     Produção    Editor              ● Ativa
+ Ciclano       ciclano@empresa.com    Expedição   Editor              ○ Inativa
+                                                   [ Carregar mais ]
+```
+
+Só o `ADMIN` (menu "Administração"). A busca procura no nome e no
+e-mail; a situação filtra ativos, inativos ou todos. A linha inteira abre
+o detalhe (T-10).
+
+### 7.14 T-10 Detalhe do usuário
+
+```
+Usuários › Beltrana                                       ● Ativa
+[ Salvar ]  [ Gerar novo convite ]  [ Mais ▾ ]  (Mais: Inativar)
+
+DADOS
+  Nome    [ Beltrana Souza          ]
+  E-mail  beltrana@empresa.com   (é o login; não muda)
+  Setor   [ Qualidade             ▾ ]
+PAPÉIS
+  Aprovador ✕   Gerente ✕   [ ＋ Conceder papel ▾ ]
+```
+
+Conceder e revogar papel valem na hora, um por vez (confirmação simples
+para revogar, §8.2). **Gerar novo convite** mostra o link para copiar e
+até quando vale; ele também serve para redefinir a senha. Inativa, a
+pessoa mostra **Reativar** no lugar de Inativar.
+
+A recusa da RN-43 aparece no topo, com a lista do que resolver:
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│ Não dá para inativar a Beltrana: ela é aprovadora de 3 itens   │
+│ em andamento. Um gerente troca o aprovador deles, e você tenta  │
+│ de novo.                                                        │
+│  NC-2026-0042 · Vazamento na linha 3          ● Aberta       →  │
+│  IV-2026-0007 · Vazamento na linha 3          ⧗ Em aprovação →  │
+│  CT-2026-0019                                  ● Aberta       →  │
+└────────────────────────────────────────────────────────────────┘
+```
+
+As outras recusas usam o mesmo lugar: o último `ADMIN` ativo ("Não dá
+para inativar o último administrador") e a pessoa num setor desativado
+("Mude o setor antes de reativar", RN-44).
+
+### 7.15 T-11 Novo usuário
+
+```
+Usuários › Novo usuário
+
+  Nome    [                          ]
+  E-mail  [                          ]
+  Setor   [ escolha               ▾ ]
+  Papéis  [ ] Visualizador — vê as NCs, sem editar
+          [ ] Editor       — registra e trabalha nas NCs
+          [ ] Aprovador    — classifica, aprova e verifica
+          [ ] Gerente      — cancela, reatribui, relatórios
+          [ ] Administrador — contas, papéis e setores
+  [ Cancelar ]                          [ Criar e gerar convite ]
+```
+
+O setor só oferece os ativos; ao menos um papel. Depois de criar, a
+mesma tela mostra o convite:
+
+```
+┌────────────────────────────────────────────────────────────┐
+│ ✓ Fulana foi criada. Envie este link a ela (vale 72 h):    │
+│ [ https://…/definir-senha?token=…           ] [ Copiar ]   │
+│ O link aparece só agora. Depois, só gerando outro.          │
+│                              [ Ir para o usuário ]          │
+└────────────────────────────────────────────────────────────┘
+```
+
+Sem e-mail no MVP: o ADMIN envia o link por fora (J11).
+
+### 7.16 T-12 Setores
+
+```
+Setores                                           [ ＋ Novo setor ]
+[ Situação: Ativos ▾ ]
+
+ Nome          Situação
+ Expedição     ● Ativo      [✎ Renomear]  [ Desativar ]
+ Produção      ● Ativo      [✎ Renomear]  [ Desativar ]
+ Almoxarifado  ○ Desativado
+```
+
+Criar e renomear acontecem na própria linha (o nome é o único campo).
+Desativar pede confirmação simples (§8.2), e a recusa da RN-44 lista
+quem ainda está no setor, com link para cada pessoa (T-10): "Mude o
+setor destas pessoas antes de desativar". Setor desativado não tem ação:
+a API não reativa setor.
+
 ---
 
 ## 8. Padrões de interação
@@ -567,3 +863,4 @@ tokens.
 | 2026-09-24 | v1 — decisões iniciais e U1–U5 |
 | 2026-09-24 | v1.1 — revisão cruzada: wireframes com os termos do glossário (U1), prefixos reais dos códigos, aprovador no checklist, triagem inclui filhos |
 | 2026-10-01 | v1.2 — etapa "Em plano de ação" removida; checklist da NC sem os planos, que passam para a investigação (PRD Q17) |
+| 2026-10-21 | v1.3 — B2: os wireframes em texto que faltavam (§7.7 a §7.16): Login, Definir senha, Classificação, Contenção, Verificação, Relatórios e as quatro de administração |
