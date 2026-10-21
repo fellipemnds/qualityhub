@@ -286,14 +286,25 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
    NCs ×2, Itens filhos ×2, Gestão e administração), revistos pela skill
    `design-taste-frontend` (regras de tela de app) e com um conjunto de
    dados só (as 4 pendências batem com o contador, 38 NCs abertas na lista
-   e nos relatórios). **Agora: Matthew refina item por item.** Três
-   decisões dele antes: (a) a barra inferior de três destinos com o
-   avatar no topo (muda a U2; `ui-ux.md` §6.1); (b) as abas Resumo · Itens
-   · Feed no Detalhe da NC no celular (veio da referência do app de
-   mercado); (c) a Investigação desenhada pela visão do aprovador (Em
-   aprovação). **Depois, o item 8:** o G1 conferido, ação por ação do
-   `fluxo-app.md` §7 (Cancelar, Retirar, Reabrir e Excluir rascunho estão
-   só dentro do "Mais", sem desenho), e o `/abrir-pr`.
+   e nos relatórios). **Agora (amanhã, depois do vite e do servidor de linguagem):**
+   Matthew confere as telas pelo **checklist**
+   `docs/identidade/revisao-wireframes.md` (um link por frame; as quatro
+   decisões primeiro: a barra de três destinos, as abas do Detalhe no
+   celular, a Investigação pela visão do aprovador e a borda dos campos).
+   **A B3 começou no Figma** (decisão de Matthew, 2026-10-21: o Claude faz
+   os tokens, Matthew os componentes, em "átomos": tokens → componentes →
+   moléculas → organismos → telas): página **Fundações** com as coleções
+   **Cor** (18, Claro e Escuro, o nome do CSS em cada uma) e **Medida**
+   (15), 8 estilos de texto Figtree e o mostruário claro e escuro lado a
+   lado; a antiga "Tema" virou histórico. Token novo, derivado:
+   `borda/controle` (`#8A8A8F` / `#68686D`, 3:1 nos dois modos). Os
+   símbolos ● ⧗ ✓ não existem na Figtree: nos componentes, o ícone é o SVG
+   do Lucide. **O primeiro componente de Matthew: o Botão** (componente
+   com variantes, ligado às variáveis). **O modo escuro nas telas** vem no
+   último passo, quando os wireframes forem refeitos com os componentes.
+   Os documentos da B3 (`ui-ux.md` §3 com os valores finais, o
+   `DESIGN.md`) entram na branch da B3. **O item 8 da B2:** o G1 ação por
+   ação (o §6 do checklist) e o `/abrir-pr`.
    **Referências de interface:** até 5 por dia, com uma frase de Matthew.
 4. **Passeio guiado, em três sessões curtas (20–30 min) durante o B**
    (plano, portão "fundação pronta"; condição para o C0): A4 (o B19 e o
