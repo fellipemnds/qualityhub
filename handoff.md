@@ -306,7 +306,17 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
    `DESIGN.md`) entram na branch da B3. **O item 8 da B2:** o G1 ação por
    ação (o §6 do checklist) e o `/abrir-pr`.
    **Referências de interface:** até 5 por dia, com uma frase de Matthew.
-4. **Passeio guiado, em três sessões curtas (20–30 min) durante o B**
+4. **Passeio guiado, em três sessões curtas (20–30 min) durante o B.**
+   ~~A4~~ (2026-10-21, na nuvem, pelo tablet): uma requisição de ponta a
+   ponta (`POST /contencoes/:id/submeter`), 9 paradas. **Sólido:** a
+   transação, a ordem do validador (estado e permissão antes do tipo), a
+   trava do B19 (o `where` com o estado e o 409 do segundo clique), a
+   auditoria na mesma transação, o `httpOnly`. **A revisitar:** o B23 e o
+   `buscarRegistroDoTipoOuFalhar` (escrito por ele na A5), os códigos 409
+   × 403 × 401, o `podeExecutar` = papel + atribuição, o `secure` (só manda
+   o cookie em HTTPS), site × domínio no `SameSite` (CSRF) e o `path:
+   "/api"`. Faltam a A6 e a A7.
+   O roteiro original:
    (plano, portão "fundação pronta"; condição para o C0): A4 (o B19 e o
    `SameSite=Strict`), A6 (a RN-43 e o convite) e A7 (a trava entre
    linhas, um teste do `pausarNoMeio` linha a linha). Matthew diz o que

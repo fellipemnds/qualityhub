@@ -227,7 +227,11 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   `pausarNoMeio` (pausa entre conferir e gravar), não pelo `Promise.all`.
 - **Permissões em três camadas**: papel (`temPapel`) → estado do registro
   → atribuição (`Atribuicao`, com `funcao: COLABORADOR | APROVADOR`).
-  `podeExecutar` combina as três; algumas transições usam checagem
+  `podeExecutar` (`compartilhado/permissoes/pode-executar.ts`) combina
+  **duas**, o papel e a atribuição (colaborador **ou** aprovador); o
+  estado é conferido antes, por quem chama (o `cicloVidaService`, que
+  responde 409). Corrigido em 2026-10-21, no passeio da A4: o texto dizia
+  "as três". Algumas transições usam checagem
   estrita manual (`decidir` exige ser especificamente o aprovador
   designado, não qualquer `APROVADOR`).
 - **Edição permitida em `RASCUNHO` e `ABERTO`**, bloqueada a partir de
