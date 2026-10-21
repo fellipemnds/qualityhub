@@ -135,6 +135,8 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
 | A primeira trava do B32 deu *deadlock* (500) | O `FOR UPDATE` segura também a chave estrangeira da auditoria que aponta para a pessoa (os dois ADMINs se esperavam) | `FOR NO KEY UPDATE`, a trava do `UPDATE` (no `CLAUDE.md`, "Trava entre linhas") |
 | `npm audit`: 4 vulnerabilidades altas | Herdadas do Prisma 7 | **Aberto**, risco baixo — `docs/trd.md` §13. Nunca `npm audit fix --force` |
 | Aviso "Update available 7.10.0 → 8.0.0-rc" do Prisma | É release candidate e versão major | **Não atualizar** |
+| CI do PR #13 vermelho no `osv-scanner` (2026-10-21): 6 alertas novos no `vite` 8.3.2 (1 alto), de desenvolvimento, transitivo do Vitest | Alerta publicado depois do último CI; não é da mudança da B2 (a `main` também acusaria) | **Aberto.** Matthew roda `npm update vite` no PC (decisão: o lockfile não sai da nuvem, §13). Na nuvem, o teste deu `vite` 8.3.5, só a árvore dele no lockfile (6 pacotes, versões) e a suíte verde (489, 97,47%) |
+| Na nuvem, a suíte caiu com 0% de cobertura e `429 Too Many Requests` (2026-10-21) | O Docker Hub limitou o download da imagem do Postgres sem login | Claude: baixar pelo espelho do Google e dar o nome original (`docker pull mirror.gcr.io/library/postgres:17-alpine` e `docker tag ... postgres:17-alpine`; o mesmo para o `testcontainers/ryuk:0.14.0`) |
 | Aviso no CI: `ubuntu-latest` vira Ubuntu 26 em 19/10/2026 | Migração do GitHub | O CI da `main` passou em 2026-10-20, já no Ubuntu novo; se quebrar, começar por aqui |
 | `npx biome` rodou um pacote errado pelo Node do Windows | O shell do Claude não carrega o nvm | Claude: `source ~/.nvm/nvm.sh` antes de npm/npx, e `npx --no-install` |
 | `npm run -s lint \| tail -1` mostrou saída vazia com erro | O `-s` esconde o resumo, e o erro fica acima da última linha | Claude: conferir o lint pelo **código de saída** (`&& echo LINT_OK`) |
@@ -255,7 +257,10 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
    ("2026-10-20"); só uma informação nova reabre uma decisão.
 3. **A B2, na ordem do plano** (seção "B2 — a ordem dos itens", 8
    itens): ~~1. o registro da B1 e o PR em rascunho~~ (2026-10-21).
-   **Começar por aqui: o item 2**, os wireframes em texto que faltam no
+   **Antes, no PC: `npm update vite`** (o CI do #13 está vermelho no
+   `osv-scanner`, §5), `npm run test:cobertura`, commit
+   `chore: vite 8.3.5 (alertas do osv-scanner)` e push; o CI tem de ficar
+   verde. **Depois, o item 2**, os wireframes em texto que faltam no
    `ui-ux.md` §7 (Login, Definir senha, Classificação, Contenção,
    Verificação, Relatórios e as 4 de administração), sem Figma. Material:
    o `docs/identidade/referencias-interface.md`. Do item 3 em diante, o
