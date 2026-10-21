@@ -316,10 +316,27 @@ Não depende de código. Detalhes em `docs/ui-ux.md` §2.
 
 | Fase | Entrega | Quem | Depende de |
 |---|---|---|---|
-| **B1 · Identidade visual** | Identidade **própria da plataforma Andon** (decisão de 2026-10-13: a da empresa não combina com o app; o nome é de 2026-10-15, antes Dusk & Dawn, e **provisório** desde 2026-10-20: o nome e o símbolo viram uma pendência só, sem prazo), que vai ganhar módulos além das NCs, com duas faces por pessoa, **Dawn** (colaborador) e **Dusk** (gestão; as faces estão suspensas desde 2026-10-14, `docs/marca.md`), e a autoria de Matthew numa tela "Sobre" (`ui-ux.md` §1): direção, paleta (neutros, um destaque, as cores de estado com o contraste conferido), fonte, o **logotipo provisório** ("Andon" em Figtree e um favicon simples; o símbolo saiu da B1 em 2026-10-20 e virou pendência à parte, sem prazo: quando sair, troca um SVG num componente só), e a assinatura da empresa (o logo dela monocromático no login, no menu, no e-mail de convite e nos relatórios; `ui-ux.md` §1). Sem limite de sessões (Matthew, 2026-10-14: antes uma marca forte que uma rápida) | 🧑 Matthew decide, 🤖 Claude conduz e gera as opções | — |
+| **B1 · Identidade visual** | Identidade **própria da plataforma Andon** (decisão de 2026-10-13: a da empresa não combina com o app; o nome é de 2026-10-15, antes Dusk & Dawn, e **provisório** desde 2026-10-20: o nome e o símbolo viram uma pendência só, sem prazo), que vai ganhar módulos além das NCs (as faces Dawn e Dusk do começo ficaram suspensas em 2026-10-14, `docs/marca.md`), e a autoria de Matthew numa tela "Sobre" (`ui-ux.md` §1): direção, paleta (o **Grafite**, sem cor de destaque desde 2026-10-20; a cor só nos estados, com o contraste conferido), fonte, o **logotipo provisório** ("andon" em Figtree 600 e o favicon "a"; o símbolo saiu da B1 em 2026-10-20 e virou pendência à parte, sem prazo: quando sair, troca um SVG num componente só), e a assinatura da empresa (o logo dela monocromático no login, no menu, no e-mail de convite e nos relatórios; `ui-ux.md` §1). Sem limite de sessões (Matthew, 2026-10-14: antes uma marca forte que uma rápida) | 🧑 Matthew decide, 🤖 Claude conduz e gera as opções | — |
 | **B2 · Wireframes (G1)** | Frames cinzas no Figma a partir de `ui-ux.md` §7, uma tela por frame | 🤖 cria no Figma de Matthew; 🧑 ajusta | — |
 | **B3 · Fundações + mockups (G2, G4)** | Variables, componentes com variantes = enums, telas com cor e os estados vazio/carregando/erro/sem permissão. Termina num **`DESIGN.md`** na raiz (o formato aberto do Google: os tokens com valores exatos e o porquê de cada um), que os agentes seguem na fase C em vez de inventar cor; o `impeccable` gera um a partir do que ficou pronto (2026-10-13) | 🧑 (é onde mais se aprende Figma); 🤖 revisa | B1, B2 |
 | **B4 · Protótipo + teste (G3)** | Protótipo HTML clicável; **3 colegas** completam sem ajuda: registrar NC com rascunho, aprovar item, comentar com menção | 🤖 o protótipo; 🧑 conduz o teste | B3 |
+
+### B2 — a ordem dos itens
+
+Proposta em 2026-10-20 e aprovada por Matthew. Os itens 1 e 2 não usam o Figma; do 3 em diante, o conector
+(no plano Starter, ele parou depois de ~15 chamadas, e o item 3 mede o limite do plano novo). São cerca de 26
+frames: 12 telas, a T-07 com 5 variantes e o celular de T-01 a T-07, menos a Investigação.
+
+| # | Entrega | Quem |
+|---|---|---|
+| 1 | O registro da B1 concluída e o PR da B2 em rascunho **Feito** (2026-10-21) | 🤖 |
+| 2 | Os wireframes em texto que faltam no `ui-ux.md` §7: Login, Definir senha, Classificação, Contenção, Verificação, Relatórios e as 4 de administração | 🤖 escreve; 🧑 revisa |
+| 3 | A página "Wireframes" no Figma e a casca (menu, barra inferior, logotipo provisório) | 🤖 |
+| 4 | Lote A: Nova NC (celular) e Detalhe da NC | 🤖 cria; 🧑 ajusta |
+| 5 | Lote B: Pendências e Lista; depois, **pausa para Matthew ajustar** antes do lote C | 🤖 cria; 🧑 ajusta |
+| 6 | Lote C: as 5 variantes da T-07 | 🤖 cria; 🧑 ajusta |
+| 7 | Lote D: Login, Definir senha, Relatórios e administração | 🤖 cria; 🧑 ajusta |
+| 8 | Conferir o G1 (`ui-ux.md` §2) e o `/abrir-pr` | 🤖 confere; 🧑 decide |
 
 O que o teste com colegas revelar volta para os documentos **antes** do
 C0.
@@ -468,3 +485,5 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-15 | v1.30 — B1: a marca recomeçou pela ideia (as 52 NCs à mão; "o processo sai da mão de uma pessoa e fica claro para todos"), com o território **Palpável**; o nome passa a ser **Andon**; o Dusk & Dawn (faces e luz da paleta) fica suspenso; cai o limite de 4 sessões (`docs/marca.md`) |
 | 2026-10-20 | v1.31 — B1: o **símbolo sai da fase** (decisão de Matthew: travado no logo, quer avançar para o front) e vira pendência à parte, sem prazo; a B1 fecha com o logotipo provisório ("Andon" em Figtree). A cor de destaque deixa de esperar o símbolo: sai da Palpável, e o símbolo se adapta a ela |
 | 2026-10-20 | v1.32 — B1: o nome **Andon** passa a ser **provisório** (Matthew ainda não quer fechar a marca); o nome e o símbolo viram uma pendência só, sem prazo. A B1 fecha com a fundação visual: o Grafite, a Figtree, a regra do logotipo e a assinatura da empresa |
+| 2026-10-20 | **B1 concluída** (branch `fase/b1-identidade-visual`, PR #12): a fundação visual da plataforma, com o Grafite sem cor de destaque, a Figtree, o logotipo provisório e a assinatura da empresa; o nome Andon e o símbolo ficam como uma pendência só, sem prazo. Só documentação; 489 testes |
+| 2026-10-21 | v1.33 — B2: a ordem em 8 itens (os dois primeiros sem o Figma), com uma pausa para Matthew ajustar depois do lote B; a linha da B1 em dia com o que ela fechou (sem as faces, o Grafite, o logotipo em minúsculas) |
