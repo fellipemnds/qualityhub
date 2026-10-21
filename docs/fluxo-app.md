@@ -99,6 +99,7 @@ Aparecem só os itens que o papel permite:
 | Administração | `ADMIN` | Usuários, Setores |
 | Tela inicial | Quem acessa mais de uma tela inicial possível | Preferência (§3) |
 | Sair | Todos | |
+| Sair de todos os aparelhos | Todos | No menu da pessoa, embaixo do Sair: encerra as sessões abertas em outros computadores (`POST /auth/sair-de-todos`, pronto desde a A4; Matthew, 2026-10-21) |
 
 ---
 
@@ -535,3 +536,4 @@ Com Matthew, em 2026-09-24.
 | 2026-09-30 | v1.2 — atribuições só em `RASCUNHO`/`ABERTO` (RN-47); ação "Retirar da aprovação" (RN-48) |
 | 2026-10-01 | v1.3 — planos de ação conferidos pela Investigação (PRD Q17): etapa "Em plano de ação" removida (10 etapas), J4 com as contramedidas, J5 com o vínculo desde a criação (RN-49), checklist da J6 sem os planos |
 | 2026-10-21 | v1.4 — o reativar setor (RN-44, pronto desde a A6) na J11 e na T-12 |
+| 2026-10-21 | v1.5 — "Sair de todos os aparelhos" no menu (§2.1) |

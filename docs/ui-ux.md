@@ -263,6 +263,10 @@ em `components/` (os do shadcn/ui, em `components/ui/`).
 └──────────────┴──────────────────────────────────────────────┘
 ```
 
+O menu da pessoa (o nome) abre **Tela inicial**, **Sair** e **Sair de
+todos os aparelhos** (`fluxo-app.md` §2.1). O contador das Pendências
+depende do `GET /pendencias`, que chega na C3.
+
 **Celular:** barra superior com o título + **barra inferior de
 navegação** (U2):
 
@@ -296,12 +300,12 @@ Minhas pendências                                   [filtro: tipo ▾]
 
 VENCIDAS (1)
 ┌─────────────────────────────────────────────────────────────────┐
-│ ⚠ Executar ação   AC-2026-0003 · Troca do fornecedor de junta    │
+│ ⚠ Executar ação   AC-2026-0003 · Trocar o fornecedor da junta…   │
 │                    NC-2026-0042        Vencido há 2 dias      →  │
 └─────────────────────────────────────────────────────────────────┘
 APROVAR (2)
 ┌─────────────────────────────────────────────────────────────────┐
-│ ⧗ Aprovar         IV-2026-0007 · Vazamento na linha 3         →  │
+│ ⧗ Aprovar         IV-2026-0007 · A junta resseca antes…       →  │
 │ ⧗ Aprovar         NC-2026-0038 · Fechamento                   →  │
 └─────────────────────────────────────────────────────────────────┘
 TRIAGEM (1)
@@ -346,7 +350,7 @@ NC-2026-0042 · Vazamento na linha 3              ● Aberta  🔍 Em investiga�
 │ CONTENÇÃO                      [+ Nova]      │ ❌ Mudanças no SGQ       │
 │  CT-2026-0019  Corrigido  ● Aberta           │ ✅ Aprovador definido    │
 │ INVESTIGAÇÃO                   [+ Nova]      │─────────────────────────│
-│  IV-2026-0007  Vazamento...  ⧗ Em aprovação  │ ATRIBUIÇÕES             │
+│  IV-2026-0007  A junta res…  ⧗ Em aprovação  │ ATRIBUIÇÕES             │
 │ AÇÃO CORRETIVA                 [+ Nova]      │ Aprovador: Beltrana     │
 │  (nenhuma ainda)                             │ Responsáveis: F, C, D   │
 │ VERIFICAÇÃO                                  │ [+ Adicionar]           │
@@ -366,7 +370,7 @@ checklist → atribuições → anexos → feed.
 ### 7.4 T-07 Ação Corretiva (exemplo de filho)
 
 ```
-NC-2026-0042 › AC-2026-0003 · Troca do fornecedor de junta
+NC-2026-0042 › AC-2026-0003 · Trocar o fornecedor da junta…
 ● Aberta   ✓ Plano aprovado   Prazo: Vencido há 2 dias
 [ Finalizar execução ]  [ Salvar ]  [ Mais ▾ ]
 
@@ -382,7 +386,7 @@ EXECUÇÃO
 ### 7.5 T-07 Investigação A3 (só computador)
 
 ```
-NC-2026-0042 › IV-2026-0007 · Vazamento na linha 3        ● Aberta
+NC-2026-0042 › IV-2026-0007 · A junta resseca antes…      ● Aberta
 [ Enviar para aprovação (bloqueado ⓘ) ]  [ Salvar ]  [ Mais ▾ ]
 ┌────────────────────┬───────────────────────────────────────────────┐
 │ ÍNDICE A3          │ REAL PROBLEMA                                 │
@@ -508,7 +512,7 @@ com a pessoa.
 ### 7.9 T-07 Classificação
 
 ```
-NC-2026-0042 › CL-2026-0011                               ● Aberta
+NC-2026-0042 › CL-2026-0011 · Maior                       ● Aberta
 [ Enviar para aprovação (bloqueado ⓘ) ]  [ Salvar ]  [ Mais ▾ ]
 
 CLASSIFICAÇÃO
@@ -533,7 +537,7 @@ classificação"**, como na Verificação.
 ### 7.10 T-07 Contenção
 
 ```
-NC-2026-0042 › CT-2026-0019                               ● Aberta
+NC-2026-0042 › CT-2026-0019 · Isolar o lote 42…           ● Aberta
 [ Enviar para aprovação (bloqueado ⓘ) ]  [ Salvar ]  [ Mais ▾ ]
 
 AÇÃO IMEDIATA
@@ -669,8 +673,8 @@ A recusa da RN-43 aparece no topo, com a lista do que resolver:
 │ em andamento. Um gerente troca o aprovador deles, e você tenta  │
 │ de novo.                                                        │
 │  NC-2026-0042 · Vazamento na linha 3          ● Aberta       →  │
-│  IV-2026-0007 · Vazamento na linha 3          ⧗ Em aprovação →  │
-│  CT-2026-0019                                  ● Aberta       →  │
+│  IV-2026-0007 · A junta resseca antes…        ⧗ Em aprovação →  │
+│  CT-2026-0019 · Isolar o lote 42…              ● Aberta       →  │
 └────────────────────────────────────────────────────────────────┘
 ```
 
@@ -829,6 +833,25 @@ Critérios do G2 e do G5, aplicados a **toda** tela:
 | Aprovador | **Aprovador** | |
 | Não Conformidade | **NC** em listas e títulos, "Não Conformidade" por extenso na primeira vez de cada tela | |
 
+### 10.3 Como um item aparece numa lista ou num cabeçalho
+
+Só a NC tem título (`prisma/schema.prisma`): os cinco filhos não têm.
+Regra (Matthew, 2026-10-21): **o código + o começo do texto principal do
+tipo**, cortado com "…", e a NC no caminho de volta. Sem código (ainda em
+rascunho), "Rascunho" no lugar dele.
+
+| Tipo | Ao lado do código | Exemplo |
+|---|---|---|
+| NC | O título | `NC-2026-0042 · Vazamento na linha 3` |
+| Classificação | O valor | `CL-2026-0011 · Maior` |
+| Contenção | O começo da descrição | `CT-2026-0019 · Isolar o lote 42…` |
+| Investigação | O começo do real problema | `IV-2026-0007 · A junta resseca antes…` |
+| Ação Corretiva | O começo da descrição do plano | `AC-2026-0003 · Trocar o fornecedor da junta…` |
+| Verificação | A ação de origem | `VE-2026-0002 · da AC-2026-0003` |
+
+No front, o rótulo sai de **uma função só**: se os filhos ganharem título
+(a avaliar antes da C0, plano), muda só ela.
+
 ---
 
 ## 11. Fora do MVP de UI
@@ -868,3 +891,4 @@ tokens.
 | 2026-10-21 | v1.3 — B2: os wireframes em texto que faltavam (§7.7 a §7.16): Login, Definir senha, Classificação, Contenção, Verificação, Relatórios e as quatro de administração |
 | 2026-10-21 | v1.4 — coerência com a B1: o §1 sem as faces Dawn e Dusk como se valessem (estão suspensas), e o tema escuro sai da §11 (é do MVP desde 2026-10-13) |
 | 2026-10-21 | v1.5 — o reativar setor no T-12 (a rota existe desde a A6; o wireframe dizia que não) e a decisão do T-02 sem o nome da pessoa |
+| 2026-10-21 | v1.6 — como um item aparece (§10.3): os filhos não têm título, então o código + o começo do texto principal; os wireframes §7.1, §7.3, §7.4, §7.5, §7.9, §7.10 e §7.14 seguem a regra; o "Sair de todos os aparelhos" no menu da pessoa (§6.1) |
