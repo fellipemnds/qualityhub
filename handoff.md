@@ -315,7 +315,16 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
    `buscarRegistroDoTipoOuFalhar` (escrito por ele na A5), os códigos 409
    × 403 × 401, o `podeExecutar` = papel + atribuição, o `secure` (só manda
    o cookie em HTTPS), site × domínio no `SameSite` (CSRF) e o `path:
-   "/api"`. Faltam a A6 e a A7.
+   "/api"`. ~~A6~~ (2026-10-21, na nuvem, pelo tablet): o Rui inativa a
+   Beltrana (a tela T-10) e o convite de ponta a ponta (emitir e definir a
+   senha), 3 paradas. **Sólido:** a recusa da RN-43 com a lista, por que
+   os itens abertos travam, o hash do token, revogar os convites antigos,
+   o `marcarComoUsado` como o B19. **A revisitar:** a idempotência (o
+   inativar de quem já está inativo), os fechados como evidência, o
+   convite antigo que voltaria a valer na reativação, por que o token
+   aparece uma vez só (consequência do hash), o oráculo da mensagem única
+   e a conexão presa numa transação longa (o bcrypt fora dela). Falta a
+   A7 (a trava entre linhas e um teste do `pausarNoMeio` linha a linha).
    O roteiro original:
    (plano, portão "fundação pronta"; condição para o C0): A4 (o B19 e o
    `SameSite=Strict`), A6 (a RN-43 e o convite) e A7 (a trava entre
