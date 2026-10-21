@@ -132,6 +132,12 @@ A partir do plano de implementação:
   (verifica pela `/verificar`). Fim: `/abrir-pr` (revisões da fase e
   "pronto quando") → merge → `/fechar-fase`.
 - **Bug começa por um teste que falha.**
+- **"Existe" ou "não existe"** (rota, campo, função, regra): Claude só
+  afirma depois de ler a busca **inteira**, sem `head`/`tail`, e cita
+  `arquivo:linha`. Para campos e rotas, a fonte é o código
+  (`prisma/schema.prisma`, `*.schema.ts`, `*.routes.ts`), não os
+  documentos. Motivo: em 2026-10-21, um `head` escondeu a rota de reativar
+  setor, e um wireframe deu título à Ação Corretiva, que não tem.
 - Cada fase termina com o checklist "pronto quando" (plano §1.1).
 - **Pedir antes de cada commit**, inclusive dentro da branch da fase,
   mostrando o que entra (Matthew pode pedir o diff antes). O push, Claude

@@ -165,6 +165,19 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
 | CI da F6a vermelho no `diff-cover` (2026-10-08): uma linha do `setor.service.ts` sem teste | O `diff-cover` local deu 100% porque o arquivo era **novo e ainda sem commit**: o Git não o rastreava, e ele ficou fora do diff | Resolvido com o teste. Claude: `git add -N` nos arquivos novos antes do `diff-cover` (na `/verificar` §4), ou rodar depois do commit |
 
 **Pendências anotadas:**
+- **Servidor de linguagem do TypeScript no PC** (2026-10-21): dá ao
+  Claude "achar todos os usos" e "ir para a definição" exatos. Na nuvem, o
+  Claude Code não liga servidor de linguagem (documentação oficial), então
+  é só para os PCs. O plano: um plugin **nosso** de dois arquivos
+  (`.claude-plugin/plugin.json` e `.lsp.json`, com o `tsc --lsp --stdio`
+  do `node_modules`), sem código de terceiros; o oficial usa o
+  `typescript-language-server`, que provavelmente não serve ao TypeScript
+  7. Testado na nuvem: o `tsc --lsp` respondeu os usos do `reativarSetor`
+  certos. É configuração: Matthew escreve, no PC, antes da C0. Nos PCs,
+  Matthew usa o app desktop ligado ao WSL; a documentação só garante o
+  servidor "em sessões de terminal". **Teste:** sessão nova pelo app,
+  Claude põe um erro de tipo num `.ts` de propósito; aparecer "Found N new
+  diagnostic issues" = ligado; senão, a aba Errors do `/plugin` diz por quê.
 - **Ideia para refinar (`idea-refine`) antes da C3: a atividade recente
   na tela inicial** (2026-10-20, da referência do Flowio,
   `docs/identidade/referencias-interface.md`). O que aconteceu nas NCs que
@@ -259,10 +272,13 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
 3. **A B2, na ordem do plano** (seção "B2 — a ordem dos itens", 8
    itens): ~~1. o registro da B1 e o PR em rascunho~~ e ~~2. os
    wireframes em texto~~ (2026-10-21, `ui-ux.md` §7.7 a §7.16).
-   **Antes, no PC: `npm update vite`** (o CI do #13 está vermelho no
-   `osv-scanner`, §5), `npm run test:cobertura`, commit
-   `chore: vite 8.3.5 (alertas do osv-scanner)` e push; o CI tem de ficar
-   verde. **Depois, o item 3:** a página "Wireframes" no Figma e a casca
+   **Antes, no PC (na chegada, nesta ordem):** (1) `npm update vite` (o
+   CI do #13 está vermelho no `osv-scanner`, §5), `npm run
+   test:cobertura`, commit `chore: vite 8.3.5 (alertas do osv-scanner)` e
+   push; o CI tem de ficar verde. (2) **O servidor de linguagem do
+   TypeScript** (Matthew escreve o plugin de dois arquivos e faz o teste
+   do erro de tipo pelo app desktop; o passo a passo está nas pendências
+   do §5). **Depois, o item 3:** a página "Wireframes" no Figma e a casca
    (menu, barra inferior, logotipo provisório), que mede o limite de
    chamadas do plano de estudante.
    **Referências de interface:** até 5 por dia, com uma frase de Matthew.
