@@ -296,7 +296,7 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
    moléculas → organismos → telas): página **Fundações** com as coleções
    **Cor** (18, Claro e Escuro, o nome do CSS em cada uma) e **Medida**
    (15), 8 estilos de texto Figtree e o mostruário claro e escuro lado a
-   lado; a antiga "Tema" virou histórico. Token novo, derivado:
+   lado; a antiga "Tema" virou histórico. **O arquivo foi limpo** (pedido de Matthew): a Moodboard (vazia) saiu, e a Marca, a Fonte e o Símbolo foram juntados na página "Arquivo · B1"; ficam Fundações, Wireframes, Logo e o Arquivo. A "Tema" antiga só sai quando nada do Arquivo a usar. Token novo, derivado:
    `borda/controle` (`#8A8A8F` / `#68686D`, 3:1 nos dois modos). Os
    símbolos ● ⧗ ✓ não existem na Figtree: nos componentes, o ícone é o SVG
    do Lucide. **O primeiro componente de Matthew: o Botão** (componente

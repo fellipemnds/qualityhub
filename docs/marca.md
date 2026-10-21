@@ -244,9 +244,12 @@ azul no topo), Q2 Planning e Flowio (a luz ambiente no claro).
 Contraste conferido em 2026-10-13: texto ≥ 4,5:1 e ícone ≥ 3:1 nas quatro
 combinações (a página `docs/identidade/paleta.html`, que mostrava a conferência,
 saiu em 2026-10-16: o visual da marca fica só no Figma). No Figma
-(arquivo "Andon — Identidade", time "Designing" desde 2026-10-20; antes no time Work, e antes "Dusk & Dawn — Identidade"), as cores são *Variables*
+(arquivo "Andon — Identidade", time "Designing" desde 2026-10-20; antes no time Work, e antes "Dusk & Dawn — Identidade"), as cores eram *Variables*
 na coleção "Tema", com os modos Dawn · Claro, Dawn · Escuro, Dusk · Claro e
-Dusk · Escuro, e o nome do CSS em cada uma.
+Dusk · Escuro, e o nome do CSS em cada uma. **Desde 2026-10-21** (a B3
+adiantada), as que valem estão na coleção **Cor** (modos Claro e Escuro,
+página Fundações); a antiga virou "Tema (B1, histórico: Dawn e Dusk)", e as
+páginas Marca, Fonte e Símbolo foram juntadas na página "Arquivo · B1".
 
 ### O que evitar (a "cara de IA")
 
