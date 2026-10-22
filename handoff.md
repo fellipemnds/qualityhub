@@ -281,7 +281,14 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
    push; o CI tem de ficar verde. (2) **O servidor de linguagem do
    TypeScript** (Matthew escreve o plugin de dois arquivos e faz o teste
    do erro de tipo pelo app desktop; o passo a passo está nas pendências
-   do §5). ~~O item 3~~ (2026-10-21, na nuvem): a página "Wireframes" e
+   do §5). (3) **O grafo do `understand-anything`** (o plugin já está
+   habilitado): antes, decidir a pasta `.understand-anything/` (a
+   recomendação é o `.gitignore`: um grafo gerado envelhece a cada
+   commit); depois, o `/understand` no PC (é caro: vários agentes) e a
+   primeira pergunta, as lacunas da A4 (`/understand-explain` no
+   `buscar-registro-do-tipo.ts`). Ficou de fora do passeio de propósito:
+   o grafo dá a visão do todo, e a parada 2 da A7 é um teste lido linha a
+   linha. ~~O item 3~~ (2026-10-21, na nuvem): a página "Wireframes" e
    a casca (https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=86-2).
    ~~Itens 4 a 7~~ (2026-10-21, na nuvem, de uma vez, a pedido de
    Matthew): **28 frames** no Figma, em 7 Sections (Componentes, Acesso,
