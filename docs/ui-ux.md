@@ -20,7 +20,7 @@ Com Matthew, em 2026-09-24:
 | Decisão | Escolha | Observação |
 |---|---|---|
 | Biblioteca de componentes | **shadcn/ui** (Radix + Tailwind) | **Diverge do `arquitetura.md`** (ADR-28 recomendava Mantine). Os componentes são copiados para dentro do projeto e viram código nosso |
-| Identidade visual | **Própria da plataforma Andon** (nome **provisório** desde 2026-10-20, `docs/marca.md`), com a **assinatura** da empresa (revisto em 2026-10-13; antes, "decidir depois"; o nome Andon é de 2026-10-15 e substitui "Dusk & Dawn" no texto ao lado, onde as **faces Dawn e Dusk estão suspensas** desde 2026-10-14, `docs/marca.md`) | A identidade oficial da empresa não combina com o app, e Matthew tem liberdade para decidir. **Andon** é o nome da **plataforma**, que vai ganhar módulos além das NCs (o roteiro no `README.md`); cada módulo mantém um nome que diz o que faz ("Andon · Qualidade"). O código continua `qualityhub`: o nome só aparece na tela. A plataforma tem **uma cara só**, com um login: as faces Dawn (colaborador) e Dusk (gestão) da direção de 2026-10-13 estão **suspensas** (`docs/marca.md`, "Suspenso"). O que muda por pessoa é o menu e a tela inicial, pelos papéis (`fluxo-app.md` §2.1 e §3). A autoria de Matthew fica numa tela **"Sobre"** ("Criado por Matthew", com o aviso de copyright), não na marca. A empresa aparece só como assinatura, com o logo dela **monocromático** (cinza ou a cor do texto, nunca as cores originais): no login, no rodapé do menu lateral, no rodapé do e-mail de convite e no cabeçalho dos relatórios exportados. O ícone da aba, o topo das telas e os botões são do Andon. Os tokens continuam por **função** (`--perigo`, `--primary`...); a B1 definiu os valores (`docs/marca.md`: o **Grafite**, sem cor de destaque; as faces não entram no tema), e o `DESIGN.md` da B3 registra tudo |
+| Identidade visual | **Própria da plataforma Andon** (nome **provisório** desde 2026-10-20, `docs/marca.md`), com a **assinatura** da empresa (revisto em 2026-10-13; antes, "decidir depois"; o nome Andon é de 2026-10-15 e substitui "Dusk & Dawn" no texto ao lado, onde as **faces Dawn e Dusk estão suspensas** desde 2026-10-14, `docs/marca.md`) | A identidade oficial da empresa não combina com o app, e Matthew tem liberdade para decidir. **Andon** é o nome da **plataforma**, que vai ganhar módulos além das NCs (o roteiro no `README.md`); cada módulo mantém um nome que diz o que faz ("Andon · Qualidade"). O código continua `qualityhub`: o nome só aparece na tela. A plataforma tem **uma cara só**, com um login: as faces Dawn (colaborador) e Dusk (gestão) da direção de 2026-10-13 estão **suspensas** (`docs/marca.md`, "Suspenso"). O que muda por pessoa é o menu e a tela inicial, pelos papéis (`fluxo-app.md` §2.1 e §3). A autoria de Matthew fica numa tela **"Sobre"** ("Criado por Matthew", com o aviso de copyright), não na marca. A empresa aparece só como assinatura, com o logo dela **monocromático** (cinza ou a cor do texto, nunca as cores originais): no login, no menu da pessoa (que abre da doca do computador e na tela Eu do celular), no rodapé do e-mail de convite e no cabeçalho dos relatórios exportados. O ícone da aba, o topo das telas e os botões são do Andon. Os tokens continuam por **função** (`--perigo`, `--primary`...); a B1 definiu os valores (`docs/marca.md`: o **Grafite**, sem cor de destaque; as faces não entram no tema), e o `DESIGN.md` da B3 registra tudo |
 | Processo de design | **Documento → Figma → protótipo HTML** | Wireframes e mockups no Figma; protótipo HTML clicável quando o design fechar, para o teste do gate G3 |
 | Tema | **Claro e escuro** (revisto em 2026-10-13; antes, "só claro no MVP"; as duas faces saíram com o Dusk & Dawn) | Decidido na entrevista da B1 (`docs/marca.md`). As cores já são tokens, então o escuro não refaz telas; o custo fica na B3, com o contraste conferido nos dois modos |
 
@@ -139,7 +139,7 @@ competiria com os badges.
 |---|---|---|
 | Celular | < 768 px | Uma coluna; navegação inferior; tabelas viram cartões |
 | Tablet | 768–1023 px | Uma coluna, menu recolhível |
-| Computador | ≥ 1024 px | Menu lateral fixo + conteúdo; detalhe da NC com coluna lateral |
+| Computador | ≥ 1024 px | Doca flutuante embaixo + a tela inteira para o conteúdo (§6.1); detalhe da NC com coluna lateral |
 
 ---
 
@@ -245,27 +245,53 @@ em `components/` (os do shadcn/ui, em `components/ui/`).
 
 ### 6.1 Estrutura geral
 
-**Computador:**
+**Computador** (decisão (e) da B2, 2026-10-22; Figma, página Decisões
+(histórico), seção "Decisão (e)"; o componente `Shell/Doca`): uma **doca
+flutuante embaixo, no centro**, e a tela inteira para o conteúdo, sem
+menu lateral nem barra de topo. É a mesma ideia da barra flutuante do
+celular.
 
 ```
-┌──────────────┬──────────────────────────────────────────────┐
-│ QualityHub   │  NC-2026-0042 › Investigação IV-2026-0007     │
-│              │──────────────────────────────────────────────│
-│ ◉ Pendências │                                              │
-│   (4)        │              conteúdo da tela                 │
-│ ▢ NCs        │                                              │
-│ ▢ Relatórios │                                              │
-│              │                                              │
-│ ──────────── │                                              │
-│ Fulana ▾     │                                              │
-│  Tela inicial│                                              │
-│  Sair        │                                              │
-└──────────────┴──────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│ NC-2026-0042 · Vazamento na linha 3          [Enviar] [⋯]    │
+│ ● Aberta  Em investigação                                    │
+│                                                              │
+│                     conteúdo da tela                         │
+│                                                              │
+│              (96 px livres no fim do conteúdo)               │
+│  ╭────────────────────────────────────────────────────────╮  │
+│  │ ⌕ Buscar │ Pendências ④  NCs  Relatórios │ Usuários  Setores │ ◯ ⌃ │
+│  ╰────────────────────────────────────────────────────────╯  │
+└──────────────────────────────────────────────────────────────┘
 ```
 
-O menu da pessoa (o nome) abre **Tela inicial**, **Sair** e **Sair de
-todos os aparelhos** (`fluxo-app.md` §2.1). O contador das Pendências
-depende do `GET /pendencias`, que chega na C3.
+1. **A doca fica fixa no rodapé da janela**, centralizada, com ícone e
+   rótulo em cada item; o item ativo com a pílula cinza; o contador das
+   Pendências vira um selo (depende do `GET /pendencias`, que chega na
+   C3). Os itens de administração vêm depois de uma divisória e só para
+   quem tem o papel (`fluxo-app.md` §2.1).
+2. **Toda tela deixa 96 px livres embaixo do conteúdo** (a altura da doca
+   e a margem). Sem isso, a doca cobriria o fim das listas, o "Carregar
+   mais" e o campo de comentário do feed, o risco apontado na decisão.
+3. **Buscar é o primeiro item**, e o atalho **Ctrl K** abre a mesma
+   busca: uma janela no centro, com os resultados em Itens, NCs e "Ir
+   para". Procura pelo código e pelo texto (os filhos não têm título,
+   §10.3). Depende do `GET /registros/busca`, planejado para a C4.
+4. **A pessoa fica no fim da doca:** o avatar gerado pelo nome
+   (`docs/marca.md`) com a seta. O **menu da pessoa abre para cima**: nome,
+   setor e papel, **Tela inicial**, **Sair**, **Sair de todos os
+   aparelhos** (`fluxo-app.md` §2.1) e, embaixo, a **assinatura da
+   empresa**.
+5. **Sem barra de topo:** o caminho de volta fica na linha do título,
+   dentro da tela, e a ação da tela (Enviar, Salvar, Mais) fica no canto
+   superior direito, sem nada por cima.
+6. **Com outros módulos** (pendência no handoff): a doca cabe uns 8 itens
+   na largura mínima do computador (1024 px). Quando passar disso, os
+   módulos viram um item só, com um seletor, como no celular.
+
+As alternativas (o trilho estreito à esquerda, colado ou flutuante, e o
+trilho com uma barra fina no topo) estão na mesma seção do Figma, como
+registro; o componente do trilho ficou lá, como "não escolhido".
 
 **Celular** (U2, decidida em 2026-10-22, B2): barra superior com o
 título + **barra flutuante** com três abas e o **＋** ao lado:
@@ -312,12 +338,11 @@ NCs vira **Módulos** (ou o módulo atual, com seletor), as Pendências
 passam a juntar todos os módulos e o Eu fica. Se for preciso uma quarta
 aba, o ＋ sobe para cima da barra, à direita (a variante B).
 
-Os desenhos: Figma, página Wireframes, seção "Decisão (a) · barra do
-celular (2026-10-22)" (as variantes A e B e a tela Eu). **Ainda a
-confirmar com Matthew** (proposta da B2, 2026-10-21): no computador,
-**sem barra de topo** (o caminho de volta fica na linha do título, dentro
-da tela), os grupos do menu em letra normal ("Administração", não
-"ADMINISTRAÇÃO") e o item ativo só com a pílula cinza.
+Os desenhos: Figma, página Decisões (histórico), seção "Decisão (a) ·
+barra do celular (2026-10-22)" (as variantes A e B e a tela Eu). A
+proposta de 2026-10-21 para o computador (sem barra de topo, o item ativo
+com a pílula cinza) ficou confirmada pela decisão (e), acima, e o menu
+lateral saiu.
 
 ---
 
@@ -1027,3 +1052,4 @@ tokens.
 | 2026-10-22 | v1.10 — B2, decisão (c): a Investigação nas duas visões (§7.5), quem preenche e o aprovador; o aprovador sem "+ Nova ação corretiva" (RN-49) |
 | 2026-10-22 | v1.11 — a Investigação (§7.5): o Ishikawa numerado com o símbolo da classificação, os 5 porquês em cadeia e o check de efetividade como resumo das contramedidas |
 | 2026-10-22 | v1.12 — Relatórios e administração no celular (depois do §7.16) e o diálogo do efeito como folha |
+| 2026-10-22 | v1.13 — B2, decisão (e): a navegação do computador vira uma doca flutuante embaixo, no centro, com a busca (Ctrl K) e a pessoa no fim; 96 px livres embaixo do conteúdo; sem menu lateral nem barra de topo (§6.1) |

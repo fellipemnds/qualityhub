@@ -338,7 +338,9 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
    **O Figma foi reorganizado** (pedido de Matthew): a página Wireframes
    só com as telas decididas; as decisões, com as variantes e o "Antes",
    na página nova **Decisões (histórico)**. **Próximo: a decisão (d)**, a
-   borda dos campos. As versões de celular que faltavam (T-08 a T-12, o
+   borda dos campos. Antes dela, a **decisão (e)**, a navegação do computador, foi
+   **fechada** (2026-10-22): a doca flutuante embaixo, com a busca em janela
+   (Ctrl K) e a pessoa no fim, aplicada nas 16 telas (item 7d). As versões de celular que faltavam (T-08 a T-12, o
    convite e o diálogo do efeito) **feitas**, cada tela ao lado da sua.
    Pendente da (a): a barra nova no T-04 celular e no frame dos
    componentes (item 7a). Pendente da (b): conferir se a T-07 no celular segue o padrão.

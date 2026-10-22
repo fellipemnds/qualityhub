@@ -46,13 +46,25 @@ variantes comparadas e, num quadro "Antes", a tela que foi substituída.
   investigação em aprovação, a ação não pode nascer (RN-49).
   [Quem preenche](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=156-1072)
   · [Aprovador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-579)
+- [x] **(e) A navegação do computador** (pedido de Matthew, depois das
+  quatro) — **decidida em 2026-10-22**: uma **doca flutuante embaixo, no
+  centro**, como a barra do celular, com o Buscar em primeiro (abre uma
+  janela de busca; Ctrl K também) e a pessoa no fim, cujo menu abre para
+  cima (com a assinatura da empresa); toda tela deixa 96 px livres embaixo
+  do conteúdo, para a doca não cobrir o fim; sem menu lateral nem barra de
+  topo. Comparada com o trilho à esquerda (colado e flutuante, a
+  recomendação do Claude) e com o trilho e uma barra fina no topo.
+  **Aplicada** nas 16 telas de computador. Registrado no `ui-ux.md` §6.1,
+  no `fluxo-app.md` §2.1 e no plano (B2, 7d; a busca por texto na C1 e na
+  C4).
+  [Decisão (e) no Figma](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=170-274)
 - [ ] **(d) A borda dos campos** (`borda/controle`, `#8A8A8F` no claro):
   mais escura que as outras bordas, porque a regra de acessibilidade do
   projeto pede 3:1 (`ui-ux.md` §9). [Fundações](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=105-45)
 
 ## 1. Componentes
 
-- [ ] [Os 16 componentes](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=95-62), cada um no seu frame: o menu lateral (grupos em letra normal, o ativo só com a pílula cinza), o menu da pessoa, as barras do celular (o ＋ no centro), os botões, os campos, estado/etapa/prazo e a linha de pendência.
+- [ ] [Os 16 componentes](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=95-62), cada um no seu frame: a **doca** do computador (`Shell/Doca`, decisão (e), com uma variante por item ativo), o menu da pessoa, as barras do celular (o ＋ no centro), os botões, os campos, estado/etapa/prazo e a linha de pendência.
 
 ## 2. Acesso
 

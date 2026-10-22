@@ -97,7 +97,9 @@ Prefixos reais dos códigos: `NC`, `CL` (Classificação), `CT` (Contenção),
 Aparecem só os itens que o papel permite. No celular, eles se dividem
 entre a barra flutuante (Pendências, NCs, Eu) e a tela **Eu** (T-13:
 Tela inicial, a Gestão para quem tem o papel e as duas saídas;
-`ui-ux.md` §6.1):
+`ui-ux.md` §6.1). No computador, os destinos ficam na **doca** flutuante
+embaixo, com o **Buscar** em primeiro (Ctrl K), e Tela inicial e as
+saídas ficam no **menu da pessoa**, que abre do fim da doca:
 
 | Item | Papéis | Detalhe |
 |---|---|---|
@@ -553,3 +555,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-21 | v1.5 — "Sair de todos os aparelhos" no menu (§2.1) |
 | 2026-10-22 | v1.6 — a T-06 no celular em quatro abas (decisão (b) da B2, `ui-ux.md` §7.3); a menção abre na aba Feed (J10) |
 | 2026-10-22 | v1.7 — J4: o check de efetividade resume as contramedidas, e a hipótese aponta a causa numerada do Ishikawa |
+| 2026-10-22 | v1.8 — §2.1: no computador, a doca flutuante embaixo, com a busca e o menu da pessoa (decisão (e) da B2) |
