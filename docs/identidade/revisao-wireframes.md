@@ -77,7 +77,7 @@ variantes comparadas e, num quadro "Antes", a tela que foi substituída.
 
 - [ ] [Classificação · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-343): Maior e Menor como opções; a nota da Q21 e da Q22 para a C2.
 - [ ] [Contenção · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-439): o botão bloqueado com a lista do que falta aberta.
-- [ ] [Verificação · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-540) e o [diálogo do efeito](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-652): as instruções só de leitura e o "Não eficaz" explicado antes de concluir.
+- [ ] [Verificação · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-540) e o [diálogo do efeito](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-652) ([no celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=164-1105), uma folha que sobe do rodapé): as instruções só de leitura e o "Não eficaz" explicado antes de concluir.
 - [ ] [Ação Corretiva · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-476): o plano aprovado só de leitura, o selo e o prazo vencido; a execução editável.
 - [ ] Investigação A3 · computador, nas duas visões da decisão (c): [aprovador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-579) (em aprovação, só leitura) e [quem preenche](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=156-1072) (aberta): o índice das 10 etapas, o Ishikawa, as hipóteses, os 5 porquês e as contramedidas.
 - [ ] [Classificação · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-763)
@@ -86,6 +86,8 @@ variantes comparadas e, num quadro "Antes", a tela que foi substituída.
 - [ ] [Verificação · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-880)
 
 ## 5. Gestão e administração
+
+Cada tela tem a versão de celular ao lado (pedido de Matthew, 2026-10-22): telas internas, abertas pela tela Eu, com a seta de voltar e sem a barra de abas; as tabelas viram listas de cartões e a ação principal vai para a barra fixa no rodapé. [T-08](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=162-903) · [T-09](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=162-1105) · [T-10](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=163-927) · [T-11](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=163-1059) · [convite](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=163-1174) · [T-12](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=164-970).
 
 - [ ] [T-08 Relatórios](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=103-620): os 4 números num container só, as NCs abertas por setor, o tempo médio (sem cor), as atrasadas, a eficácia. Os números batem entre si (38 abertas; 18 + 3 + 1 = 22 verificações).
 - [ ] [T-09 Usuários](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=103-806)

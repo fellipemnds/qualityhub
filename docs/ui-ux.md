@@ -848,6 +848,17 @@ quem ainda está no setor, com link para cada pessoa (T-10): "Mude o
 setor destas pessoas antes de desativar". Reativar devolve o setor
 às opções, sem confirmação (é reversível).
 
+**No celular** (T-08 a T-12, B2, 2026-10-22; Figma, seção "Gestão e
+administração"): telas internas, abertas pela tela Eu (§6.1), com a seta
+de voltar e sem a barra de abas. As tabelas viram listas de cartões; a
+ação principal da tela (Novo usuário, Novo setor, Salvar, Criar e gerar
+convite) vai para a barra fixa no rodapé; as ações de cada setor saem da
+linha e abrem num toque no cartão. O convite gerado ganha o
+**Compartilhar**, que abre o menu do celular (WhatsApp, Teams), além do
+Copiar. Os Relatórios ficam numa coluna, com os 4 números em grade 2 × 2.
+O diálogo do efeito da Verificação vira uma folha que sobe do rodapé,
+com os botões empilhados.
+
 ---
 
 ## 8. Padrões de interação
@@ -1015,3 +1026,4 @@ tokens.
 | 2026-10-22 | v1.9 — B2, decisão (b): o Detalhe da NC no celular (§7.3) em quatro abas (Resumo · Detalhes · Itens · Feed), com o bloco do título no estilo do Fresha (o estado e a pilha dos envolvidos em cima, a etapa embaixo, o título inteiro que encolhe ao rolar) e o token `fundo/destaque` para a B3 |
 | 2026-10-22 | v1.10 — B2, decisão (c): a Investigação nas duas visões (§7.5), quem preenche e o aprovador; o aprovador sem "+ Nova ação corretiva" (RN-49) |
 | 2026-10-22 | v1.11 — a Investigação (§7.5): o Ishikawa numerado com o símbolo da classificação, os 5 porquês em cadeia e o check de efetividade como resumo das contramedidas |
+| 2026-10-22 | v1.12 — Relatórios e administração no celular (depois do §7.16) e o diálogo do efeito como folha |
