@@ -336,6 +336,7 @@ frames: 12 telas, a T-07 com 5 variantes e o celular de T-01 a T-07, menos a Inv
 | 5 | Lote B: Pendências e Lista **Feito** (2026-10-21). A pausa saiu: Matthew pediu todas as telas de uma vez e o refinamento item por item depois | 🤖 cria; 🧑 ajusta |
 | 6 | Lote C: as 5 variantes da T-07 **Feito** (2026-10-21), com o balão do botão bloqueado (Contenção) e o diálogo do efeito (Verificação) | 🤖 cria; 🧑 ajusta |
 | 7 | Lote D: Login, Definir senha, Relatórios e administração **Feito** (2026-10-21), com as recusas da RN-43 e da RN-44 e o convite gerado | 🤖 cria; 🧑 ajusta |
+| 7a | **Novo (2026-10-22, decisão (a) da revisão):** a navegação do celular revista (a barra flutuante e a tela Eu, T-13, **feitas** na seção "Decisão (a)" do Figma) e as **versões de celular** de Relatórios e administração (T-08 a T-12), que o `fluxo-app.md` §1 passou a pedir. Depois, aplicar a barra nova nas telas raiz do celular que já existem (T-03 e T-04) | 🤖 cria; 🧑 ajusta |
 | 8 | Conferir o G1 (`ui-ux.md` §2) e o `/abrir-pr` | 🤖 confere; 🧑 decide |
 
 O que o teste com colegas revelar volta para os documentos **antes** do

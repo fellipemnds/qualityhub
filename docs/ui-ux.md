@@ -267,32 +267,57 @@ O menu da pessoa (o nome) abre **Tela inicial**, **Sair** e **Sair de
 todos os aparelhos** (`fluxo-app.md` §2.1). O contador das Pendências
 depende do `GET /pendencias`, que chega na C3.
 
-**Celular:** barra superior com o título + **barra inferior de
-navegação** (U2):
+**Celular** (U2, decidida em 2026-10-22, B2): barra superior com o
+título + **barra flutuante** com três abas e o **＋** ao lado:
 
 ```
 ┌────────────────────────┐
-│ ← NC-2026-0042      ⋯  │
+│ Minhas pendências      │
 ├────────────────────────┤
 │                        │
 │    conteúdo (1 coluna) │
 │                        │
-├────────────────────────┤
-│ Pendências  NCs  ＋  ☰ │
+│ ╭──────────────────╮ ● │
+│ │ Pend.  NCs   Eu  │ ＋│
+│ ╰──────────────────╯   │
 └────────────────────────┘
 ```
 
-O **＋** abre direto a Nova NC: registrar no chão de fábrica é o uso
-principal no celular (`fluxo-app.md` §1).
+1. **As abas:** Pendências · NCs · **Eu**. A barra é uma pílula
+   flutuante, sem a faixa sólida no rodapé, acima da área do gesto do
+   iPhone, com toque de 44 px no mínimo por aba e espaço embaixo da
+   lista para o último item não ficar escondido.
+2. **O ＋ ao lado da barra**, na mesma linha (variante A), em grafite
+   como o botão primário (sem cor de destaque, `docs/marca.md`).
+3. **A barra e o ＋ só nas três telas raiz.** Nas telas internas (o
+   Detalhe da NC, os filhos, a Nova NC) eles somem e fica a seta de
+   voltar no topo; assim não brigam com a barra de ações fixa da Nova NC.
+4. **Na tela Eu, o ＋ sai e a barra cresce** até a largura toda (16 px
+   de margem), com uma transição curta.
+5. **O ＋ cria a coisa principal da tela.** Hoje é sempre Nova NC. Com
+   outros módulos, cria no módulo atual; nas Pendências (que juntam
+   todos), abre uma escolha rápida; e, quando a tela não deixar óbvio, o
+   botão leva o rótulo ("＋ Nova NC"). A escolha rápida só se constrói
+   com o segundo módulo.
+6. **A tela Eu** (T-13, só no celular) substitui o avatar e o menu ☰:
+   perfil (nome, e-mail, papéis), **Conta** (Tela inicial), **Gestão**
+   (Relatórios para `GERENTE`; Usuários e Setores para `ADMIN`; só para
+   quem tem o papel), **Sessão** (Sair, Sair de todos os aparelhos) e a
+   assinatura da empresa embaixo. Relatórios e administração ganham
+   versão de celular (`fluxo-app.md` §1, revisto em 2026-10-22).
 
-**Proposta da B2 (2026-10-21), a confirmar com Matthew:** a barra
-inferior fica com **três** destinos, Pendências · ＋ Nova NC · NCs, para o
-＋ ficar no centro; o Menu sai dela e vira o **avatar** na barra de cima
-(abre o menu da pessoa: Tela inicial, Sair, Sair de todos os aparelhos).
-Muda a U2. No computador, **sem barra de topo**: o caminho de volta fica
-na linha do título, dentro da tela. Os grupos do menu em letra normal
-("Administração", não "ADMINISTRAÇÃO"), e o item ativo só com a pílula
-cinza. Os wireframes no Figma (página Wireframes) já seguem a proposta.
+**Com outros módulos** (pendência no handoff): a barra comporta até 5
+abas, mas a variante A (com o ＋ ao lado) só cabe com 3. O plano: a aba
+NCs vira **Módulos** (ou o módulo atual, com seletor), as Pendências
+passam a juntar todos os módulos e o Eu fica. Se for preciso uma quarta
+aba, o ＋ sobe para cima da barra, à direita (a variante B).
+
+Os desenhos: Figma, página Wireframes, seção "Decisão (a) · barra do
+celular (2026-10-22)" (as variantes A e B e a tela Eu). **Ainda a
+confirmar com Matthew** (proposta da B2, 2026-10-21): no computador,
+**sem barra de topo** (o caminho de volta fica na linha do título, dentro
+da tela), os grupos do menu em letra normal ("Administração", não
+"ADMINISTRAÇÃO") e o item ativo só com a pílula cinza.
 
 ---
 
@@ -878,7 +903,7 @@ Com Matthew, em 2026-09-24 (além das da §1).
 | # | Pergunta | Decisão |
 |---|---|---|
 | **U1** | Textos dos botões e das atribuições | **"Enviar para aprovação"** e **"Responsável"** na tela; código e banco mantêm os nomes atuais → §10.2 |
-| **U2** | Navegação no celular | **Barra inferior**: Pendências, NCs, ＋ Nova NC, Menu → §6.1 |
+| **U2** | Navegação no celular | **Barra flutuante** com Pendências, NCs e Eu, e o ＋ Nova NC ao lado; a tela Eu no lugar do menu (revista em 2026-10-22, B2) → §6.1 |
 | **U3** | Fonte | **Figtree** (B1, 2026-10-13); sempre servida pelo nosso servidor; `tabular-nums` nos números → §3.2 |
 | **U4** | Salvar | **Botão explícito** + cópia local no navegador → §8.1 |
 | **U5** | Quem monta o Figma | **Claude cria os wireframes** (a partir da §7) no Figma de Matthew; **Matthew faz os mockups** |
@@ -902,3 +927,4 @@ tokens.
 | 2026-10-21 | v1.5 — o reativar setor no T-12 (a rota existe desde a A6; o wireframe dizia que não) e a decisão do T-02 sem o nome da pessoa |
 | 2026-10-21 | v1.6 — como um item aparece (§10.3): os filhos não têm título, então o código + o começo do texto principal; os wireframes §7.1, §7.3, §7.4, §7.5, §7.9, §7.10 e §7.14 seguem a regra; o "Sair de todos os aparelhos" no menu da pessoa (§6.1) |
 | 2026-10-21 | v1.7 — B2: a proposta da barra inferior de três destinos e do avatar (muda a U2, a confirmar), o computador sem barra de topo e os grupos do menu em letra normal (§6.1) |
+| 2026-10-22 | v1.8 — B2, decisão (a): a U2 revista (a barra flutuante Pendências · NCs · Eu, o ＋ ao lado, só nas telas raiz; a tela Eu com a Gestão; o ＋ cria a coisa principal da tela) e o plano para outros módulos (§6.1) |

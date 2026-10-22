@@ -32,8 +32,10 @@ Decididos com Matthew em 2026-09-24:
      não aparece; o painel de atribuições mostra quem está.
 4. **Computador primeiro; celular para o essencial.** No celular precisam
    funcionar bem: registrar NC, anexar foto, ver pendências, aprovar ou
-   reprovar, comentar. Investigação A3, relatórios e administração só
-   precisam funcionar no computador.
+   reprovar, comentar. A Investigação A3 só precisa funcionar no
+   computador. **Relatórios e administração ganham versão de celular**
+   (revisto por Matthew em 2026-10-22, na B2: a Gestão fica na tela Eu,
+   T-13; `ui-ux.md` §6.1).
 
 ---
 
@@ -62,6 +64,8 @@ flowchart TD
     Usu --> UsuDet[T-10 Detalhe do usuário]
     Usu --> UsuNovo[T-11 Novo usuário]
     Usu --> Set[T-12 Setores]
+    Eu[T-13 Eu<br/>só no celular] --> Rel
+    Eu --> Usu
 ```
 
 | ID | Tela | Rota | Quem acessa | Celular |
@@ -73,11 +77,12 @@ flowchart TD
 | T-05 | Nova NC | `/nc/nova` | `EDITOR`, `GERENTE` | ✅ |
 | T-06 | Detalhe da NC | `/nc/:id` | Todos com papel de negócio | ✅ |
 | T-07 | Detalhe do item filho | `/classificacoes/:id`, `/contencoes/:id`, `/investigacoes/:id`, `/acoes-corretivas/:id`, `/verificacoes/:id` | Todos com papel de negócio | ✅ exceto Investigação |
-| T-08 | Relatórios | `/relatorios` | `GERENTE` | — |
-| T-09 | Usuários | `/admin/usuarios` | `ADMIN` | — |
-| T-10 | Detalhe do usuário | `/admin/usuarios/:id` | `ADMIN` | — |
-| T-11 | Novo usuário | `/admin/usuarios/novo` | `ADMIN` | — |
-| T-12 | Setores | `/admin/setores` | `ADMIN` | — |
+| T-08 | Relatórios | `/relatorios` | `GERENTE` | ✅ (a desenhar) |
+| T-09 | Usuários | `/admin/usuarios` | `ADMIN` | ✅ (a desenhar) |
+| T-10 | Detalhe do usuário | `/admin/usuarios/:id` | `ADMIN` | ✅ (a desenhar) |
+| T-11 | Novo usuário | `/admin/usuarios/novo` | `ADMIN` | ✅ (a desenhar) |
+| T-12 | Setores | `/admin/setores` | `ADMIN` | ✅ (a desenhar) |
+| T-13 | Eu | `/eu` | Todos | ✅ só no celular (no computador, o menu da pessoa faz o papel) |
 
 "Papel de negócio" = `VISUALIZADOR`, `EDITOR`, `APROVADOR` ou `GERENTE`.
 Um `ADMIN` só com esse papel não vê NCs (PRD §8).
@@ -89,7 +94,10 @@ Prefixos reais dos códigos: `NC`, `CL` (Classificação), `CT` (Contenção),
 
 ### 2.1 Menu principal
 
-Aparecem só os itens que o papel permite:
+Aparecem só os itens que o papel permite. No celular, eles se dividem
+entre a barra flutuante (Pendências, NCs, Eu) e a tela **Eu** (T-13:
+Tela inicial, a Gestão para quem tem o papel e as duas saídas;
+`ui-ux.md` §6.1):
 
 | Item | Papéis | Detalhe |
 |---|---|---|

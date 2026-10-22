@@ -11,9 +11,16 @@ Arquivo: https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K (página
 
 ## 0. Antes das telas: quatro decisões
 
-- [ ] **(a) A barra inferior do celular com três destinos** (Pendências ·
-  ＋ Nova NC · NCs) e o **avatar** no topo no lugar do Menu. Muda a U2
-  (`ui-ux.md` §6.1). [Componentes](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=95-62)
+- [x] **(a) A navegação do celular** — **decidida em 2026-10-22**, com
+  uma proposta de Matthew no lugar da original: a barra **flutuante**
+  Pendências · NCs · **Eu**, o ＋ ao lado (variante A), só nas telas raiz;
+  na tela Eu o ＋ sai e a barra cresce; o ＋ cria a coisa principal da
+  tela; a tela **Eu** (T-13) com a Gestão por papel, e Relatórios e
+  administração com versão de celular. Registrado no `ui-ux.md` §6.1
+  (U2), no `fluxo-app.md` §1 e §2 e no plano (B2, item 7a).
+  [Decisão (a) no Figma](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=127-848)
+  — falta aplicar a barra nova no T-03 e no T-04 celular e no frame
+  dos componentes.
 - [ ] **(b) As abas Resumo · Itens · Feed** no Detalhe da NC no celular
   (vieram da referência do app de mercado).
 - [ ] **(c) A Investigação pela visão do aprovador** (Em aprovação, com
@@ -65,6 +72,8 @@ Arquivo: https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K (página
 - [ ] [T-12 Setores](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=103-1175): a recusa da RN-44 e o Reativar no setor desativado.
 
 ## 6. O que ainda não está desenhado (o G1, item 8)
+
+- [ ] As versões de celular de T-08 a T-12 (decisão (a), plano B2 item 7a).
 
 - [ ] As ações dentro do "Mais": Cancelar, Retirar da aprovação, Reabrir e Excluir rascunho (`fluxo-app.md` §7).
 - [ ] Os estados da tela: vazio, carregando, erro e sem permissão (`fluxo-app.md` §8). São do G4, na B3.
