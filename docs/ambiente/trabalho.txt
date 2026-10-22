@@ -11,7 +11,7 @@ git: git version 2.53.0
 docker: Docker version 29.9.2, build a82e528
 docker compose: Docker Compose version v5.6.1
 gh: gh version 2.101.0 (2026-09-15)
-claude code: 2.1.280 (Claude Code)
+claude code: 2.1.308 (Claude Code)
 
 ## Contas e configuração
 git user.name: Mateus Felipe Mendes
