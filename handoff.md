@@ -337,8 +337,10 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
    ~~(c) a Investigação de quem preenche~~ (feita em 2026-10-22, item 7c).
    **O Figma foi reorganizado** (pedido de Matthew): a página Wireframes
    só com as telas decididas; as decisões, com as variantes e o "Antes",
-   na página nova **Decisões (histórico)**. **Próximo: a decisão (d)**, a
-   borda dos campos. Antes dela, a **decisão (e)**, a navegação do computador, foi
+   na página nova **Decisões (histórico)**. ~~(d) a borda dos campos~~ (fechada em 2026-10-22: a borda inteira em
+   `borda/controle`; `ui-ux.md` §9). **As cinco decisões estão fechadas.**
+   **Próximo: a revisão tela por tela**, pela seção 1 do checklist (os
+   componentes). Antes dela, a **decisão (e)**, a navegação do computador, foi
    **fechada** (2026-10-22): a doca flutuante embaixo, com a busca em janela
    (Ctrl K) e a pessoa no fim, aplicada nas 16 telas (item 7d). As versões de celular que faltavam (T-08 a T-12, o
    convite e o diálogo do efeito) **feitas**, cada tela ao lado da sua.

@@ -496,3 +496,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-22 | v1.36 — B2: os itens 7a (decisão (a), a navegação do celular) e 7b (decisão (b), o Detalhe da NC no celular em quatro abas), da revisão dos wireframes |
 | 2026-10-22 | v1.37 — B2: o item 7c (decisão (c), a Investigação de quem preenche) e as telas decididas no lugar das antigas no Figma |
 | 2026-10-22 | v1.38 — B2: o item 7d (decisão (e), a doca do computador); a busca por texto na C1 (lista) e na C4 (`GET /registros/busca`, também para o Ctrl K) |
+| 2026-10-22 | v1.39 — B2: as cinco decisões da revisão fechadas, com a (d), a borda dos campos (a borda inteira em `borda/controle`); falta a revisão tela por tela e o item 8 |

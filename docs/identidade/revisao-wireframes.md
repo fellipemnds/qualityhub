@@ -14,7 +14,7 @@ Arquivo: https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K (página
 Cada decisão ganha uma seção na página **Decisões (histórico)**, com as
 variantes comparadas e, num quadro "Antes", a tela que foi substituída.
 
-## 0. Antes das telas: quatro decisões
+## 0. Antes das telas: as decisões
 
 - [x] **(a) A navegação do celular** — **decidida em 2026-10-22**, com
   uma proposta de Matthew no lugar da original: a barra **flutuante**
@@ -58,9 +58,16 @@ variantes comparadas e, num quadro "Antes", a tela que foi substituída.
   no `fluxo-app.md` §2.1 e no plano (B2, 7d; a busca por texto na C1 e na
   C4).
   [Decisão (e) no Figma](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=170-274)
-- [ ] **(d) A borda dos campos** (`borda/controle`, `#8A8A8F` no claro):
-  mais escura que as outras bordas, porque a regra de acessibilidade do
-  projeto pede 3:1 (`ui-ux.md` §9). [Fundações](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=105-45)
+- [x] **(d) A borda dos campos** — **decidida em 2026-10-22: a A**, a
+  borda inteira de 1 px em `borda/controle` (#8A8A8F no claro, 3,44:1 com
+  o cartão; #68686D no escuro, 3,35:1), com o canto de 6 px
+  (`raio/controle`) e o foco num anel de 2 px afastado 2 px. Comparada com
+  o campo preenchido com a linha embaixo (B) e com a borda clara do
+  shadcn (C, #D4D4D8, 1,48:1, que não passa a regra do `ui-ux.md` §9). A
+  A já é quase o cinza mais claro que passa 3:1 no branco (o limite fica
+  perto de #959595). Os componentes do Figma já estavam assim. Registrado
+  no `ui-ux.md` §9.
+  [Decisão (d) no Figma](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=179-363)
 
 ## 1. Componentes
 
@@ -109,7 +116,7 @@ Cada tela tem a versão de celular ao lado (pedido de Matthew, 2026-10-22): tela
 
 ## 6. O que ainda não está desenhado (o G1, item 8)
 
-- [ ] As versões de celular de T-08 a T-12 (decisão (a), plano B2 item 7a).
+- [x] As versões de celular de T-08 a T-12, com o convite e o diálogo do efeito (feitas em 2026-10-22, §5). Falta a barra nova no T-04 celular e no frame dos componentes (plano B2, item 7a).
 
 - [ ] As ações dentro do "Mais": Cancelar, Retirar da aprovação, Reabrir e Excluir rascunho (`fluxo-app.md` §7).
 - [ ] Os estados da tela: vazio, carregando, erro e sem permissão (`fluxo-app.md` §8). São do G4, na B3.

@@ -941,6 +941,11 @@ Para não perder trabalho:
 Critérios do G2 e do G5, aplicados a **toda** tela:
 
 1. **Contraste** ≥ 4,5:1 para texto, ≥ 3:1 para ícones e bordas de campo.
+   O campo tem a **borda inteira** de 1 px em `borda/controle` (#8A8A8F
+   no claro, 3,44:1; #68686D no escuro, 3,35:1), o canto de 6 px e o foco
+   num anel de 2 px afastado 2 px; no shadcn, o `--input` e o `--ring`
+   (decisão (d) da B2, 2026-10-22). A borda clara do padrão do shadcn
+   (#D4D4D8, 1,48:1) não passa.
 2. **Nunca só cor** — badges com ícone + texto; prazos com texto
    ("Vencido há 2 dias"); campos com erro com mensagem, não só borda
    vermelha. Parte da equipe pode ter daltonismo, e o app pode ser
@@ -1053,3 +1058,4 @@ tokens.
 | 2026-10-22 | v1.11 — a Investigação (§7.5): o Ishikawa numerado com o símbolo da classificação, os 5 porquês em cadeia e o check de efetividade como resumo das contramedidas |
 | 2026-10-22 | v1.12 — Relatórios e administração no celular (depois do §7.16) e o diálogo do efeito como folha |
 | 2026-10-22 | v1.13 — B2, decisão (e): a navegação do computador vira uma doca flutuante embaixo, no centro, com a busca (Ctrl K) e a pessoa no fim; 96 px livres embaixo do conteúdo; sem menu lateral nem barra de topo (§6.1) |
+| 2026-10-22 | v1.14 — B2, decisão (d): a borda dos campos (§9), a borda inteira em `borda/controle` e o anel de foco |
