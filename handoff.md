@@ -323,8 +323,16 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
    inativar de quem já está inativo), os fechados como evidência, o
    convite antigo que voltaria a valer na reativação, por que o token
    aparece uma vez só (consequência do hash), o oráculo da mensagem única
-   e a conexão presa numa transação longa (o bcrypt fora dela). Falta a
-   A7 (a trava entre linhas e um teste do `pausarNoMeio` linha a linha).
+   e a conexão presa numa transação longa (o bcrypt fora dela). **A7, feita
+   em parte** (2026-10-22, madrugada, pelo tablet): a corrida do B29 (a
+   Fulana envia a NC enquanto o Ciclano cria uma investigação). A parada 1
+   (por que o B19 não pega uma corrida entre **duas linhas**, e os dois
+   lados travando a linha da NC) ficou entendida **depois** da
+   explicação; as respostas dele erraram nos dois pontos. A parada 2 (o
+   teste do `pausarNoMeio`: onde pausa, o 200 e o 409, a contagem) foi
+   "não sei" e foi explicada. **Repetir a parada 2** num dia descansado, no
+   PC, com o `nc.routes.test.ts:225` aberto e Matthew explicando: é o que
+   falta do portão para o C0.
    O roteiro original:
    (plano, portão "fundação pronta"; condição para o C0): A4 (o B19 e o
    `SameSite=Strict`), A6 (a RN-43 e o convite) e A7 (a trava entre
