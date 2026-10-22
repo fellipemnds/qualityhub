@@ -5,7 +5,8 @@
     "taste-skill@taste-skill": true,
     "understand-anything@understand-anything": true,
     "frontend-slides@frontend-slides": true,
-    "diagram-design@diagram-design": true
+    "diagram-design@diagram-design": true,
+    "typescript-lsp@qualityhub": true
   },
   "extraKnownMarketplaces": {
     "ponytail": {
@@ -25,6 +26,9 @@
     },
     "diagram-design": {
       "source": { "source": "github", "repo": "cathrynlavery/diagram-design" }
+    },
+    "qualityhub": {
+      "source": { "source": "directory", "path": "/home/matthew/projects/qualityhub/.claude/marketplace" }
     }
   }
 }

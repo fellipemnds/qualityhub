@@ -28,6 +28,7 @@ Thumbs.db
 .claude/*
 !.claude/skills/
 !.claude/settings.json
+!.claude/marketplace/
 .cursor/
 .windsurf/
 .agents/
