@@ -332,11 +332,13 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
    `node-id` do link; o conector **não lê comentários** do Figma), anota,
    e só mexe no Figma no fim da seção, de uma vez; commit no fim de cada
    seção. ~~(a) a navegação do celular~~ (fechada: §6.1 do `ui-ux.md`).
-   **Próximo: a decisão (b)**, as abas Resumo · Itens · Feed no Detalhe da
-   NC no celular; depois (c) e (d). Pendente da (a): aplicar a barra nova
-   no T-03 e T-04 celular e no frame dos componentes, e desenhar as versões
-   de celular de T-08 a T-12 (plano B2, item 7a). Se o Mobbin já estiver
-   conectado, testar o fluxo proposto (§5) na (b).
+   ~~(b) o Detalhe da NC no celular~~ (fechada em 2026-10-22, com o fluxo
+   do Mobbin testado: quatro abas e o bloco do título; `ui-ux.md` §7.3).
+   **Próximo: a decisão (c)**, a Investigação de quem preenche; depois a
+   (d). Pendente da (a): aplicar a barra nova no T-03 e T-04 celular e no
+   frame dos componentes, e desenhar as versões de celular de T-08 a T-12
+   (plano B2, item 7a). Pendente da (b): trocar o frame T-06 celular pela
+   versão decidida (item 7b).
    **A B3 começou no Figma** (decisão de Matthew, 2026-10-21: o Claude faz
    os tokens, Matthew os componentes, em "átomos": tokens → componentes →
    moléculas → organismos → telas): página **Fundações** com as coleções

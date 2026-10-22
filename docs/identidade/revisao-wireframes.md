@@ -21,8 +21,16 @@ Arquivo: https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K (página
   [Decisão (a) no Figma](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=127-848)
   — falta aplicar a barra nova no T-03 e no T-04 celular e no frame
   dos componentes.
-- [ ] **(b) As abas Resumo · Itens · Feed** no Detalhe da NC no celular
-  (vieram da referência do app de mercado).
+- [x] **(b) O Detalhe da NC no celular** — **decidida em 2026-10-22**,
+  depois de comparar as abas, a página única (estilo Linear) e a
+  proposta de Matthew: **quatro abas**, Resumo · Detalhes · Itens · Feed,
+  e o título num **bloco escuro** no topo (estilo Fresha), com o estado e
+  a pilha dos envolvidos em cima e a etapa embaixo; ao rolar, o bloco
+  encolhe. No modo escuro, o bloco sobe um degrau (`fundo/destaque`, para
+  a B3). Registrado no `ui-ux.md` §7.3, no `fluxo-app.md` (T-06 e J10) e
+  no plano (B2, item 7b).
+  [Decisão (b) no Figma](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=141-894)
+  — falta trocar o frame T-06 celular pela versão decidida.
 - [ ] **(c) A Investigação pela visão do aprovador** (Em aprovação, com
   Aprovar e Reprovar). Falta a de quem preenche: fazer também?
 - [ ] **(d) A borda dos campos** (`borda/controle`, `#8A8A8F` no claro):

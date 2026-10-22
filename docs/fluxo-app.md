@@ -327,7 +327,8 @@ precisar estar atribuído.
    cronológica.
 2. Comentar; `@` sugere pessoas e `#` sugere itens com código.
 3. A pessoa mencionada recebe a pendência **"Você foi mencionado em
-   NC-2026-0042"**, que some ao abrir o item.
+   NC-2026-0042"**, que some ao abrir o item. No celular, a NC abre
+   direto na aba Feed (`ui-ux.md` §7.3).
 
 ### J11 — Administrar usuários e setores (TI) · RF-13, RF-15, RF-20
 
@@ -412,6 +413,9 @@ De cima para baixo:
    Nos outros estados, o painel é só leitura.
 7. **Anexos**.
 8. **Feed** (J10).
+
+No celular, as mesmas partes em quatro abas, Resumo · Detalhes · Itens ·
+Feed, com o cabeçalho num bloco escuro (`ui-ux.md` §7.3).
 
 ### T-07 Detalhe do item filho
 
@@ -545,3 +549,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-01 | v1.3 — planos de ação conferidos pela Investigação (PRD Q17): etapa "Em plano de ação" removida (10 etapas), J4 com as contramedidas, J5 com o vínculo desde a criação (RN-49), checklist da J6 sem os planos |
 | 2026-10-21 | v1.4 — o reativar setor (RN-44, pronto desde a A6) na J11 e na T-12 |
 | 2026-10-21 | v1.5 — "Sair de todos os aparelhos" no menu (§2.1) |
+| 2026-10-22 | v1.6 — a T-06 no celular em quatro abas (decisão (b) da B2, `ui-ux.md` §7.3); a menção abre na aba Feed (J10) |

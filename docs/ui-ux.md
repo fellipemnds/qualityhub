@@ -398,8 +398,60 @@ NC-2026-0042 · Vazamento na linha 3              ● Aberta  🔍 Em investiga�
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
-**No celular**, a coluna lateral desce para baixo dos filhos, na ordem:
-checklist → atribuições → anexos → feed.
+**No celular** (decisão (b) da B2, 2026-10-22; Figma, página Wireframes,
+seção "Decisão (b) · Detalhe da NC no celular"): um bloco escuro com o
+título no topo e a página em quatro abas.
+
+```
+┌──────────────────────────────┐
+│ ←  NC-2026-0042            ⋯ │ ┐
+│ [● Aberta]          (◐◐◐◐)   │ │
+│ Vazamento na linha 3         │ │ bloco do título
+│ ⌕ Em investigação ·          │ │
+│   Contenção em andamento     │ ┘
+│ Resumo  Detalhes  Itens (3)  Feed │
+│──────────────────────────────│
+│ conteúdo da aba              │
+│                              │
+│ [Enviar p/ fechamento ⓘ] [Salvar] │
+└──────────────────────────────┘
+```
+
+1. **A barra do topo:** voltar, o código e o ⋯.
+2. **O bloco do título** (o "título grande" do Fresha), em
+   `fundo/destaque`, token novo para a B3: no claro, o grafite
+   (#1C1C1F); no escuro, um degrau **acima** da página e dos cartões
+   (#1D1D21), porque a página já é quase preta. Dentro dele, de cima para
+   baixo:
+   - o **estado** na caixinha e, à direita, a **pilha dos envolvidos**
+     (avatares gerados pelo nome, `docs/marca.md`; o toque abre as
+     atribuições em Detalhes; para o leitor de tela, "4 envolvidos:
+     Beltrana (aprovadora), Fulana, Ciclano, Deltrano");
+   - o **título grande e inteiro** (até 200 caracteres, `nc.schema.ts`),
+     sem corte;
+   - a **etapa** e, ao lado, os **indicadores** que valerem
+     (`fluxo-app.md` §4); com os três, a linha pode quebrar.
+3. **Ao rolar para baixo**, o bloco encolhe e o título vai para a barra
+   em 1 linha; **ao voltar ao topo**, ele reaparece inteiro (o "título
+   grande" do iOS). Sem gesto novo: puxar além do topo já é o "puxar para
+   atualizar". Com movimento reduzido, a troca acontece sem animação.
+4. **As abas** (abre no Resumo; a pendência de menção abre no Feed):
+   - **Resumo:** a descrição em até 3 linhas, com "Ler mais"; o checklist
+     de fechamento; a atividade recente (3 eventos, com "Ver tudo").
+   - **Detalhes:** a descrição inteira; os dados; o envio para fechamento
+     (riscos revisados e mudanças no SGQ, campos de texto); as
+     atribuições, com avatar, nome e papel; os anexos.
+   - **Itens (N):** um cartão por tipo, na ordem do processo, com
+     "＋ Nova" quando o papel permite.
+   - **Feed:** completo; o campo de comentário toma o lugar da barra de
+     ações.
+5. **A barra de ações** (`fluxo-app.md` §7) fica fixa no rodapé no
+   Resumo, em Detalhes e em Itens.
+
+As alternativas que ficaram de fora (as abas Resumo · Itens · Feed, a
+página única no estilo do Linear e os cabeçalhos intermediários) estão na
+mesma seção do Figma, como registro. A T-07 no celular segue o mesmo
+padrão? A conferir na revisão da seção 4 do checklist.
 
 ### 7.4 T-07 Ação Corretiva (exemplo de filho)
 
@@ -928,3 +980,4 @@ tokens.
 | 2026-10-21 | v1.6 — como um item aparece (§10.3): os filhos não têm título, então o código + o começo do texto principal; os wireframes §7.1, §7.3, §7.4, §7.5, §7.9, §7.10 e §7.14 seguem a regra; o "Sair de todos os aparelhos" no menu da pessoa (§6.1) |
 | 2026-10-21 | v1.7 — B2: a proposta da barra inferior de três destinos e do avatar (muda a U2, a confirmar), o computador sem barra de topo e os grupos do menu em letra normal (§6.1) |
 | 2026-10-22 | v1.8 — B2, decisão (a): a U2 revista (a barra flutuante Pendências · NCs · Eu, o ＋ ao lado, só nas telas raiz; a tela Eu com a Gestão; o ＋ cria a coisa principal da tela) e o plano para outros módulos (§6.1) |
+| 2026-10-22 | v1.9 — B2, decisão (b): o Detalhe da NC no celular (§7.3) em quatro abas (Resumo · Detalhes · Itens · Feed), com o bloco do título no estilo do Fresha (o estado e a pilha dos envolvidos em cima, a etapa embaixo, o título inteiro que encolhe ao rolar) e o token `fundo/destaque` para a B3 |
