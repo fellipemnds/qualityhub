@@ -239,10 +239,12 @@ aprovador e aparece na triagem até alguém definir (RN-46).
    direta → 5 Porquês → Causa raiz → Contramedidas → Check de
    efetividade*. Um índice lateral mostra quais etapas já estão
    preenchidas e leva direto a qualquer uma, porque a investigação é
-   trabalhada ao longo de dias e fora de ordem.
+   trabalhada ao longo de dias e fora de ordem. O *Check de efetividade* não
+   se preenche: resume as instruções de verificação de cada contramedida
+   e, depois, a Verificação de cada uma (`ui-ux.md` §7.5).
 4. **Hipóteses**: lista dentro da investigação. Cada uma tem descrição,
-   número no Ishikawa e classificação (causa direta / fator contribuinte /
-   sem relação). Pode ficar incompleta até a submissão.
+   número no Ishikawa (a causa numerada no diagrama) e classificação
+   (causa direta / fator contribuinte / sem relação). Pode ficar incompleta até a submissão.
 5. **Contramedidas**: as ações corretivas nascem aqui, com a
    investigação ainda aberta, e têm os planos aprovados antes do envio
    (J5, passos 1 a 3). A investigação também pode concluir sem nenhuma
@@ -550,3 +552,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-21 | v1.4 — o reativar setor (RN-44, pronto desde a A6) na J11 e na T-12 |
 | 2026-10-21 | v1.5 — "Sair de todos os aparelhos" no menu (§2.1) |
 | 2026-10-22 | v1.6 — a T-06 no celular em quatro abas (decisão (b) da B2, `ui-ux.md` §7.3); a menção abre na aba Feed (J10) |
+| 2026-10-22 | v1.7 — J4: o check de efetividade resume as contramedidas, e a hipótese aponta a causa numerada do Ishikawa |

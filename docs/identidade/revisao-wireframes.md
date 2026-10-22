@@ -9,6 +9,11 @@
 Arquivo: https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K (página
 **Wireframes**; os tokens estão na página **Fundações**).
 
+**Como o arquivo se organiza** (pedido de Matthew, 2026-10-22): a página
+**Wireframes** guarda só as telas **decididas**, cada uma na sua seção.
+Cada decisão ganha uma seção na página **Decisões (histórico)**, com as
+variantes comparadas e, num quadro "Antes", a tela que foi substituída.
+
 ## 0. Antes das telas: quatro decisões
 
 - [x] **(a) A navegação do celular** — **decidida em 2026-10-22**, com
@@ -19,8 +24,8 @@ Arquivo: https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K (página
   administração com versão de celular. Registrado no `ui-ux.md` §6.1
   (U2), no `fluxo-app.md` §1 e §2 e no plano (B2, item 7a).
   [Decisão (a) no Figma](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=127-848)
-  — falta aplicar a barra nova no T-03 e no T-04 celular e no frame
-  dos componentes.
+  — o T-03 celular e a tela Eu (T-13) já estão na seção "NCs · T-03 e
+  T-04"; falta a barra nova no T-04 celular e no frame dos componentes.
 - [x] **(b) O Detalhe da NC no celular** — **decidida em 2026-10-22**,
   depois de comparar as abas, a página única (estilo Linear) e a
   proposta de Matthew: **quatro abas**, Resumo · Detalhes · Itens · Feed,
@@ -30,9 +35,17 @@ Arquivo: https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K (página
   a B3). Registrado no `ui-ux.md` §7.3, no `fluxo-app.md` (T-06 e J10) e
   no plano (B2, item 7b).
   [Decisão (b) no Figma](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=141-894)
-  — falta trocar o frame T-06 celular pela versão decidida.
-- [ ] **(c) A Investigação pela visão do aprovador** (Em aprovação, com
-  Aprovar e Reprovar). Falta a de quem preenche: fazer também?
+  — as quatro abas já estão na seção "NCs · T-05 e T-06".
+- [x] **(c) A Investigação de quem preenche** — **decidida em
+  2026-10-22: fazer.** É a tela mais usada da investigação, e só nela
+  aparecem o Salvar, o Enviar para aprovação com a lista do que falta
+  (RN-24) e o Cancelar (RN-50), que o G1 pede. O frame novo mostra a
+  investigação aberta: o progresso no índice (✓ ◐ ○), os campos
+  editáveis, a hipótese sem classificação e o plano da ação em aprovação.
+  No frame do aprovador, saiu o "+ Nova ação corretiva": com a
+  investigação em aprovação, a ação não pode nascer (RN-49).
+  [Quem preenche](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=156-1072)
+  · [Aprovador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-579)
 - [ ] **(d) A borda dos campos** (`borda/controle`, `#8A8A8F` no claro):
   mais escura que as outras bordas, porque a regra de acessibilidade do
   projeto pede 3:1 (`ui-ux.md` §9). [Fundações](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=105-45)
@@ -51,13 +64,14 @@ Arquivo: https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K (página
 ## 3. NCs
 
 - [ ] [T-03 Minhas pendências · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=99-31): os grupos Vencidas, Aprovar e Triagem, com as 4 pendências que batem com o contador do menu; o "Assumir" na triagem.
-- [ ] [T-03 Minhas pendências · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=99-132)
+- [ ] [T-03 Minhas pendências · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1128): com a barra nova (decisão (a)).
+- [ ] [T-13 Eu · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1180): a tela nova da decisão (a).
 - [ ] [T-04 Lista de NCs · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=99-189): as abas Todas · Minhas · Vencidas, os filtros, a tabela e o "Carregar mais".
 - [ ] [T-04 Lista de NCs · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=99-373): a lista vira cartões.
 - [ ] [T-05 Nova NC · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-192): os campos em duas colunas, os responsáveis e os anexos ao lado.
 - [ ] [T-05 Nova NC · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-289): "Detectada em" já com hoje, a barra de ações fixa embaixo.
 - [ ] [T-06 Detalhe da NC · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-338): os dados, uma seção por filho, o feed; o checklist, as atribuições e os anexos na lateral.
-- [ ] [T-06 Detalhe da NC · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-517)
+- [ ] T-06 Detalhe da NC · celular, as quatro abas da decisão (b): [Resumo](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1248) · [Detalhes](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1320) · [Itens](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1438) · [Feed](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1519)
 
 ## 4. Itens filhos (T-07)
 
@@ -65,7 +79,7 @@ Arquivo: https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K (página
 - [ ] [Contenção · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-439): o botão bloqueado com a lista do que falta aberta.
 - [ ] [Verificação · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-540) e o [diálogo do efeito](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-652): as instruções só de leitura e o "Não eficaz" explicado antes de concluir.
 - [ ] [Ação Corretiva · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-476): o plano aprovado só de leitura, o selo e o prazo vencido; a execução editável.
-- [ ] [Investigação A3 · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-579): o índice das 10 etapas, o Ishikawa, as hipóteses, os 5 porquês e as contramedidas.
+- [ ] Investigação A3 · computador, nas duas visões da decisão (c): [aprovador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-579) (em aprovação, só leitura) e [quem preenche](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=156-1072) (aberta): o índice das 10 etapas, o Ishikawa, as hipóteses, os 5 porquês e as contramedidas.
 - [ ] [Classificação · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-763)
 - [ ] [Contenção · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-798)
 - [ ] [Ação Corretiva · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-843)

@@ -493,6 +493,38 @@ NC-2026-0042 › IV-2026-0007 · A junta resseca antes…      ● Aberta
 
 O índice fica fixo ao rolar. ✓ preenchida · ◐ parcial · ○ vazia.
 
+**As duas visões** (decisão (c) da B2, 2026-10-22), as duas no Figma:
+- **Quem preenche** (`ABERTO`, o desenho acima): o progresso no topo do
+  índice ("5 de 10 etapas completas", com uma barra), as seções como
+  campos editáveis, o "+ Hipótese", e o Enviar para aprovação bloqueado
+  com a lista do que falta aberta embaixo dele (por exemplo, "Causa raiz:
+  pelo menos 20 caracteres", "Hipótese 2: falta a classificação",
+  "Plano da AC-2026-0003: ainda em aprovação"). No "Mais", o Cancelar
+  (RN-50).
+- **O aprovador** (`EM_APROVACAO`): tudo só para leitura, com Aprovar e
+  Reprovar. **Sem "+ Nova ação corretiva"**: a ação só nasce ligada a uma
+  investigação aberta (RN-49).
+
+**Três regras das seções** (Matthew, 2026-10-22, valem nas duas visões):
+1. **O Ishikawa é numerado.** Cada causa ganha um número, e é por ele que
+   a hipótese se liga ao diagrama (o `numeroIshikawa` da hipótese é um
+   número, não a categoria); a coluna da hipótese mostra "4 · Meio
+   ambiente". Ao lado da causa, o símbolo da classificação da hipótese:
+   ◆ causa direta, ◇ fator contribuinte, × sem relação; sem símbolo, a
+   causa ainda não tem hipótese classificada. A legenda fica embaixo do
+   diagrama, e o símbolo nunca vem sozinho: a tabela das hipóteses repete
+   o texto, e o leitor de tela lê o nome. Losango e × para não confundir
+   com o ✓ ◐ ○ do índice.
+2. **Os 5 porquês em cadeia:** cada porquê fica um degrau à direita do
+   anterior, ligado a ele por uma linha, até a causa raiz, que vem logo
+   depois.
+3. **O check de efetividade não se preenche:** ele resume, para cada
+   contramedida, o código e o título da ação, as instruções de
+   verificação do plano (`instrucoesVerificacao`) e o andamento ("a VE
+   nasce ao finalizar a execução"; depois, a Verificação e o resultado).
+   No índice, ele conta como completo quando toda contramedida tem as
+   instruções.
+
 ### 7.6 T-05 Nova NC (celular)
 
 ```
@@ -981,3 +1013,5 @@ tokens.
 | 2026-10-21 | v1.7 — B2: a proposta da barra inferior de três destinos e do avatar (muda a U2, a confirmar), o computador sem barra de topo e os grupos do menu em letra normal (§6.1) |
 | 2026-10-22 | v1.8 — B2, decisão (a): a U2 revista (a barra flutuante Pendências · NCs · Eu, o ＋ ao lado, só nas telas raiz; a tela Eu com a Gestão; o ＋ cria a coisa principal da tela) e o plano para outros módulos (§6.1) |
 | 2026-10-22 | v1.9 — B2, decisão (b): o Detalhe da NC no celular (§7.3) em quatro abas (Resumo · Detalhes · Itens · Feed), com o bloco do título no estilo do Fresha (o estado e a pilha dos envolvidos em cima, a etapa embaixo, o título inteiro que encolhe ao rolar) e o token `fundo/destaque` para a B3 |
+| 2026-10-22 | v1.10 — B2, decisão (c): a Investigação nas duas visões (§7.5), quem preenche e o aprovador; o aprovador sem "+ Nova ação corretiva" (RN-49) |
+| 2026-10-22 | v1.11 — a Investigação (§7.5): o Ishikawa numerado com o símbolo da classificação, os 5 porquês em cadeia e o check de efetividade como resumo das contramedidas |
