@@ -35,3 +35,7 @@ Thumbs.db
 skills-lock.json
 src/generated/
 coverage/
+# Grafo do understand-anything: o grafo vai para o Git; o rascunho do plugin, não
+.ua/intermediate/
+.ua/tmp/
+.ua/.trash-*/
