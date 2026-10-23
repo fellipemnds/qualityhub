@@ -411,17 +411,26 @@ De cima para baixo:
    envio (riscos revisados, mudanças no SGQ, aprovador da NC), cada um
    com ✅/❌ e link para o que resolve. Visível enquanto a NC estiver
    `ABERTA`.
-5. **Filhos**, uma seção por tipo, na ordem do processo: Classificação ·
-   Contenção · Investigação · Ação Corretiva · Verificação. Cada seção
-   lista os itens (código, estado, responsável, prazo) e tem o botão
-   **Novo…** quando o papel permite. As Verificações aparecem, mas **não
-   têm "Nova"**, porque nascem sozinhas.
+5. **Filhos**, num cartão só ("Itens da NC"), na ordem do processo:
+   Classificação · Contenção · Investigação · Ação Corretiva ·
+   Verificação, agrupados por tipo (os grupos abrem e fecham) ou numa
+   lista plana, em lista ou cartões, ordenados por estado ou criação
+   (`ui-ux.md` §7.3, decisão (g) da B2). Cada item mostra o código, o
+   estado, o responsável e o prazo; o "+ Nova" aparece quando o papel e a
+   regra permitem (a Ação Corretiva só com uma investigação aberta,
+   RN-49). As Verificações aparecem, mas **não têm "Nova"**, porque nascem
+   sozinhas.
 6. **Painel de atribuições**: colaboradores e aprovador, com
    adicionar/remover/definir conforme RN-18. Só em `RASCUNHO` e
    `ABERTO`; em `EM_APROVACAO`, só o `GERENTE` troca o aprovador (RN-47).
    Nos outros estados, o painel é só leitura.
 7. **Anexos**.
-8. **Feed** (J10).
+8. **Feed** (J10): no celular, a aba Feed; no computador, um painel à
+   direita aberto pelo botão Atividade, que empurra a página e recolhe a
+   coluna lateral numa faixa de resumo (`ui-ux.md` §7.3).
+
+Os dados também mostram a **classificação vigente** (a última aprovada,
+PRD Q19), e o envio para fechamento vem **depois** dos filhos.
 
 No celular, as mesmas partes em quatro abas, Resumo · Detalhes · Itens ·
 Feed, com o cabeçalho num bloco escuro (`ui-ux.md` §7.3).
@@ -527,6 +536,8 @@ TRD e o Plano de Implementação:
 | L7 | **Último motivo de reprovação** exposto no item | J8, pendência "Corrigir" |
 | L8 | Tudo o que o PRD já listou: Feed, anexos, usuários, setores, relatórios, NC com colaboradores na criação | — |
 | L9 | **Preferência de tela inicial** salva por usuário | §3, menu |
+| L11 | **Foto da pessoa**: o `Usuario` não tem foto (`prisma/schema.prisma`); os avatares são as iniciais, geradas pelo nome. A foto pede envio, armazenamento e o cuidado da LGPD (escopo novo, sem fase; achado na decisão (g) da B2) | T-06, T-09, T-10 |
+| L12 | **Resposta em fio no feed**: o "Responder" num comentário pede que o comentário saiba quem é o pai (uma coluna a mais na tabela de comentários, que nasce na C4); e o filtro Tudo · Comentários · Histórico do painel (decisão (g) da B2) | T-06, J10 |
 | L10 | **Total e contagens na lista**: a paginação devolve só a página e o cursor (`paginacao-cursor.ts`); a frase de estado ("38 abertas"), o "Mostrando 6 de 38", o "Ver 20 NCs" da folha e as contagens por etapa precisam de um total (decisão (f) da B2, 2026-10-23) | T-04, a frase de estado (`ui-ux.md` §6.2) |
 
 ---
@@ -563,3 +574,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-22 | v1.7 — J4: o check de efetividade resume as contramedidas, e a hipótese aponta a causa numerada do Ishikawa |
 | 2026-10-22 | v1.8 — §2.1: no computador, a doca flutuante embaixo, com a busca e o menu da pessoa (decisão (e) da B2) |
 | 2026-10-23 | v1.9 — T-04: as visões separadas dos filtros, o agrupar opcional, a linha rica no celular (decisão (f) da B2); o "só as minhas" já existe na API; a lacuna L10, o total e as contagens na lista |
+| 2026-10-23 | v1.10 — T-06: os filhos num cartão só (agrupados ou não, lista ou cartões), o feed no painel Atividade no computador, a classificação vigente nos dados, o envio depois dos filhos (decisão (g) da B2); as lacunas L11 (a foto da pessoa) e L12 (a resposta em fio e o filtro do painel) |

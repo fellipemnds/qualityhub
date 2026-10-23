@@ -70,6 +70,8 @@ variantes comparadas e, num quadro "Antes", a tela que foi substituída.
   [Decisão (d) no Figma](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=179-363)
 - [x] **(f) A lista de NCs e os filtros** (achado de Matthew na revisão, a estreia da `/desenhar`) — **decidida em 2026-10-23: a A**, a tabela plana com uma pílula por coluna (o Qatalog) e, no celular, a linha rica com os filtros em pílulas que abrem uma folha (o Jira Cloud); as visões separadas dos filtros; o filtro ativo com o valor e o ✕; o agrupar por etapa (a B) como opção do computador; a busca visível que some ao rolar. Descartados: o quadro (a etapa é calculada, ninguém a arrasta), o "puxar para revelar" a busca (briga com o navegador) e o ＋ como busca (o mesmo botão mudaria de função). Registrado no `ui-ux.md` §7.2 e no `fluxo-app.md` (T-04 e L10).
   [Decisão (f) no Figma](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=211-353)
+- [x] **(g) O Detalhe da NC: as abas, o feed, os itens e a Atividade** (pedidos de Matthew na revisão) — **decidida em 2026-10-23**, pela `/desenhar`, com o Deel (as abas), o Linear e o incident.io (o feed) e o Jira (os itens): as abas iguais com o traço grosso; o feed em linha do tempo, os eventos com ícone e o antes → depois, os comentários em cartão com o Responder; os Itens da NC num cartão só, agrupados (os grupos fecham) ou não, em lista ou cartões, ordenados por estado ou criação, com o medidor em segmentos; o Envio depois dos Itens; a Atividade num botão da lateral que abre um painel que empurra a página e recolhe a lateral numa faixa de resumo; o checklist com ícones; as atribuições com tags; a classificação nos Dados; o nome do responsável na lista (as iniciais sozinhas são ambíguas). Descartados: o feed por cima da página, a lateral mantida com o painel aberto e só o avatar na tabela. Registrado no `ui-ux.md` §7.3 e no `fluxo-app.md` (T-06, L11 e L12).
+  [Decisão (g) no Figma](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=227-755)
 
 ## 1. Componentes
 
@@ -102,10 +104,12 @@ variantes comparadas e, num quadro "Antes", a tela que foi substituída.
 - [x] [T-04 Lista de NCs · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=217-2192): a linha rica, e a [folha da Etapa](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=217-2257) (decisão (f)).
 
   **Revista em 2026-10-23** (plano, B2, item 10): a T-13 bate com o `ui-ux.md` §6.1. A T-03 celular não tinha o filtro por tipo (posto); a T-04 virou a decisão (f), com a frase de estado e o Carregar mais no celular, que faltavam.
-- [ ] [T-05 Nova NC · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-192): os campos em duas colunas, os responsáveis e os anexos ao lado.
-- [ ] [T-05 Nova NC · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-289): "Detectada em" já com hoje, a barra de ações fixa embaixo.
-- [ ] [T-06 Detalhe da NC · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-338): os dados, uma seção por filho, o feed; o checklist, as atribuições e os anexos na lateral.
-- [ ] T-06 Detalhe da NC · celular, as quatro abas da decisão (b): [Resumo](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1248) · [Detalhes](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1320) · [Itens](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1438) · [Feed](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1519)
+- [x] [T-05 Nova NC · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-192): os campos em duas colunas, os responsáveis e os anexos ao lado.
+- [x] [T-05 Nova NC · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-289): "Detectada em" já com hoje, a barra de ações fixa embaixo.
+- [x] [T-06 Detalhe da NC · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-338): os dados, uma seção por filho, o feed; o checklist, as atribuições e os anexos na lateral.
+- [x] T-06 Detalhe da NC · celular, as quatro abas da decisão (b): [Resumo](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1248) · [Detalhes](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1320) · [Itens](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1438) · [Feed](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1519)
+
+  **Revista em 2026-10-23** (plano, B2, item 11): na T-05, os grupos com nome, a ajuda fixa e os responsáveis no celular; na T-06, o + Nova da Ação Corretiva tirado (RN-49), os dados alinhados entre os tamanhos, o envio e o + Anexar no computador, o bloco escuro no computador, e a decisão (g). Também: a [Atividade aberta](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=246-2161), os [itens em cartões](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=237-3037) e os [itens sem agrupar](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=238-1925).
 
 ## 4. Itens filhos (T-07)
 
@@ -144,8 +148,8 @@ quando não sobrar linha com "—". Criadas em 2026-10-23.
 | T-02 Definir senha | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-47) | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-66) | item 9 |
 | T-03 Minhas pendências | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=99-31) | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1128) | item 10 |
 | T-04 Lista de NCs | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=217-2063) | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=217-2192) | item 10 |
-| T-05 Nova NC | — | — | — |
-| T-06 Detalhe da NC | — | — | — |
+| T-05 Nova NC | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-192) | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-289) | item 11 |
+| T-06 Detalhe da NC | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-338) | [as 4 abas](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1248) | item 11 |
 | T-07 Itens filhos (5 tipos) | — | — | — |
 | T-08 Relatórios | — | — | — |
 | T-09 Usuários | — | — | — |
@@ -158,10 +162,10 @@ quando não sobrar linha com "—". Criadas em 2026-10-23.
 
 | Ação | Estado | Tipos | Onde aparece |
 |---|---|---|---|
-| Salvar | `RASCUNHO`, `ABERTO` | Todos (a Verificação nunca é rascunho) | — |
-| Publicar | `RASCUNHO` | Todos | — |
+| Salvar | `RASCUNHO`, `ABERTO` | Todos (a Verificação nunca é rascunho) | NC: T-05 ("Salvar rascunho"), T-06 |
+| Publicar | `RASCUNHO` | Todos | NC: T-05 |
 | Excluir rascunho | `RASCUNHO` | Todos | — |
-| Submeter ("Submeter para fechamento" na NC) | `ABERTO` | NC, Classificação, Contenção, Investigação | — |
+| Submeter ("Submeter para fechamento" na NC) | `ABERTO` | NC, Classificação, Contenção, Investigação | NC: T-06 ("Enviar para fechamento", bloqueado com a lista do que falta) |
 | Submeter plano | `ABERTO` | Ação Corretiva, antes do plano aprovado | — |
 | Finalizar execução | `ABERTO` | Ação Corretiva, depois do plano aprovado | — |
 | Concluir | `ABERTO` | Verificação | — |
@@ -169,8 +173,8 @@ quando não sobrar linha com "—". Criadas em 2026-10-23.
 | Aprovar · Reprovar | `EM_APROVACAO` | Todos com portão | — |
 | Retirar da aprovação | `EM_APROVACAO` | Todos com portão (RN-48) | — |
 | Reabrir | `FECHADO` | Só a NC (RN-42) | — |
-| Comentar | Qualquer | Todos | — |
-| Anexar | `RASCUNHO`, `ABERTO` | Todos | — |
+| Comentar | Qualquer | Todos | NC: T-06 (o painel Atividade; a aba Feed no celular) |
+| Anexar | `RASCUNHO`, `ABERTO` | Todos | NC: T-05, T-06 ("+ Anexar") |
 
 ### 6.3 O que ainda não está desenhado
 

@@ -229,6 +229,15 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
   (`marca.md`, `ui-ux.md` §9); (4) duas variantes lado a lado numa seção
   "Decisão" no Figma, com os tokens ligados; (5) Matthew decide, e o
   Claude registra nos documentos e no checklist.
+- **Figma pelo conector, três armadilhas da B2 (2026-10-23):** (1) uma
+  cor ligada a variável e criada com `setBoundVariableForPaint` sobre o
+  preto às vezes sai **preta** numa cópia (as divisórias e o medidor); o
+  conserto é copiar a cor (`fills`/`strokes`) de um nó que já está certo.
+  (2) Os símbolos ● ⧗ ✓ **não existem na Figtree** e somem conforme o zoom:
+  ícone é sempre SVG (o `Item/Estado` virou um conjunto por isso). (3)
+  Chamada que falha é desfeita inteira, sem resto; mas o `clone()` de um
+  componente já nasce componente (o `createComponentFromNode` recusa), e
+  não se põe filho dentro de uma instância.
 - **Ideia para refinar (`idea-refine`) antes da C0: o Andon como SaaS**
   (2026-10-23, Matthew avalia oferecer a outras empresas; plano, linha da
   C0). Duas partes. (1) O **multi-tenant**: hoje tudo é para uma empresa,

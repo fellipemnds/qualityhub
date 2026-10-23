@@ -321,6 +321,9 @@ em `components/` (os do shadcn/ui, em `components/ui/`).
 | `Anexos` | react-dropzone | Lista de arquivos + área de envio, com tipo e tamanho validados antes de enviar |
 | `IndiceA3` | — | Índice lateral da Investigação, com o preenchimento de cada etapa |
 | `ItemPendencia` | Card | Uma linha de "Minhas pendências" |
+| `ItensDaNC` | Collapsible, ToggleGroup, DropdownMenu | Os itens filhos no Detalhe da NC: agrupados por tipo ou não, em lista ou cartões, ordenados por estado ou criação, com o medidor em segmentos (§7.3) |
+| `PainelAtividade` | Sheet (sem véu, empurrando a página) | O feed inteiro à direita, com Tudo · Comentários · Histórico; ao abrir, a coluna lateral vira a faixa de resumo (§7.3) |
+| `Medidor` | — | O progresso em segmentos: um por item, os feitos preenchidos; contínuo acima de 10 (os itens, o checklist) |
 | `FiltrosNC` | Select, Popover, Calendar | Filtros da lista de NCs, refletidos na URL (dá pra compartilhar um link filtrado) |
 
 ### 5.2 De estado de tela (`fluxo-app.md` §8)
@@ -456,8 +459,8 @@ revisão da B2 confere cada um); o 5 é acabamento (B3).
 2. **A frase de estado.** Toda tela raiz abre com uma frase que diz o que
    importa agora ("4 itens esperam por você · 1 vencido"; "38 abertas · 3
    com prazo vencido"), em vez de só o título.
-3. **O número protagonista.** O número que importa aparece grande e
-   com o contexto ao lado ("2 de 6 atendidos", "82% (18 de 22)", "há 9
+3. **O número protagonista.** O número que importa aparece grande, ou
+   num medidor em segmentos (um por item, §5.1), e com o contexto ao lado ("2 de 6 atendidos", "82% (18 de 22)", "há 9
    dias"), no estilo Número/Indicador e com dígitos tabulares (§3.2).
 4. **O formulário com ritmo.** Os campos em grupos com nome ("O que
    aconteceu", "Onde", "Evidência"), o opcional marcado e o valor padrão
@@ -576,32 +579,83 @@ Paginação por "Carregar mais" (a API usa cursor, não páginas numeradas).
 
 ### 7.3 T-06 Detalhe da NC (computador)
 
+Revisto em 2026-10-23 (decisão (g) da B2; Figma, página Decisões
+(histórico), seção "Decisão (g)"; as referências, o Deel, o Linear, o
+incident.io e o Jira, no `docs/identidade/referencias-interface.md`).
+
 ```
-NC-2026-0042 · Vazamento na linha 3              ● Aberta  🔍 Em investigação
-                                                  Contenção em andamento
-[ Enviar para fechamento (bloqueado ⓘ) ]  [ Salvar ]  [ Mais ▾ ]
-┌──────────────────────────────────────────────┬─────────────────────────┐
-│ DADOS                                   [✎]  │ CHECKLIST DE FECHAMENTO │
-│ Descrição, requisito, processo, setor...     │ ✅ Classificação         │
-│                                              │ ❌ Investigação → IV-7   │
-│ CLASSIFICAÇÃO                  [+ Nova]      │ ❌ Contenção → CT-19     │
-│  CL-2026-0011  Maior   ✓ Fechada             │ ❌ Riscos revisados      │
-│ CONTENÇÃO                      [+ Nova]      │ ❌ Mudanças no SGQ       │
-│  CT-2026-0019  Corrigido  ● Aberta           │ ✅ Aprovador definido    │
-│ INVESTIGAÇÃO                   [+ Nova]      │─────────────────────────│
-│  IV-2026-0007  A junta res…  ⧗ Em aprovação  │ ATRIBUIÇÕES             │
-│ AÇÃO CORRETIVA                 [+ Nova]      │ Aprovador: Beltrana     │
-│  (nenhuma ainda)                             │ Responsáveis: F, C, D   │
-│ VERIFICAÇÃO                                  │ [+ Adicionar]           │
-│  (nasce ao finalizar uma ação)               │─────────────────────────│
-│                                              │ ANEXOS (3)   [+ Enviar] │
-├──────────────────────────────────────────────┴─────────────────────────┤
-│ FEED                                                                   │
-│ 22/09 14:02  Fulana enviou IV-2026-0007 para aprovação                 │
-│ 21/09 09:15  Fulana: @Beltrana pode revisar a causa raiz?              │
-│ [ Escrever comentário… @ para mencionar, # para citar item ]           │
-└────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│ █ NC-2026-0042 · Vazamento na linha 3     [Enviar p/ fech. ⓘ][Salvar][Mais ▾] █ │
+│ █ ● Aberta  Em investigação · Contenção em andamento  (◐◐◐◐)         █ │
+├───────────────────────────────────────────────┬──────────────────────┤
+│ DADOS                                    [✎]  │ [💬 Atividade  ① ›]   │
+│ Descrição, requisito, processo, setor, origem │ 1 comentário novo    │
+│ Classificação  (Maior) CL-2026-0011           ├──────────────────────┤
+│ Detectada em, cliente                         │ CHECKLIST            │
+├───────────────────────────────────────────────┤ ▮▮▯▯▯▯ • 2 de 6       │
+│ ITENS DA NC • 1 de 4 fechados ▮▯▯▯            │ ✓ Classificação      │
+│                [⧉] [Ordenar ▾] [☰|▦] [+ Novo item ▾] │ ⧗ Investigação ›     │
+│ › CLASSIFICAÇÃO 1 · fechada            + Nova │ ◉ Contenção ›        │
+│ ⌄ CONTENÇÃO 1                          + Nova │ ◌ Riscos revisados › │
+│   CT-2026-0019 · Isolar o lote 42…  ● Aberta  (CR) Ciclano Reis  25/09 │
+│ ⌄ INVESTIGAÇÃO 1                       + Nova ├──────────────────────┤
+│   IV-2026-0007 · A junta resseca…   ⧗ Em apr. (FS) Fulana Souza   —   │
+│ ⌄ AÇÃO CORRETIVA 1 · nasce de uma investigação aberta │ ATRIBUIÇÕES │
+│   AC-2026-0003 · Trocar o fornec…   ● Aberta  (FS) Fulana  ⚠ Vencido │
+│ › VERIFICAÇÃO 0 · nasce sozinha ao finalizar uma ação │ (BL) Beltrana [Aprovadora] │
+├───────────────────────────────────────────────┤ (FS) Fulana [Responsável] │
+│ ENVIO PARA FECHAMENTO                         │ ANEXOS (3)  [+ Anexar]│
+│ Riscos revisados · Mudanças no SGQ            │                      │
+└───────────────────────────────────────────────┴──────────────────────┘
 ```
+
+1. **O bloco do título, escuro,** como no celular (o gesto 1 da casa,
+   §6.2): o código e o título, o estado, a etapa e os indicadores, a
+   pilha dos envolvidos e as ações à direita.
+2. **Os Dados** trazem a **classificação vigente** (a última aprovada,
+   PRD Q19) como tag, mesmo repetida nos Itens: é o que mais diz sobre a
+   NC. O ID fica em cinza ao lado da tag.
+3. **Os Itens da NC num cartão só**, na ordem do processo
+   (Classificação → Contenção → Investigação → Ação Corretiva →
+   Verificação):
+   - no cabeçalho, a contagem e o **medidor em segmentos** (um por item,
+     os fechados preenchidos; acima de 10 itens, contínuo);
+   - **Agrupar por tipo** (um botão de ícone, apertado quando ligado;
+     ligado por padrão): os grupos **abrem e fecham**, com a contagem; o
+     grupo todo fechado começa recolhido; o "+ Nova" fica no grupo, e o
+     tipo que não pode ter um novo diz o porquê (RN-49). Desligado, a
+     lista plana com o tipo como coluna;
+   - **Ordenar** por estado (os abertos e vencidos primeiro) ou por
+     criação;
+   - **Lista ou Cartões**: na lista, as colunas alinhadas (o item com o
+     ID em cinza, o estado, o responsável com o nome, o prazo); nos
+     cartões, o ID pequeno e o estado com o avatar em cima, o título
+     embaixo e o prazo quando existe. A escolha fica no navegador;
+   - **o nome do responsável fica na lista** (o "de quem é" é das colunas
+     mais lidas, e as iniciais sozinhas são ambíguas); só o avatar nos
+     cartões, onde o espaço é pouco.
+4. **O Envio para fechamento** (riscos revisados, mudanças no SGQ) vem
+   **depois** dos Itens: é o último passo.
+5. **A coluna lateral:** o botão **Atividade** em cima (cinza, com o que é
+   novo: "1 comentário novo · 6 eventos" e o selo), o **checklist** com um
+   ícone por estado (✓ atendido, ⧗ em aprovação, ◉ aberta, ◌ a preencher)
+   e a seta nos pendentes, as **atribuições** uma pessoa por linha, com o
+   avatar e a função como tag (a da aprovadora escura), e os **anexos**.
+6. **O feed não fica na página:** o botão Atividade abre um **painel à
+   direita, de 380 px, que empurra a página** (sem cobrir o conteúdo),
+   com Tudo · Comentários · Histórico, o feed inteiro e o campo de
+   comentário. **Com o painel aberto, a coluna lateral sempre se recolhe**
+   numa faixa de resumo no topo do conteúdo (o checklist com o medidor, as
+   pessoas com as tags, os anexos), de altura igual, cada parte abrindo o
+   conteúdo inteiro; com ela aberta, a tabela de itens apertava
+   (Matthew, 2026-10-23).
+7. **O feed** (nos dois tamanhos): os **dias** como cabeçalho; os
+   **eventos** numa linha do tempo, com um ícone por tipo e o código do
+   item, e o **antes → depois** nas mudanças (a `Auditoria` guarda os
+   dois); os **comentários** em cartão, com o avatar, a @menção em negrito
+   e o **Responder** (só nos comentários: responder a um evento é
+   comentar a NC). O botão do campo é "Comentar" (o "Enviar" é o nome do
+   submeter, §10.2).
 
 **No celular** (decisão (b) da B2, 2026-10-22; Figma, página Wireframes,
 seção "Decisão (b) · Detalhe da NC no celular"): um bloco escuro com o
@@ -645,11 +699,18 @@ título no topo e a página em quatro abas.
      de fechamento; a atividade recente (3 eventos, com "Ver tudo").
    - **Detalhes:** a descrição inteira; os dados; o envio para fechamento
      (riscos revisados e mudanças no SGQ, campos de texto); as
-     atribuições, com avatar, nome e papel; os anexos.
-   - **Itens (N):** um cartão por tipo, na ordem do processo, com
-     "＋ Nova" quando o papel permite.
-   - **Feed:** completo; o campo de comentário toma o lugar da barra de
-     ações.
+     atribuições, uma pessoa por linha, com o avatar e a função como
+     tag (Aprovadora, Responsável); a classificação vigente como tag nos
+     dados; os anexos.
+   - **Itens (N):** o medidor e o "+ Novo item"; os grupos por tipo, que
+     abrem e fecham, com a contagem e o "+ Nova"; os itens em cartões com
+     fundo (o ID pequeno, o estado e o avatar em cima, o título, o prazo),
+     sem divisórias, porque os cartões já separam.
+   - **Feed:** completo, a mesma linha do tempo do computador (item 7,
+     acima); o campo de comentário toma o lugar da barra de ações.
+   - As **abas** são iguais na largura, a ativa em negrito com o traço
+     grosso e a contagem dos itens numa pílula (o Deel; o componente
+     `Shell/Abas do item`).
 5. **A barra de ações** (`fluxo-app.md` §7) fica fixa no rodapé no
    Resumo, em Detalhes e em Itens.
 
@@ -732,21 +793,29 @@ O índice fica fixo ao rolar. ✓ preenchida · ◐ parcial · ○ vazia.
 
 ### 7.6 T-05 Nova NC (celular)
 
+Revista em 2026-10-23 (o gesto 4 da casa, §6.2): os campos em grupos com
+nome, a regra como ajuda fixa e os responsáveis também no celular.
+
 ```
 ┌────────────────────────┐
 │ ✕  Nova NC             │
 ├────────────────────────┤
+│ O QUE ACONTECEU        │
 │ Título                 │
 │ [                    ] │
+│ Pelo menos 5 caracteres│
 │ Descrição              │
 │ [                    ] │
+│ Pelo menos 20 caract.  │
+│ Detectada em  [hoje   ]│
 │ Origem        [      ▾]│
+│ ONDE                   │
 │ Setor         [      ▾]│
-│ Detectada em  [hoje  ▾]│
 │ Processo afetado  ...  │
-│ Requisito violado ...  │
 │ Cliente (opcional)     │
-│ Responsáveis (opc.)    │
+│ O QUE FOI VIOLADO      │
+│ Requisito violado ...  │
+│ Responsáveis (você + …)│
 │ [📷 Tirar foto/anexar] │
 ├────────────────────────┤
 │ [Salvar rascunho][Publicar]│
@@ -754,7 +823,11 @@ O índice fica fixo ao rolar. ✓ preenchida · ◐ parcial · ○ vazia.
 ```
 
 "Detectada em" já vem com **hoje**. O botão de anexo abre a câmera no
-celular.
+celular. A regra do título (5 caracteres) e da descrição (20) é a do
+`nc.schema.ts`, numa ajuda fixa embaixo do campo, nunca só no
+placeholder. No computador, os mesmos três grupos, com os responsáveis e
+os anexos na coluna da direita. Os responsáveis na criação ainda não
+existem na rota (a C1: "NC criada com colaboradores").
 
 ### 7.7 T-01 Login
 
@@ -1243,3 +1316,4 @@ tokens.
 | 2026-10-23 | v1.16 — O token `marca/toque` reservado (§2.2, item 1), para a cor de uma empresa cliente, se o Andon virar SaaS |
 | 2026-10-23 | v1.17 — Os gestos da casa (§6.2): o bloco do título com hierarquia (escuro só na NC; claro nos filhos, com a NC em cima), a frase de estado, o número protagonista, o formulário com ritmo e, na B3, movimento e voz |
 | 2026-10-23 | v1.18 — Decisão (f) da B2: a T-04 (§7.2) com a tabela plana e as pílulas, as visões separadas dos filtros, o filtro ativo com o valor, a folha no celular, o agrupar por etapa opcional no computador, a busca visível que some ao rolar; o total e as contagens que a API ainda não dá |
+| 2026-10-23 | v1.19 — Decisão (g) da B2: a T-06 do computador refeita (§7.3: o bloco escuro, a classificação nos Dados, os Itens da NC agrupados ou não, em lista ou cartões, o medidor em segmentos, o Envio depois dos Itens, a Atividade num painel que empurra a página e recolhe a lateral numa faixa, o feed em linha do tempo com o Responder); no celular, as abas do Deel, os Itens em grupos e cartões, as atribuições com tags; a T-05 em grupos com a ajuda fixa (§7.6); os componentes `ItensDaNC`, `PainelAtividade` e `Medidor` (§5.1) |

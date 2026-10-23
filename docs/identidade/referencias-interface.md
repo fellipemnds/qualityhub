@@ -223,3 +223,22 @@ do repositório.
   *"Mostra os itens de maneira muito competente e organizada."* A busca,
   as pílulas de filtro roláveis e a linha rica (o título, o código e o
   estado), agrupada por dia.
+
+## 2026-10-23 · Deel, Linear, incident.io e Jira (o Detalhe da NC, decisão (g))
+
+Escolhidas por Matthew na decisão (g) da B2. As três primeiras estão na
+coleção "Andon · T-06 Detalhe da NC" do Mobbin (privada, da conta de
+Matthew); as imagens ficam lá, fora do repositório.
+
+- **Deel** (as abas do celular, https://mobbin.com/screens/0ad6cfc0-0f19-4e43-9f4b-a4ef05007bb0):
+  as abas sublinhadas, mas firmes: iguais na largura, a ativa em negrito
+  com o traço grosso. A personalidade fica com o bloco escuro e o feed.
+- **Linear** (o feed, https://mobbin.com/screens/a625482c-b708-4b6b-a9b2-1f4a4feb26f6)
+  e **incident.io** (https://mobbin.com/screens/8d27748b-e522-40ba-a951-f718beb76799):
+  a linha do tempo, com os eventos curtos e um ícone por tipo, e os
+  comentários em cartão. Separa o que o sistema registrou do que as
+  pessoas disseram, o que numa NC (registro de auditoria) importa.
+- **Jira** (os itens, https://mobbin.com/screens/4f91b801-6465-49cd-9579-f6fe5d1f0c80):
+  os itens ligados num bloco só, com um subtítulo por tipo e o progresso
+  em cima; e as abas de atividade (Tudo, Comentários, Histórico) que
+  viraram o filtro do painel.
