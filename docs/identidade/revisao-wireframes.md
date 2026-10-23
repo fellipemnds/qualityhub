@@ -84,10 +84,12 @@ variantes comparadas e, num quadro "Antes", a tela que foi substituída.
 
 ## 2. Acesso
 
-- [ ] [T-01 Login · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-3): "Manter conectado", a ajuda do convite no lugar de "esqueci minha senha", a assinatura da empresa embaixo.
-- [ ] [T-01 Login · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-25)
-- [ ] [T-02 Definir senha · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-47): sem o nome da pessoa (decisão de 2026-10-21).
-- [ ] [T-02 Definir senha · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-66)
+- [x] [T-01 Login · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-3): "Manter conectado", a ajuda do convite no lugar de "esqueci minha senha", a assinatura da empresa embaixo.
+- [x] [T-01 Login · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-25)
+- [x] [T-02 Definir senha · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-47): sem o nome da pessoa (decisão de 2026-10-21).
+- [x] [T-02 Definir senha · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-66)
+
+  **Revista em 2026-10-23** (plano, B2, item 9): a estrutura bate com o `ui-ux.md` §7.7 e §7.8, e o código cumpre o que as telas prometem (o `manterConectado`, a senha de 12 caracteres e até 72 bytes, o convite de 72 h). Duas faltas corrigidas pelo componente novo **`Campo/Senha`**: o botão de mostrar a senha nos 3 campos e a regra dos 12 caracteres como ajuda fixa embaixo do campo (o placeholder some ao digitar). Matthew quer reavaliar o ícone do olho, que é o padrão do Android (para o átomo Ícone, na B3).
 
 ## 3. NCs
 
@@ -123,7 +125,50 @@ Cada tela tem a versão de celular ao lado (pedido de Matthew, 2026-10-22): tela
 - [ ] [T-11 Novo usuário](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=103-1043) e o [convite gerado](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=103-1124): o link aparece só uma vez.
 - [ ] [T-12 Setores](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=103-1175): a recusa da RN-44 e o Reativar no setor desativado.
 
-## 6. O que ainda não está desenhado (o G1, item 8)
+## 6. O G1 (o gate dos wireframes)
+
+O G1 (`ui-ux.md` §2) pede duas coisas: **toda tela do mapa tem wireframe**
+e **toda ação do `fluxo-app.md` §7 é alcançável**. As duas tabelas abaixo
+são preenchidas seção por seção (plano, B2, itens 9 a 14); o G1 fecha
+quando não sobrar linha com "—". Criadas em 2026-10-23.
+
+### 6.1 As telas do mapa (`fluxo-app.md` §2)
+
+| Tela | Computador | Celular | Conferida |
+|---|---|---|---|
+| T-01 Login | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-3) | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-25) | item 9 |
+| T-02 Definir senha | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-47) | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-66) | item 9 |
+| T-03 Minhas pendências | — | — | — |
+| T-04 Lista de NCs | — | — | — |
+| T-05 Nova NC | — | — | — |
+| T-06 Detalhe da NC | — | — | — |
+| T-07 Itens filhos (5 tipos) | — | — | — |
+| T-08 Relatórios | — | — | — |
+| T-09 Usuários | — | — | — |
+| T-10 Detalhe do usuário | — | — | — |
+| T-11 Novo usuário e convite | — | — | — |
+| T-12 Setores | — | — | — |
+| T-13 Eu | (só no celular) | — | — |
+
+### 6.2 As ações (`fluxo-app.md` §7)
+
+| Ação | Estado | Tipos | Onde aparece |
+|---|---|---|---|
+| Salvar | `RASCUNHO`, `ABERTO` | Todos (a Verificação nunca é rascunho) | — |
+| Publicar | `RASCUNHO` | Todos | — |
+| Excluir rascunho | `RASCUNHO` | Todos | — |
+| Submeter ("Submeter para fechamento" na NC) | `ABERTO` | NC, Classificação, Contenção, Investigação | — |
+| Submeter plano | `ABERTO` | Ação Corretiva, antes do plano aprovado | — |
+| Finalizar execução | `ABERTO` | Ação Corretiva, depois do plano aprovado | — |
+| Concluir | `ABERTO` | Verificação | — |
+| Cancelar | `ABERTO`, `EM_APROVACAO` | Todos, menos a Classificação | — |
+| Aprovar · Reprovar | `EM_APROVACAO` | Todos com portão | — |
+| Retirar da aprovação | `EM_APROVACAO` | Todos com portão (RN-48) | — |
+| Reabrir | `FECHADO` | Só a NC (RN-42) | — |
+| Comentar | Qualquer | Todos | — |
+| Anexar | `RASCUNHO`, `ABERTO` | Todos | — |
+
+### 6.3 O que ainda não está desenhado
 
 - [x] As versões de celular de T-08 a T-12, com o convite e o diálogo do efeito (feitas em 2026-10-22, §5). Falta a barra nova no T-04 celular e no frame dos componentes (plano B2, item 7a).
 
