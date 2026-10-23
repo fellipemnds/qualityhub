@@ -241,7 +241,10 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
   de ~15 chamadas. O SheerID aprovou a licença de estudante (2026-10-21):
   o `whoami` do conector mostra o "Designing" no plano `student`, com
   assento Full. Na B2 (2026-10-21), umas 25 chamadas seguidas passaram sem
-  bloqueio (no Starter, parava em ~15).
+  bloqueio (no Starter, parava em ~15). **Desde 2026-10-23, no time
+  "Andon"** (um time só para a plataforma; o mesmo arquivo e a mesma chave,
+  os links continuam valendo): o `whoami` mostra o "Andon", `student`,
+  assento Full, e o Code Connect segue recusado pelo conector.
 - **Classificação, reincidência e segregação** (2026-10-07, com a
   analista): PRD Q19–Q22, na C2 como proposta (a 3ª ocorrência aceita a
   Menor com justificativa; colaborador e aprovador excludentes por item;
