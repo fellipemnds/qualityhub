@@ -229,6 +229,23 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
   (`marca.md`, `ui-ux.md` §9); (4) duas variantes lado a lado numa seção
   "Decisão" no Figma, com os tokens ligados; (5) Matthew decide, e o
   Claude registra nos documentos e no checklist.
+- **Ideia para refinar (`idea-refine`) antes da C0: o Andon como SaaS**
+  (2026-10-23, Matthew avalia oferecer a outras empresas; plano, linha da
+  C0). Duas partes. (1) O **multi-tenant**: hoje tudo é para uma empresa,
+  instalada nela; várias empresas no mesmo sistema mexem no banco, nas
+  permissões e na hospedagem (TRD §10.6). (2) O **branding de cada
+  empresa**, sem espalhar o logo: a interface é do Andon (a cor tem
+  função: estado, prazo), e a empresa aparece **onde ela fala**. Do mais
+  profundo ao mais visível: a **língua** dela (o glossário: RNC, desvio,
+  ocorrência; o prefixo dos códigos; os setores), os **documentos que saem**
+  (o PDF, a NC exportada para o auditor e o e-mail, com a identidade
+  inteira), a **porta de entrada** (o logo no login, o nome na saudação, o
+  endereço próprio), **um toque de cor** num token só (`marca/toque`,
+  reservado na B3, com o contraste conferido) e a **assinatura** que já
+  existe. A empresa informaria 5 coisas: o logo em SVG, o nome, uma cor
+  (opcional), o glossário e o prefixo. Barato fazer já: a empresa como
+  dado, nunca escrita no código. 🐴 O mínimo para o MVP: o glossário e a
+  assinatura.
 - **Ideia para refinar (`idea-refine`) antes da C3: a atividade recente
   na tela inicial** (2026-10-20, da referência do Flowio,
   `docs/identidade/referencias-interface.md`). O que aconteceu nas NCs que

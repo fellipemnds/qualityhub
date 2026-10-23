@@ -99,6 +99,12 @@ A ordem é puxada pelas telas, sobre uma base de tokens.
    motivo escrito: quando um componente precisar fugir do semântico. Em
    2026-10-23, a coleção Cor tem só os 18 semânticos, com o valor direto: a
    B3 começa criando os primitivos embaixo deles.
+   **Reservado: `marca/toque`** (2026-10-23), o único semântico onde a
+   cor de uma empresa cliente poderia entrar, se o Andon virar SaaS (a
+   sessão antes da C0, no plano): só em lugar sem significado (o fundo do
+   login, o anel do avatar, o ícone da aba), nunca num estado nem numa
+   ação, e com o contraste conferido nos dois modos antes de valer. Começa
+   no cinza.
 2. **A construção: uma base comum, depois as telas puxam.** A base são os
    tokens das duas camadas e os 5 átomos que toda tela usa (botão, campo,
    estado/etapa/prazo, ícone e avatar). Depois, uma tela por vez, na ordem
@@ -430,6 +436,35 @@ barra do celular (2026-10-22)" (as variantes A e B e a tela Eu). A
 proposta de 2026-10-21 para o computador (sem barra de topo, o item ativo
 com a pílula cinza) ficou confirmada pela decisão (e), acima, e o menu
 lateral saiu.
+
+### 6.2 A personalidade: os gestos da casa
+
+Decidido com Matthew em 2026-10-23, na revisão dos wireframes: o
+Detalhe da NC no celular tinha personalidade, e as outras telas ficaram
+sem graça. A diferença não era enfeite, eram **gestos**, e eles passam a
+valer para o app todo. A personalidade vem de repetir poucos gestos com
+hierarquia, não de decorar cada tela. Os gestos 1 a 4 são estrutura (a
+revisão da B2 confere cada um); o 5 é acabamento (B3).
+
+1. **O bloco do título, com hierarquia.** Toda página de item abre com um
+   bloco que dá o "rosto" do item: o código, o título (ou o rótulo, nos
+   filhos, §10.3), o estado e quem está envolvido. **A NC é a casa**, a
+   que agrupa tudo: só ela tem o bloco **escuro** (§7.3). Os **filhos** são
+   da família: a mesma anatomia num tom **claro**, com o nome da NC em
+   cima (o caminho de volta, `CabecalhoItem`), que diz a quem pertencem.
+   Nenhuma outra tela usa o bloco escuro.
+2. **A frase de estado.** Toda tela raiz abre com uma frase que diz o que
+   importa agora ("4 itens esperam por você · 1 vencido"; "38 abertas · 3
+   com prazo vencido"), em vez de só o título.
+3. **O número protagonista.** O número que importa aparece grande e
+   com o contexto ao lado ("2 de 6 atendidos", "82% (18 de 22)", "há 9
+   dias"), no estilo Número/Indicador e com dígitos tabulares (§3.2).
+4. **O formulário com ritmo.** Os campos em grupos com nome ("O que
+   aconteceu", "Onde", "Evidência"), o opcional marcado e o valor padrão
+   visível (a Nova NC já vem com "Detectada em: hoje"), em vez de uma lista
+   de campos com o mesmo peso.
+5. **Movimento e voz.** O bloco do título que encolhe ao rolar, as
+   transições curtas e o tom dos textos (§10.1). Entra na B3, com a cor.
 
 ---
 
@@ -1147,3 +1182,5 @@ tokens.
 | 2026-10-22 | v1.13 — B2, decisão (e): a navegação do computador vira uma doca flutuante embaixo, no centro, com a busca (Ctrl K) e a pessoa no fim; 96 px livres embaixo do conteúdo; sem menu lateral nem barra de topo (§6.1) |
 | 2026-10-22 | v1.14 — B2, decisão (d): a borda dos campos (§9), a borda inteira em `borda/controle` e o anel de foco |
 | 2026-10-23 | v1.15 — O método do Design System (§2.2): o Atomic Design para organizar, os tokens em duas camadas (primitivos e semânticos), a base comum e as telas na ordem das fatias C, as cinco regras de governança e a ponte com o código; as páginas do Figma por camada (§2.1); a escada do componente (§1.1) |
+| 2026-10-23 | v1.16 — O token `marca/toque` reservado (§2.2, item 1), para a cor de uma empresa cliente, se o Andon virar SaaS |
+| 2026-10-23 | v1.17 — Os gestos da casa (§6.2): o bloco do título com hierarquia (escuro só na NC; claro nos filhos, com a NC em cima), a frase de estado, o número protagonista, o formulário com ritmo e, na B3, movimento e voz |
