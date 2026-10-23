@@ -1,0 +1,12 @@
+{
+  "name": "qualityhub",
+  "owner": {
+    "name": "Mateus Felipe Mendes"
+  },
+  "plugins": [
+    {
+      "name": "typescript-lsp",
+      "source": "./plugins/typescript-lsp"
+    }
+  ]
+}

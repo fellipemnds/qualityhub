@@ -84,6 +84,11 @@ Claude pode abrir PRs e ler o CI com ele, e o `git push` também
 funciona por ele (2026-10-06). Desde 2026-10-08, **Claude dá o push**
 (autorização de Matthew): depois da `/verificar`, só na branch de
 trabalho, nunca na `main` e nunca com `--force`. O merge é de Matthew.
+**Nenhum comando com `--force`** (git, npm ou qualquer outro), nem atalho
+com o mesmo efeito (`git reset --hard`, `--legacy-peer-deps` sem motivo),
+sem consultar Matthew antes: quando um comando sugerir isso, Claude para,
+explica o que ele faria e pergunta (2026-10-23; o `npm audit fix --force`
+quebraria o Prisma, `CONSTRAINTS.md` §5).
 
 **Dois computadores:** Matthew alterna entre o do trabalho e o de casa
 (mesmo ambiente: Windows + WSL2 + Docker Desktop + nvm; `SETUP.md` §12).
@@ -130,8 +135,16 @@ A partir do plano de implementação:
 - **Uma branch e um Pull Request por fase**; CI verde para entrar na `main`.
   Começo: `/comecar-fase` (o PR nasce em rascunho). Cada item: `/item`
   (verifica pela `/verificar`). Fim: `/abrir-pr` (revisões da fase e
-  "pronto quando") → merge → `/fechar-fase`.
+  "pronto quando") → merge → `/fechar-fase`. Decisão de desenho de tela
+  ou componente (Mobbin + Figma + skills de front): `/desenhar`; o método
+  do Design System está no `ui-ux.md` §2.2.
 - **Bug começa por um teste que falha.**
+- **"Existe" ou "não existe"** (rota, campo, função, regra): Claude só
+  afirma depois de ler a busca **inteira**, sem `head`/`tail`, e cita
+  `arquivo:linha`. Para campos e rotas, a fonte é o código
+  (`prisma/schema.prisma`, `*.schema.ts`, `*.routes.ts`), não os
+  documentos. Motivo: em 2026-10-21, um `head` escondeu a rota de reativar
+  setor, e um wireframe deu título à Ação Corretiva, que não tem.
 - Cada fase termina com o checklist "pronto quando" (plano §1.1).
 - **Pedir antes de cada commit**, inclusive dentro da branch da fase,
   mostrando o que entra (Matthew pode pedir o diff antes). O push, Claude
@@ -221,7 +234,11 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   `pausarNoMeio` (pausa entre conferir e gravar), não pelo `Promise.all`.
 - **Permissões em três camadas**: papel (`temPapel`) → estado do registro
   → atribuição (`Atribuicao`, com `funcao: COLABORADOR | APROVADOR`).
-  `podeExecutar` combina as três; algumas transições usam checagem
+  `podeExecutar` (`compartilhado/permissoes/pode-executar.ts`) combina
+  **duas**, o papel e a atribuição (colaborador **ou** aprovador); o
+  estado é conferido antes, por quem chama (o `cicloVidaService`, que
+  responde 409). Corrigido em 2026-10-21, no passeio da A4: o texto dizia
+  "as três". Algumas transições usam checagem
   estrita manual (`decidir` exige ser especificamente o aprovador
   designado, não qualquer `APROVADOR`).
 - **Edição permitida em `RASCUNHO` e `ABERTO`**, bloqueada a partir de

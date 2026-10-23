@@ -8,10 +8,10 @@ nvm (node padrão): v24.20.0
 node: v24.20.0
 npm: 12.0.2
 git: git version 2.53.0
-docker: Docker version 29.8.2, build 7fc2dff
-docker compose: Docker Compose version v5.6.0
+docker: Docker version 29.9.2, build a82e528
+docker compose: Docker Compose version v5.6.1
 gh: gh version 2.101.0 (2026-09-15)
-claude code: 2.1.280 (Claude Code)
+claude code: 2.1.308 (Claude Code)
 
 ## Contas e configuração
 git user.name: Mateus Felipe Mendes
@@ -25,11 +25,11 @@ banco (docker): postgres:17-alpine
 migrations: em dia
 
 ## VS Code — extensões no WSL
-anthropic.claude-code@2.1.304
-biomejs.biome@3.7.1
-eamodio.gitlens@19.3.0
+anthropic.claude-code@2.1.308
+biomejs.biome@3.8.0
+eamodio.gitlens@19.4.0
 github.vscode-github-actions@0.32.3
-github.vscode-pull-request-github@0.170.0
+github.vscode-pull-request-github@0.172.0
 humao.rest-client@0.25.1
 miguelsolorio.symbols@0.0.26
 ms-azuretools.vscode-containers@2.5.3
@@ -37,21 +37,21 @@ ms-azuretools.vscode-docker@2.0.0
 ms-ceintl.vscode-language-pack-pt-br@1.131.2026090407
 prisma.prisma@31.13.0
 ritwickdey.liveserver@5.7.10
-usernamehw.errorlens@3.29.0
+usernamehw.errorlens@3.30.0
 
 ## VS Code — extensões no Windows
-anthropic.claude-code@2.1.304
-biomejs.biome@3.7.1
-eamodio.gitlens@19.3.0
+anthropic.claude-code@2.1.308
+biomejs.biome@3.8.0
+eamodio.gitlens@19.4.0
 github.vscode-github-actions@0.32.3
-github.vscode-pull-request-github@0.170.0
+github.vscode-pull-request-github@0.172.0
 humao.rest-client@0.25.1
 miguelsolorio.symbols@0.0.26
 ms-azuretools.vscode-containers@2.5.3
 ms-azuretools.vscode-docker@2.0.0
 ms-ceintl.vscode-language-pack-pt-br@1.131.2026090407
 ms-vscode-remote.remote-containers@0.469.0
-ms-vscode-remote.remote-wsl@0.104.4
+ms-vscode-remote.remote-wsl@0.104.5
 prisma.prisma@31.13.0
 ritwickdey.liveserver@5.7.10
-usernamehw.errorlens@3.29.0
+usernamehw.errorlens@3.30.0

@@ -661,7 +661,23 @@ node -v && docker info > /dev/null && echo DOCKER_OK
 npm ci && npx --no-install prisma generate
 ```
 
-**Para não repetir a cada sessão:** as duas primeiras linhas (o Node) podem ir para o **script de configuração do ambiente** (no app: o menu do ambiente na barra de título da sessão → Edit), que roda no começo de toda sessão nova. O `dockerd` e o `npm ci` o Claude roda na sessão.
+**Os plugins do Claude Code** (os 6 do §12.4): a nuvem nasce sem eles. O `.claude/settings.json` do projeto já diz de onde vêm (`extraKnownMarketplaces`, desde 2026-10-21), mas sem a confirmação de uma pessoa o CLI não cadastra as marketplaces sozinho; o `claude plugin marketplace add` direto funciona (instalados assim em 2026-10-21):
+
+```bash
+for par in "addyosmani/agent-skills agent-skills@addy-agent-skills" \
+           "DietrichGebert/ponytail ponytail@ponytail" \
+           "Leonxlnx/taste-skill taste-skill@taste-skill" \
+           "Egonex-AI/Understand-Anything understand-anything@understand-anything" \
+           "zarazhangrui/frontend-slides frontend-slides@frontend-slides" \
+           "cathrynlavery/diagram-design diagram-design@diagram-design"; do
+  set -- $par; claude plugin marketplace add "$1" && claude plugin install "$2"
+done
+mkdir -p ~/.config/ponytail && echo '{ "defaultMode": "lite" }' > ~/.config/ponytail/config.json
+```
+
+Instalados no meio da sessão, provavelmente só valem na próxima. Por isso o lugar deles é o script de configuração do ambiente (abaixo), junto do Node.
+
+**Para não repetir a cada sessão:** as duas primeiras linhas (o Node) e o bloco dos plugins podem ir para o **script de configuração do ambiente** (no app: o menu do ambiente na barra de título da sessão → Edit), que roda no começo de toda sessão nova. O `dockerd` e o `npm ci` o Claude roda na sessão.
 
 **O Docker pode cair sozinho** entre uma rodada e outra (aconteceu em 2026-10-09: a suíte seguinte falhou com `Could not find a working container runtime strategy`). Antes de cada suíte, `docker info`; se falhar, ligar o `dockerd` de novo.
 

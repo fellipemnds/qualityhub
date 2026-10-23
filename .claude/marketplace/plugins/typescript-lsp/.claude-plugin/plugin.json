@@ -1,0 +1,4 @@
+{
+  "name": "typescript-lsp",
+  "description": "Servidor de linguagem do TypeScript 7 do próprio projeto (tsc --lsp): dá ao Claude os usos e as definições exatos."
+}

@@ -32,8 +32,10 @@ Decididos com Matthew em 2026-09-24:
      não aparece; o painel de atribuições mostra quem está.
 4. **Computador primeiro; celular para o essencial.** No celular precisam
    funcionar bem: registrar NC, anexar foto, ver pendências, aprovar ou
-   reprovar, comentar. Investigação A3, relatórios e administração só
-   precisam funcionar no computador.
+   reprovar, comentar. A Investigação A3 só precisa funcionar no
+   computador. **Relatórios e administração ganham versão de celular**
+   (revisto por Matthew em 2026-10-22, na B2: a Gestão fica na tela Eu,
+   T-13; `ui-ux.md` §6.1).
 
 ---
 
@@ -62,6 +64,8 @@ flowchart TD
     Usu --> UsuDet[T-10 Detalhe do usuário]
     Usu --> UsuNovo[T-11 Novo usuário]
     Usu --> Set[T-12 Setores]
+    Eu[T-13 Eu<br/>só no celular] --> Rel
+    Eu --> Usu
 ```
 
 | ID | Tela | Rota | Quem acessa | Celular |
@@ -73,11 +77,12 @@ flowchart TD
 | T-05 | Nova NC | `/nc/nova` | `EDITOR`, `GERENTE` | ✅ |
 | T-06 | Detalhe da NC | `/nc/:id` | Todos com papel de negócio | ✅ |
 | T-07 | Detalhe do item filho | `/classificacoes/:id`, `/contencoes/:id`, `/investigacoes/:id`, `/acoes-corretivas/:id`, `/verificacoes/:id` | Todos com papel de negócio | ✅ exceto Investigação |
-| T-08 | Relatórios | `/relatorios` | `GERENTE` | — |
-| T-09 | Usuários | `/admin/usuarios` | `ADMIN` | — |
-| T-10 | Detalhe do usuário | `/admin/usuarios/:id` | `ADMIN` | — |
-| T-11 | Novo usuário | `/admin/usuarios/novo` | `ADMIN` | — |
-| T-12 | Setores | `/admin/setores` | `ADMIN` | — |
+| T-08 | Relatórios | `/relatorios` | `GERENTE` | ✅ (a desenhar) |
+| T-09 | Usuários | `/admin/usuarios` | `ADMIN` | ✅ (a desenhar) |
+| T-10 | Detalhe do usuário | `/admin/usuarios/:id` | `ADMIN` | ✅ (a desenhar) |
+| T-11 | Novo usuário | `/admin/usuarios/novo` | `ADMIN` | ✅ (a desenhar) |
+| T-12 | Setores | `/admin/setores` | `ADMIN` | ✅ (a desenhar) |
+| T-13 | Eu | `/eu` | Todos | ✅ só no celular (no computador, o menu da pessoa faz o papel) |
 
 "Papel de negócio" = `VISUALIZADOR`, `EDITOR`, `APROVADOR` ou `GERENTE`.
 Um `ADMIN` só com esse papel não vê NCs (PRD §8).
@@ -89,7 +94,12 @@ Prefixos reais dos códigos: `NC`, `CL` (Classificação), `CT` (Contenção),
 
 ### 2.1 Menu principal
 
-Aparecem só os itens que o papel permite:
+Aparecem só os itens que o papel permite. No celular, eles se dividem
+entre a barra flutuante (Pendências, NCs, Eu) e a tela **Eu** (T-13:
+Tela inicial, a Gestão para quem tem o papel e as duas saídas;
+`ui-ux.md` §6.1). No computador, os destinos ficam na **doca** flutuante
+embaixo, com o **Buscar** em primeiro (Ctrl K), e Tela inicial e as
+saídas ficam no **menu da pessoa**, que abre do fim da doca:
 
 | Item | Papéis | Detalhe |
 |---|---|---|
@@ -99,6 +109,7 @@ Aparecem só os itens que o papel permite:
 | Administração | `ADMIN` | Usuários, Setores |
 | Tela inicial | Quem acessa mais de uma tela inicial possível | Preferência (§3) |
 | Sair | Todos | |
+| Sair de todos os aparelhos | Todos | No menu da pessoa, embaixo do Sair: encerra as sessões abertas em outros computadores (`POST /auth/sair-de-todos`, pronto desde a A4; Matthew, 2026-10-21) |
 
 ---
 
@@ -230,10 +241,12 @@ aprovador e aparece na triagem até alguém definir (RN-46).
    direta → 5 Porquês → Causa raiz → Contramedidas → Check de
    efetividade*. Um índice lateral mostra quais etapas já estão
    preenchidas e leva direto a qualquer uma, porque a investigação é
-   trabalhada ao longo de dias e fora de ordem.
+   trabalhada ao longo de dias e fora de ordem. O *Check de efetividade* não
+   se preenche: resume as instruções de verificação de cada contramedida
+   e, depois, a Verificação de cada uma (`ui-ux.md` §7.5).
 4. **Hipóteses**: lista dentro da investigação. Cada uma tem descrição,
-   número no Ishikawa e classificação (causa direta / fator contribuinte /
-   sem relação). Pode ficar incompleta até a submissão.
+   número no Ishikawa (a causa numerada no diagrama) e classificação
+   (causa direta / fator contribuinte / sem relação). Pode ficar incompleta até a submissão.
 5. **Contramedidas**: as ações corretivas nascem aqui, com a
    investigação ainda aberta, e têm os planos aprovados antes do envio
    (J5, passos 1 a 3). A investigação também pode concluir sem nenhuma
@@ -318,7 +331,8 @@ precisar estar atribuído.
    cronológica.
 2. Comentar; `@` sugere pessoas e `#` sugere itens com código.
 3. A pessoa mencionada recebe a pendência **"Você foi mencionado em
-   NC-2026-0042"**, que some ao abrir o item.
+   NC-2026-0042"**, que some ao abrir o item. No celular, a NC abre
+   direto na aba Feed (`ui-ux.md` §7.3).
 
 ### J11 — Administrar usuários e setores (TI) · RF-13, RF-15, RF-20
 
@@ -329,7 +343,7 @@ precisar estar atribuído.
 3. **Inativar** ou **revogar papel** (T-10): se a pessoa for aprovadora
    de itens abertos, o sistema recusa e lista os itens; um `GERENTE`
    reatribui e o ADMIN tenta de novo (RN-43).
-4. **Setores** (T-12): criar, renomear, desativar (RN-44).
+4. **Setores** (T-12): criar, renomear, desativar e reativar (RN-44).
 
 ### J12 — Acompanhar o processo (gestor) · RF-19
 
@@ -368,11 +382,16 @@ em amarelo (F3). "Nunca só cor": o destaque também leva texto
 
 - Colunas: código, título, etapa + indicadores, setor, origem,
   classificação, data de detecção.
+- Visões: Todas · Minhas · Vencidas (abas no computador, controle
+  segmentado no celular; decisão (f) da B2, `ui-ux.md` §7.2).
 - Filtros: estado, origem, classificação, período, **etapa**, setor,
-  "só as minhas", "com prazo vencido". Os três últimos são novos na API.
+  "com prazo vencido". Etapa, setor e prazo vencido são novos na API (L5);
+  "só as minhas" já existe (o `minhas` do `nc.schema.ts`) e virou a visão
+  Minhas. Agrupar por etapa, opcional, só no computador.
 - Busca por código ou por palavra no título.
 - Botão **Nova NC** para `EDITOR`/`GERENTE`.
-- No celular, vira uma lista de cartões (código, título, etapa).
+- No celular, vira uma lista de linhas ricas (código, título, estado,
+  etapa e setor), com os filtros em pílulas que abrem uma folha.
 
 ### T-05 Nova NC
 
@@ -392,17 +411,29 @@ De cima para baixo:
    envio (riscos revisados, mudanças no SGQ, aprovador da NC), cada um
    com ✅/❌ e link para o que resolve. Visível enquanto a NC estiver
    `ABERTA`.
-5. **Filhos**, uma seção por tipo, na ordem do processo: Classificação ·
-   Contenção · Investigação · Ação Corretiva · Verificação. Cada seção
-   lista os itens (código, estado, responsável, prazo) e tem o botão
-   **Novo…** quando o papel permite. As Verificações aparecem, mas **não
-   têm "Nova"**, porque nascem sozinhas.
+5. **Filhos**, num cartão só ("Itens da NC"), na ordem do processo:
+   Classificação · Contenção · Investigação · Ação Corretiva ·
+   Verificação, agrupados por tipo (os grupos abrem e fecham) ou numa
+   lista plana, em lista ou cartões, ordenados por estado ou criação
+   (`ui-ux.md` §7.3, decisão (g) da B2). Cada item mostra o código, o
+   estado, o responsável e o prazo; o "+ Nova" aparece quando o papel e a
+   regra permitem (a Ação Corretiva só com uma investigação aberta,
+   RN-49). As Verificações aparecem, mas **não têm "Nova"**, porque nascem
+   sozinhas.
 6. **Painel de atribuições**: colaboradores e aprovador, com
    adicionar/remover/definir conforme RN-18. Só em `RASCUNHO` e
    `ABERTO`; em `EM_APROVACAO`, só o `GERENTE` troca o aprovador (RN-47).
    Nos outros estados, o painel é só leitura.
 7. **Anexos**.
-8. **Feed** (J10).
+8. **Feed** (J10): no celular, a aba Feed; no computador, um painel à
+   direita aberto pelo botão Atividade, que empurra a página e recolhe a
+   coluna lateral numa faixa de resumo (`ui-ux.md` §7.3).
+
+Os dados também mostram a **classificação vigente** (a última aprovada,
+PRD Q19), e o envio para fechamento vem **depois** dos filhos.
+
+No celular, as mesmas partes em quatro abas, Resumo · Detalhes · Itens ·
+Feed, com o cabeçalho num bloco escuro (`ui-ux.md` §7.3).
 
 ### T-07 Detalhe do item filho
 
@@ -430,7 +461,7 @@ levam à lista de NCs filtrada.
   gerar novo convite. A recusa da RN-43 mostra a lista de itens a
   reatribuir.
 - **T-11 Novo usuário**: formulário → mostra o link de convite para copiar.
-- **T-12 Setores**: lista, criar, renomear, desativar.
+- **T-12 Setores**: lista, criar, renomear, desativar, reativar.
 
 ---
 
@@ -505,6 +536,9 @@ TRD e o Plano de Implementação:
 | L7 | **Último motivo de reprovação** exposto no item | J8, pendência "Corrigir" |
 | L8 | Tudo o que o PRD já listou: Feed, anexos, usuários, setores, relatórios, NC com colaboradores na criação | — |
 | L9 | **Preferência de tela inicial** salva por usuário | §3, menu |
+| L11 | **Foto da pessoa**: o `Usuario` não tem foto (`prisma/schema.prisma`); os avatares são as iniciais, geradas pelo nome. A foto pede envio, armazenamento e o cuidado da LGPD (escopo novo, sem fase; achado na decisão (g) da B2) | T-06, T-09, T-10 |
+| L12 | **Resposta em fio no feed**: o "Responder" num comentário pede que o comentário saiba quem é o pai (uma coluna a mais na tabela de comentários, que nasce na C4); e o filtro Tudo · Comentários · Histórico do painel (decisão (g) da B2) | T-06, J10 |
+| L10 | **Total e contagens na lista**: a paginação devolve só a página e o cursor (`paginacao-cursor.ts`); a frase de estado ("38 abertas"), o "Mostrando 6 de 38", o "Ver 20 NCs" da folha e as contagens por etapa precisam de um total (decisão (f) da B2, 2026-10-23) | T-04, a frase de estado (`ui-ux.md` §6.2) |
 
 ---
 
@@ -534,3 +568,10 @@ Com Matthew, em 2026-09-24.
 | 2026-09-24 | v1.1 — revisão cruzada: etapa "Pronta para fechamento" olha só os filhos; aprovador no checklist; herança do aprovador (RN-46); rascunho não se cancela; vínculo obrigatório da AC com investigação; prefixos reais dos códigos |
 | 2026-09-30 | v1.2 — atribuições só em `RASCUNHO`/`ABERTO` (RN-47); ação "Retirar da aprovação" (RN-48) |
 | 2026-10-01 | v1.3 — planos de ação conferidos pela Investigação (PRD Q17): etapa "Em plano de ação" removida (10 etapas), J4 com as contramedidas, J5 com o vínculo desde a criação (RN-49), checklist da J6 sem os planos |
+| 2026-10-21 | v1.4 — o reativar setor (RN-44, pronto desde a A6) na J11 e na T-12 |
+| 2026-10-21 | v1.5 — "Sair de todos os aparelhos" no menu (§2.1) |
+| 2026-10-22 | v1.6 — a T-06 no celular em quatro abas (decisão (b) da B2, `ui-ux.md` §7.3); a menção abre na aba Feed (J10) |
+| 2026-10-22 | v1.7 — J4: o check de efetividade resume as contramedidas, e a hipótese aponta a causa numerada do Ishikawa |
+| 2026-10-22 | v1.8 — §2.1: no computador, a doca flutuante embaixo, com a busca e o menu da pessoa (decisão (e) da B2) |
+| 2026-10-23 | v1.9 — T-04: as visões separadas dos filtros, o agrupar opcional, a linha rica no celular (decisão (f) da B2); o "só as minhas" já existe na API; a lacuna L10, o total e as contagens na lista |
+| 2026-10-23 | v1.10 — T-06: os filhos num cartão só (agrupados ou não, lista ou cartões), o feed no painel Atividade no computador, a classificação vigente nos dados, o envio depois dos filhos (decisão (g) da B2); as lacunas L11 (a foto da pessoa) e L12 (a resposta em fio e o filtro do painel) |
