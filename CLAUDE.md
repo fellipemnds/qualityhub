@@ -84,6 +84,11 @@ Claude pode abrir PRs e ler o CI com ele, e o `git push` também
 funciona por ele (2026-10-06). Desde 2026-10-08, **Claude dá o push**
 (autorização de Matthew): depois da `/verificar`, só na branch de
 trabalho, nunca na `main` e nunca com `--force`. O merge é de Matthew.
+**Nenhum comando com `--force`** (git, npm ou qualquer outro), nem atalho
+com o mesmo efeito (`git reset --hard`, `--legacy-peer-deps` sem motivo),
+sem consultar Matthew antes: quando um comando sugerir isso, Claude para,
+explica o que ele faria e pergunta (2026-10-23; o `npm audit fix --force`
+quebraria o Prisma, `CONSTRAINTS.md` §5).
 
 **Dois computadores:** Matthew alterna entre o do trabalho e o de casa
 (mesmo ambiente: Windows + WSL2 + Docker Desktop + nvm; `SETUP.md` §12).
