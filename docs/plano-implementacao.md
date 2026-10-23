@@ -340,7 +340,64 @@ frames: 12 telas, a T-07 com 5 variantes e o celular de T-01 a T-07, menos a Inv
 | 7b | **Novo (2026-10-22, decisão (b) da revisão):** o Detalhe da NC no celular em quatro abas, com o bloco do título (`ui-ux.md` §7.3; os frames **feitos** na seção "Decisão (b)" do Figma). O T-06 celular da seção "NCs · T-05 e T-06" **trocado** pelas quatro abas (2026-10-22). Falta conferir se a T-07 no celular segue o mesmo padrão. Para a B3: o token `fundo/destaque` | 🤖 cria; 🧑 ajusta |
 | 7c | **Novo (2026-10-22, decisão (c) da revisão):** a Investigação de quem preenche (aberta), ao lado da do aprovador, **feita**; o aprovador sem "+ Nova ação corretiva" (RN-49). O arquivo passou a guardar as decisões na página "Decisões (histórico)", e a página Wireframes só as telas decididas | 🤖 cria; 🧑 ajusta |
 | 7d | **Novo (2026-10-22, decisão (e) da revisão):** a navegação do computador vira uma **doca flutuante embaixo, no centro** (componente `Shell/Doca`, 5 variantes pelo item ativo), com o Buscar (Ctrl K) e a pessoa no fim, e 96 px livres embaixo do conteúdo; **aplicada** nas 16 telas de computador; o menu antigo e o trilho (a opção recomendada pelo Claude, não escolhida) foram para o histórico | 🤖 cria; 🧑 decide |
-| 8 | Conferir o G1 (`ui-ux.md` §2) e o `/abrir-pr` | 🤖 confere; 🧑 decide |
+| ~~8~~ | ~~Conferir o G1 (`ui-ux.md` §2) e o `/abrir-pr`~~ **Substituído em 2026-10-23** pelos itens 8 a 14 abaixo: com o método do Design System (`ui-ux.md` §2.2), a B3 refaz cada tela com os componentes, então a revisão dos wireframes fica **só na estrutura** (toda tela existe, toda ação é alcançável) e se junta ao G1, numa passada só | — |
+
+**Os itens 8 a 14 (replanejados em 2026-10-23, com a skill `planning-and-task-breakdown`).** Cada um termina num commit. A verificação de uma tarefa de desenho: o ok de Matthew no frame, o checklist (`docs/identidade/revisao-wireframes.md`) e os documentos em dia. O acabamento visual (os achados 4 a 6 da seção 1 do checklist) vai para a B3. Peça nova: uma **tabela do G1** no §6 do checklist, uma linha por ação do `fluxo-app.md` §7, com o link do frame onde ela aparece; cada seção preenche a dela.
+
+| # | Entrega | Aceite | Quem |
+|---|---|---|---|
+| 8 | Os 3 achados de estrutura da seção 1: a barra de baixo do celular (a pílula Pendências · NCs · Eu, com o ＋ ao lado), a barra de cima sem o avatar e o menu da pessoa abrindo para cima, com a assinatura | Os 3 componentes batem com as decisões (a) e (e), e as telas que os usam também | 🤖; 🧑 confere |
+| 9 | Seção 2, Acesso (T-01 e T-02, nos dois tamanhos), e a tabela do G1 criada | O ok de Matthew em cada frame; as linhas dessas telas na tabela | 🤖 e 🧑 |
+| | **Conferência:** o jeito de revisar (estrutura e G1 juntos) funciona? | | 🧑 |
+| 10 | Seção 3a: T-03, T-13 e T-04, com a barra nova no T-04 celular (o pendente do 7a) | O mesmo, e a barra aplicada | 🤖 e 🧑 |
+| 11 | Seção 3b: T-05 e T-06 (as quatro abas do celular) | O mesmo | 🤖 e 🧑 |
+| | **Conferência:** as NCs fechadas | | 🧑 |
+| 12 | Seção 4: a T-07 dos cinco tipos, com o padrão do celular conferido (o pendente do 7b) | O mesmo; Salvar, Publicar e Submeter de cada tipo na tabela | 🤖 e 🧑 |
+| 13 | Seção 5: T-08 a T-12 e o convite | O mesmo | 🤖 e 🧑 |
+| 14 | O menu "Mais" aberto (Cancelar, Retirar da aprovação, Reabrir, Excluir rascunho: ainda sem desenho) e o G1 fechado; o `/abrir-pr` | Nenhuma linha vazia na tabela do G1; o PR fora do rascunho | 🤖; 🧑 decide o merge |
+
+### B3 — a ordem dos itens
+
+Planejada em 2026-10-23 (`planning-and-task-breakdown`), pelo método do
+`ui-ux.md` §2.2: a base comum primeiro, depois as telas na ordem das
+fatias C. Começa pela `/comecar-fase`, numa branch nova. A verificação de
+cada tarefa: o script de valor solto sem achados, o contraste conferido
+nos dois modos, o ok de Matthew e os documentos em dia; cada uma termina
+num commit. A partir do item 6, cada tela traz as moléculas e os
+organismos que faltam e os estados do G4 (vazio, carregando, erro, sem
+permissão), nos dois tamanhos e nos dois modos.
+
+| # | Entrega | Aceite | Quem |
+|---|---|---|---|
+| 1 | Os primitivos: a coleção nova (a escala do Grafite e os tons dos estados) e os 18 semânticos da coleção Cor apontando para ela | Nenhum semântico com valor direto; o contraste dos pares numa tabela, nos dois modos | 🤖 |
+| 2 | O script de valor solto (lista toda cor e medida sem variável) e as páginas Átomos, Moléculas, Organismos e Mockups | Acha um retângulo solto plantado de propósito (a prova de quebra) e passa limpo na Fundações | 🤖 |
+| 3 | Átomos I: o Botão de Matthew conferido contra o "pronto quando" (`ui-ux.md` §2.2, regra 4) e o Campo, com o erro e o foco (achado 6) | O script limpo; os estados e os dois modos | 🧑 |
+| 4 | Átomos II: Estado/Etapa/Prazo (achado 5), Ícone (os SVG do Lucide) e Avatar (gerado pelo nome, `docs/marca.md`) | O mesmo; o badge cobre os 5 estados (G2) | 🧑 |
+| | **Conferência:** a base comum pronta | | 🧑 |
+| 5 | T-01 e T-02 em mockup: a **prova do caminho** do token à tela, a tarefa mais arriscada (por isso cedo) | Nos dois tamanhos e nos dois modos, com os estados do G4; uma **retrospectiva** do método, que ajusta a §2.2 se for preciso | 🧑; 🤖 revisa |
+| | **Conferência:** o método provado | | 🧑 |
+| 6 | T-05 Nova NC, com a casca (a doca e a barra do celular; achado 4) | O mesmo, sem a retrospectiva | 🧑; 🤖 revisa |
+| 7 | T-06 Detalhe da NC: o feed, a seção de filhos, o checklist e as atribuições | O mesmo | 🧑; 🤖 revisa |
+| 8 | T-04 Lista de NCs | O mesmo | 🧑; 🤖 revisa |
+| 9 | T-07 I: Classificação, Contenção e Verificação, com o diálogo do efeito | O mesmo | 🧑; 🤖 revisa |
+| 10 | T-07 II: Ação Corretiva e as duas visões da Investigação | O mesmo | 🧑; 🤖 revisa |
+| 11 | T-03 Minhas pendências e T-13 Eu | O mesmo | 🧑; 🤖 revisa |
+| 12 | T-09 a T-12 e o convite gerado | O mesmo | 🧑; 🤖 revisa |
+| 13 | T-08 Relatórios (com a skill `dataviz`) | O mesmo | 🧑; 🤖 revisa |
+| 14 | O `DESIGN.md` (os tokens, o histórico e a tabela componente do Figma → arquivo React), o G2 e o G4 conferidos; o `/abrir-pr` | Os dois portões fechados | 🤖; 🧑 revisa |
+
+**Riscos:** o método ainda não foi provado (a retrospectiva do item 5); o
+limite do conector no plano de estudante (as mudanças no Figma de uma vez,
+no fim de cada seção); o cansaço, porque os componentes são de Matthew (um
+átomo por sessão; os itens 3 e 4 podem virar duas sessões cada); e a
+`/desenhar` puxar escopo novo (o que a API não tem vira "escopo novo", com a
+fase anotada, não trabalho agora).
+
+**Em aberto:** onde o script de valor solto mora no repositório (proposta:
+`docs/identidade/figma/`, versionado para os dois PCs); se a B4 começa
+antes do fim da B3 (o teste com colegas só precisa das telas até o item
+10); e a parada 2 do passeio da A7, condição para a C0, numa sessão
+descansada antes dela.
 
 O que o teste com colegas revelar volta para os documentos **antes** do
 C0.
@@ -498,3 +555,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-22 | v1.38 — B2: o item 7d (decisão (e), a doca do computador); a busca por texto na C1 (lista) e na C4 (`GET /registros/busca`, também para o Ctrl K) |
 | 2026-10-22 | v1.39 — B2: as cinco decisões da revisão fechadas, com a (d), a borda dos campos (a borda inteira em `borda/controle`); falta a revisão tela por tela e o item 8 |
 | 2026-10-23 | v1.40 — B3 pelo método do `ui-ux.md` §2.2 (duas camadas de tokens, a base comum e as telas na ordem das fatias C, a governança); a skill `/desenhar`; na C0, o CSS a partir do `DESIGN.md`, a prova do Code Connect e o layout com a doca e a barra flutuante (o menu lateral tinha ficado no texto) |
+| 2026-10-23 | v1.41 — B2 replanejada: o item 8 vira os itens 8 a 14 (a revisão só na estrutura, junto com o G1, e a tabela do G1); a ordem da B3 em 14 itens, com as conferências, os riscos e o que está em aberto (`planning-and-task-breakdown`) |
