@@ -382,11 +382,16 @@ em amarelo (F3). "Nunca só cor": o destaque também leva texto
 
 - Colunas: código, título, etapa + indicadores, setor, origem,
   classificação, data de detecção.
+- Visões: Todas · Minhas · Vencidas (abas no computador, controle
+  segmentado no celular; decisão (f) da B2, `ui-ux.md` §7.2).
 - Filtros: estado, origem, classificação, período, **etapa**, setor,
-  "só as minhas", "com prazo vencido". Os três últimos são novos na API.
+  "com prazo vencido". Etapa, setor e prazo vencido são novos na API (L5);
+  "só as minhas" já existe (o `minhas` do `nc.schema.ts`) e virou a visão
+  Minhas. Agrupar por etapa, opcional, só no computador.
 - Busca por código ou por palavra no título.
 - Botão **Nova NC** para `EDITOR`/`GERENTE`.
-- No celular, vira uma lista de cartões (código, título, etapa).
+- No celular, vira uma lista de linhas ricas (código, título, estado,
+  etapa e setor), com os filtros em pílulas que abrem uma folha.
 
 ### T-05 Nova NC
 
@@ -522,6 +527,7 @@ TRD e o Plano de Implementação:
 | L7 | **Último motivo de reprovação** exposto no item | J8, pendência "Corrigir" |
 | L8 | Tudo o que o PRD já listou: Feed, anexos, usuários, setores, relatórios, NC com colaboradores na criação | — |
 | L9 | **Preferência de tela inicial** salva por usuário | §3, menu |
+| L10 | **Total e contagens na lista**: a paginação devolve só a página e o cursor (`paginacao-cursor.ts`); a frase de estado ("38 abertas"), o "Mostrando 6 de 38", o "Ver 20 NCs" da folha e as contagens por etapa precisam de um total (decisão (f) da B2, 2026-10-23) | T-04, a frase de estado (`ui-ux.md` §6.2) |
 
 ---
 
@@ -556,3 +562,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-22 | v1.6 — a T-06 no celular em quatro abas (decisão (b) da B2, `ui-ux.md` §7.3); a menção abre na aba Feed (J10) |
 | 2026-10-22 | v1.7 — J4: o check de efetividade resume as contramedidas, e a hipótese aponta a causa numerada do Ishikawa |
 | 2026-10-22 | v1.8 — §2.1: no computador, a doca flutuante embaixo, com a busca e o menu da pessoa (decisão (e) da B2) |
+| 2026-10-23 | v1.9 — T-04: as visões separadas dos filtros, o agrupar opcional, a linha rica no celular (decisão (f) da B2); o "só as minhas" já existe na API; a lacuna L10, o total e as contagens na lista |

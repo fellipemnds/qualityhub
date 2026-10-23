@@ -68,6 +68,8 @@ variantes comparadas e, num quadro "Antes", a tela que foi substituída.
   perto de #959595). Os componentes do Figma já estavam assim. Registrado
   no `ui-ux.md` §9.
   [Decisão (d) no Figma](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=179-363)
+- [x] **(f) A lista de NCs e os filtros** (achado de Matthew na revisão, a estreia da `/desenhar`) — **decidida em 2026-10-23: a A**, a tabela plana com uma pílula por coluna (o Qatalog) e, no celular, a linha rica com os filtros em pílulas que abrem uma folha (o Jira Cloud); as visões separadas dos filtros; o filtro ativo com o valor e o ✕; o agrupar por etapa (a B) como opção do computador; a busca visível que some ao rolar. Descartados: o quadro (a etapa é calculada, ninguém a arrasta), o "puxar para revelar" a busca (briga com o navegador) e o ＋ como busca (o mesmo botão mudaria de função). Registrado no `ui-ux.md` §7.2 e no `fluxo-app.md` (T-04 e L10).
+  [Decisão (f) no Figma](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=211-353)
 
 ## 1. Componentes
 
@@ -93,11 +95,13 @@ variantes comparadas e, num quadro "Antes", a tela que foi substituída.
 
 ## 3. NCs
 
-- [ ] [T-03 Minhas pendências · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=99-31): os grupos Vencidas, Aprovar e Triagem, com as 4 pendências que batem com o contador do menu; o "Assumir" na triagem.
-- [ ] [T-03 Minhas pendências · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1128): com a barra nova (decisão (a)).
-- [ ] [T-13 Eu · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1180): a tela nova da decisão (a).
-- [ ] [T-04 Lista de NCs · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=99-189): as abas Todas · Minhas · Vencidas, os filtros, a tabela e o "Carregar mais".
-- [ ] [T-04 Lista de NCs · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=99-373): a lista vira cartões.
+- [x] [T-03 Minhas pendências · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=99-31): os grupos Vencidas, Aprovar e Triagem, com as 4 pendências que batem com o contador do menu; o "Assumir" na triagem.
+- [x] [T-03 Minhas pendências · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1128): com a barra nova (decisão (a)).
+- [x] [T-13 Eu · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1180): a tela nova da decisão (a).
+- [x] [T-04 Lista de NCs · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=217-2063): as abas Todas · Minhas · Vencidas, os filtros, a tabela e o "Carregar mais".
+- [x] [T-04 Lista de NCs · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=217-2192): a linha rica, e a [folha da Etapa](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=217-2257) (decisão (f)).
+
+  **Revista em 2026-10-23** (plano, B2, item 10): a T-13 bate com o `ui-ux.md` §6.1. A T-03 celular não tinha o filtro por tipo (posto); a T-04 virou a decisão (f), com a frase de estado e o Carregar mais no celular, que faltavam.
 - [ ] [T-05 Nova NC · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-192): os campos em duas colunas, os responsáveis e os anexos ao lado.
 - [ ] [T-05 Nova NC · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-289): "Detectada em" já com hoje, a barra de ações fixa embaixo.
 - [ ] [T-06 Detalhe da NC · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-338): os dados, uma seção por filho, o feed; o checklist, as atribuições e os anexos na lateral.
@@ -138,8 +142,8 @@ quando não sobrar linha com "—". Criadas em 2026-10-23.
 |---|---|---|---|
 | T-01 Login | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-3) | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-25) | item 9 |
 | T-02 Definir senha | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-47) | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-66) | item 9 |
-| T-03 Minhas pendências | — | — | — |
-| T-04 Lista de NCs | — | — | — |
+| T-03 Minhas pendências | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=99-31) | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1128) | item 10 |
+| T-04 Lista de NCs | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=217-2063) | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=217-2192) | item 10 |
 | T-05 Nova NC | — | — | — |
 | T-06 Detalhe da NC | — | — | — |
 | T-07 Itens filhos (5 tipos) | — | — | — |
@@ -148,7 +152,7 @@ quando não sobrar linha com "—". Criadas em 2026-10-23.
 | T-10 Detalhe do usuário | — | — | — |
 | T-11 Novo usuário e convite | — | — | — |
 | T-12 Setores | — | — | — |
-| T-13 Eu | (só no celular) | — | — |
+| T-13 Eu | (só no celular) | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1180) | item 10 |
 
 ### 6.2 As ações (`fluxo-app.md` §7)
 

@@ -206,3 +206,20 @@ gestão: a tela inicial do `GERENTE`, `fluxo-app.md` §3):
   nomes ao lado (`ui-ux.md` §6.1), porque quem registra NC no chão de
   fábrica não decora ícones.
 - **O "Ask AI" com a faísca:** a cara de IA. Fora.
+
+## 2026-10-23 · Qatalog e Jira Cloud (a lista de NCs, decisão (f))
+
+Escolhidas por Matthew na decisão (f) da B2 (a T-04 e os filtros), entre
+as formas de exibir buscadas no Mobbin: tabela, lista agrupada, quadro e
+lista com o detalhe ao lado. As duas estão na coleção "Andon · T-04 Lista
+de NCs" do Mobbin (privada, da conta de Matthew); as imagens ficam lá, fora
+do repositório.
+
+- **Qatalog** (computador, https://mobbin.com/screens/7c52b06d-ef8a-463f-825c-64dcc5551e7b):
+  *"Gosto da forma como o Qatalog mostra os itens na tabela, as pílulas em
+  cada coluna."* Cada coluna mostra o valor como uma pílula (o estado, a
+  pessoa, a data), e a tabela fica legível sem virar planilha.
+- **Jira Cloud** (celular, https://mobbin.com/screens/6401a4bf-26d0-476e-8d8c-dbda23746e81):
+  *"Mostra os itens de maneira muito competente e organizada."* A busca,
+  as pílulas de filtro roláveis e a linha rica (o título, o código e o
+  estado), agrupada por dia.

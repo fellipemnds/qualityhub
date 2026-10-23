@@ -463,7 +463,8 @@ revisão da B2 confere cada um); o 5 é acabamento (B3).
    aconteceu", "Onde", "Evidência"), o opcional marcado e o valor padrão
    visível (a Nova NC já vem com "Detectada em: hoje"), em vez de uma lista
    de campos com o mesmo peso.
-5. **Movimento e voz.** O bloco do título que encolhe ao rolar, as
+5. **Movimento e voz.** O bloco do título que encolhe ao rolar, a
+   busca da T-04 no celular que some ao rolar e volta ao subir (§7.2), as
    transições curtas e o tom dos textos (§10.1). Entra na B3, com a cor.
 
 ---
@@ -502,17 +503,74 @@ aprovador), sem precisar abrir o item.
 
 ### 7.2 T-04 Lista de NCs
 
-```
-Não Conformidades                                      [＋ Nova NC]
-[🔍 código ou título      ] [Estado ▾] [Etapa ▾] [Setor ▾] [Mais filtros ▾]
-Filtros ativos: Etapa: Em investigação ✕   Só as minhas ✕
+Decisão (f) da B2, 2026-10-23, a estreia da `/desenhar` (Figma, página
+Decisões (histórico), seção "Decisão (f)"; as referências, o Qatalog e o
+Jira Cloud, no `docs/identidade/referencias-interface.md`). Comparadas a
+tabela plana com pílulas (a A, escolhida) e a lista agrupada por etapa,
+com a folha de filtros (a B, que ficou como opção do computador). O quadro
+(kanban) ficou de fora: arrastar o cartão muda a etapa, e aqui a etapa é
+calculada (`fluxo-app.md` §4), ninguém a move.
 
- Código        Título                  Estado    Etapa              Setor     Detecção
- NC-2026-0045  Rótulo ilegível         ● Aberta  Aguardando classif. Expedição 22/09/2026
- NC-2026-0042  Vazamento na linha 3    ● Aberta  Em investigação ⚠  Produção  15/09/2026
- NC-2026-0038  Atraso na calibração    ⧗ Em apr. Aguardando aprov.  Metrologia 02/09/2026
-                                                        [ Carregar mais ]
+**Computador:** a tabela plana, com uma pílula por coluna onde o valor é
+uma categoria (o estado e o setor), e texto simples no resto.
+
 ```
+Não Conformidades                                           [＋ Nova NC]
+38 abertas · 3 com prazo vencido
+Todas   Minhas   Vencidas
+[⌕ código ou título ] [Estado ⌄] [Etapa ⌄] [Setor ⌄] [Mais filtros ⌄] [Agrupar: nenhum ⌄]
+
+ Código        Título                 Estado       Etapa               Setor         Detecção
+ NC-2026-0045  Rótulo ilegível        (● Aberta)   Aguardando classif. (Expedição)   22/09/2026
+ NC-2026-0042  Vazamento na linha 3   (● Aberta)   Em investigação ⚠   (Produção)    15/09/2026
+ NC-2026-0038  Atraso na calibração   (⧗ Em apr.)  Aguardando aprov.   (Metrologia)  02/09/2026
+ Mostrando 6 de 38                                                 [ Carregar mais ]
+```
+
+**Celular:** a linha rica (o código e o título, o estado, a etapa e o
+setor) e os filtros em pílulas que rolam para o lado.
+
+```
+┌────────────────────────────────┐
+│ Não Conformidades              │
+│ 38 abertas · 3 com prazo venc. │
+│ [⌕ código ou título          ] │
+│ [ Todas | Minhas | Vencidas  ] │
+│ (Etapa ⌄)(Estado ⌄)(Setor ⌄)(… │
+│ NC-2026-0045 · Rótulo…  ●Aberta│
+│ Aguardando classif. · Expedição│
+│ …                              │
+│ Mostrando 5 de 38              │
+│ [        Carregar mais       ] │
+│ ╭────────────────────╮ ●       │
+│ │ Pend.   NCs   Eu   │ ＋      │
+└────────────────────────────────┘
+```
+
+1. **A visão e o filtro têm caras diferentes.** As visões (Todas · Minhas
+   · Vencidas) são abas no computador e um controle segmentado no
+   celular; os filtros são pílulas com ⌄. Antes, no celular, eram pílulas
+   iguais, e o "Filtros" parecia uma quarta visão.
+2. **O filtro ativo mostra o valor e sai com um toque:** a pílula fica
+   escura, com o valor e o ✕ ("Etapa: Em investigação ✕"). Vale também
+   para os filtros que chegam prontos pelo link dos Relatórios (J12).
+3. **No celular, a pílula abre uma folha** que sobe do rodapé, com as
+   opções e a contagem de cada uma, o "Limpar" e o "Ver 20 NCs". A pílula
+   tem 32 px de desenho e **44 px de área de toque** (§9); as mais usadas
+   vêm primeiro (Etapa, Estado, Setor), porque as últimas ficam fora da
+   tela, na rolagem para o lado.
+4. **Agrupar por etapa, opcional e só no computador** ("Agrupar: nenhum"
+   por padrão): para quem gerencia a fila, os grupos por etapa com a
+   contagem ("Em investigação · 20"), e as fechadas recolhidas.
+5. **A busca fica visível.** No celular, ela some ao rolar a lista para
+   baixo e volta ao rolar para cima (o movimento é da B3, gesto 5, §6.2).
+   Sem "puxar para revelar": num app web, o gesto briga com o atualizar do
+   navegador, e o §7.3 já o reserva. O ＋ continua criando (§6.1, regra 5):
+   virar busca na T-04 mudaria a função do mesmo botão conforme a tela.
+6. **O que a API ainda não dá:** a etapa, o setor e o prazo vencido (L5) e
+   a busca por texto, na C1; e o **total e as contagens** (o "38 abertas",
+   o "Mostrando 6 de 38", o "Ver 20 NCs", a contagem dos grupos): a lista
+   devolve só a página e o cursor (`fluxo-app.md`, L10, na C1).
 
 Paginação por "Carregar mais" (a API usa cursor, não páginas numeradas).
 
@@ -1184,3 +1242,4 @@ tokens.
 | 2026-10-23 | v1.15 — O método do Design System (§2.2): o Atomic Design para organizar, os tokens em duas camadas (primitivos e semânticos), a base comum e as telas na ordem das fatias C, as cinco regras de governança e a ponte com o código; as páginas do Figma por camada (§2.1); a escada do componente (§1.1) |
 | 2026-10-23 | v1.16 — O token `marca/toque` reservado (§2.2, item 1), para a cor de uma empresa cliente, se o Andon virar SaaS |
 | 2026-10-23 | v1.17 — Os gestos da casa (§6.2): o bloco do título com hierarquia (escuro só na NC; claro nos filhos, com a NC em cima), a frase de estado, o número protagonista, o formulário com ritmo e, na B3, movimento e voz |
+| 2026-10-23 | v1.18 — Decisão (f) da B2: a T-04 (§7.2) com a tabela plana e as pílulas, as visões separadas dos filtros, o filtro ativo com o valor, a folha no celular, o agrupar por etapa opcional no computador, a busca visível que some ao rolar; o total e as contagens que a API ainda não dá |
