@@ -72,6 +72,13 @@ variantes comparadas e, num quadro "Antes", a tela que foi substituída.
 ## 1. Componentes
 
 - [ ] [Os 16 componentes](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=95-62), cada um no seu frame: a **doca** do computador (`Shell/Doca`, decisão (e), com uma variante por item ativo), o menu da pessoa, as barras do celular (o ＋ no centro), os botões, os campos, estado/etapa/prazo e a linha de pendência.
+  **Achados de Claude (2026-10-23), esperando o ok de Matthew** (a revisão parou aqui para o método do Design System, `ui-ux.md` §2.2):
+  1. A barra de baixo do celular ainda é a antiga (Pendências · ＋ Nova NC · NCs); a da decisão (a) é a pílula Pendências · NCs · Eu, com o ＋ ao lado (o pendente do item 7a).
+  2. A barra de cima do celular (raiz) ainda tem o avatar, que a tela Eu substituiu: fica só o título.
+  3. O menu da pessoa: abre **para cima**, da doca (decisão (e)), com o nome, o setor e o papel em cima e a assinatura da empresa embaixo; no celular, ele não existe mais. O texto do frame diz o contrário.
+  4. A doca é o único frame sem título e sem a frase do uso (e a regra: os itens de administração só para quem tem o papel).
+  5. Estado, etapa e prazo: o ⚠ está amarelo num frame que diz "tudo cinza"; o ícone da etapa é um quadrado que parece uma caixa de marcar.
+  6. Campos: falta o campo com erro (o texto promete) e o anel de foco da decisão (d).
 
 ## 2. Acesso
 

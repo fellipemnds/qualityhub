@@ -44,6 +44,8 @@ calendário, popover...). O QualityHub precisa de algumas peças que ele
 Versões e configuração ficam para o TRD. **Regra:** não adicionar
 biblioteca além destas sem registrar o motivo no changelog, porque cada
 dependência é mais uma coisa que pode quebrar (princípio do PRD §2).
+Quando o shadcn/ui não tem o componente, a escada da §2.2 (regra 3 da
+governança) decide entre compor, buscar um pacote ou escrever o nosso.
 
 ---
 
@@ -63,12 +65,96 @@ um lugar onde acontece:
 
 ### 2.1 Estrutura do arquivo no Figma
 
+As páginas de componentes seguem o Atomic Design (§2.2; revisto em
+2026-10-23, antes uma página só, "Componentes"):
+
 | Página | Conteúdo |
 |---|---|
-| **Fundações** | Variables de cor, tipografia, espaçamento e raio, com os mesmos nomes dos tokens da §3 |
-| **Componentes** | Os componentes da §5. Variantes do badge com os nomes do enum (`RASCUNHO`, `EM_APROVACAO`...), assim o handoff é mecânico: o nome no Figma é a chave no código |
+| **Fundações** | Variables de cor (primitivos e semânticos, §2.2), tipografia, espaçamento e raio, com os mesmos nomes dos tokens da §3 |
+| **Átomos** | As peças que não se dividem: botão, campo, estado/etapa/prazo, ícone, avatar |
+| **Moléculas** | Átomos juntos com uma função (a linha de pendência, o campo com rótulo e erro) |
+| **Organismos** | As partes inteiras de uma tela (a doca, a barra do celular, o feed, a seção de filhos) |
 | **Wireframes** | Cinza, sem cor, um frame por tela (desktop e, quando indicado, celular) |
-| **Mockups** | As mesmas telas com as fundações aplicadas e os estados do G4 |
+| **Mockups** | As mesmas telas com os componentes e as fundações aplicados, e os estados do G4 |
+| **Decisões (histórico)** | Uma seção por decisão de desenho, com as variantes comparadas e o "Antes" (skill `/desenhar`) |
+
+Em todas: as variantes têm os nomes do enum (`RASCUNHO`, `EM_APROVACAO`...),
+e o componente tem o nome do componente React (§5), assim o handoff é
+mecânico: o nome no Figma é a chave no código.
+
+### 2.2 Como o Design System é construído (B3)
+
+Decidido com Matthew em 2026-10-23, na B2, antes da B3. Os componentes
+seguem o **Atomic Design** de Brad Frost como **modelo para organizar e
+dar nome** (átomos, moléculas, organismos, telas), não como ordem de
+construção: o próprio Frost diz que ele não é um processo em linha reta.
+A ordem é puxada pelas telas, sobre uma base de tokens.
+
+1. **Os tokens em duas camadas.** Os **primitivos** são a paleta crua,
+   sem função (`cinza/900`, `vermelho/600`); os **semânticos** dizem a
+   função e apontam para um primitivo em cada modo (`estado/vencida` → um
+   vermelho no claro, outro no escuro). O modo escuro é trocar para onde o
+   semântico aponta, e o contraste se confere nos pares de primitivos.
+   **Token de componente** (`botao/primario/fundo`) só por exceção, com o
+   motivo escrito: quando um componente precisar fugir do semântico. Em
+   2026-10-23, a coleção Cor tem só os 18 semânticos, com o valor direto: a
+   B3 começa criando os primitivos embaixo deles.
+2. **A construção: uma base comum, depois as telas puxam.** A base são os
+   tokens das duas camadas e os 5 átomos que toda tela usa (botão, campo,
+   estado/etapa/prazo, ícone e avatar). Depois, uma tela por vez, na ordem
+   das fatias da fase C: T-01 Login (C0; testa o caminho do token à tela)
+   → T-05, T-06 e T-04 (C1) → T-07 (C2) → T-03 (C3) → T-09 a T-12 (C6) →
+   T-08 (C7). Cada tela monta só as moléculas e os organismos que faltam e
+   reaproveita o resto. Quando ela não cabe num componente, o ajuste é
+   **no componente**, nunca uma cópia solta na tela. A ordem também cobre a
+   B4 a tempo: a Nova NC, a aprovação e o comentário vêm cedo.
+3. **A governança**, cinco regras:
+   1. **Onde está a verdade:** no Figma, durante o Bloco B. O `DESIGN.md`
+      (fim da B3) é o contrato escrito que os agentes leem na fase C. A
+      partir da C0, o CSS nasce do `DESIGN.md`, e uma mudança de token
+      mexe nos três no mesmo commit.
+   2. **Quem decide:** Matthew decide, Claude propõe. Semântico novo só
+      com uma função nova (um estado novo, por exemplo), nunca por "um tom
+      diferente"; primitivo novo só quando nenhum dos que existem passa o
+      contraste; token de componente, com o motivo escrito.
+   3. **Quando um componente entra:** quando uma tela precisa e nada do
+      que existe serve. A mesma função é **variante** (variante = enum,
+      §2.1), não componente novo. No código, a escada da `/desenhar`, que
+      para no primeiro degrau que resolve: o shadcn tem → compor com o que
+      ele tem → um registro da comunidade do shadcn → um pacote de fora
+      (pesado pelo peso, manutenção, acessibilidade, encaixe nos tokens e
+      licença) → escrever o nosso. Degrau 4 ou 5 vai para o changelog
+      (§1.1).
+   4. **Quando um componente está pronto:** toda cor e medida ligada a
+      uma variável, sem valor solto (Claude confere pelo conector, com um
+      script que lista o que está sem variável); os estados que fizerem
+      sentido (padrão, hover, foco, desabilitado, erro); claro e escuro,
+      com o contraste conferido; a descrição de uso no Figma; o nome no
+      padrão (§2.1).
+   5. **Registro e saída:** toda mudança numa tabela de histórico do
+      `DESIGN.md` (data, o quê, por quê), sem número de versão (um
+      produto e um time: o histórico e o Git bastam). O componente que sai
+      não é apagado: vai para o histórico marcado "não usar" e sai de vez
+      quando nenhuma tela o usar.
+4. **A ponte com o código** (na C0). Os primitivos ficam no tema do
+   Tailwind, e os semânticos, nas variáveis do shadcn (claro e escuro),
+   cada um apontando para um primitivo; o formato exato é conferido na
+   documentação na hora. Os valores vão do Figma para o `DESIGN.md` e o
+   CSS pelo conector, escritos pelo Claude (uns 40 tokens, uma plataforma
+   só), sem o Style Dictionary, que existe para gerar para várias
+   plataformas e seria dependência sem motivo. O componente do Figma tem
+   o nome do componente React, e as variantes, os valores dos enums do
+   backend (`compartilhado/entidades/`). **O Code Connect fica a
+   conferir na C0.** A ajuda do Figma diz que ele vale no plano
+   Professional (uma biblioteca e um framework) com um assento Full ou Dev,
+   e Matthew tem um assento Full no plano de estudante; mas o conector
+   recusou a leitura em 2026-10-23, pedindo um plano Organization ou
+   Enterprise. A prova na C0: publicar a biblioteca, ligar um componente
+   pelo Dev Mode ("Connect to code") e ler pelo conector. Se não
+   funcionar, fica a tabela no `DESIGN.md` (componente do Figma → arquivo
+   React), que Claude lê antes de montar cada tela. O script que compara os tokens do
+   `DESIGN.md` com os do CSS só entra se os dois se desencontrarem na
+   prática.
 
 ---
 
@@ -76,7 +162,8 @@ um lugar onde acontece:
 
 ### 3.1 Cores
 
-Os nomes são **funções**, não cores. Os valores são **provisórios** (tons
+Os nomes abaixo são os **semânticos** (a função, não a cor), que na B3
+passam a apontar para os **primitivos** (§2.2). Os valores são **provisórios** (tons
 da paleta padrão do Tailwind); os da marca, com o contraste conferido,
 estão no `docs/marca.md` (B1) e entram aqui na B3. O contraste é conferido no G2.
 
@@ -1059,3 +1146,4 @@ tokens.
 | 2026-10-22 | v1.12 — Relatórios e administração no celular (depois do §7.16) e o diálogo do efeito como folha |
 | 2026-10-22 | v1.13 — B2, decisão (e): a navegação do computador vira uma doca flutuante embaixo, no centro, com a busca (Ctrl K) e a pessoa no fim; 96 px livres embaixo do conteúdo; sem menu lateral nem barra de topo (§6.1) |
 | 2026-10-22 | v1.14 — B2, decisão (d): a borda dos campos (§9), a borda inteira em `borda/controle` e o anel de foco |
+| 2026-10-23 | v1.15 — O método do Design System (§2.2): o Atomic Design para organizar, os tokens em duas camadas (primitivos e semânticos), a base comum e as telas na ordem das fatias C, as cinco regras de governança e a ponte com o código; as páginas do Figma por camada (§2.1); a escada do componente (§1.1) |

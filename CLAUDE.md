@@ -130,7 +130,9 @@ A partir do plano de implementação:
 - **Uma branch e um Pull Request por fase**; CI verde para entrar na `main`.
   Começo: `/comecar-fase` (o PR nasce em rascunho). Cada item: `/item`
   (verifica pela `/verificar`). Fim: `/abrir-pr` (revisões da fase e
-  "pronto quando") → merge → `/fechar-fase`.
+  "pronto quando") → merge → `/fechar-fase`. Decisão de desenho de tela
+  ou componente (Mobbin + Figma + skills de front): `/desenhar`; o método
+  do Design System está no `ui-ux.md` §2.2.
 - **Bug começa por um teste que falha.**
 - **"Existe" ou "não existe"** (rota, campo, função, regra): Claude só
   afirma depois de ler a busca **inteira**, sem `head`/`tail`, e cita

@@ -9,6 +9,31 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Fase B2 — wireframes (branch `fase/b2-wireframes`)
+
+- **O método do Design System (2026-10-23).** Antes da B3, quatro
+  decisões com Matthew, no `ui-ux.md` §2.2: o **Atomic Design** de Brad
+  Frost para organizar e dar nome, não como ordem de construção; os tokens
+  em **duas camadas** (primitivos e semânticos; de componente só por
+  exceção); uma **base comum** (os tokens e os 5 átomos) e depois as
+  telas puxando o resto, na ordem das fatias C; cinco regras de
+  **governança** (a verdade no Figma e depois no `DESIGN.md` e no CSS,
+  quem decide, quando um componente entra, quando está pronto, registro
+  e saída); e a **ponte com o código** pelo conector, sem o Style
+  Dictionary (dependência sem motivo para uma plataforma só). O Code
+  Connect ficou a conferir na C0: a ajuda do Figma diz que ele vale no
+  plano Professional com assento Full, e o conector o recusou no plano de
+  estudante; a tabela no `DESIGN.md` é a alternativa.
+- **A skill `/desenhar` (2026-10-23).** O fluxo testado nas decisões
+  (b), (c) e (e) virou rotina: entender a tela, referências no Mobbin
+  (numa coleção da conta de Matthew, fora do repositório público), as
+  regras das skills de front, duas variantes no Figma, as **fichas de UX
+  e de factibilidade** (a API dá? o componente existe? os tokens dão?) e
+  a decisão. A pergunta do componente é uma escada: o shadcn tem →
+  compor → registro da comunidade → um pacote de fora, pesado por peso,
+  manutenção, acessibilidade, encaixe e licença → o nosso (proposta de
+  Matthew, que leva o princípio 2 do TRD para a hora do desenho).
+
 ### Fase B1 — identidade visual (branch `fase/b1-identidade-visual`)
 
 - **O nome fica provisório (2026-10-20).** Matthew ainda não quer fechar
