@@ -346,10 +346,10 @@ frames: 12 telas, a T-07 com 5 variantes e o celular de T-01 a T-07, menos a Inv
 
 | # | Entrega | Aceite | Quem |
 |---|---|---|---|
-| 8 | Os 3 achados de estrutura da seção 1: a barra de baixo do celular (a pílula Pendências · NCs · Eu, com o ＋ ao lado), a barra de cima sem o avatar e o menu da pessoa abrindo para cima, com a assinatura | Os 3 componentes batem com as decisões (a) e (e), e as telas que os usam também | 🤖; 🧑 confere |
+| 8 | Os 3 achados de estrutura da seção 1: a barra de baixo do celular (a pílula Pendências · NCs · Eu, com o ＋ ao lado), a barra de cima sem o avatar e o menu da pessoa abrindo para cima, com a assinatura **Feito** (2026-10-23): a barra virou o conjunto `Shell/Barra inferior` (Ativo = Pendências, NCs, Eu; a do Eu é a mesma barra sem o ＋), com as abas dividindo a largura por igual (o "Pendências" estava apertado, achado de Matthew) e o **selo do contador** nas Pendências, o mesmo da doca (pedido de Matthew; refinado pelas referências do Mobbin, BlaBlaCar e TikTok: um círculo de 16 px com folga para o número, sobre o canto do ícone e longe da curva da pílula, e o da doca no mesmo tamanho); a T-03, a T-13 e a **T-04** passaram a usar o componente (o pendente do 7a, adiantado); o componente antigo foi para o histórico da decisão (a), marcado "não usar" | Os 3 componentes batem com as decisões (a) e (e), e as telas que os usam também | 🤖; 🧑 confere |
 | 9 | Seção 2, Acesso (T-01 e T-02, nos dois tamanhos), e a tabela do G1 criada | O ok de Matthew em cada frame; as linhas dessas telas na tabela | 🤖 e 🧑 |
 | | **Conferência:** o jeito de revisar (estrutura e G1 juntos) funciona? | | 🧑 |
-| 10 | Seção 3a: T-03, T-13 e T-04, com a barra nova no T-04 celular (o pendente do 7a) | O mesmo, e a barra aplicada | 🤖 e 🧑 |
+| 10 | Seção 3a: T-03, T-13 e T-04 (a barra nova da T-04 celular já entrou no item 8). **Com uma decisão pela `/desenhar`, a primeira:** os filtros da T-04 no celular, onde as abas (Todas · Minhas · Vencidas) e o "Filtros" viraram pílulas iguais e faltam os filtros do computador (Estado, Etapa, Setor, Mais filtros); achado de Matthew, 2026-10-23. A aparência das pílulas fica para a B3 | O mesmo, e os filtros decididos | 🤖 e 🧑 |
 | 11 | Seção 3b: T-05 e T-06 (as quatro abas do celular) | O mesmo | 🤖 e 🧑 |
 | | **Conferência:** as NCs fechadas | | 🧑 |
 | 12 | Seção 4: a T-07 dos cinco tipos, com o padrão do celular conferido (o pendente do 7b) | O mesmo; Salvar, Publicar e Submeter de cada tipo na tabela | 🤖 e 🧑 |
@@ -372,7 +372,7 @@ permissão), nos dois tamanhos e nos dois modos.
 | 1 | Os primitivos: a coleção nova (a escala do Grafite e os tons dos estados) e os 18 semânticos da coleção Cor apontando para ela | Nenhum semântico com valor direto; o contraste dos pares numa tabela, nos dois modos | 🤖 |
 | 2 | O script de valor solto (lista toda cor e medida sem variável) e as páginas Átomos, Moléculas, Organismos e Mockups | Acha um retângulo solto plantado de propósito (a prova de quebra) e passa limpo na Fundações | 🤖 |
 | 3 | Átomos I: o Botão de Matthew conferido contra o "pronto quando" (`ui-ux.md` §2.2, regra 4) e o Campo, com o erro e o foco (achado 6) | O script limpo; os estados e os dois modos | 🧑 |
-| 4 | Átomos II: Estado/Etapa/Prazo (achado 5), Ícone (os SVG do Lucide) e Avatar (gerado pelo nome, `docs/marca.md`) | O mesmo; o badge cobre os 5 estados (G2) | 🧑 |
+| 4 | Átomos II: Estado/Etapa/Prazo (achado 5), Ícone (os SVG do Lucide) e Avatar (gerado pelo nome, `docs/marca.md`) | O mesmo; o badge cobre os 5 estados (G2); os **72 chevrons de texto** do arquivo (›, ⌄, ∨, as letras da Figtree fazendo papel de ícone, achado de Matthew em 2026-10-23) trocados pelo ícone | 🧑 |
 | | **Conferência:** a base comum pronta | | 🧑 |
 | 5 | T-01 e T-02 em mockup: a **prova do caminho** do token à tela, a tarefa mais arriscada (por isso cedo) | Nos dois tamanhos e nos dois modos, com os estados do G4; uma **retrospectiva** do método, que ajusta a §2.2 se for preciso | 🧑; 🤖 revisa |
 | | **Conferência:** o método provado | | 🧑 |
@@ -556,3 +556,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-22 | v1.39 — B2: as cinco decisões da revisão fechadas, com a (d), a borda dos campos (a borda inteira em `borda/controle`); falta a revisão tela por tela e o item 8 |
 | 2026-10-23 | v1.40 — B3 pelo método do `ui-ux.md` §2.2 (duas camadas de tokens, a base comum e as telas na ordem das fatias C, a governança); a skill `/desenhar`; na C0, o CSS a partir do `DESIGN.md`, a prova do Code Connect e o layout com a doca e a barra flutuante (o menu lateral tinha ficado no texto) |
 | 2026-10-23 | v1.41 — B2 replanejada: o item 8 vira os itens 8 a 14 (a revisão só na estrutura, junto com o G1, e a tabela do G1); a ordem da B3 em 14 itens, com as conferências, os riscos e o que está em aberto (`planning-and-task-breakdown`) |
+| 2026-10-23 | v1.42 — B2: o item 8 feito (a barra do celular como componente, com o contador; a T-04 com a barra nova); os filtros da T-04 no celular para a `/desenhar` no item 10; na B3, os 72 chevrons de texto no aceite do item 4 |
