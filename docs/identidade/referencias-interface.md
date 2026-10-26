@@ -258,3 +258,24 @@ Matthew); as imagens ficam lá, fora do repositório.
   atividade em linha do tempo embaixo, e o comentar num botão ou numa barra
   flutuante. O GitHub também mostra o "Mais" aberto (Fechar, Excluir), uma
   referência para o item 14.
+
+## 2026-10-26 · Cleo AI, Chime, Shopify e Public (a Investigação no celular, decisão (i))
+
+Escolhidas por Matthew na decisão (i) da B2: a Investigação A3 ganha versão
+de celular para preencher, uma etapa por tela, e uma página corrida de
+leitura para o aprovador. As quatro estão na coleção "Andon · T-07
+Investigação no celular" do Mobbin (privada, da conta de Matthew); as
+imagens ficam lá, fora do repositório. Todas são telas de onboarding: delas
+vem o jeito de mostrar o estado de cada etapa e de focar numa só, não a
+ordem obrigatória (o A3 é feito fora de ordem, ao longo de dias, e uma
+etapa pode ficar pela metade).
+
+- **A entrada (o índice):** **Cleo AI** (https://mobbin.com/screens/c80a9ae9-9e0f-40d9-827d-578b33a0fb1f),
+  **Chime** (https://mobbin.com/screens/5964d1f6-e082-4612-a968-568b09e2cc8a)
+  e **Shopify** (https://mobbin.com/screens/32ac5921-43be-435c-88cc-9e29bd8eb23e):
+  *"Acho fáceis de entender a etapa do processo."* As etapas numeradas com
+  o estado de cada uma (feita, atual, a fazer), o progresso em segmentos
+  (Chime) e a lista compacta que cabe numa tela (Shopify).
+- **A etapa:** **Public** (https://mobbin.com/screens/f350f14f-30f4-4391-9326-2633d5c38c1e):
+  *"Parece bem simplista."* Só a barra segmentada no topo, a seta de
+  voltar e o conteúdo limpo.

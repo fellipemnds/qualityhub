@@ -188,6 +188,26 @@ execução, verificação gerada/concluída, mudança de atribuições e
 anexos. Edições de campos aparecem **agrupadas** ("Fulana editou os
 dados") sem detalhar o antes/depois — o detalhe continua na auditoria.
 
+### M6 — `Hipotese`: como verificar (nova, C2)
+
+Decidida na B2 (decisão (i), PRD Q26, `fluxo-app.md` L13), entra na C2 junto
+com as rotas das hipóteses (L1):
+
+| Tabela | Campo | Observações |
+|---|---|---|
+| `Hipotese` | `comoVerificar String?` | O teste que confirma ou descarta a hipótese. Nulo no rascunho; obrigatório para a hipótese estar **completa** (RN-24) |
+
+O `avaliarSubmissaoInvestigacao` ganha dois requisitos: toda hipótese com o
+`comoVerificar`, e **ao menos uma hipótese `CAUSA_DIRETA`**. A
+`causaDireta` da investigação continua um texto (o front a preenche a partir
+da hipótese, e a pessoa confirma a redação).
+
+**Na mesma fase (C2), a Q22 na Verificação:** o `finalizarExecucao` hoje
+dá ao aprovador da ação as duas funções na Verificação gerada
+(`acao-corretiva.service.ts:82-83`). Com colaborador e aprovador
+excludentes, ela passa a nascer **só com o colaborador**: sem portão, o
+aprovador nela não serve para nada.
+
 ### M5 — Limpeza
 
 Apagar os modelos antigos `Anexo` e `Comentario` que estão **comentados**
@@ -409,7 +429,7 @@ a lista dela filtra por `acaoCorretivaId`. A Ação Corretiva tem ainda
 | ＋ ✅ | Todos os `POST /<tipo>/:id/retirar` | Retira da aprovação, como na NC (RN-48). Não vale para Verificação (não tem portão). **Feito na A3** (2026-10-01): `cicloVidaService.retirar`, com a ação do submeter como parâmetro (`CLASSIFICAR` na Classificação); auditoria `RETIRAR_DA_APROVACAO` |
 | Δ | Todos os `GET /<tipo>/:id` | + último motivo de reprovação |
 | Δ ✅ | `POST /nc/:ncId/acoes-corretivas` · `PATCH /acoes-corretivas/:id` | `investigacaoId` **obrigatório já na criação**, de uma investigação **desta NC** em `ABERTO`; o `PATCH` não o apaga (B10, RN-49) |
-| Δ ✅ | `POST /investigacoes/:id/submeter` | Exige os planos das ações ligadas aprovados (RN-24, B5); responde 409 com a lista do que falta |
+| Δ ✅ | `POST /investigacoes/:id/submeter` | Exige os planos das ações ligadas aprovados (RN-24, B5); responde 409 com a lista do que falta. **Na C2 (M6, Q26):** também o `comoVerificar` em toda hipótese e ao menos uma hipótese de causa direta |
 | Δ ✅ | `POST /investigacoes/:id/cancelar` | Exige as ações ligadas canceladas ou fechadas (RN-50); responde 409 com a lista das que faltam. **Feito na A3 (8f):** `avaliarCancelamentoInvestigacao`, no validador opcional que o `cicloVidaService.cancelar` ganhou (roda depois de estado e permissão) |
 | ＋ | `POST /investigacoes/:id/hipoteses` | Cria hipótese (lacuna L1) — só colaborador, investigação editável |
 | ＋ | `PATCH /hipoteses/:id` · `DELETE /hipoteses/:id` | Edita / apaga — mesmas regras |
@@ -605,3 +625,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-09 | v1.57 — B29–B36 corrigidos (A7): travar antes de ler (`registroRepository.travar`, as travas da pessoa e do setor, a trava única da saída de ADMIN), sempre `FOR NO KEY UPDATE`; filho novo só com a NC aberta |
 | 2026-10-09 | v1.58 — B37 registrado e corrigido (A7, no portão): o `conteudo` da investigação sem `z.json()`, e a trava de `$ref` no `app.test.ts` |
 | 2026-10-26 | v1.59 — M4 e §6: o feed mora só na NC (Q25, B2): o `Comentario` pertence à NC, o feed junta os eventos dos filhos, e as rotas viram `GET /nc/:id/feed`, `POST /nc/:id/comentarios` e `POST /nc/:id/mencoes/vistas` |
+| 2026-10-26 | v1.60 — M6 (C2): `Hipotese.comoVerificar` e os dois requisitos novos do envio da investigação (PRD Q26); a Verificação nasce só com o colaborador (Q22) |

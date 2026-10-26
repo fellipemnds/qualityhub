@@ -14,6 +14,16 @@ Arquivo: https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K (página
 Cada decisão ganha uma seção na página **Decisões (histórico)**, com as
 variantes comparadas e, num quadro "Antes", a tela que foi substituída.
 
+**Reorganizada em 2026-10-26** (pedido de Matthew, no item 12): a página
+Wireframes tem dois blocos, **CELULAR** e depois **COMPUTADOR**, com a mesma
+ordem de seções nos dois, a do fluxo: 1 Acesso · 2 Início · 3 NCs · 4 os
+filhos, um tipo por seção, na ordem em que acontecem na NC (4a
+Classificação, 4b Contenção, 4c Investigação, 4d Ação Corretiva, 4e
+Verificação) · 5 Gestão. Dentro de cada seção, as telas na ordem do
+processo (o rascunho antes do aberto; o plano em edição antes do
+aprovado; a tela antes do diálogo), cada uma com um rótulo curto em cima.
+As telas foram movidas, não copiadas: os links abaixo continuam valendo.
+
 ## 0. Antes das telas: as decisões
 
 - [x] **(a) A navegação do celular** — **decidida em 2026-10-22**, com
@@ -74,6 +84,8 @@ variantes comparadas e, num quadro "Antes", a tela que foi substituída.
   [Decisão (g) no Figma](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=227-755)
 - [x] **(h) Os filhos no celular: a Atividade, as Atribuições e os Anexos** (a pergunta de Matthew na revisão da Classificação) — **decidida em 2026-10-26: a B**, pela `/desenhar`, com o Linear e o GitHub: tudo empilhado numa página só, sem abas, a barra de ações fixa no rodapé. Com três ajustes de Matthew: o **tipo** como título do bloco (o rótulo repetia o primeiro campo e, antes do Salvar, podia contradizê-lo), o **estado embaixo do título** (na NC continua em cima, por causa da etapa) e o **feed só na NC** (PRD Q25: ela junta os eventos dos filhos, e só se comenta nela; o filho troca a Atividade por um atalho filtrado). Descartada: a A, com as abas Item · Anexos · Atividade como as da NC (a recomendação do Claude: a menção cairia direto na conversa, e os filhos longos não empurrariam a conversa para longe; o feed só na NC tirou o motivo). Registrado no `ui-ux.md` §6.2, §7.3, §7.4, §7.9 e §10.3, no `fluxo-app.md` (§1, J10, T-07, §7), no PRD (Q25) e no `esquema-backend.md` (M4).
   [Decisão (h) no Figma](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=262-1342)
+- [x] **(i) A Investigação no celular** (pedido de Matthew: "nem todos os trabalhadores aqui possuem computador") — **decidida em 2026-10-26**, pela `/desenhar`, com a Cleo AI, a Chime e a Shopify (a entrada) e a Public (a etapa): para preencher, **uma etapa por tela**, com a entrada em **lista compacta** (a B) que diz o que falta só nas etapas pela metade, a barra de segmentos com o ponto na etapa atual e Anterior · Salvar e próxima; para aprovar, **uma página corrida de leitura**. O Ishikawa como molde (o mapa em blocos do mesmo tamanho por fila, o número no círculo, os símbolos como ícones, a origem embaixo de cada causa); as Hipóteses com o **Como verificar**; os 5 Porquês numa linha do tempo; a **causa direta vinda da hipótese** (PRD Q26, RN-24). Descartada: a entrada em cartões (a A), mais longa. Registrado no `ui-ux.md` §7.5 e §5.1, no `fluxo-app.md` (princípio 4, J4, T-07, L13), no PRD (Q26) e no `esquema-backend.md` (M6).
+  [Decisão (i) no Figma](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=309-1428) · [as telas na página Wireframes](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=336-2311)
 
 ## 1. Componentes
 
@@ -115,17 +127,13 @@ variantes comparadas e, num quadro "Antes", a tela que foi substituída.
 
 ## 4. Itens filhos (T-07)
 
-- [x] [Classificação · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-343): Maior e Menor como opções; a nota da Q21 e da Q22 para a C2.
-- [ ] [Contenção · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-439): o botão bloqueado com a lista do que falta aberta.
-- [ ] [Verificação · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-540) e o [diálogo do efeito](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-652) ([no celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=164-1105), uma folha que sobe do rodapé): as instruções só de leitura e o "Não eficaz" explicado antes de concluir.
-- [ ] [Ação Corretiva · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-476): o plano aprovado só de leitura, o selo e o prazo vencido; a execução editável.
-- [ ] Investigação A3 · computador, nas duas visões da decisão (c): [aprovador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-579) (em aprovação, só leitura) e [quem preenche](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=156-1072) (aberta): o índice das 10 etapas, o Ishikawa, as hipóteses, os 5 porquês e as contramedidas.
-- [x] [Classificação · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=266-1900): a da decisão (h).
+Revista inteira em 2026-10-26 (plano, B2, item 12), com as decisões (h) e (i).
 
-  **Revista em 2026-10-26** (plano, B2, item 12): os 9 achados de estrutura (o bloco claro sem a NC em cima nos dois tamanhos; o feed antigo no meio da página; as atribuições em texto; a ajuda dos 20 caracteres; o "+ Enviar" no lugar do "+ Anexar"; no celular, sem atribuições, anexos nem atividade, as opções sem a explicação e o "⋯" vazio) e a decisão (h). Sem o "Mais": a Classificação aberta não tem Cancelar. Depois, dois pedidos de Matthew: a tela **como fica depois da C2** (Q22: sem aprovador e sem portão, "Concluir classificação", a Beltrana como Responsável) e o cartão **Sobre a NC** antes do formulário (a tela do computador estava vazia, e quem classifica precisa ler a NC). A Abrangência da Q21 continua como nota. Para a B3: o nome que quebra em duas linhas com as duas etiquetas na lateral do computador.
-- [ ] [Contenção · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-798)
-- [ ] [Ação Corretiva · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-843)
-- [ ] [Verificação · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-880)
+- [x] Classificação: [computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-343) · [celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=266-1900). Desenhada como fica depois da C2 (Q22: Concluir classificação, sem aprovador) e com o Sobre a NC antes do formulário. Os 9 achados de estrutura: o bloco claro sem a NC em cima; o feed antigo no meio da página; as atribuições em texto; a ajuda dos 20 caracteres; o "+ Enviar"; no celular, sem atribuições, anexos nem atividade, as opções sem a explicação e o "⋯" vazio. Para a B3: o nome que quebra com duas etiquetas na lateral.
+- [x] Contenção: [computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-439) · [celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=272-1895) · a nova, em rascunho: [computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=272-3405) · [celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=272-3580). O Sobre a NC, as ajudas, a data com Hoje e Ontem, a disposição em cartões com a explicação (a conferir com a analista); o rascunho vale de exemplo para os cinco tipos (Publicar, Excluir rascunho).
+- [x] Verificação: [computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-540) · [celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=278-1956) · o diálogo do efeito: [computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-652) · [celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=284-2169). O Sobre a ação no lugar das instruções, o resultado em três colunas, a Verificada em com atalhos (no celular, faltava); a pessoa só como Responsável (Q22; achado: a Verificação nasce com o aprovador da ação nas duas funções, `acao-corretiva.service.ts:82-83`).
+- [x] Ação Corretiva: [computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-476) · [celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=282-2044) · o plano em edição: [computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=283-2125) · [celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=283-2296) · o diálogo do Finalizar: [computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=284-2059) · [celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=284-2072) · as larguras menores: [1280](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=293-2076) · [1024](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=293-2285). Empilhada, com o plano em grade, a linha de indicadores, a área de arrastar nas colunas do plano e a faixa de resumo abaixo de 1440.
+- [x] Investigação A3: no computador, [quem preenche](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=156-1072) e [o aprovador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-579) (refeitas com o desenho do celular, a pedido de Matthew: a faixa da T-06, as seções em cartões, o Ishikawa em três colunas, a mesma tabela das hipóteses, a origem da causa direta, os porquês em linha do tempo, contramedidas e check em cartões) e a faixa aberta: [Atribuições](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=345-2291) · [Anexos, com a área de arrastar](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=345-2790) · [Atividade, filtrada pelo item](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=345-3284); no celular, [a entrada, as 10 etapas e a leitura do aprovador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=336-2311) (a decisão (i)).
 
 ## 5. Gestão e administração
 
@@ -154,7 +162,7 @@ quando não sobrar linha com "—". Criadas em 2026-10-23.
 | T-04 Lista de NCs | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=217-2063) | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=217-2192) | item 10 |
 | T-05 Nova NC | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-192) | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-289) | item 11 |
 | T-06 Detalhe da NC | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-338) | [as 4 abas](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1248) | item 11 |
-| T-07 Itens filhos (5 tipos) | — | — | — |
+| T-07 Itens filhos (5 tipos) | [Classificação](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-343) · [Contenção](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-439) · [Verificação](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-540) · [Ação Corretiva](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-476) · [Investigação](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=156-1072) | [Classificação](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=266-1900) · [Contenção](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=272-1895) · [Verificação](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=278-1956) · [Ação Corretiva](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=282-2044) · [Investigação](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=336-2311) | item 12 |
 | T-08 Relatórios | — | — | — |
 | T-09 Usuários | — | — | — |
 | T-10 Detalhe do usuário | — | — | — |
@@ -166,19 +174,19 @@ quando não sobrar linha com "—". Criadas em 2026-10-23.
 
 | Ação | Estado | Tipos | Onde aparece |
 |---|---|---|---|
-| Salvar | `RASCUNHO`, `ABERTO` | Todos (a Verificação nunca é rascunho) | NC: T-05 ("Salvar rascunho"), T-06 · [Classificação](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-343) |
-| Publicar | `RASCUNHO` | Todos | NC: T-05 |
-| Excluir rascunho | `RASCUNHO` | Todos | — |
-| Submeter ("Submeter para fechamento" na NC) | `ABERTO` | NC, Classificação, Contenção, Investigação | NC: T-06 ("Enviar para fechamento", bloqueado com a lista do que falta). A Classificação sai daqui na C2 (Q22): vira o Concluir |
-| Submeter plano | `ABERTO` | Ação Corretiva, antes do plano aprovado | — |
-| Finalizar execução | `ABERTO` | Ação Corretiva, depois do plano aprovado | — |
-| Concluir | `ABERTO` | Verificação; a Classificação depois da C2 (Q22) | [Classificação](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-343) ("Concluir classificação") |
+| Salvar | `RASCUNHO`, `ABERTO` | Todos (a Verificação nunca é rascunho) | NC: T-05 ("Salvar rascunho"), T-06 · [Classificação](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-343) · e os outros quatro filhos, nos dois tamanhos (seção 4) |
+| Publicar | `RASCUNHO` | Todos | NC: T-05 · filhos: [Contenção nova](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=272-3405) ([celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=272-3580)) |
+| Excluir rascunho | `RASCUNHO` | Todos | Filhos: no "Mais" da [Contenção nova](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=272-3405) (o menu aberto, no item 14) |
+| Submeter ("Submeter para fechamento" na NC) | `ABERTO` | NC, Classificação, Contenção, Investigação | NC: T-06 ("Enviar para fechamento", bloqueado com a lista do que falta). A Classificação sai daqui na C2 (Q22): vira o Concluir · filhos: [Contenção](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-439) e [Investigação](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=156-1072) ("Enviar para aprovação", bloqueado com a lista do que falta) |
+| Submeter plano | `ABERTO` | Ação Corretiva, antes do plano aprovado | [Ação Corretiva, plano em edição](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=283-2125) ("Enviar plano para aprovação") |
+| Finalizar execução | `ABERTO` | Ação Corretiva, depois do plano aprovado | [Ação Corretiva](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-476) e o [diálogo](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=284-2059) ("Verificar em quantos dias?") |
+| Concluir | `ABERTO` | Verificação; a Classificação depois da C2 (Q22) | [Classificação](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-343) ("Concluir classificação") · [Verificação](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-540) ("Concluir verificação", com o diálogo do efeito) |
 | Cancelar | `ABERTO`, `EM_APROVACAO` | Todos, menos a Classificação | — |
-| Aprovar · Reprovar | `EM_APROVACAO` | Todos com portão | — |
+| Aprovar · Reprovar | `EM_APROVACAO` | Todos com portão | [Investigação, aprovador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=102-579) e [no celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=332-3207). O diálogo do motivo do Reprovar, no item 14 |
 | Retirar da aprovação | `EM_APROVACAO` | Todos com portão (RN-48) | — |
 | Reabrir | `FECHADO` | Só a NC (RN-42) | — |
-| Comentar | Qualquer | **Só a NC** (PRD Q25) | NC: T-06 (o painel Atividade; a aba Feed no celular). Nos filhos, o atalho "Atividade deste item" abre o feed da NC |
-| Anexar | `RASCUNHO`, `ABERTO` | Todos | NC: T-05, T-06 ("+ Anexar") · [Classificação](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-343) |
+| Comentar | Qualquer | **Só a NC** (PRD Q25) | NC: T-06 (o painel Atividade; a aba Feed no celular). Nos filhos, o atalho "Atividade deste item" abre o feed da NC · a folha no celular: [filtrada pelo item](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=349-2553) e [sem o filtro](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=349-2744); no computador, a [Atividade aberta na Investigação](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=345-3284) |
+| Anexar | `RASCUNHO`, `ABERTO` | Todos | NC: T-05, T-06 ("+ Anexar") · [Classificação](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=101-343) · e os outros quatro filhos, nos dois tamanhos (seção 4) |
 
 ### 6.3 O que ainda não está desenhado
 

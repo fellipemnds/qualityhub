@@ -47,6 +47,27 @@ documento de arquitetura.
   pertence à NC, e as rotas viram `GET /nc/:id/feed?item=` e
   `POST /nc/:id/comentarios` (`esquema-backend.md` M4 e §6). A menção
   `#item` continua levando à página do filho.
+- **A Investigação ganha o celular (2026-10-26, decisão (i) da B2).** O
+  princípio 4 do `fluxo-app.md` deixava a Investigação A3 só no
+  computador; Matthew o reviu: "nem todos os trabalhadores aqui possuem
+  computador". Para preencher, uma etapa por tela, com o índice das 10
+  como entrada; para aprovar, uma página corrida de leitura. Sem rota
+  nova: o estado de cada etapa sai do conteúdo da investigação, e o que
+  falta, da rota de leitura do envio (já planejada na C2).
+- **A hipótese diz como vai ser verificada, e a causa direta vem dela
+  (2026-10-26, PRD Q26).** Até aqui, a `causaDireta` era um texto solto,
+  sem ligação com as hipóteses, e a hipótese não guardava o teste que a
+  confirma. Agora: a `Hipotese` ganha o `comoVerificar` (obrigatório para
+  ela estar completa), e o envio exige ao menos uma hipótese de causa
+  direta; o front traz a resposta dela para a pessoa confirmar. A
+  `causaDireta` continua um texto, para a redação. Muda o contrato da C2
+  (`esquema-backend.md` M6).
+- **A Verificação nasce só com o colaborador (2026-10-26, a Q22 na C2).**
+  Achado na revisão da T-07: o `finalizarExecucao` dá ao aprovador da
+  ação as duas funções na Verificação (`acao-corretiva.service.ts:82-83`),
+  o que a Q22 (colaborador e aprovador excludentes) proíbe. Como a
+  Verificação não tem portão, o aprovador nela não tem função: na C2, ela
+  nasce só com o colaborador.
 
 ### Fase B1 — identidade visual (branch `fase/b1-identidade-visual`)
 

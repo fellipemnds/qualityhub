@@ -34,8 +34,11 @@ Decididos com Matthew em 2026-09-24:
      não aparece; o painel de atribuições mostra quem está.
 4. **Computador primeiro; celular para o essencial.** No celular precisam
    funcionar bem: registrar NC, anexar foto, ver pendências, aprovar ou
-   reprovar, comentar. A Investigação A3 só precisa funcionar no
-   computador. **Relatórios e administração ganham versão de celular**
+   reprovar, comentar. **A Investigação A3 também tem versão de celular**
+   (revisto por Matthew em 2026-10-26, decisão (i) da B2: "nem todos os
+   trabalhadores aqui possuem computador"): para preencher, uma etapa
+   por tela; para aprovar, uma página corrida de leitura (`ui-ux.md` §7.5).
+   **Relatórios e administração ganham versão de celular**
    (revisto por Matthew em 2026-10-22, na B2: a Gestão fica na tela Eu,
    T-13; `ui-ux.md` §6.1).
 
@@ -78,7 +81,7 @@ flowchart TD
 | T-04 | Lista de NCs | `/nc` | Todos com papel de negócio | ✅ |
 | T-05 | Nova NC | `/nc/nova` | `EDITOR`, `GERENTE` | ✅ |
 | T-06 | Detalhe da NC | `/nc/:id` | Todos com papel de negócio | ✅ |
-| T-07 | Detalhe do item filho | `/classificacoes/:id`, `/contencoes/:id`, `/investigacoes/:id`, `/acoes-corretivas/:id`, `/verificacoes/:id` | Todos com papel de negócio | ✅ exceto Investigação |
+| T-07 | Detalhe do item filho | `/classificacoes/:id`, `/contencoes/:id`, `/investigacoes/:id`, `/acoes-corretivas/:id`, `/verificacoes/:id` | Todos com papel de negócio | ✅ (a Investigação, uma etapa por tela, decisão (i) da B2) |
 | T-08 | Relatórios | `/relatorios` | `GERENTE` | ✅ (a desenhar) |
 | T-09 | Usuários | `/admin/usuarios` | `ADMIN` | ✅ (a desenhar) |
 | T-10 | Detalhe do usuário | `/admin/usuarios/:id` | `ADMIN` | ✅ (a desenhar) |
@@ -232,7 +235,7 @@ aprovador e aparece na triagem até alguém definir (RN-46).
 4. Aprovador aprova → Contenção `FECHADA`. Se não funcionou: cria-se uma
    **nova** contenção, não se reabre a anterior (RN-42).
 
-### J4 — Investigação A3 SPS (colaborador, computador) · RF-05
+### J4 — Investigação A3 SPS (colaborador, computador ou celular) · RF-05
 
 1. Na NC → seção Investigação → **Nova investigação** → descreve o
    **real problema**.
@@ -247,15 +250,20 @@ aprovador e aparece na triagem até alguém definir (RN-46).
    se preenche: resume as instruções de verificação de cada contramedida
    e, depois, a Verificação de cada uma (`ui-ux.md` §7.5).
 4. **Hipóteses**: lista dentro da investigação. Cada uma tem descrição,
-   número no Ishikawa (a causa numerada no diagrama) e classificação
-   (causa direta / fator contribuinte / sem relação). Pode ficar incompleta até a submissão.
+   número no Ishikawa (a causa numerada no diagrama), **como verificar**
+   (o teste que confirma ou descarta a hipótese) e classificação (causa
+   direta / fator contribuinte / sem relação), que é o resultado do
+   teste. Pode ficar incompleta até a submissão. **A causa direta vem da
+   hipótese marcada como causa direta**: a etapa traz a resposta para a
+   pessoa confirmar ou ajustar a redação (PRD Q26).
 5. **Contramedidas**: as ações corretivas nascem aqui, com a
    investigação ainda aberta, e têm os planos aprovados antes do envio
    (J5, passos 1 a 3). A investigação também pode concluir sem nenhuma
    ação (PRD Q17).
 6. **Submeter**: exige método, conteúdo do A3, causa direta, causa raiz,
-   todas as hipóteses completas e os planos de todas as ações ligadas a
-   ela aprovados (RN-24). Antes disso, o botão mostra a lista do que
+   todas as hipóteses completas (com o como verificar), **ao menos uma
+   hipótese marcada como causa direta** e os planos de todas as ações
+   ligadas a ela aprovados (RN-24, PRD Q26). Antes disso, o botão mostra a lista do que
    falta (ex.: "❌ Plano da AC-2026-0003 ainda não aprovado"). Aprovador
    aprova → a etapa da NC avança (§4).
 
@@ -331,7 +339,9 @@ precisar estar atribuído.
 1. Na NC, o **feed** mostra os eventos do sistema dela e de todos os
    filhos (publicado, aprovado, reprovado, reaberto...) e os comentários,
    em ordem cronológica. **Só se comenta na NC** (PRD Q25): o filho tem o
-   atalho "Atividade deste item", que abre o feed da NC filtrado por ele.
+   atalho "Atividade deste item", que abre o feed da NC filtrado por ele,
+   sem sair do filho (no celular, uma folha); o "×" do filtro mostra o feed
+   inteiro, o mesmo da página da NC.
 2. Comentar; `@` sugere pessoas e `#` sugere itens com código.
 3. A pessoa mencionada recebe a pendência **"Você foi mencionado em
    NC-2026-0042"**, que some ao abrir o item. No celular, a NC abre
@@ -450,7 +460,7 @@ celular, tudo empilhado numa página só, sem abas (decisão (h) da B2,
 |---|---|---|
 | Classificação | Valor (Maior/Menor), justificativa | Formulário curto |
 | Contenção | Descrição, data de execução, disposição | — |
-| Investigação | Real problema, método (A3 SPS), conteúdo do A3, causa direta, causa raiz, **hipóteses** | Página com seções + índice lateral (J4), só no computador. Lista de ações corretivas vinculadas, com **Nova ação corretiva** |
+| Investigação | Real problema, método (A3 SPS), conteúdo do A3, causa direta, causa raiz, **hipóteses** | Página com seções + índice lateral (J4) no computador; no celular, uma etapa por tela e, para o aprovador, uma página corrida de leitura (decisão (i) da B2). Lista de ações corretivas vinculadas, com **Nova ação corretiva** |
 | Ação Corretiva | **Plano:** descrição, prazo, instruções de verificação · **Execução:** data de execução, evidência | Dois blocos. O bloco Execução só fica editável depois do plano aprovado. Selo "Plano aprovado" |
 | Verificação | Instruções (só leitura), prazo, resultado, conclusão, data da verificação | Confirmação do efeito automático antes de concluir (J7) |
 
@@ -533,6 +543,7 @@ TRD e o Plano de Implementação:
 | # | Lacuna | Usada em |
 |---|---|---|
 | L1 | **Hipóteses não têm rota**: o repository existe, mas nada as cria, edita ou exclui pela API | J4, T-07 Investigação |
+| L13 | **A hipótese não tem o como verificar**: a `Hipotese` só tem descrição, número do Ishikawa e classificação (`prisma/schema.prisma:347-354`); o campo novo (`comoVerificar`) entra na C2, na mesma migration das rotas da L1. Junto, o envio da investigação passa a exigir o campo em toda hipótese e ao menos uma hipótese de causa direta (PRD Q26, decisão (i) da B2) | J4, T-07 Investigação |
 | L2 | **Etapa calculada** (§4) não existe | T-04, T-06 |
 | L3 | **"Plano aprovado"** não é distinguível pelo estado: a AC volta para `ABERTO` tanto antes de submeter quanto depois de aprovada. Precisa de um sinal explícito (o `Aprovacao` existe; falta expor) | §7, J5, etapa 8 |
 | L4 | **Pendências** (T-03): nenhuma consulta junta tudo isso hoje | T-03 |
@@ -581,3 +592,5 @@ Com Matthew, em 2026-09-24.
 | 2026-10-23 | v1.9 — T-04: as visões separadas dos filtros, o agrupar opcional, a linha rica no celular (decisão (f) da B2); o "só as minhas" já existe na API; a lacuna L10, o total e as contagens na lista |
 | 2026-10-23 | v1.10 — T-06: os filhos num cartão só (agrupados ou não, lista ou cartões), o feed no painel Atividade no computador, a classificação vigente nos dados, o envio depois dos filhos (decisão (g) da B2); as lacunas L11 (a foto da pessoa) e L12 (a resposta em fio e o filtro do painel) |
 | 2026-10-26 | v1.11 — O feed mora só na NC, com os eventos dos filhos, e só se comenta nela (§1, J10, T-07; PRD Q25); a T-07 no celular empilhada, sem abas (decisão (h) da B2) |
+| 2026-10-26 | v1.12 — A Investigação no celular (§1, princípio 4 revisto; mapa; J4; T-07): uma etapa por tela e, para o aprovador, a leitura corrida (decisão (i) da B2); a hipótese com o como verificar, a causa direta vinda da hipótese e o envio com ao menos uma hipótese de causa direta (J4, PRD Q26); a lacuna L13 |
+| 2026-10-26 | v1.13 — J10: o atalho do filho abre o feed da NC sem sair dele (no celular, uma folha), e o × do filtro mostra o feed inteiro |

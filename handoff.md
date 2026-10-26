@@ -356,19 +356,20 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
    três perguntas em aberto no `docs/identidade/referencias.md`
    ("2026-10-20"); só uma informação nova reabre uma decisão.
 3. **A B2, na ordem do plano** (seção "B2 — a ordem dos itens", com os
-   itens 8 a 14 replanejados em 2026-10-23). **Feitos:** do 1 ao 11. **Próximo:
-   o item 12**, a seção 4 do checklist: a T-07 dos cinco filhos (Classificação,
-   Contenção, Verificação com o diálogo, Ação Corretiva e as duas
-   Investigações), nos dois tamanhos. O que já se sabe: no celular, a T-07
-   **não segue** o padrão da NC; os filhos ganham o **bloco do título claro**,
-   com a NC em cima (o gesto 1, `ui-ux.md` §6.2). **Como revisar** (combinado
+   itens 8 a 14 replanejados em 2026-10-23). **Feitos:** do 1 ao 12 (o 12 em
+   2026-10-26: a T-07 dos cinco, as decisões (h) e (i), o feed só na NC e as
+   regras novas da investigação, PRD Q25 e Q26). A página Wireframes
+   foi **reorganizada** no mesmo dia: os blocos CELULAR e COMPUTADOR, cada um
+   com as seções na ordem do fluxo (1 Acesso, 2 Início, 3 NCs, 4a a 4e os
+   filhos, 5 Gestão). **Próximo:** o item 13 (T-08 a T-12 e o convite). **Como revisar** (combinado
    em 2026-10-23): só a **estrutura** (o acabamento é da B3) e os **gestos 1 a
    4**; cada seção preenche a parte dela nas tabelas do G1 (o checklist §6);
    achado de estrutura se corrige no Figma, achado de acabamento vai para a
    B3; quando a frase de Matthew abre uma decisão de desenho, a `/desenhar`
    (as referências no Mobbin, as duas fichas, a escada do componente).
-   Depois: o 13 (T-08 a T-12 e o convite) e o 14 (o menu "Mais" com Cancelar,
-   Retirar, Reabrir e Excluir rascunho; o G1 fechado; o `/abrir-pr`).
+   Depois: o 14 (o menu "Mais" com Cancelar, Retirar, Reabrir e Excluir
+   rascunho, o `DialogoMotivo`, os estados que faltam; o G1 fechado; o
+   `/abrir-pr`).
    **A B3** (branch nova, pela `/comecar-fase`) segue o `ui-ux.md` §2.2 e a
    ordem do plano: os primitivos (e o `marca/toque` reservado), o script de
    valor solto, os átomos (o Botão de Matthew, o Campo, o Estado, já em

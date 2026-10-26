@@ -318,6 +318,9 @@ em `components/` (os do shadcn/ui, em `components/ui/`).
 | `DialogoEfeito` | AlertDialog | Confirmação que explica um efeito automático (concluir verificação, finalizar execução) |
 | `Feed` | ScrollArea | Linha do tempo com eventos e comentários |
 | `EditorComentario` | Tiptap | Texto com sugestão de `@pessoa` e `#item` |
+| `AreaDeArrastar` | react-dropzone | A área de arrastar anexos, só no computador: ícone, a frase da tela e o apoio com o que o sistema aceita (JPEG, PNG, WebP ou PDF, até 10 MB; TRD §8). No Figma, `Anexos/Área de arrastar`. No celular, o "+ Anexar" abre a câmera ou os arquivos (B2, 2026-10-26) |
+| `CampoData` | Input, Button | O campo de data com atalhos ao lado: Hoje e Ontem quando a data é passada (executada, verificada), Em 15 dias e Em 30 dias quando é futura (o prazo); o campo abre o calendário (B2, 2026-10-26) |
+| `EtapasA3` | — | A Investigação no celular: a entrada com o índice das 10 etapas (o estado de cada uma e o que falta nas que estão pela metade) e uma etapa por tela, com a barra de segmentos e o ponto na etapa atual (§7.5, decisão (i)) |
 | `Anexos` | react-dropzone | Lista de arquivos + área de envio, com tipo e tamanho validados antes de enviar |
 | `IndiceA3` | — | Índice lateral da Investigação, com o preenchimento de cada etapa |
 | `ItemPendencia` | Card | Uma linha de "Minhas pendências" |
@@ -460,7 +463,11 @@ revisão da B2 confere cada um); o 5 é acabamento (B3).
    rótulo, que repetia o primeiro campo da página e podia contradizê-lo
    antes do Salvar; o código fica na barra de cima. E o estado vem
    **embaixo** do título: na NC ele fica em cima, porque embaixo dela vem
-   a etapa, que os filhos não têm.
+   a etapa, que os filhos não têm. **O estado secundário** (o selo "Plano
+   aprovado", o prazo, quem salvou ou enviou) vai numa **linha de
+   indicadores** no estilo da etapa da NC (ícone e texto em cinza,
+   separados por "·"), nunca em pílula; só o ícone do prazo vencido tem
+   cor (Matthew, 2026-10-26, na Ação Corretiva).
 2. **A frase de estado.** Toda tela raiz abre com uma frase que diz o que
    importa agora ("4 itens esperam por você · 1 vencido"; "38 abertas · 3
    com prazo vencido"), em vez de só o título.
@@ -743,29 +750,59 @@ Linear e o GitHub):
    na seção da decisão).
 3. **Sem feed próprio** (PRD Q25): no lugar, o atalho **"Atividade deste
    item · N eventos · no feed da NC"**, que abre o feed da NC filtrado por
-   ele (no computador, o painel Atividade da NC; no celular, a aba Feed
-   dela). Não há campo de comentário no filho.
+   ele, **sem sair do filho** (Matthew, 2026-10-26): no computador, o
+   painel Atividade da NC, empurrando a página; no celular, o mesmo painel
+   como **folha que sobe**, com o filho escurecido atrás (a alça e o "×"
+   fecham). O filtro aparece como a pílula "Só este item: CT-2026-0019 ×";
+   o "×" mostra o feed inteiro da NC, o mesmo da página da NC. Um link
+   "Feed da NC-2026-0042 ›" leva à NC de fato. Não há campo de comentário
+   no filho: o campo do painel comenta na NC.
 4. O formulário **sem cabeçalho** que repita o tipo (o título do bloco
    já diz).
 
-**A Ação Corretiva:**
+**A Ação Corretiva** (revista em 2026-10-26, na B2):
 
 ```
-NC-2026-0042 · Vazamento na linha 3 ›            (AC-2026-0003 na barra)
-Ação Corretiva
-● Aberta   ✓ Plano aprovado   Prazo: Vencido há 2 dias
-[ Finalizar execução ]  [ Salvar ]  [ Mais ▾ ]
+NC-2026-0042 · Vazamento na linha 3 › AC-2026-0003
+Ação Corretiva                 [ Finalizar execução ] [ Salvar ] [ Mais ▾ ]
+● Aberta  ✓ Plano aprovado · ⚠ Vencido há 2 dias  (BL)(FS)(CR)
 
-PLANO (aprovado — só leitura)
-  Descrição · Prazo · Instruções de verificação
+PLANO (aprovado · só leitura), em grade de duas colunas
+  Descrição                       Instruções de verificação
+  Prazo                           Investigação  IV-2026-0007 ›
 EXECUÇÃO
-  Data de execução [ dd/mm/aaaa ]
-  Evidência        [ texto                        ]
-  Anexos           [ arraste fotos ou PDF aqui ]
+  Executada em [dd/mm/aaaa] (Hoje) (Ontem)   ┌ área de arrastar ┐
+  Prazo do plano: 19/10 · vencido há 2 dias  │ fotos ou PDF     │
+  Para finalizar: a data e a evidência.      └──────────────────┘
+  Evidência [ o que foi feito                                    ]
 ─── atribuições · anexos · Atividade deste item › ───
 ```
 
-### 7.5 T-07 Investigação A3 (só computador)
+1. **Empilhado, em toda largura:** o Plano em cima, a Execução embaixo.
+   Lado a lado, as duas colunas apertavam abaixo de 1440 e deixavam um
+   vazio embaixo do Plano só de leitura. O Plano aprovado vira um
+   **resumo em grade** (Descrição | Instruções; Prazo | Investigação), e a
+   Execução usa **as mesmas duas colunas**: a data com a ajuda (o prazo do
+   plano e o que falta para finalizar) à esquerda, a área de arrastar à
+   direita, na altura da linha; a Evidência embaixo, na largura toda.
+2. **O plano em edição** (antes da aprovação) usa a mesma grade, com os
+   campos: Descrição | Instruções; o Prazo com os atalhos Em 15 dias e Em
+   30 dias | a Investigação fixa ("o vínculo não muda", RN-49). A Execução
+   aparece fechada ("abre depois que o plano for aprovado"), e o botão é
+   **Enviar plano para aprovação**.
+3. **Finalizar execução** abre um diálogo (no celular, uma folha):
+   "A ação fecha, sem nova aprovação, e a Verificação nasce para a
+   Beltrana Lima", com **"Verificar em quantos dias?"** e a data calculada
+   embaixo (o `diasParaVerificar` da API).
+4. **Em tela menor:** abaixo de 1440, a coluna lateral vira a **faixa de
+   resumo no topo** (Atividade deste item · Atribuições · Anexos), a mesma
+   da NC com a Atividade aberta (§7.3). A regra vale para todos os
+   filhos: quem decide é a largura da coluna principal, não o aparelho.
+5. **No celular:** o Plano com as instruções e a investigação; a
+   Execução com o campo de data e a mesma ajuda; o prazo numa linha
+   própria embaixo do estado.
+
+### 7.5 T-07 Investigação A3 (computador e celular)
 
 ```
 NC-2026-0042 › IV-2026-0007 · A junta resseca antes…      ● Aberta
@@ -789,6 +826,49 @@ NC-2026-0042 › IV-2026-0007 · A junta resseca antes…      ● Aberta
 
 O índice fica fixo ao rolar. ✓ preenchida · ◐ parcial · ○ vazia.
 
+**O computador com o desenho do celular** (B2, 2026-10-26, pedido de
+Matthew: "tenta deixar o PC parecido com o celular"). As duas visões saem do
+mesmo construtor, então são iguais por construção; muda só o que o estado
+pede (quem preenche tem os campos, o "⋯", o "+ Causa" e o "+ Hipótese").
+
+1. **O bloco claro** (com "Salva por…" ou "Enviada por…" na linha de
+   indicadores) e, como a página não tem coluna lateral, a **faixa de
+   resumo da T-06**: três cartões, a **Atividade deste item** com o mesmo
+   desenho do atalho dos outros filhos (abre o painel Atividade da NC,
+   empurrando a página, já filtrado por "Só este item"), as
+   **Atribuições** (o avatar e a etiqueta da aprovadora, a pilha e a
+   contagem dos responsáveis) e os **Anexos** (o clipe e a contagem). As
+   duas últimas abrem com o "⌄" uma lista que cai da faixa: as pessoas com
+   as etiquetas e o "+ Adicionar responsável"; os anexos com o "+ Anexar" e
+   a **área de arrastar** (o componente `AreaDeArrastar`).
+2. **Cada seção é um cartão com o título e a frase do que ela é**, as
+   mesmas das etapas do celular; os campos sem o rótulo que repetiria o
+   título.
+3. **O Ishikawa em três colunas** (duas filas de três categorias, do mesmo
+   tamanho por fila), com a anatomia da causa do celular (o número no
+   círculo, a origem embaixo) e a legenda com os ícones.
+4. **A tabela das hipóteses é a mesma nas duas visões:** o número, a
+   hipótese com o como verificar, a causa no Ishikawa e a classificação
+   (o ícone e o nome, ou "Falta classificar" em vermelho).
+5. **A causa direta mostra de onde veio:** "◆ Da hipótese 2 · causa 2 ·
+   Material" em cima do texto; sem hipótese de causa direta, a caixa
+   "Nenhuma hipótese marcada…" com o atalho para as hipóteses.
+6. **Os 5 porquês na linha do tempo do celular** (o real problema de
+   ponto de partida, os porquês ligados por um fio; na leitura, terminando
+   na causa raiz). Substitui os degraus da regra 2 abaixo.
+7. **Contramedidas e check em cartões:** a contramedida com o código, o
+   título e a linha do estado do plano, do prazo e do responsável. **O
+   check é uma linha curta por contramedida** (Matthew, 2026-10-26: com
+   várias, ele ficaria imenso): o código e o título, um **mini andamento**
+   (três ícones ligados, com o passo atual escrito) e o "⌄"; aberta, ela
+   mostra o completo num painel só, sem caixas esticadas: o como
+   verificar, **quem vai verificar e quando** (o prazo sai do Finalizar
+   execução) e o **andamento vertical** (Plano → Execução → Verificação),
+   separados por uma divisória no computador e empilhados no celular. Os
+   desenhos mostram duas ações (a AC-2026-0004, "medir a dureza no
+   recebimento", ataca a outra metade da causa raiz), uma aberta e uma
+   fechada.
+
 **As duas visões** (decisão (c) da B2, 2026-10-22), as duas no Figma:
 - **Quem preenche** (`ABERTO`, o desenho acima): o progresso no topo do
   índice ("5 de 10 etapas completas", com uma barra), as seções como
@@ -811,15 +891,66 @@ O índice fica fixo ao rolar. ✓ preenchida · ◐ parcial · ○ vazia.
    diagrama, e o símbolo nunca vem sozinho: a tabela das hipóteses repete
    o texto, e o leitor de tela lê o nome. Losango e × para não confundir
    com o ✓ ◐ ○ do índice.
-2. **Os 5 porquês em cadeia:** cada porquê fica um degrau à direita do
-   anterior, ligado a ele por uma linha, até a causa raiz, que vem logo
-   depois.
+2. **Os 5 porquês em cadeia:** cada porquê ligado ao anterior por um fio,
+   numa linha do tempo, do real problema até a causa raiz (2026-10-26: no
+   lugar dos degraus, a mesma estrutura do celular nos dois tamanhos).
 3. **O check de efetividade não se preenche:** ele resume, para cada
    contramedida, o código e o título da ação, as instruções de
    verificação do plano (`instrucoesVerificacao`) e o andamento ("a VE
    nasce ao finalizar a execução"; depois, a Verificação e o resultado).
    No índice, ele conta como completo quando toda contramedida tem as
    instruções.
+4. **Toda hipótese diz como vai ser verificada** (Matthew, 2026-10-26):
+   o campo **Como verificar** fica entre a causa no Ishikawa e a
+   classificação, que é o resultado do teste. Sem ele, a hipótese está
+   incompleta e trava o envio (PRD Q26, RN-24). O banco ainda não tem o
+   campo (`fluxo-app.md` L13, na C2).
+5. **A causa direta vem da hipótese marcada como causa direta**
+   (Matthew, 2026-10-26): a seção traz a resposta da hipótese, pronta
+   para confirmar ou ajustar a redação; com mais de uma, todas; com
+   nenhuma, a seção não pede texto, diz "Nenhuma hipótese marcada como
+   causa direta ainda" e leva às hipóteses. O envio exige ao menos uma
+   hipótese marcada como causa direta (PRD Q26, RN-24).
+
+**No celular** (decisão (i) da B2, 2026-10-26; Figma, página Decisões,
+seção "Decisão (i) · a Investigação no celular", e a seção "Celular · 4c ·
+Investigação"
+da página Wireframes; referências: Cleo AI, Chime, Shopify e Public).
+Matthew: "nem todos os trabalhadores aqui possuem computador". Revê o
+princípio 4 do `fluxo-app.md` §1.
+
+1. **Quem preenche: uma etapa por tela.** A entrada é o índice das 10
+   etapas numa lista compacta (a variante B, como a Shopify), com o
+   progresso ("5 de 10") num medidor em segmentos e o ✓ ◐ ◌ de cada
+   etapa; só as etapas pela metade dizem o que falta ("Falta classificar
+   a hipótese 2"). Embaixo, as atribuições, os anexos e o atalho da
+   atividade; no rodapé, o Enviar para aprovação bloqueado.
+2. **A tela da etapa** (como a Public): a seta para o índice, "IV-2026-0007
+   · Etapa 4 de 10", a barra de segmentos (escuro é completa) com um
+   ponto embaixo da etapa atual; o título, a frase do que a etapa é, um
+   lembrete do que veio antes e o conteúdo; no rodapé, **Anterior** e
+   **Salvar e próxima** (o salvar é sempre um botão, U4; sair com algo não
+   salvo pergunta). A última, o Check de efetividade, só tem leitura e
+   termina em "Voltar ao índice".
+3. **As etapas com estrutura:** o **Ishikawa** com um mapa das seis
+   categorias em blocos de duas colunas (do mesmo tamanho por fila) e um
+   cartão por categoria, com as causas numeradas, o "⋯" e o "+ Causa"; as
+   **Hipóteses** em cartões (o número, a causa no Ishikawa num seletor com
+   a lista numerada, o Como verificar e a classificação em pílulas com os
+   ícones); os **5 Porquês** numa linha do tempo, do real problema até o
+   link para a causa raiz.
+4. **A anatomia da causa:** o número num círculo, em negrito; o texto; e
+   uma linha de origem embaixo, com o ícone da classificação e a
+   hipótese ("◇ Fator contribuinte · hipótese 1", "Hipótese 2 · falta
+   classificar", "Sem hipótese ainda"); no mapa, a versão curta ("◇
+   hipótese 1"). Os três símbolos são ícones de 12 px, não caracteres (a
+   Figtree não os tem, e cada um saía de um tamanho).
+5. **O aprovador: uma página corrida de leitura**, com as etapas em
+   cartões, o Ishikawa no mesmo mapa, as hipóteses com a verificação e a
+   origem, os 5 porquês na linha do tempo terminando na causa raiz, e
+   Reprovar e Aprovar no rodapé; um link leva à investigação inteira no
+   computador. A variante A da entrada (os cartões, como a Cleo e a Chime)
+   ficou na seção da decisão.
 
 ### 7.6 T-05 Nova NC (celular)
 
@@ -979,50 +1110,79 @@ frame, uma nota.
 
 ### 7.10 T-07 Contenção
 
-```
-NC-2026-0042 › CT-2026-0019 · Isolar o lote 42…           ● Aberta
-[ Enviar para aprovação (bloqueado ⓘ) ]  [ Salvar ]  [ Mais ▾ ]
+Revista em 2026-10-26 (B2, item 12).
 
+```
+NC-2026-0042 · Vazamento na linha 3 › CT-2026-0019
+Contenção          [ Enviar para aprovação (bloqueado ⓘ) ] [ Salvar ] [ Mais ▾ ]
+● Aberta  (BL)(CR)
+
+SOBRE A NC (só leitura)                                  Abrir a NC ›
 AÇÃO IMEDIATA
-  Descrição
-  [ o que foi feito para conter o problema                  ]
-EXECUÇÃO
-  Executada em  [ dd/mm/aaaa ]
-  Disposição    [ Aceito · Corrigido · Anulado · Em análise ▾ ]
-  Anexos        [ arraste fotos ou PDF aqui ]
+  Descrição [ o que foi feito para conter o problema ]  Mínimo de 20 caracteres
+EXECUÇÃO   Preencha depois de executar: as duas são necessárias para enviar.
+  Executada em [dd/mm/aaaa] (Hoje) (Ontem)
+  Disposição   ( ) Aceito      Usado como está, com a liberação de quem pode autorizar
+               ( ) Corrigido   Ajustado ou refeito até atender ao requisito
+               ( ) Anulado     Descartado, cancelado ou recolhido
+               ( ) Em análise  Separado, esperando a decisão
 ─── atribuições · anexos · Atividade deste item › ───
 ```
 
-Publicada só com a descrição (mínimo de 20 caracteres); a data e a
-disposição vêm depois de executar. Sem elas, o "Enviar para aprovação"
-mostra a lista do que falta (J3). **Fechada**, a tela mostra embaixo do
-cabeçalho: "Não resolveu? Crie uma nova contenção na NC" (RN-42: a
-contenção não se reabre). No celular, a barra de ações vai para o rodapé,
-fixa, com a ação principal e o Salvar.
+1. **Sobre a NC** antes da ação: quem contém precisa saber o que
+   aconteceu (o mesmo cartão da Classificação, com a classificação
+   vigente).
+2. **A data** com o `CampoData` (Hoje · Ontem ao lado; o campo abre o
+   calendário). **A disposição** em quatro cartões com a explicação, em
+   duas colunas no computador e empilhados no celular. As explicações são
+   uma proposta do Claude, a conferir com a analista (o PRD só diz que os
+   termos são genéricos).
+3. Publicada só com a descrição (mínimo de 20 caracteres); a data e a
+   disposição vêm depois de executar. Sem elas, o "Enviar para aprovação"
+   mostra a lista do que falta (J3). No "Mais", o Cancelar, para o
+   aprovador ou o `GERENTE`.
+4. **A Contenção nova (rascunho)**, nos dois tamanhos, vale de exemplo
+   para os cinco tipos: "Rascunho" no lugar do código, o estado Rascunho,
+   **Publicar** e Salvar, e o **Excluir rascunho** no "Mais". O aprovador da
+   NC já aparece (RN-46), e o atalho da atividade não aparece: o filho só
+   entra no feed da NC quando é publicado (RN-10).
+5. **Fechada**, a tela mostra embaixo do cabeçalho: "Não resolveu? Crie
+   uma nova contenção na NC" (RN-42: a contenção não se reabre). Ainda sem
+   desenho (item 14 da B2, os estados).
 
 ### 7.11 T-07 Verificação
 
-```
-NC-2026-0042 › VE-2026-0002 · da AC-2026-0003             ● Aberta
-Prazo: Vence em 5 dias
-[ Concluir verificação ]  [ Salvar ]  [ Mais ▾ ]
+Revista em 2026-10-26 (B2, item 12).
 
-INSTRUÇÕES (do plano da AC-2026-0003 — só leitura)
-  Conferir 3 lotes seguidos sem vazamento na linha 3...
-RESULTADO
-  ( ) Eficaz
-  ( ) Parcialmente eficaz
-  ( ) Não eficaz
-  Conclusão           [ o que foi conferido e o que se viu    ]
-  Verificada em       [ dd/mm/aaaa ]
-  Anexos              [ arraste fotos ou PDF aqui ]
+```
+NC-2026-0029 · Rebarba no flange › VE-2026-0001
+Verificação                 [ Concluir verificação ] [ Salvar ] [ Mais ▾ ]
+● Aberta  🕒 Vence em 5 dias  (BL)
+
+SOBRE A AÇÃO AC-2026-0001 ›  (só leitura)
+  Plano · Instruções de verificação · Evidência · Executada em
+RESULTADO   ( ) Eficaz        ( ) Parcialmente eficaz      ( ) Não eficaz
+            Nada mais acontece  Cria uma nova ação          Reabre a investigação
+                                corretiva em rascunho       e a NC
+  Conclusão     [ o que foi conferido e o que se viu ]
+  Verificada em [dd/mm/aaaa] (Hoje) (Ontem)
 ─── atribuições · anexos · Atividade deste item › ───
 ```
 
-Nasce sozinha ao finalizar a execução da ação (J5), já aberta, nunca em
-rascunho. O cabeçalho leva à ação de origem. "Concluir verificação" é só
-do responsável com papel `APROVADOR` (§7 do fluxo) e abre o
-`DialogoEfeito` com o efeito do resultado escolhido:
+1. **Sobre a ação** no lugar das instruções soltas: para verificar a
+   eficácia, o que importa é a ação (o plano, as instruções, a evidência
+   e quando foi executada); a NC continua no caminho de volta.
+2. **O resultado em três colunas** no computador, com o efeito de cada
+   um; no celular, empilhado. **A data** com o `CampoData`.
+3. Nasce sozinha ao finalizar a execução da ação (J5), já aberta, nunca
+   em rascunho. Desenhada **como fica depois da C2** (PRD Q22): a pessoa
+   aparece só como **Responsável**; a Verificação não tem portão, e o
+   aprovador nela não serve para nada. Hoje o backend a cria com o
+   aprovador da ação como colaborador **e** aprovador
+   (`acao-corretiva.service.ts:82-83`), o que a Q22 proíbe: na C2, ela
+   nasce só com o colaborador (plano, linha da C2).
+4. "Concluir verificação" é só do responsável com papel `APROVADOR` (§7
+   do fluxo) e abre o `DialogoEfeito` com o efeito do resultado escolhido:
 
 ```
 ┌──────────────────────────────────────────────┐
@@ -1369,3 +1529,6 @@ tokens.
 | 2026-10-23 | v1.18 — Decisão (f) da B2: a T-04 (§7.2) com a tabela plana e as pílulas, as visões separadas dos filtros, o filtro ativo com o valor, a folha no celular, o agrupar por etapa opcional no computador, a busca visível que some ao rolar; o total e as contagens que a API ainda não dá |
 | 2026-10-23 | v1.19 — Decisão (g) da B2: a T-06 do computador refeita (§7.3: o bloco escuro, a classificação nos Dados, os Itens da NC agrupados ou não, em lista ou cartões, o medidor em segmentos, o Envio depois dos Itens, a Atividade num painel que empurra a página e recolhe a lateral numa faixa, o feed em linha do tempo com o Responder); no celular, as abas do Deel, os Itens em grupos e cartões, as atribuições com tags; a T-05 em grupos com a ajuda fixa (§7.6); os componentes `ItensDaNC`, `PainelAtividade` e `Medidor` (§5.1) |
 | 2026-10-26 | v1.20 — Decisão (h) da B2: a T-07 no celular empilhada, sem abas (§7.4, o padrão dos cinco filhos); no bloco do filho, o tipo como título e o estado embaixo dele (§6.2, gesto 1); o feed só na NC, com os eventos dos filhos e o atalho "Atividade deste item" (§7.3, §7.4, §5.1; PRD Q25); a Classificação refeita como fica depois da C2 (§7.9: a Q22, sem portão, "Concluir classificação"; o cartão Sobre a NC antes do formulário) |
+| 2026-10-26 | v1.21 — B2, item 12 e decisão (i): a T-07 dos cinco tipos revista (§7.4 a Ação Corretiva empilhada, com o plano em grade, o plano em edição, o diálogo do Finalizar e a faixa abaixo de 1440; §7.10 a Contenção com o Sobre a NC, a data com atalhos, a disposição em cartões e o rascunho; §7.11 a Verificação com o Sobre a ação, depois da C2); a Investigação no celular, uma etapa por tela, e a leitura do aprovador (§7.5); o Como verificar das hipóteses e a causa direta vinda da hipótese (§7.5); a linha de indicadores (§6.2, gesto 1); os componentes `AreaDeArrastar`, `CampoData` e `EtapasA3` (§5.1) |
+| 2026-10-26 | v1.22 — §7.5: a Investigação do computador com o desenho do celular (a faixa da T-06 e os três estados abertos, as seções em cartões, o Ishikawa em três colunas, a mesma tabela das hipóteses nas duas visões, a origem da causa direta, os porquês em linha do tempo, contramedidas e check em cartões com o andamento) |
+| 2026-10-26 | v1.23 — §7.4: o atalho Atividade deste item abre o feed da NC sem sair do filho (no celular, uma folha), filtrado pelo item, com o × que mostra o feed inteiro; §7.5: o check em linhas curtas com o ⌄ |
