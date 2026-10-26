@@ -151,7 +151,7 @@ rotina de limpeza de órfãos (TRD §10.4) cobre o que escapar.
 
 ```mermaid
 erDiagram
-    Registro ||--o{ Comentario : "feed do item"
+    NaoConformidade ||--o{ Comentario : "feed da NC (Q25)"
     Comentario ||--o{ Comentario : "respostas (1 nível)"
     Comentario ||--o{ MencaoUsuario : "@pessoa"
     Comentario ||--o{ MencaoRegistro : "#item"
@@ -161,7 +161,7 @@ erDiagram
 
 | Tabela | Campos | Observações |
 |---|---|---|
-| `Comentario` | `id`, `registroId` (cascade), `autorId`, `texto`, `respostaAId String?` (auto-relação), `criadoEm`, `editadoEm DateTime?` | Resposta de resposta aponta para o comentário **raiz** — um nível só (RN-34). `editadoEm` preenchido = marcador "editado" (RN-31) |
+| `Comentario` | `id`, `naoConformidadeId` (cascade; só a NC tem feed, Q25), `autorId`, `texto`, `respostaAId String?` (auto-relação), `criadoEm`, `editadoEm DateTime?` | Resposta de resposta aponta para o comentário **raiz** — um nível só (RN-34). `editadoEm` preenchido = marcador "editado" (RN-31) |
 | `MencaoUsuario` | `comentarioId` (cascade), `usuarioId`, `vistaEm DateTime?` | Chave `(comentarioId, usuarioId)`. `vistaEm` nulo = pendência "Você foi mencionado" (fluxo T-03) |
 | `MencaoRegistro` | `comentarioId` (cascade), `registroId` (cascade) | Chave `(comentarioId, registroId)`. Permite "onde este item foi citado?" |
 
@@ -174,6 +174,12 @@ reescreve as tabelas de menção **na mesma transação** (RN-35).
 **Eventos do feed não têm tabela nova:** vêm da `Auditoria` (e de
 `Aprovacao`, para o "Aprovado pelo próprio autor", RN-28), mesclados com
 os comentários por data.
+
+**O feed é da NC e junta os filhos (Q25, 2026-10-26):** os eventos da
+própria NC e os de cada filho dela (pelo `naoConformidadeId`; a
+Verificação, pela ação de origem). O filtro `?item=` deixa só os eventos
+de um filho: é o que o atalho "Atividade deste item" da T-07 abre. O
+filho não tem comentário próprio.
 
 **Nem toda linha de auditoria vira evento no feed**, senão cada "Salvar"
 encheria a conversa. Entram: criação, publicação, envio para aprovação,
@@ -420,10 +426,10 @@ a lista dela filtra por `acaoCorretivaId`. A Ação Corretiva tem ainda
 |---|---|---|
 | ＋ | `GET /registros/:id/atribuicoes` | Colaboradores e aprovador (painel de atribuições) |
 | Δ ✅ | `PUT /registros/:id/aprovador` · `POST`/`DELETE /registros/:id/colaboradores` | Só em `RASCUNHO`/`ABERTO`; em `EM_APROVACAO`, só o `GERENTE` troca o aprovador (RN-47, B17). Colaborador inexistente → 404 (B16) |
-| ＋ | `GET /registros/:id/feed?cursor=` | Eventos + comentários, em ordem cronológica, paginado |
-| ＋ | `POST /registros/:id/comentarios` | Comenta (ou responde, com `respostaAId`) |
+| ＋ | `GET /nc/:id/feed?cursor=&item=` | Eventos da NC e dos filhos + comentários, em ordem cronológica, paginado; `item` filtra os eventos de um filho (Q25) |
+| ＋ | `POST /nc/:id/comentarios` | Comenta (ou responde, com `respostaAId`) |
 | ＋ | `PATCH /comentarios/:id` · `DELETE /comentarios/:id` | RN-31 a RN-33 |
-| ＋ | `POST /registros/:id/mencoes/vistas` | Marca as menções à pessoa neste item como vistas (ao abrir o item) |
+| ＋ | `POST /nc/:id/mencoes/vistas` | Marca as menções à pessoa nesta NC como vistas (ao abrir o feed) |
 | ＋ | `GET /registros/:id/anexos` · `POST /registros/:id/anexos` | Lista / envia (multipart) |
 | ＋ | `GET /anexos/:id` · `DELETE /anexos/:id` | Baixa / remove (TRD §8.3) |
 | ＋ | `GET /registros/busca?q=` | Busca por código — alimenta o `#` do feed. Só itens publicados (RN-11) |
@@ -598,3 +604,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-09 | v1.56 — B29–B36 registrados (filho fora da NC aberta e as conferências entre linhas sem trava), da revisão de concorrência da A6; fase A7 |
 | 2026-10-09 | v1.57 — B29–B36 corrigidos (A7): travar antes de ler (`registroRepository.travar`, as travas da pessoa e do setor, a trava única da saída de ADMIN), sempre `FOR NO KEY UPDATE`; filho novo só com a NC aberta |
 | 2026-10-09 | v1.58 — B37 registrado e corrigido (A7, no portão): o `conteudo` da investigação sem `z.json()`, e a trava de `$ref` no `app.test.ts` |
+| 2026-10-26 | v1.59 — M4 e §6: o feed mora só na NC (Q25, B2): o `Comentario` pertence à NC, o feed junta os eventos dos filhos, e as rotas viram `GET /nc/:id/feed`, `POST /nc/:id/comentarios` e `POST /nc/:id/mencoes/vistas` |

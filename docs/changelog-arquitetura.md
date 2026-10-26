@@ -33,6 +33,20 @@ documento de arquitetura.
   compor → registro da comunidade → um pacote de fora, pesado por peso,
   manutenção, acessibilidade, encaixe e licença → o nosso (proposta de
   Matthew, que leva o princípio 2 do TRD para a hora do desenho).
+- **O feed mora só na NC (2026-10-26, decisão de Matthew na decisão (h)
+  da B2).** O PRD dizia "feed por item" (RF-11), e o contrato da API
+  tinha um feed por registro (`GET /registros/:id/feed`), mas o wireframe
+  da NC já mostrava os eventos dos filhos: ninguém tinha decidido se a NC
+  os juntava. Agora: **a NC tem o único feed**, com os eventos dela e de
+  todos os filhos (a Verificação entra pela ação de origem), e **só se
+  comenta na NC**; o filho não tem feed nem campo de comentário, só um
+  atalho, "Atividade deste item", que abre o feed da NC filtrado por ele.
+  O porquê: a NC é a que concentra tudo, e uma linha do tempo só é a
+  evidência mais limpa da cláusula 10.2 (nada de "onde foi que comentaram
+  isso?"). Muda o contrato da C4, que ainda não existe: o comentário
+  pertence à NC, e as rotas viram `GET /nc/:id/feed?item=` e
+  `POST /nc/:id/comentarios` (`esquema-backend.md` M4 e §6). A menção
+  `#item` continua levando à página do filho.
 
 ### Fase B1 — identidade visual (branch `fase/b1-identidade-visual`)
 

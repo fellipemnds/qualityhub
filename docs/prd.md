@@ -214,7 +214,7 @@ Legenda: ✅ pronto · 🔧 pronto, com ajuste decidido · ⬜ a construir
 | RF-08 | NC só fecha com classificação e investigações aprovadas (a investigação, só com os **planos de ação** aprovados) e nenhuma contenção pendente; reabrível | c), d) | ✅ |
 | RF-09 | Rascunhos visíveis a todos, editáveis só pelos colaboradores | — | ✅ |
 | RF-10 | Grupo de colaboradores + um único aprovador por item | — | ✅ |
-| RF-11 | Feed por item: eventos do sistema + comentários com respostas e menções `@pessoa` / `#item` | 10.2.2 a) | ⬜ |
+| RF-11 | **(alterada)** Feed **por NC**: os eventos do sistema da NC e de todos os filhos + comentários (só na NC) com respostas e menções `@pessoa` / `#item` (Q25) | 10.2.2 a) | ⬜ |
 | RF-12 | Trilha de auditoria imutável de toda ação | 10.2.2 a), b) | ✅ |
 | RF-13 | Login e definição de senha por convite (token de uso único, 72 h) | — | ✅ |
 | RF-14 | Registrar revisão de riscos/oportunidades e mudanças no SGQ na NC | e), f) | ✅ |
@@ -293,7 +293,7 @@ Legenda: ✅ pronto · 🔧 pronto, com ajuste decidido · ⬜ a construir
 ### Feed
 | ID | Regra |
 |---|---|
-| RN-30 | Comentário tem a mesma visibilidade do item |
+| RN-30 | **(alterada)** Comentário só na NC, com a mesma visibilidade dela; o filho não tem campo de comentário (Q25) |
 | RN-31 | Autor edita o próprio comentário, sem limite de tempo; marcador "editado" |
 | RN-32 | Autor ou `GERENTE` exclui comentário |
 | RN-33 | Comentário com respostas não pode ser excluído |
@@ -398,6 +398,7 @@ fase for implementada (plano §8); até lá, o código segue as atuais.
 | Q22 | Quem fez um item pode aprová-lo? | **Não.** Colaborador e aprovador são **excludentes por item**: o backend recusa definir como aprovador quem é colaborador, e incluir como colaborador quem é o aprovador (409, dizendo o que fazer); quem cria é colaborador, e só aprova se sair dos colaboradores. Sem exceção (nem em férias: esperar é melhor que aprovar o próprio trabalho). Com uma aprovadora só (a analista), a **Classificação perde o portão**: classificar já é o julgamento dela, e ela conclui direto, como na Verificação (a RN-21 segue, concluir leva a `FECHADA`). O filho **não herda** o aprovador da NC quando quem o cria é esse aprovador. Ficam de fora o gestor como segundo aprovador e a exceção de férias → RN-27 e RN-29 saem; RN-46 muda |
 | Q23 | Quem escolhe o aprovador de um item? | **Também o colaborador** (`EDITOR`), nos itens em que é colaborador: o time reatribui sozinho, sem depender do gerente (confirmado com a analista, 2026-10-08). Valem as regras de hoje: o escolhido tem o papel `APROVADOR`, não pode ser colaborador do item (Q22) e, com o item `EM_APROVACAO`, a troca continua só do `GERENTE` (o colaborador retira antes, RN-48). Implementação na C2, com a Q22 |
 | Q24 | Pode nascer item filho com a NC em aprovação ou fechada? | **Não: só com a NC `ABERTO`** (Matthew, 2026-10-09), nem em rascunho: "pra que criar filhos pra uma NC que pode nem chegar a existir?". A contenção física acontece de qualquer jeito; o registro dela espera a publicação (7 campos). A revisão da A6 mostrou que um filho criado com a NC em aprovação passava por fora da guarda de fechamento: a NC aprovada fechava com ele em rascunho → RN-51 |
+| Q25 | Os filhos têm feed próprio? | **Não: o feed mora só na NC** (Matthew, 2026-10-26, na revisão dos wireframes): ela concentra tudo o que acontece, inclusive os eventos dos filhos (a Verificação entra pela ação de origem), e só se comenta nela. O filho mostra um atalho, "Atividade deste item", que abre o feed da NC filtrado por ele. Uma linha do tempo só é a evidência mais limpa da 10.2 → RF-11, RN-30 |
 
 Limite de tamanho e armazenamento dos anexos foram resolvidos no TRD (§8).
 
@@ -417,3 +418,4 @@ Limite de tamanho e armazenamento dos anexos foram resolvidos no TRD (§8).
 | 2026-10-08 | v1.7 — RN-43 detalhada (os três estados, só o `APROVADOR` trava, o último `ADMIN`); Q23, o colaborador escolhe o aprovador (implementação na C2) |
 | 2026-10-08 | v1.8 — RN-44 detalhada: desativar exige o setor sem pessoas ativas; setor desativado fora das escolhas novas e do reativar |
 | 2026-10-09 | v1.9 — RN-51 (filho novo só com a NC aberta), Q24 |
+| 2026-10-26 | v1.10 — RF-11 e RN-30 alteradas: o feed mora só na NC, com os eventos dos filhos, e só se comenta nela (Q25, decisão de Matthew na B2) |

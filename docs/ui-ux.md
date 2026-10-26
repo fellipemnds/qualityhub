@@ -322,7 +322,7 @@ em `components/` (os do shadcn/ui, em `components/ui/`).
 | `IndiceA3` | — | Índice lateral da Investigação, com o preenchimento de cada etapa |
 | `ItemPendencia` | Card | Uma linha de "Minhas pendências" |
 | `ItensDaNC` | Collapsible, ToggleGroup, DropdownMenu | Os itens filhos no Detalhe da NC: agrupados por tipo ou não, em lista ou cartões, ordenados por estado ou criação, com o medidor em segmentos (§7.3) |
-| `PainelAtividade` | Sheet (sem véu, empurrando a página) | O feed inteiro à direita, com Tudo · Comentários · Histórico; ao abrir, a coluna lateral vira a faixa de resumo (§7.3) |
+| `PainelAtividade` | Sheet (sem véu, empurrando a página) | O feed inteiro da NC à direita (com os eventos dos filhos, PRD Q25), com Tudo · Comentários · Histórico; ao abrir, a coluna lateral vira a faixa de resumo (§7.3). Aberto pelo atalho de um filho, vem filtrado por ele |
 | `Medidor` | — | O progresso em segmentos: um por item, os feitos preenchidos; contínuo acima de 10 (os itens, o checklist) |
 | `FiltrosNC` | Select, Popover, Calendar | Filtros da lista de NCs, refletidos na URL (dá pra compartilhar um link filtrado) |
 
@@ -455,7 +455,12 @@ revisão da B2 confere cada um); o 5 é acabamento (B3).
    que agrupa tudo: só ela tem o bloco **escuro** (§7.3). Os **filhos** são
    da família: a mesma anatomia num tom **claro**, com o nome da NC em
    cima (o caminho de volta, `CabecalhoItem`), que diz a quem pertencem.
-   Nenhuma outra tela usa o bloco escuro.
+   Nenhuma outra tela usa o bloco escuro. **Nos filhos** (decisão (h),
+   2026-10-26), o título do bloco é o **tipo** ("Classificação"), não o
+   rótulo, que repetia o primeiro campo da página e podia contradizê-lo
+   antes do Salvar; o código fica na barra de cima. E o estado vem
+   **embaixo** do título: na NC ele fica em cima, porque embaixo dela vem
+   a etapa, que os filhos não têm.
 2. **A frase de estado.** Toda tela raiz abre com uma frase que diz o que
    importa agora ("4 itens esperam por você · 1 vencido"; "38 abertas · 3
    com prazo vencido"), em vez de só o título.
@@ -655,7 +660,10 @@ incident.io e o Jira, no `docs/identidade/referencias-interface.md`).
    dois); os **comentários** em cartão, com o avatar, a @menção em negrito
    e o **Responder** (só nos comentários: responder a um evento é
    comentar a NC). O botão do campo é "Comentar" (o "Enviar" é o nome do
-   submeter, §10.2).
+   submeter, §10.2). **O feed é só da NC** (PRD Q25, 2026-10-26): ele
+   junta os eventos de todos os filhos, e só se comenta aqui. O atalho
+   "Atividade deste item" de um filho (§7.4) abre este feed filtrado por
+   ele, com o filtro à vista (o código do filho, que se tira com um toque).
 
 **No celular** (decisão (b) da B2, 2026-10-22; Figma, página Wireframes,
 seção "Decisão (b) · Detalhe da NC no celular"): um bloco escuro com o
@@ -716,13 +724,35 @@ título no topo e a página em quatro abas.
 
 As alternativas que ficaram de fora (as abas Resumo · Itens · Feed, a
 página única no estilo do Linear e os cabeçalhos intermediários) estão na
-mesma seção do Figma, como registro. A T-07 no celular segue o mesmo
-padrão? A conferir na revisão da seção 4 do checklist.
+mesma seção do Figma, como registro. A T-07 no celular **não** segue
+este padrão: é uma página só, sem abas (decisão (h), §7.4).
 
-### 7.4 T-07 Ação Corretiva (exemplo de filho)
+### 7.4 T-07 Itens filhos: o padrão, e a Ação Corretiva
+
+**O padrão dos cinco** (decisão (h) da B2, 2026-10-26; Figma, página
+Decisões, seção "Decisão (h) · o celular dos filhos"; referências: o
+Linear e o GitHub):
+
+1. **O bloco do título claro** (§6.2, gesto 1): a NC em cima (o caminho
+   de volta), o **tipo** como título, o estado e os envolvidos embaixo; o
+   código na barra de cima. No computador, as ações à direita do bloco.
+2. **No celular, tudo empilhado numa página só, sem abas:** o formulário
+   do tipo, as atribuições (uma pessoa por linha, com as tags), os anexos
+   e o atalho; a barra de ações fixa no rodapé. As abas como as da NC
+   foram a variante A, recomendada pelo Claude e não escolhida (ficaram
+   na seção da decisão).
+3. **Sem feed próprio** (PRD Q25): no lugar, o atalho **"Atividade deste
+   item · N eventos · no feed da NC"**, que abre o feed da NC filtrado por
+   ele (no computador, o painel Atividade da NC; no celular, a aba Feed
+   dela). Não há campo de comentário no filho.
+4. O formulário **sem cabeçalho** que repita o tipo (o título do bloco
+   já diz).
+
+**A Ação Corretiva:**
 
 ```
-NC-2026-0042 › AC-2026-0003 · Trocar o fornecedor da junta…
+NC-2026-0042 · Vazamento na linha 3 ›            (AC-2026-0003 na barra)
+Ação Corretiva
 ● Aberta   ✓ Plano aprovado   Prazo: Vencido há 2 dias
 [ Finalizar execução ]  [ Salvar ]  [ Mais ▾ ]
 
@@ -732,7 +762,7 @@ EXECUÇÃO
   Data de execução [ dd/mm/aaaa ]
   Evidência        [ texto                        ]
   Anexos           [ arraste fotos ou PDF aqui ]
-─── atribuições · feed ───
+─── atribuições · anexos · Atividade deste item › ───
 ```
 
 ### 7.5 T-07 Investigação A3 (só computador)
@@ -907,28 +937,45 @@ com a pessoa.
 
 ### 7.9 T-07 Classificação
 
+Desenhada **como fica depois da C2** (PRD Q22, pedido de Matthew em
+2026-10-26): colaborador e aprovador excludentes por item, e a
+Classificação **sem portão**.
+
 ```
-NC-2026-0042 › CL-2026-0011 · Maior                       ● Aberta
-[ Enviar para aprovação (bloqueado ⓘ) ]  [ Salvar ]  [ Mais ▾ ]
+← CL-2026-0011
+NC-2026-0042 · Vazamento na linha 3 ›
+Classificação              [ Concluir classificação ]  [ Salvar ]
+● Aberta  (BL)
 
-CLASSIFICAÇÃO
-  ( ) Maior     ( ) Menor
-  Justificativa
-  [ por que esta classificação                              ]
-  Mínimo de 20 caracteres
-─── atribuições · anexos · feed ───
+SOBRE A NC (só leitura)                              Abrir a NC ›
+  Descrição · Requisito violado · Setor · Origem · Detectada em · Cliente
+( ) Maior   Afeta o cliente, a segurança ou um requisito legal
+( ) Menor   Desvio pontual, sem efeito no produto final
+Justificativa
+[ por que esta classificação                              ]
+Mínimo de 20 caracteres
+─── atribuições · anexos · Atividade deste item › ───
 ```
 
-Formulário curto. Só `APROVADOR` e `GERENTE` editam, publicam e enviam
-(RN-20); para o `EDITOR`, a tela é só leitura e a barra de ações some.
-**Não há Cancelar** (§7 do fluxo): quando a classificação muda, cria-se
-outra.
+**Ler e depois classificar:** o cartão **Sobre a NC** vem antes do
+formulário, com os dados da NC só para leitura (Matthew, 2026-10-26: a
+tela do computador estava vazia, e quem classifica precisa ler a NC sem
+sair da página). No celular, compacto: a descrição em 3 linhas e o "Ler
+mais", como no Resumo da NC. Os dados vêm do `GET /nc/:id`.
 
-**A conferir na C2** (PRD Q21 e Q22, propostas): ao escolher **Menor**,
-entra uma seção **Abrangência** (as NCs dos últimos 12 meses, para marcar
-as relacionadas, e a justificativa específica na 3ª ocorrência), e a
-Classificação perde o portão: "Enviar para aprovação" vira **"Concluir
-classificação"**, como na Verificação.
+**Quem conclui:** o **papel** decide, não a etiqueta. Só quem tem o papel
+`APROVADOR` ou `GERENTE` cria, edita, publica e conclui (RN-20); para o
+`EDITOR`, a tela é só leitura e a barra de ações some. Nas atribuições, a
+pessoa que classifica aparece como **Responsável**: com a Q22, a
+Classificação não tem aprovador. "Concluir classificação" leva direto a
+`FECHADA`, como o Concluir da Verificação. **Não há Cancelar** (§7 do
+fluxo): quando a classificação muda, cria-se outra. Por isso, aberta, ela
+não tem o "Mais": nada iria nele.
+
+**A conferir na C2** (PRD Q21): ao escolher **Menor**, entra uma seção
+**Abrangência** (as NCs dos últimos 12 meses, para marcar as relacionadas,
+e a justificativa específica na 3ª ocorrência). Ainda sem desenho: no
+frame, uma nota.
 
 ### 7.10 T-07 Contenção
 
@@ -943,7 +990,7 @@ EXECUÇÃO
   Executada em  [ dd/mm/aaaa ]
   Disposição    [ Aceito · Corrigido · Anulado · Em análise ▾ ]
   Anexos        [ arraste fotos ou PDF aqui ]
-─── atribuições · feed ───
+─── atribuições · anexos · Atividade deste item › ───
 ```
 
 Publicada só com a descrição (mínimo de 20 caracteres); a data e a
@@ -969,7 +1016,7 @@ RESULTADO
   Conclusão           [ o que foi conferido e o que se viu    ]
   Verificada em       [ dd/mm/aaaa ]
   Anexos              [ arraste fotos ou PDF aqui ]
-─── atribuições · feed ───
+─── atribuições · anexos · Atividade deste item › ───
 ```
 
 Nasce sozinha ao finalizar a execução da ação (J5), já aberta, nunca em
@@ -1261,6 +1308,10 @@ rascunho), "Rascunho" no lugar dele.
 | Ação Corretiva | O começo da descrição do plano | `AC-2026-0003 · Trocar o fornecedor da junta…` |
 | Verificação | A ação de origem | `VE-2026-0002 · da AC-2026-0003` |
 
+O rótulo vale nas listas, no feed, nas pendências e no caminho de volta.
+**No bloco do título do próprio filho, não**: lá o título é o tipo, e o
+código fica na barra de cima (decisão (h), §6.2).
+
 No front, o rótulo sai de **uma função só**: se os filhos ganharem título
 (a avaliar antes da C0, plano), muda só ela.
 
@@ -1317,3 +1368,4 @@ tokens.
 | 2026-10-23 | v1.17 — Os gestos da casa (§6.2): o bloco do título com hierarquia (escuro só na NC; claro nos filhos, com a NC em cima), a frase de estado, o número protagonista, o formulário com ritmo e, na B3, movimento e voz |
 | 2026-10-23 | v1.18 — Decisão (f) da B2: a T-04 (§7.2) com a tabela plana e as pílulas, as visões separadas dos filtros, o filtro ativo com o valor, a folha no celular, o agrupar por etapa opcional no computador, a busca visível que some ao rolar; o total e as contagens que a API ainda não dá |
 | 2026-10-23 | v1.19 — Decisão (g) da B2: a T-06 do computador refeita (§7.3: o bloco escuro, a classificação nos Dados, os Itens da NC agrupados ou não, em lista ou cartões, o medidor em segmentos, o Envio depois dos Itens, a Atividade num painel que empurra a página e recolhe a lateral numa faixa, o feed em linha do tempo com o Responder); no celular, as abas do Deel, os Itens em grupos e cartões, as atribuições com tags; a T-05 em grupos com a ajuda fixa (§7.6); os componentes `ItensDaNC`, `PainelAtividade` e `Medidor` (§5.1) |
+| 2026-10-26 | v1.20 — Decisão (h) da B2: a T-07 no celular empilhada, sem abas (§7.4, o padrão dos cinco filhos); no bloco do filho, o tipo como título e o estado embaixo dele (§6.2, gesto 1); o feed só na NC, com os eventos dos filhos e o atalho "Atividade deste item" (§7.3, §7.4, §5.1; PRD Q25); a Classificação refeita como fica depois da C2 (§7.9: a Q22, sem portão, "Concluir classificação"; o cartão Sobre a NC antes do formulário) |

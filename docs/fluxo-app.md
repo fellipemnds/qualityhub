@@ -21,7 +21,9 @@ Decididos com Matthew em 2026-09-24:
 1. **A tela inicial depende do papel** (§3).
 2. **A NC é a página central, e cada filho tem página própria.** A página
    da NC mostra a etapa atual e um resumo de cada filho. Clicar num filho
-   abre a página dele, com os próprios botões, feed e anexos. Cada item
+   abre a página dele, com os próprios botões e anexos; **o feed é só da
+   NC**, que junta os eventos dos filhos (PRD Q25), e o filho tem um
+   atalho para a atividade dele no feed da NC. Cada item
    tem URL própria, que é também o destino das menções `#AC-2026-0003`.
 3. **Botão bloqueado: depende do motivo.**
    - Falta **papel** (um `EDITOR` nunca aprova) → o botão **não aparece**.
@@ -326,9 +328,10 @@ precisar estar atribuído.
 
 ### J10 — Conversar no item (qualquer papel com escrita) · RF-11
 
-1. Em qualquer NC ou filho, o **feed** mostra eventos do sistema
-   (publicado, aprovado, reprovado, reaberto...) e comentários, em ordem
-   cronológica.
+1. Na NC, o **feed** mostra os eventos do sistema dela e de todos os
+   filhos (publicado, aprovado, reprovado, reaberto...) e os comentários,
+   em ordem cronológica. **Só se comenta na NC** (PRD Q25): o filho tem o
+   atalho "Atividade deste item", que abre o feed da NC filtrado por ele.
 2. Comentar; `@` sugere pessoas e `#` sugere itens com código.
 3. A pessoa mencionada recebe a pendência **"Você foi mencionado em
    NC-2026-0042"**, que some ao abrir o item. No celular, a NC abre
@@ -439,7 +442,9 @@ Feed, com o cabeçalho num bloco escuro (`ui-ux.md` §7.3).
 
 A mesma estrutura para os cinco tipos: cabeçalho (com o caminho de volta
 para a NC) → barra de ações → formulário do tipo → atribuições → anexos
-→ feed. O que muda é o formulário:
+→ o atalho "Atividade deste item" (o feed é só da NC, PRD Q25). No
+celular, tudo empilhado numa página só, sem abas (decisão (h) da B2,
+`ui-ux.md` §7.4). O que muda é o formulário:
 
 | Tipo | Campos | Particularidade na tela |
 |---|---|---|
@@ -494,7 +499,7 @@ exclui-se. Por isso Cancelar só aparece em `ABERTO` e `EM_APROVACAO`.
 além dos campos obrigatórios; quando falta, ele entra na lista do botão
 bloqueado.
 
-Comentar vale em qualquer estado. Anexar vale enquanto o item estiver
+Comentar vale em qualquer estado, **só na NC** (PRD Q25). Anexar vale enquanto o item estiver
 editável (`RASCUNHO`/`ABERTO`); anexos de item fechado não são removidos
 (RN-45).
 
@@ -575,3 +580,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-22 | v1.8 — §2.1: no computador, a doca flutuante embaixo, com a busca e o menu da pessoa (decisão (e) da B2) |
 | 2026-10-23 | v1.9 — T-04: as visões separadas dos filtros, o agrupar opcional, a linha rica no celular (decisão (f) da B2); o "só as minhas" já existe na API; a lacuna L10, o total e as contagens na lista |
 | 2026-10-23 | v1.10 — T-06: os filhos num cartão só (agrupados ou não, lista ou cartões), o feed no painel Atividade no computador, a classificação vigente nos dados, o envio depois dos filhos (decisão (g) da B2); as lacunas L11 (a foto da pessoa) e L12 (a resposta em fio e o filtro do painel) |
+| 2026-10-26 | v1.11 — O feed mora só na NC, com os eventos dos filhos, e só se comenta nela (§1, J10, T-07; PRD Q25); a T-07 no celular empilhada, sem abas (decisão (h) da B2) |

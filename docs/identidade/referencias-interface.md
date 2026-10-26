@@ -242,3 +242,19 @@ Matthew); as imagens ficam lá, fora do repositório.
   os itens ligados num bloco só, com um subtítulo por tipo e o progresso
   em cima; e as abas de atividade (Tudo, Comentários, Histórico) que
   viraram o filtro do painel.
+
+## 2026-10-26 · Linear e GitHub (o celular dos filhos, decisão (h))
+
+Escolhidas por Matthew na decisão (h) da B2, que decide como o celular dos
+filhos mostra a Atividade, as Atribuições e os Anexos. As duas estão na
+coleção "Andon · T-07 Itens filhos" do Mobbin (privada, da conta de
+Matthew); as imagens ficam lá, fora do repositório.
+
+- **Linear** (https://mobbin.com/screens/b60dd0ce-6c97-4719-82a3-eb49756360da)
+  e **GitHub** (https://mobbin.com/screens/1e8aefa5-a220-4bc2-b8fc-d01e48fb486b):
+  *"Eu gostei da do Linear e da do GitHub. Inclusive elas se parecem um
+  pouco."* As duas empilham tudo numa página só, sem abas: o título e as
+  propriedades em pílulas em cima (o estado, as pessoas), o conteúdo e a
+  atividade em linha do tempo embaixo, e o comentar num botão ou numa barra
+  flutuante. O GitHub também mostra o "Mais" aberto (Fechar, Excluir), uma
+  referência para o item 14.
