@@ -117,6 +117,8 @@ As telas foram movidas, não copiadas: os links abaixo continuam valendo.
 - [x] [T-04 Lista de NCs · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=217-2063): as abas Todas · Minhas · Vencidas, os filtros, a tabela e o "Carregar mais".
 - [x] [T-04 Lista de NCs · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=217-2192): a linha rica, e a [folha da Etapa](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=217-2257) (decisão (f)).
 
+- [ ] T-03 Minhas pendências, de novo, nos dois tamanhos: mais convidativa (pedido de Matthew, 2026-10-26; plano, B2, item 13).
+
   **Revista em 2026-10-23** (plano, B2, item 10): a T-13 bate com o `ui-ux.md` §6.1. A T-03 celular não tinha o filtro por tipo (posto); a T-04 virou a decisão (f), com a frase de estado e o Carregar mais no celular, que faltavam.
 - [x] [T-05 Nova NC · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-192): os campos em duas colunas, os responsáveis e os anexos ao lado.
 - [x] [T-05 Nova NC · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-289): "Detectada em" já com hoje, a barra de ações fixa embaixo.
