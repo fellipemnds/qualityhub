@@ -893,6 +893,16 @@ EXECUÇÃO
    Execução com o campo de data e a mesma ajuda; o prazo numa linha
    própria embaixo do estado.
 
+**Dois estados do padrão** (B2, item 14, 2026-10-27): depois de uma
+**reprovação**, o item volta para aberto com um aviso no topo, "Reprovada
+pela <aprovador> em <data>", o motivo entre aspas e "Corrija e envie de
+novo" (L7; some no próximo envio e continua no feed da NC). O item
+**fechado** é só leitura: os blocos viram linhas de rótulo e valor (como
+o "Sobre a NC"), a barra de ações some, o "+ Anexar" e o "+ Adicionar
+responsável" também (RN-45, RN-47), e embaixo do título vai "Fechada em
+<data> · aprovada pela <aprovador>"; Contenção, Classificação e
+Investigação fechadas não reabrem: cria-se outra (RN-42).
+
 ### 7.5 T-07 Investigação A3 (computador e celular)
 
 ```
@@ -1704,3 +1714,4 @@ tokens.
 | 2026-10-27 | v1.29 — §7.16: a T-12 Setores pela decisão (m) da B2: a lista + painel da T-09, com as pessoas do setor, a zona de perigo e a recusa da RN-44 como lista do que fazer |
 | 2026-10-27 | v1.30 — §8.2: o retirar da aprovação sem confirmação, o menu "Mais" (menu no computador, folha no celular) e o texto do `DialogoMotivo`; o diálogo numa versão só, com as quatro regras (B2, item 14) |
 | 2026-10-27 | v1.31 — §3 e §8.2: o vermelho só no botão final do que não se desfaz (a exceção do `marca.md`; o reprovar sai) e a quinta regra do diálogo, o foco |
+| 2026-10-27 | v1.32 — §7.4: o filho reprovado (o último motivo no topo, L7) e o filho fechado, só leitura (B2, item 14) |
