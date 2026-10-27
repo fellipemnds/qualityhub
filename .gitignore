@@ -28,9 +28,14 @@ Thumbs.db
 .claude/*
 !.claude/skills/
 !.claude/settings.json
+!.claude/marketplace/
 .cursor/
 .windsurf/
 .agents/
 skills-lock.json
 src/generated/
 coverage/
+# Grafo do understand-anything: o grafo vai para o Git; o rascunho do plugin, não
+.ua/intermediate/
+.ua/tmp/
+.ua/.trash-*/

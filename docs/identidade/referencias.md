@@ -6,6 +6,98 @@
 > repositório: são trabalho de outros autores. Daqui se tira o princípio,
 > nunca a forma (`docs/marca.md`, critério da longevidade).
 
+## 2026-10-20 · Taskpilot, Nexflow, Kargen e Mindex: os padrões
+
+Depois da Sovra (abaixo), quatro referências, com o combinado: até 5 por
+dia, uma frase de Matthew sobre o que o pegou, nenhuma decisão. Todas
+vieram por captura; autores não identificados.
+
+1. **Taskpilot** (ferramenta de trabalho com IA). Matthew: "as cores e o
+   detalhe gráfico", que lembra a tela de abertura do Claude Code. É
+   **pixel art com pontilhamento** (*dithering*; no terminal, arte ASCII),
+   em amarelo, menta, rosa e vinho, e o nome "·taskpilot" em minúsculas.
+   **O que tirar:** o quadro do andon na fábrica costuma ser um painel de
+   LED de pontos; um desenho feito de pontos de luz conta a história da
+   marca. **O cuidado:** mais uma marca de IA, e a cápsula de vidro (nada
+   de vidro, `docs/marca.md`).
+2. **Nexflow.** Matthew: o símbolo, "dois A estilizados que juntos
+   invertidos parecem um N", e o azul forte. Duas massas inclinadas com um
+   canal ondulado entre elas; amarelo-claro sobre azul elétrico, chapado.
+   **O que tirar:** a letra aparece **na segunda olhada** (abstrato
+   primeiro, letra depois), o que concilia o "sem letra" da ficha com a
+   letra que sempre volta; duas peças que só viram desenho juntas são o
+   "Concreto" do território (do um para todos); o canal é o corte por onde
+   a luz passa. "Andon" começa com A e N.
+3. **Kargen.** Matthew: "os símbolos formam o K" e "a junção das cores".
+   Uma barra e dois arcos, com o K no vazio; verde vivo sobre um verde
+   quase preto. **O que tirar:** **tom sobre tom** (um matiz em dois
+   valores, o fundo tingido em vez de preto), a lógica mais perto da
+   Grafite. **A tensão:** as curvas (a ficha diz "reto").
+4. **Mindex.** Matthew: a simetria que forma o M e as cores, que lembram
+   **as torres de andon**. Elipses sobrepostas em vermelho, amarelo e azul;
+   onde se cruzam, preto. **O que tirar:** a cor que **vem do andon**, e
+   não da moda: a torre de sinalização (vermelho, amarelo, verde, azul,
+   branco) é uma máquina cinza com luzes que só acendem para avisar,
+   **que é a regra da Grafite** ("a cor só aparece onde informa"). A
+   interface já é uma torre de andon. **Os cuidados:** o semáforo (clichê)
+   e as primárias da Bauhaus e do Google; a simetria é parada, e a ficha
+   pede movimento.
+
+**Os padrões do dia** (o que se repetiu, e por isso vale mais que
+qualquer referência sozinha):
+
+- **A letra escondida em formas simples que se juntam** (Nexflow, Kargen,
+  Mindex; antes, o N do Nucleus e os esboços do A). Abstrato primeiro,
+  letra na segunda olhada.
+- **A luz e a cor nos momentos de marca** (Sovra, Taskpilot, Nexflow,
+  Kargen), com a interface em grafite. Toda cor forte já tem dono nos
+  estados (azul, violeta, verde, âmbar, vermelho): uma cor de marca pede
+  um matiz livre, **ou** assume as cores da torre como a própria marca
+  (Mindex).
+- **O ponto de luz como linguagem gráfica** (Taskpilot; o pixel no
+  pôster da Sovra; o "//." do Monty).
+
+> **As perguntas em aberto, para responder descansado:** (1) a luz da
+> Sovra (abaixo); (2) a letra (A, N ou as duas) entra na ficha, na segunda
+> olhada?; (3) a cor da marca é um matiz livre dos estados ou são as cores
+> da torre de andon?
+
+## 2026-10-20 · Sovra e a luz que volta (pergunta em aberto)
+
+Matthew estava duvidando de tudo (nome, logos, cores) depois de muitas
+referências: degradês, espaço negativo, formas geométricas, interface com
+ruído. A regra combinada: **só reabre uma decisão uma informação nova, não
+um sentimento novo.**
+
+**A referência:** a marca **Sovra** (infraestrutura digital segura; autor
+não identificado, veio por captura). O símbolo tem três barras cheias e
+retas, de cantos macios, cortadas na diagonal, e o vazio entre elas
+desenha o S. Ao lado, "sovra" em minúsculas num grotesco. Três pôsteres:
+faixas verticais em degradê, um nascer do sol em azul, violeta e laranja,
+e um painel escuro com números. Em tudo, granulado sobre fundo escuro.
+
+**O que se tira dela:**
+
+1. **O símbolo cumpre a nossa ficha** (massa cheia, cantos macios,
+   diagonal, a forma no vazio). A direção estava certa; o que encanta é a
+   execução.
+2. **O degradê é o Dusk & Dawn:** a hora azul e o dourado do pôr do sol,
+   a luz da direção suspensa. **A informação nova é um padrão:** o olho de
+   Matthew volta sempre para a luz.
+3. **A interface dele é neutra:** o card do produto é branco e cinza, e a
+   cor fica na barra de progresso. O degradê mora na marca (pôster, fundo,
+   símbolo), não na tela de trabalho.
+
+**O cuidado:** degradê com granulado em fundo escuro é a moda de 2025–26
+(o critério da longevidade), e o degradê atrás de texto já está em "o
+que evitar" (`docs/marca.md`).
+
+> **A pergunta, para responder descansado:** a luz volta **só nos
+> momentos de marca** (o símbolo grande, o login, o e-mail de convite),
+> com a interface em **grafite**, como está? Se sim, o símbolo ganha duas
+> versões: uma com luz, para quando aparece grande, e uma de cor única,
+> para os 16 px e o favicon (a ficha hoje diz "uma cor").
+
 ## 2026-10-16 · A exploração guiada e a estrela (trabalho)
 
 Matthew estava se perdendo entre as referências; a sessão parou de desenhar

@@ -151,7 +151,7 @@ rotina de limpeza de órfãos (TRD §10.4) cobre o que escapar.
 
 ```mermaid
 erDiagram
-    Registro ||--o{ Comentario : "feed do item"
+    NaoConformidade ||--o{ Comentario : "feed da NC (Q25)"
     Comentario ||--o{ Comentario : "respostas (1 nível)"
     Comentario ||--o{ MencaoUsuario : "@pessoa"
     Comentario ||--o{ MencaoRegistro : "#item"
@@ -161,7 +161,7 @@ erDiagram
 
 | Tabela | Campos | Observações |
 |---|---|---|
-| `Comentario` | `id`, `registroId` (cascade), `autorId`, `texto`, `respostaAId String?` (auto-relação), `criadoEm`, `editadoEm DateTime?` | Resposta de resposta aponta para o comentário **raiz** — um nível só (RN-34). `editadoEm` preenchido = marcador "editado" (RN-31) |
+| `Comentario` | `id`, `naoConformidadeId` (cascade; só a NC tem feed, Q25), `autorId`, `texto`, `respostaAId String?` (auto-relação), `criadoEm`, `editadoEm DateTime?` | Resposta de resposta aponta para o comentário **raiz** — um nível só (RN-34). `editadoEm` preenchido = marcador "editado" (RN-31) |
 | `MencaoUsuario` | `comentarioId` (cascade), `usuarioId`, `vistaEm DateTime?` | Chave `(comentarioId, usuarioId)`. `vistaEm` nulo = pendência "Você foi mencionado" (fluxo T-03) |
 | `MencaoRegistro` | `comentarioId` (cascade), `registroId` (cascade) | Chave `(comentarioId, registroId)`. Permite "onde este item foi citado?" |
 
@@ -175,12 +175,58 @@ reescreve as tabelas de menção **na mesma transação** (RN-35).
 `Aprovacao`, para o "Aprovado pelo próprio autor", RN-28), mesclados com
 os comentários por data.
 
+**O feed é da NC e junta os filhos (Q25, 2026-10-26):** os eventos da
+própria NC e os de cada filho dela (pelo `naoConformidadeId`; a
+Verificação, pela ação de origem). O filtro `?item=` deixa só os eventos
+de um filho: é o que o atalho "Atividade deste item" da T-07 abre. O
+filho não tem comentário próprio.
+
 **Nem toda linha de auditoria vira evento no feed**, senão cada "Salvar"
 encheria a conversa. Entram: criação, publicação, envio para aprovação,
 aprovação/reprovação (com motivo), reabertura, cancelamento, finalizar
 execução, verificação gerada/concluída, mudança de atribuições e
 anexos. Edições de campos aparecem **agrupadas** ("Fulana editou os
 dados") sem detalhar o antes/depois — o detalhe continua na auditoria.
+
+### M6 — `Hipotese`: como verificar (nova, C2)
+
+Decidida na B2 (decisão (i), PRD Q26, `fluxo-app.md` L13), entra na C2 junto
+com as rotas das hipóteses (L1):
+
+| Tabela | Campo | Observações |
+|---|---|---|
+| `Hipotese` | `comoVerificar String?` | O teste que confirma ou descarta a hipótese. Nulo no rascunho; obrigatório para a hipótese estar **completa** (RN-24) |
+
+O `avaliarSubmissaoInvestigacao` ganha dois requisitos: toda hipótese com o
+`comoVerificar`, e **ao menos uma hipótese `CAUSA_DIRETA`**. A
+`causaDireta` da investigação continua um texto (o front a preenche a partir
+da hipótese, e a pessoa confirma a redação).
+
+**Na mesma fase (C2), a Q22 na Verificação:** o `finalizarExecucao` hoje
+dá ao aprovador da ação as duas funções na Verificação gerada
+(`acao-corretiva.service.ts:82-83`). Com colaborador e aprovador
+excludentes, ela passa a nascer **só com o colaborador**: sem portão, o
+aprovador nela não serve para nada.
+
+### M7 — `Usuario`: apelido e foto (nova, C5)
+
+Decidida na B2 (decisão (l), PRD Q27, RN-52 e RN-53), entra na C5 com os
+anexos (a foto usa o mesmo armazenamento da M3):
+
+| Tabela | Campo | Observações |
+|---|---|---|
+| `Usuario` | `apelido String?` | O aprovado. Teto curto (ex.: 40); aparece onde a pessoa é chamada |
+| `Usuario` | `apelidoPedido String?` | O pedido pendente; nulo sem pedido. Aprovar copia para o `apelido`; recusar e cancelar limpam |
+| `Usuario` | `apelidoResposta` (`APROVADO`/`RECUSADO`, nulo) + `apelidoRespostaVistaEm DateTime?` | O aviso de uma vez na T-03: aparece enquanto `vistaEm` for nulo |
+| `Usuario` | `foto` (a chave no armazenamento, nula) | Sem foto, o avatar gerado pelo nome. Imagem só (JPEG, PNG ou WebP), tamanho com teto, validada pelo conteúdo como os anexos |
+
+Rotas novas: `POST /auth/eu/apelido` (pedir) e `DELETE /auth/eu/apelido`
+(cancelar), da própria pessoa; `POST /usuarios/:id/apelido/aprovar` e
+`/recusar`, do `ADMIN`; `PUT /auth/eu/foto` e `DELETE /auth/eu/foto`, da
+própria pessoa; `DELETE /usuarios/:id/foto`, do `ADMIN`; no
+`GET /usuarios`, o filtro "com pedido de apelido" e o total de pedidos.
+Tudo auditado. O `euRespostaSchema` e a resposta do usuário ganham o
+apelido e a foto.
 
 ### M5 — Limpeza
 
@@ -313,6 +359,14 @@ obrigatórios do schema de fechamento que faltam + aprovador definido
 "Hoje" é o **dia em `America/Sao_Paulo`**, e a comparação é por dia, não
 por instante (TRD §6, B11).
 
+**O que a T-03 pede** (decisão (j) da B2, `ui-ux.md` §7.1): a ordem acima
+já dá o cartão do mais urgente (o primeiro da lista), e as contagens e o
+"em dia" saem da própria lista no front. **A decidir na C3:** os
+responsáveis do cartão, no computador. Ou a rota passa a trazer os
+colaboradores do primeiro item, ou o cartão busca o item (uma requisição
+a mais). O Corrigir mostra o último motivo da reprovação (§4.5, L7), e
+Suas NCs usa o `GET /ncs?minhas`, que já existe.
+
 ### 4.5 Último motivo de reprovação (lacuna L7)
 
 `motivo` da última `Aprovacao` do item, se ela for `REPROVADO` — vai
@@ -353,15 +407,15 @@ Os caminhos abaixo são mostrados **sem** o prefixo `/api`.
 | | Método e caminho | Quem | O que faz |
 |---|---|---|---|
 | = | `POST /usuarios` | `ADMIN` | Cria e devolve o token do convite (já é assim); o frontend monta o link |
-| ＋ | `GET /usuarios` | `ADMIN` | Lista com busca (nome/e-mail) e filtro ativo/inativo |
-| ＋ | `GET /usuarios/:id` | `ADMIN` | Detalhe com papéis |
-| ＋ | `PATCH /usuarios/:id` | `ADMIN` | Nome, setor |
-| ＋ | `POST /usuarios/:id/papeis` | `ADMIN` | Concede um papel |
-| ＋ | `DELETE /usuarios/:id/papeis/:papel` | `ADMIN` | Revoga — **recusa** se a pessoa for aprovadora de item aberto e o papel for `APROVADOR`, listando os itens (RN-43) |
-| ＋ | `POST /usuarios/:id/inativar` | `ADMIN` | Mesma trava; preenche `desativadoEm` e soma 1 à `versaoSessao` |
-| ＋ | `POST /usuarios/:id/reativar` | `ADMIN` | Limpa `desativadoEm` (E2) |
+| ＋ ✅ | `GET /usuarios` | `ADMIN` | Lista com busca (nome/e-mail) e filtro ativo/inativo |
+| ＋ ✅ | `GET /usuarios/:id` | `ADMIN` | Detalhe com papéis |
+| ＋ ✅ | `PATCH /usuarios/:id` | `ADMIN` | Nome, setor |
+| ＋ ✅ | `POST /usuarios/:id/papeis` | `ADMIN` | Concede um papel |
+| ＋ ✅ | `DELETE /usuarios/:id/papeis/:papel` | `ADMIN` | Revoga — **recusa** se a pessoa for aprovadora de item aberto e o papel for `APROVADOR`, listando os itens (RN-43) |
+| ＋ ✅ | `POST /usuarios/:id/inativar` | `ADMIN` | Mesma trava; preenche `desativadoEm` e soma 1 à `versaoSessao` |
+| ＋ ✅ | `POST /usuarios/:id/reativar` | `ADMIN` | Limpa `desativadoEm` (E2) |
 | ＋ ✅ | `POST /usuarios/:id/convite` | `ADMIN` | Gera novo link (o anterior expirou, se perdeu, ou a pessoa esqueceu a senha) e **invalida os convites anteriores não usados** (`revogadoEm`); derruba as sessões; inativo → 409. Resposta `{ tokenConvite, expiraEm }`, `no-store` |
-| ＋ | `GET /pessoas` | Papéis de negócio | Busca leve (id, nome, setor — E3) de usuários **ativos**, com filtro `?papel=APROVADOR` — alimenta o painel de atribuições e o `@` do feed |
+| ＋ ✅ | `GET /pessoas` | Papéis de negócio | Busca leve (id, nome, setor — E3) de usuários **ativos**, com filtro `?papel=APROVADOR` — alimenta o painel de atribuições e o `@` do feed |
 | ＋ ✅ | `GET /setores` | Logado | Setores ativos (o `ADMIN` pode pedir os inativos também) |
 | ＋ ✅ | `POST /setores` · `PATCH /setores/:id` | `ADMIN` | Criar, renomear |
 | ＋ ✅ | `POST /setores/:id/desativar` · `/reativar` | `ADMIN` | RN-44 |
@@ -403,7 +457,7 @@ a lista dela filtra por `acaoCorretivaId`. A Ação Corretiva tem ainda
 | ＋ ✅ | Todos os `POST /<tipo>/:id/retirar` | Retira da aprovação, como na NC (RN-48). Não vale para Verificação (não tem portão). **Feito na A3** (2026-10-01): `cicloVidaService.retirar`, com a ação do submeter como parâmetro (`CLASSIFICAR` na Classificação); auditoria `RETIRAR_DA_APROVACAO` |
 | Δ | Todos os `GET /<tipo>/:id` | + último motivo de reprovação |
 | Δ ✅ | `POST /nc/:ncId/acoes-corretivas` · `PATCH /acoes-corretivas/:id` | `investigacaoId` **obrigatório já na criação**, de uma investigação **desta NC** em `ABERTO`; o `PATCH` não o apaga (B10, RN-49) |
-| Δ ✅ | `POST /investigacoes/:id/submeter` | Exige os planos das ações ligadas aprovados (RN-24, B5); responde 409 com a lista do que falta |
+| Δ ✅ | `POST /investigacoes/:id/submeter` | Exige os planos das ações ligadas aprovados (RN-24, B5); responde 409 com a lista do que falta. **Na C2 (M6, Q26):** também o `comoVerificar` em toda hipótese e ao menos uma hipótese de causa direta |
 | Δ ✅ | `POST /investigacoes/:id/cancelar` | Exige as ações ligadas canceladas ou fechadas (RN-50); responde 409 com a lista das que faltam. **Feito na A3 (8f):** `avaliarCancelamentoInvestigacao`, no validador opcional que o `cicloVidaService.cancelar` ganhou (roda depois de estado e permissão) |
 | ＋ | `POST /investigacoes/:id/hipoteses` | Cria hipótese (lacuna L1) — só colaborador, investigação editável |
 | ＋ | `PATCH /hipoteses/:id` · `DELETE /hipoteses/:id` | Edita / apaga — mesmas regras |
@@ -420,13 +474,13 @@ a lista dela filtra por `acaoCorretivaId`. A Ação Corretiva tem ainda
 |---|---|---|
 | ＋ | `GET /registros/:id/atribuicoes` | Colaboradores e aprovador (painel de atribuições) |
 | Δ ✅ | `PUT /registros/:id/aprovador` · `POST`/`DELETE /registros/:id/colaboradores` | Só em `RASCUNHO`/`ABERTO`; em `EM_APROVACAO`, só o `GERENTE` troca o aprovador (RN-47, B17). Colaborador inexistente → 404 (B16) |
-| ＋ | `GET /registros/:id/feed?cursor=` | Eventos + comentários, em ordem cronológica, paginado |
-| ＋ | `POST /registros/:id/comentarios` | Comenta (ou responde, com `respostaAId`) |
+| ＋ | `GET /nc/:id/feed?cursor=&item=` | Eventos da NC e dos filhos + comentários, em ordem cronológica, paginado; `item` filtra os eventos de um filho (Q25) |
+| ＋ | `POST /nc/:id/comentarios` | Comenta (ou responde, com `respostaAId`) |
 | ＋ | `PATCH /comentarios/:id` · `DELETE /comentarios/:id` | RN-31 a RN-33 |
-| ＋ | `POST /registros/:id/mencoes/vistas` | Marca as menções à pessoa neste item como vistas (ao abrir o item) |
+| ＋ | `POST /nc/:id/mencoes/vistas` | Marca as menções à pessoa nesta NC como vistas (ao abrir o feed) |
 | ＋ | `GET /registros/:id/anexos` · `POST /registros/:id/anexos` | Lista / envia (multipart) |
 | ＋ | `GET /anexos/:id` · `DELETE /anexos/:id` | Baixa / remove (TRD §8.3) |
-| ＋ | `GET /registros/busca?q=` | Busca por código — alimenta o `#` do feed. Só itens publicados (RN-11) |
+| ＋ | `GET /registros/busca?q=` | Busca por código — alimenta o `#` do feed. Só itens publicados (RN-11). **A busca geral** (decisão (n) da B2) pede também o texto (o título da NC, a descrição dos filhos), o filtro `?tipo=` das pílulas e a contagem por tipo: o índice e a forma da resposta decididos na C4 |
 
 ### 6.6 Pendências, relatórios, sistema
 
@@ -437,11 +491,98 @@ a lista dela filtra por `acaoCorretivaId`. A Ação Corretiva tem ainda
 | ＋ | `GET /relatorios/tempo-fechamento` | `GERENTE` | Média detecção → fechamento, por período e classificação |
 | ＋ | `GET /relatorios/atrasados` | `GERENTE` | Ações e verificações vencidas, com responsáveis |
 | ＋ | `GET /relatorios/eficacia` | `GERENTE` | Resultados de verificação, NCs reabertas, causas-raiz recorrentes |
-| Δ | `GET /` → `GET /saude` | Público | Confere banco e armazenamento |
-| ＋ | `GET /docs` | Só em desenvolvimento | OpenAPI navegável |
+| Δ | `GET /` → `GET /saude` | Público | Confere banco e armazenamento. **Existe** desde a A5 (`src/app.ts`), mas só responde `ok`: conferir o banco e o armazenamento fica para a D1 |
+| ＋ ✅ | `GET /docs` | Só em desenvolvimento | OpenAPI navegável (`src/interface-documentacao.ts`) |
+
+**O que a T-08 pede** (decisão (k) da B2, `ui-ux.md` §7.12), a decidir na
+C7: as quatro rotas recebem o período (`de`/`ate`, dias de calendário) e
+devolvem também o **valor do período anterior** de mesmo tamanho (ou o
+front chama duas vezes); o **"O que mudou"** sai das respostas, no front,
+por uma regra combinada com a analista, sem rota nova.
 
 Relatórios aceitam `?de=&ate=` e devolvem, junto de cada número, os
 **filtros** que levam à lista de NCs correspondente (fluxo J12).
+
+
+### 6.7 As rotas que existem (o código em 2026-10-27)
+
+Levantadas no item 16 da B2, direto dos `*.routes.ts` e do `src/app.ts` (a busca inteira, a regra do "existe ou não existe"). São **82**, todas sob `/api`; a página do OpenAPI (`/api/docs`) é só de desenvolvimento e não entra na conta. É a lista que o Orval vai ler na C0; as marcas ✅ das tabelas acima foram conferidas contra ela no mesmo dia.
+
+| Arquivo | Rotas | Quantas |
+|---|---|---|
+| `src/app.ts` | `GET /saude` | 1 |
+| `compartilhado/atribuicao/atribuicao.routes.ts` | `PUT /registros/:id/aprovador` · `POST /registros/:id/colaboradores` · `DELETE /registros/:id/colaboradores` | 3 |
+| `modulos/auth/auth.routes.ts` | `POST /auth/definir-senha` · `POST /auth/login` · `GET /auth/eu` · `PATCH /auth/eu` · `POST /auth/logout` · `POST /auth/sair-de-todos` | 6 |
+| `modulos/nc/acao-corretiva/acao-corretiva.routes.ts` | `POST /nc/:naoConformidadeId/acoes-corretivas` · `PATCH /acoes-corretivas/:id` · `DELETE /acoes-corretivas/:id` · `POST /acoes-corretivas/:id/publicar` · `POST /acoes-corretivas/:id/submeter` · `POST /acoes-corretivas/:id/retirar` · `POST /acoes-corretivas/:id/decidir` · `POST /acoes-corretivas/:id/finalizar-execucao` · `POST /acoes-corretivas/:id/cancelar` · `GET /acoes-corretivas/:id` · `GET /acoes-corretivas` | 11 |
+| `modulos/nc/classificacao/classificacao.routes.ts` | `POST /nc/:naoConformidadeId/classificacoes` · `PATCH /classificacoes/:id` · `DELETE /classificacoes/:id` · `POST /classificacoes/:id/publicar` · `POST /classificacoes/:id/submeter` · `POST /classificacoes/:id/retirar` · `POST /classificacoes/:id/decidir` · `GET /classificacoes/:id` · `GET /classificacoes` | 9 |
+| `modulos/nc/contencao/contencao.routes.ts` | `POST /nc/:naoConformidadeId/contencoes` · `PATCH /contencoes/:id` · `DELETE /contencoes/:id` · `POST /contencoes/:id/publicar` · `POST /contencoes/:id/submeter` · `POST /contencoes/:id/retirar` · `POST /contencoes/:id/decidir` · `POST /contencoes/:id/cancelar` · `GET /contencoes/:id` · `GET /contencoes` | 10 |
+| `modulos/nc/investigacao/investigacao.routes.ts` | `POST /nc/:naoConformidadeId/investigacoes` · `PATCH /investigacoes/:id` · `DELETE /investigacoes/:id` · `POST /investigacoes/:id/publicar` · `POST /investigacoes/:id/submeter` · `POST /investigacoes/:id/retirar` · `POST /investigacoes/:id/decidir` · `POST /investigacoes/:id/cancelar` · `GET /investigacoes/:id` · `GET /investigacoes` | 10 |
+| `modulos/nc/nc/nc.routes.ts` | `POST /nc` · `PATCH /nc/:id` · `DELETE /nc/:id` · `POST /nc/:id/publicar` · `POST /nc/:id/submeter` · `POST /nc/:id/retirar` · `GET /nc/:id/checklist-fechamento` · `POST /nc/:id/decidir` · `POST /nc/:id/reabrir` · `POST /nc/:id/cancelar` · `GET /nc/:id` · `GET /nc` | 12 |
+| `modulos/nc/verificacao/verificacao.routes.ts` | `PATCH /verificacoes/:id` · `POST /verificacoes/:id/concluir` · `POST /verificacoes/:id/cancelar` · `GET /verificacoes/:id` · `GET /verificacoes` | 5 |
+| `modulos/setor/setor.routes.ts` | `GET /setores` · `POST /setores` · `PATCH /setores/:id` · `POST /setores/:id/desativar` · `POST /setores/:id/reativar` | 5 |
+| `modulos/usuario/usuario.routes.ts` | `POST /usuarios` · `GET /usuarios` · `GET /pessoas` · `GET /usuarios/:id` · `PATCH /usuarios/:id` · `POST /usuarios/:id/convite` · `POST /usuarios/:id/inativar` · `POST /usuarios/:id/reativar` · `POST /usuarios/:id/papeis` · `DELETE /usuarios/:id/papeis/:papel` | 10 |
+| **Total** | | **82** |
+
+### 6.8 As rotas que as telas pedem (B2, item 16)
+
+Tela por tela, o que ela **lê** e **faz**, a rota que responde e a
+situação conferida no código (§6.7): **existe** (serve como está),
+**muda** (Δ: existe, mas falta campo ou filtro) ou **nova** (＋). A fase
+é a fatia C que traz a tela (plano). Feito em 2026-10-27, depois das
+decisões (a) a (n) da B2. Nenhuma tela ficou sem rota; o que é só do
+front está dito.
+
+| Tela | O que lê ou faz | Rota | Situação | Fase |
+|---|---|---|---|---|
+| Casca (doca, barra, menu da pessoa) | Quem é, os papéis, a tela inicial | `GET /auth/eu` | existe | C0 |
+| | O contador das Pendências | `GET /pendencias` | nova (§4.4) | C3 |
+| | Sair, sair de todos | `POST /auth/logout` · `/auth/sair-de-todos` | existe | C0 |
+| | O apelido e a foto onde a pessoa é chamada | `GET /auth/eu` e as listas de pessoas | muda (M7) | C5 |
+| | A janela dos atalhos (o ?) | — | só front (o interruptor fica no navegador) | C8 |
+| A busca (Ctrl K, a lupa) | Itens e NCs pelo código e pelo texto, o filtro por tipo, a contagem por tipo | `GET /registros/busca` | nova; o texto, o `?tipo=` e a contagem a decidir (§6.5) | C4 |
+| | Os recentes | — | só front (o navegador) | C4 |
+| T-01 Login | Entrar | `POST /auth/login` | existe | C0 |
+| T-02 Definir senha | Definir pelo convite | `POST /auth/definir-senha` | existe | C0 |
+| T-03 Minhas pendências | As gavetas, o mais urgente (com os responsáveis) | `GET /pendencias` | nova (§4.4) | C3 |
+| | Suas NCs (computador) | `GET /nc?minhas=true` | existe | C3 |
+| | O aviso do apelido aprovado ou recusado, uma vez | `GET /auth/eu` + marcar como visto | **nova, sem rota definida**: a M7 tem o `apelidoRespostaVistaEm`, mas nenhuma rota o preenche | C5 |
+| T-04 Lista de NCs | A lista com etapa, indicadores e os responsáveis (Com quem) | `GET /nc` | muda (§6.3; os responsáveis, decisão (f) revista) | C1 |
+| | Os filtros (etapa, setor, prazo vencido, sem aprovador), a busca e as visões com o total (L10) | `GET /nc` | muda: hoje só `minhas` (`nc.schema.ts:52`) | C1 |
+| | As opções de setor | `GET /setores` | existe | C1 |
+| | Nova NC (só `EDITOR` e `GERENTE`) | `GET /auth/eu` (os papéis) | existe | C1 |
+| T-05 Nova NC | Criar, salvar, publicar | `POST /nc` · `PATCH /nc/:id` · `POST /nc/:id/publicar` | `POST` muda (os colaboradores, Q10); o resto existe | C1 |
+| | O setor e as pessoas para atribuir | `GET /setores` · `GET /pessoas` | existe | C1 |
+| | Os anexos | `POST /registros/:id/anexos` | nova | C5 |
+| T-06 Detalhe da NC | A NC com etapa, indicadores, o último motivo, a classificação vigente e o resumo dos filhos | `GET /nc/:id` | muda (§6.3, plano C1) | C1 |
+| | O checklist de fechamento | `GET /nc/:id/checklist-fechamento` | existe | C1 |
+| | Os itens da NC | `GET /<tipo>?naoConformidadeId=` | existe (ou o resumo no `GET /nc/:id`) | C1 |
+| | As atribuições: ler e mudar | `GET /registros/:id/atribuicoes` · `PUT .../aprovador` · `POST`/`DELETE .../colaboradores` | o `GET` é novo; o resto existe | C1 |
+| | Enviar, retirar, aprovar ou reprovar o fechamento, cancelar, reabrir (o "Mais", o `DialogoMotivo`) | `POST /nc/:id/submeter` · `/retirar` · `/decidir` · `/cancelar` · `/reabrir` | existe | C1 |
+| | O feed, os comentários, as menções | `GET /nc/:id/feed` · `POST /nc/:id/comentarios` · `PATCH`/`DELETE /comentarios/:id` · `POST /nc/:id/mencoes/vistas` | nova | C4 |
+| | Os anexos | `GET`/`POST /registros/:id/anexos` · `GET`/`DELETE /anexos/:id` | nova | C5 |
+| T-07 Itens filhos (os cinco) | O item com o último motivo de reprovação (o aviso L7) | `GET /<tipo>/:id` | muda (§6.4) | C2 |
+| | Criar, salvar, publicar, enviar, retirar, decidir, cancelar, excluir o rascunho | `POST /nc/:id/<tipo>` · `PATCH`/`DELETE /<tipo>/:id` · `/publicar` · `/submeter` · `/retirar` · `/decidir` · `/cancelar` | existe (as exceções da §6.4) | C2 |
+| | A Ação Corretiva: finalizar a execução | `POST /acoes-corretivas/:id/finalizar-execucao` | existe | C2 |
+| | A Verificação: concluir | `POST /verificacoes/:id/concluir` | existe | C2 |
+| | A Investigação: as hipóteses e as contramedidas | `GET /investigacoes/:id` · `POST /investigacoes/:id/hipoteses` · `PATCH`/`DELETE /hipoteses/:id` | o `GET` muda; as hipóteses são novas (L1, M6) | C2 |
+| | A Atividade deste item (o feed da NC filtrado) | `GET /nc/:id/feed?item=` | nova | C4 |
+| T-08 Relatórios | Os quatro relatórios, com o período e o anterior | `GET /relatorios/...` (4) | nova (§6.6) | C7 |
+| T-09 a T-11 Usuários | A lista, a busca, o filtro ativo ou inativo | `GET /usuarios` | existe; muda na C5 (o filtro e o total dos pedidos de apelido) | C6 |
+| | A pessoa: dados, papéis, convite, inativar e reativar | `GET`/`PATCH /usuarios/:id` · `POST /usuarios/:id/papeis` · `DELETE .../papeis/:papel` · `/convite` · `/inativar` · `/reativar` | existe | C6 |
+| | Em andamento com ela (os itens de que é aprovadora, antes de inativar) | `GET /usuarios/:id` | **muda, sem rota definida**: hoje a lista só vem no 409 da recusa (RN-43) | C6 |
+| | O apelido (aprovar, recusar) e a foto (remover) | `POST /usuarios/:id/apelido/aprovar` · `/recusar` · `DELETE /usuarios/:id/foto` | nova (M7) | C5 |
+| | Novo usuário e o convite | `POST /usuarios` | existe | C6 |
+| T-12 Setores | A lista com as contagens de pessoas ativas e inativas e o `criadoEm` | `GET /setores` | muda (decisão (m)): hoje só `id`, `nome` e `desativadoEm` | C6 |
+| | As pessoas do setor | `GET /usuarios?setorId=` | muda (decisão (m)): hoje `busca` e `situacao` | C6 |
+| | Criar, renomear, desativar, reativar | `POST /setores` · `PATCH /setores/:id` · `/desativar` · `/reativar` | existe | C6 |
+| T-13 Eu / Minha conta | Os dados e a tela inicial | `GET /auth/eu` · `PATCH /auth/eu` | existe | C3 |
+| | O apelido (pedir, cancelar) e a foto (trocar, remover) | `POST`/`DELETE /auth/eu/apelido` · `PUT`/`DELETE /auth/eu/foto` | nova (M7) | C5 |
+
+**Duas faltas que este levantamento achou** e nenhum documento tinha: a
+rota que marca como **visto o aviso do apelido** (T-03; a M7 tem o
+campo, ninguém o preenche) e a lista **Em andamento com ela** (T-09:
+os itens de que a pessoa é aprovadora, que hoje só aparecem no 409 da
+RN-43). As duas se decidem na fase de cada uma (C5 e C6).
 
 ---
 
@@ -598,3 +739,10 @@ Com Matthew, em 2026-09-24.
 | 2026-10-09 | v1.56 — B29–B36 registrados (filho fora da NC aberta e as conferências entre linhas sem trava), da revisão de concorrência da A6; fase A7 |
 | 2026-10-09 | v1.57 — B29–B36 corrigidos (A7): travar antes de ler (`registroRepository.travar`, as travas da pessoa e do setor, a trava única da saída de ADMIN), sempre `FOR NO KEY UPDATE`; filho novo só com a NC aberta |
 | 2026-10-09 | v1.58 — B37 registrado e corrigido (A7, no portão): o `conteudo` da investigação sem `z.json()`, e a trava de `$ref` no `app.test.ts` |
+| 2026-10-26 | v1.59 — M4 e §6: o feed mora só na NC (Q25, B2): o `Comentario` pertence à NC, o feed junta os eventos dos filhos, e as rotas viram `GET /nc/:id/feed`, `POST /nc/:id/comentarios` e `POST /nc/:id/mencoes/vistas` |
+| 2026-10-26 | v1.60 — M6 (C2): `Hipotese.comoVerificar` e os dois requisitos novos do envio da investigação (PRD Q26); a Verificação nasce só com o colaborador (Q22) |
+| 2026-10-26 | v1.61 — §4.4: o que a T-03 nova pede (decisão (j) da B2): o cartão e as contagens saem da própria lista; os responsáveis do cartão, a decidir na C3 |
+| 2026-10-26 | v1.62 — §6, relatórios: o que a T-08 nova pede (o período anterior para a comparação e o "O que mudou" no front), a decidir na C7 |
+| 2026-10-26 | v1.63 — M7 (C5): o apelido com o pedido e a resposta, e a foto, com as rotas (decisão (l) da B2, PRD RN-52 e RN-53) |
+| 2026-10-27 | v1.64 — B2, item 16 (fatia 1): §6.7, as 82 rotas que existem no código; as marcas ✅ conferidas contra ele (as rotas de usuários e pessoas, o `/docs`; o `/saude` existe sem conferir o banco) |
+| 2026-10-27 | v1.65 — B2, item 16 (fatia 2): §6.8, as rotas que as telas pedem, tela por tela, com a situação no código e a fase; duas faltas novas (o aviso do apelido visto, o Em andamento com ela) |

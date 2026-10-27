@@ -20,7 +20,7 @@ Com Matthew, em 2026-09-24:
 | Decisão | Escolha | Observação |
 |---|---|---|
 | Biblioteca de componentes | **shadcn/ui** (Radix + Tailwind) | **Diverge do `arquitetura.md`** (ADR-28 recomendava Mantine). Os componentes são copiados para dentro do projeto e viram código nosso |
-| Identidade visual | **Própria da plataforma Andon** (nome **provisório** desde 2026-10-20, `docs/marca.md`), com a **assinatura** da empresa (revisto em 2026-10-13; antes, "decidir depois"; o nome Andon é de 2026-10-15 e substitui "Dusk & Dawn" no texto ao lado, onde as **faces Dawn e Dusk estão suspensas** desde 2026-10-14, `docs/marca.md`) | A identidade oficial da empresa não combina com o app, e Matthew tem liberdade para decidir. **Andon** é o nome da **plataforma**, que vai ganhar módulos além das NCs (o roteiro no `README.md`); cada módulo mantém um nome que diz o que faz ("Andon · Qualidade"). O código continua `qualityhub`: o nome só aparece na tela. A plataforma tem **duas faces, divididas por pessoa e não por módulo**: **Dawn**, a do colaborador (pendências, abrir uma NC ou uma solicitação, fazer um treinamento), e **Dusk**, a da gestão (aprovar, relatórios, indicadores, administração). Um login só; a face Dusk aparece para quem tem papel de gestão (a tela inicial por papel da A4 e os papéis que se somam). A autoria de Matthew fica numa tela **"Sobre"** ("Criado por Matthew", com o aviso de copyright), não na marca. A empresa aparece só como assinatura, com o logo dela **monocromático** (cinza ou a cor do texto, nunca as cores originais): no login, no rodapé do menu lateral, no rodapé do e-mail de convite e no cabeçalho dos relatórios exportados. O ícone da aba, o topo das telas e os botões são do Andon. Os tokens continuam por **função** (`--perigo`, `--primary`...); a B1 definiu os valores (`docs/marca.md`: o **Grafite**, sem cor de destaque; as faces não entram no tema), e o `DESIGN.md` da B3 registra tudo |
+| Identidade visual | **Própria da plataforma Andon** (nome **provisório** desde 2026-10-20, `docs/marca.md`), com a **assinatura** da empresa (revisto em 2026-10-13; antes, "decidir depois"; o nome Andon é de 2026-10-15 e substitui "Dusk & Dawn" no texto ao lado, onde as **faces Dawn e Dusk estão suspensas** desde 2026-10-14, `docs/marca.md`) | A identidade oficial da empresa não combina com o app, e Matthew tem liberdade para decidir. **Andon** é o nome da **plataforma**, que vai ganhar módulos além das NCs (o roteiro no `README.md`); cada módulo mantém um nome que diz o que faz ("Andon · Qualidade"). O código continua `qualityhub`: o nome só aparece na tela. A plataforma tem **uma cara só**, com um login: as faces Dawn (colaborador) e Dusk (gestão) da direção de 2026-10-13 estão **suspensas** (`docs/marca.md`, "Suspenso"). O que muda por pessoa é o menu e a tela inicial, pelos papéis (`fluxo-app.md` §2.1 e §3). A autoria de Matthew fica numa tela **"Sobre"** ("Criado por Matthew", com o aviso de copyright), não na marca. A empresa aparece só como assinatura, com o logo dela **monocromático** (cinza ou a cor do texto, nunca as cores originais): no login, no menu da pessoa (que abre da doca do computador e na tela Eu do celular), no rodapé do e-mail de convite e no cabeçalho dos relatórios exportados. O ícone da aba, o topo das telas e os botões são do Andon. Os tokens continuam por **função** (`--perigo`, `--primary`...); a B1 definiu os valores (`docs/marca.md`: o **Grafite**, sem cor de destaque; as faces não entram no tema), e o `DESIGN.md` da B3 registra tudo |
 | Processo de design | **Documento → Figma → protótipo HTML** | Wireframes e mockups no Figma; protótipo HTML clicável quando o design fechar, para o teste do gate G3 |
 | Tema | **Claro e escuro** (revisto em 2026-10-13; antes, "só claro no MVP"; as duas faces saíram com o Dusk & Dawn) | Decidido na entrevista da B1 (`docs/marca.md`). As cores já são tokens, então o escuro não refaz telas; o custo fica na B3, com o contraste conferido nos dois modos |
 
@@ -44,6 +44,8 @@ calendário, popover...). O QualityHub precisa de algumas peças que ele
 Versões e configuração ficam para o TRD. **Regra:** não adicionar
 biblioteca além destas sem registrar o motivo no changelog, porque cada
 dependência é mais uma coisa que pode quebrar (princípio do PRD §2).
+Quando o shadcn/ui não tem o componente, a escada da §2.2 (regra 3 da
+governança) decide entre compor, buscar um pacote ou escrever o nosso.
 
 ---
 
@@ -63,12 +65,102 @@ um lugar onde acontece:
 
 ### 2.1 Estrutura do arquivo no Figma
 
+As páginas de componentes seguem o Atomic Design (§2.2; revisto em
+2026-10-23, antes uma página só, "Componentes"):
+
 | Página | Conteúdo |
 |---|---|
-| **Fundações** | Variables de cor, tipografia, espaçamento e raio, com os mesmos nomes dos tokens da §3 |
-| **Componentes** | Os componentes da §5. Variantes do badge com os nomes do enum (`RASCUNHO`, `EM_APROVACAO`...), assim o handoff é mecânico: o nome no Figma é a chave no código |
+| **Fundações** | Variables de cor (primitivos e semânticos, §2.2), tipografia, espaçamento e raio, com os mesmos nomes dos tokens da §3 |
+| **Átomos** | As peças que não se dividem: botão, campo, estado/etapa/prazo, ícone, avatar |
+| **Moléculas** | Átomos juntos com uma função (a linha de pendência, o campo com rótulo e erro) |
+| **Organismos** | As partes inteiras de uma tela (a doca, a barra do celular, o feed, a seção de filhos) |
 | **Wireframes** | Cinza, sem cor, um frame por tela (desktop e, quando indicado, celular) |
-| **Mockups** | As mesmas telas com as fundações aplicadas e os estados do G4 |
+| **Mockups** | As mesmas telas com os componentes e as fundações aplicados, e os estados do G4 |
+| **Decisões (histórico)** | Uma seção por decisão de desenho, com as variantes comparadas e o "Antes" (skill `/desenhar`) |
+
+Em todas: as variantes têm os nomes do enum (`RASCUNHO`, `EM_APROVACAO`...),
+e o componente tem o nome do componente React (§5), assim o handoff é
+mecânico: o nome no Figma é a chave no código.
+
+### 2.2 Como o Design System é construído (B3)
+
+Decidido com Matthew em 2026-10-23, na B2, antes da B3. Os componentes
+seguem o **Atomic Design** de Brad Frost como **modelo para organizar e
+dar nome** (átomos, moléculas, organismos, telas), não como ordem de
+construção: o próprio Frost diz que ele não é um processo em linha reta.
+A ordem é puxada pelas telas, sobre uma base de tokens.
+
+1. **Os tokens em duas camadas.** Os **primitivos** são a paleta crua,
+   sem função (`cinza/900`, `vermelho/600`); os **semânticos** dizem a
+   função e apontam para um primitivo em cada modo (`estado/vencida` → um
+   vermelho no claro, outro no escuro). O modo escuro é trocar para onde o
+   semântico aponta, e o contraste se confere nos pares de primitivos.
+   **Token de componente** (`botao/primario/fundo`) só por exceção, com o
+   motivo escrito: quando um componente precisar fugir do semântico. Em
+   2026-10-23, a coleção Cor tem só os 18 semânticos, com o valor direto: a
+   B3 começa criando os primitivos embaixo deles.
+   **Reservado: `marca/toque`** (2026-10-23), o único semântico onde a
+   cor de uma empresa cliente poderia entrar, se o Andon virar SaaS (a
+   sessão antes da C0, no plano): só em lugar sem significado (o fundo do
+   login, o anel do avatar, o ícone da aba), nunca num estado nem numa
+   ação, e com o contraste conferido nos dois modos antes de valer. Começa
+   no cinza.
+2. **A construção: uma base comum, depois as telas puxam.** A base são os
+   tokens das duas camadas e os 5 átomos que toda tela usa (botão, campo,
+   estado/etapa/prazo, ícone e avatar). Depois, uma tela por vez, na ordem
+   das fatias da fase C: T-01 Login (C0; testa o caminho do token à tela)
+   → T-05, T-06 e T-04 (C1) → T-07 (C2) → T-03 (C3) → T-09 a T-12 (C6) →
+   T-08 (C7). Cada tela monta só as moléculas e os organismos que faltam e
+   reaproveita o resto. Quando ela não cabe num componente, o ajuste é
+   **no componente**, nunca uma cópia solta na tela. A ordem também cobre a
+   B4 a tempo: a Nova NC, a aprovação e o comentário vêm cedo.
+3. **A governança**, cinco regras:
+   1. **Onde está a verdade:** no Figma, durante o Bloco B. O `DESIGN.md`
+      (fim da B3) é o contrato escrito que os agentes leem na fase C. A
+      partir da C0, o CSS nasce do `DESIGN.md`, e uma mudança de token
+      mexe nos três no mesmo commit.
+   2. **Quem decide:** Matthew decide, Claude propõe. Semântico novo só
+      com uma função nova (um estado novo, por exemplo), nunca por "um tom
+      diferente"; primitivo novo só quando nenhum dos que existem passa o
+      contraste; token de componente, com o motivo escrito.
+   3. **Quando um componente entra:** quando uma tela precisa e nada do
+      que existe serve. A mesma função é **variante** (variante = enum,
+      §2.1), não componente novo. No código, a escada da `/desenhar`, que
+      para no primeiro degrau que resolve: o shadcn tem → compor com o que
+      ele tem → um registro da comunidade do shadcn → um pacote de fora
+      (pesado pelo peso, manutenção, acessibilidade, encaixe nos tokens e
+      licença) → escrever o nosso. Degrau 4 ou 5 vai para o changelog
+      (§1.1).
+   4. **Quando um componente está pronto:** toda cor e medida ligada a
+      uma variável, sem valor solto (Claude confere pelo conector, com um
+      script que lista o que está sem variável); os estados que fizerem
+      sentido (padrão, hover, foco, desabilitado, erro); claro e escuro,
+      com o contraste conferido; a descrição de uso no Figma; o nome no
+      padrão (§2.1).
+   5. **Registro e saída:** toda mudança numa tabela de histórico do
+      `DESIGN.md` (data, o quê, por quê), sem número de versão (um
+      produto e um time: o histórico e o Git bastam). O componente que sai
+      não é apagado: vai para o histórico marcado "não usar" e sai de vez
+      quando nenhuma tela o usar.
+4. **A ponte com o código** (na C0). Os primitivos ficam no tema do
+   Tailwind, e os semânticos, nas variáveis do shadcn (claro e escuro),
+   cada um apontando para um primitivo; o formato exato é conferido na
+   documentação na hora. Os valores vão do Figma para o `DESIGN.md` e o
+   CSS pelo conector, escritos pelo Claude (uns 40 tokens, uma plataforma
+   só), sem o Style Dictionary, que existe para gerar para várias
+   plataformas e seria dependência sem motivo. O componente do Figma tem
+   o nome do componente React, e as variantes, os valores dos enums do
+   backend (`compartilhado/entidades/`). **O Code Connect fica a
+   conferir na C0.** A ajuda do Figma diz que ele vale no plano
+   Professional (uma biblioteca e um framework) com um assento Full ou Dev,
+   e Matthew tem um assento Full no plano de estudante; mas o conector
+   recusou a leitura em 2026-10-23, pedindo um plano Organization ou
+   Enterprise. A prova na C0: publicar a biblioteca, ligar um componente
+   pelo Dev Mode ("Connect to code") e ler pelo conector. Se não
+   funcionar, fica a tabela no `DESIGN.md` (componente do Figma → arquivo
+   React), que Claude lê antes de montar cada tela. O script que compara os tokens do
+   `DESIGN.md` com os do CSS só entra se os dois se desencontrarem na
+   prática.
 
 ---
 
@@ -76,7 +168,8 @@ um lugar onde acontece:
 
 ### 3.1 Cores
 
-Os nomes são **funções**, não cores. Os valores são **provisórios** (tons
+Os nomes abaixo são os **semânticos** (a função, não a cor), que na B3
+passam a apontar para os **primitivos** (§2.2). Os valores são **provisórios** (tons
 da paleta padrão do Tailwind); os da marca, com o contraste conferido,
 estão no `docs/marca.md` (B1) e entram aqui na B3. O contraste é conferido no G2.
 
@@ -89,7 +182,7 @@ estão no `docs/marca.md` (B1) e entram aqui na B3. O contraste é conferido no 
 | `--muted` / `--muted-foreground` | Fundos secundários / texto de apoio | `slate-100` / `slate-600` |
 | `--border` | Bordas e divisórias | `slate-200` |
 | `--primary` | **Destaque**: ação principal de cada tela | o **grafite** da marca, `#121214` / `#ECECEF` (definido em 2026-10-20: sem cor de destaque, `docs/marca.md`) |
-| `--destructive` | Ações destrutivas (excluir, cancelar, reprovar) | `red-600` |
+| `--destructive` | O botão final do diálogo do que não se desfaz: excluir, descartar, cancelar, concluir como não eficaz (a exceção do `docs/marca.md`; reprovar e reabrir são reversíveis e usam o `--primary`) | `red-600` |
 | `--ring` | Contorno de foco do teclado | o grafite, como o `--primary` (2026-10-20); o link é sublinhado |
 
 **Semânticas** (nossas, adicionadas ao tema):
@@ -139,7 +232,7 @@ competiria com os badges.
 |---|---|---|
 | Celular | < 768 px | Uma coluna; navegação inferior; tabelas viram cartões |
 | Tablet | 768–1023 px | Uma coluna, menu recolhível |
-| Computador | ≥ 1024 px | Menu lateral fixo + conteúdo; detalhe da NC com coluna lateral |
+| Computador | ≥ 1024 px | Doca flutuante embaixo + a tela inteira para o conteúdo (§6.1); detalhe da NC com coluna lateral |
 
 ---
 
@@ -225,9 +318,15 @@ em `components/` (os do shadcn/ui, em `components/ui/`).
 | `DialogoEfeito` | AlertDialog | Confirmação que explica um efeito automático (concluir verificação, finalizar execução) |
 | `Feed` | ScrollArea | Linha do tempo com eventos e comentários |
 | `EditorComentario` | Tiptap | Texto com sugestão de `@pessoa` e `#item` |
+| `AreaDeArrastar` | react-dropzone | A área de arrastar anexos, só no computador: ícone, a frase da tela e o apoio com o que o sistema aceita (JPEG, PNG, WebP ou PDF, até 10 MB; TRD §8). No Figma, `Anexos/Área de arrastar`. No celular, o "+ Anexar" abre a câmera ou os arquivos (B2, 2026-10-26) |
+| `CampoData` | Input, Button | O campo de data com atalhos ao lado: Hoje e Ontem quando a data é passada (executada, verificada), Em 15 dias e Em 30 dias quando é futura (o prazo); o campo abre o calendário (B2, 2026-10-26) |
+| `EtapasA3` | — | A Investigação no celular: a entrada com o índice das 10 etapas (o estado de cada uma e o que falta nas que estão pela metade) e uma etapa por tela, com a barra de segmentos e o ponto na etapa atual (§7.5, decisão (i)) |
 | `Anexos` | react-dropzone | Lista de arquivos + área de envio, com tipo e tamanho validados antes de enviar |
 | `IndiceA3` | — | Índice lateral da Investigação, com o preenchimento de cada etapa |
 | `ItemPendencia` | Card | Uma linha de "Minhas pendências" |
+| `ItensDaNC` | Collapsible, ToggleGroup, DropdownMenu | Os itens filhos no Detalhe da NC: agrupados por tipo ou não, em lista ou cartões, ordenados por estado ou criação, com o medidor em segmentos (§7.3) |
+| `PainelAtividade` | Sheet (sem véu, empurrando a página) | O feed inteiro da NC à direita (com os eventos dos filhos, PRD Q25), com Tudo · Comentários · Histórico; ao abrir, a coluna lateral vira a faixa de resumo (§7.3). Aberto pelo atalho de um filho, vem filtrado por ele |
+| `Medidor` | — | O progresso em segmentos: um por item, os feitos preenchidos; contínuo acima de 10 (os itens, o checklist) |
 | `FiltrosNC` | Select, Popover, Calendar | Filtros da lista de NCs, refletidos na URL (dá pra compartilhar um link filtrado) |
 
 ### 5.2 De estado de tela (`fluxo-app.md` §8)
@@ -241,147 +340,621 @@ em `components/` (os do shadcn/ui, em `components/ui/`).
 
 ---
 
+
+### 5.3 O inventário do Figma (B2, item 15)
+
+Feito em 2026-10-27, pelo método da §2.2: cada peça dos wireframes num
+cartão nas páginas **Átomos**, **Moléculas** e **Organismos** do Figma,
+com o estado, as contagens, o item da B3 que a constrói e um exemplo.
+Os estados: **Componente** (já é componente), **Virar componente** (se
+repete em cópias soltas), **Duas versões** (a mesma coisa com cara
+diferente: fica uma) e **Novo** (nasceu no item 14).
+
+| Camada | Componente | Virar componente | Duas versões ou mais | Novo |
+|---|---|---|---|---|
+| Átomos | Botão (falta a variante Destrutiva), Campo (falta o erro e o foco), Etapa, Prazo | Ícone (341), Avatar (285), Tag (101), Indicador (63), Contador (62), Interruptor (52) | Estado × Situação; Pílula (filtro × tipo); Aba (sublinhada × do item × controle segmentado) | Tecla |
+| Moléculas | Feed (dia, evento, comentário), Anexos | Linha de pessoa (235), Opção (60), Campo de data (32), Cartão de NC do celular (25) | Linha de pendência (o componente sem uso × as linhas da T-03) | Linha de resultado, Item de menu |
+| Organismos | Doca, Barra do celular, Menu da pessoa, Abas do item | Bloco do título (37), Barra de ações fixa (36), Gaveta (7), Folha (5) | Recusa (T-09 × T-12); o Diálogo já ficou numa versão só (§8.2) | Menu "Mais", a busca |
+
+O "Item/Estado (antigo, não usar)" (sem uso) sai na B3. A lista e a
+ordem do que construir estão no plano (B3, itens 3, 4 e 6 a 13).
+
 ## 6. Layout
 
 ### 6.1 Estrutura geral
 
-**Computador:**
+**Computador** (decisão (e) da B2, 2026-10-22; Figma, página Decisões
+(histórico), seção "Decisão (e)"; o componente `Shell/Doca`): uma **doca
+flutuante embaixo, no centro**, e a tela inteira para o conteúdo, sem
+menu lateral nem barra de topo. É a mesma ideia da barra flutuante do
+celular.
 
 ```
-┌──────────────┬──────────────────────────────────────────────┐
-│ QualityHub   │  NC-2026-0042 › Investigação IV-2026-0007     │
-│              │──────────────────────────────────────────────│
-│ ◉ Pendências │                                              │
-│   (4)        │              conteúdo da tela                 │
-│ ▢ NCs        │                                              │
-│ ▢ Relatórios │                                              │
-│              │                                              │
-│ ──────────── │                                              │
-│ Fulana ▾     │                                              │
-│  Tela inicial│                                              │
-│  Sair        │                                              │
-└──────────────┴──────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│ NC-2026-0042 · Vazamento na linha 3          [Enviar] [⋯]    │
+│ ● Aberta  Em investigação                                    │
+│                                                              │
+│                     conteúdo da tela                         │
+│                                                              │
+│              (96 px livres no fim do conteúdo)               │
+│  ╭────────────────────────────────────────────────────────╮  │
+│  │ ⌕ Buscar │ Pendências ④  NCs  Relatórios │ Usuários  Setores │ ◯ ⌃ │
+│  ╰────────────────────────────────────────────────────────╯  │
+└──────────────────────────────────────────────────────────────┘
 ```
 
-**Celular:** barra superior com o título + **barra inferior de
-navegação** (U2):
+1. **A doca fica fixa no rodapé da janela**, centralizada, com ícone e
+   rótulo em cada item; o item ativo com a pílula cinza; o contador das
+   Pendências vira um selo (depende do `GET /pendencias`, que chega na
+   C3). Os itens de administração vêm depois de uma divisória e só para
+   quem tem o papel (`fluxo-app.md` §2.1).
+2. **Toda tela deixa 96 px livres embaixo do conteúdo** (a altura da doca
+   e a margem). Sem isso, a doca cobriria o fim das listas, o "Carregar
+   mais" e o campo de comentário do feed, o risco apontado na decisão.
+3. **Buscar é o primeiro item**, e o atalho **Ctrl K** abre a mesma
+   busca: uma janela no centro, com os resultados em Itens, NCs e "Ir
+   para". Procura pelo código e pelo texto (os filhos não têm título,
+   §10.3). Depende do `GET /registros/busca`, planejado para a C4.
+4. **A pessoa fica no fim da doca:** o avatar gerado pelo nome
+   (`docs/marca.md`) com a seta. O **menu da pessoa abre para cima**: nome,
+   setor e papel, **Minha conta** (decisão (l)), **Tela inicial**,
+   **Atalhos de teclado** (abre a janela do ?, item 14 da B2), **Sair**,
+   **Sair de todos os aparelhos** (`fluxo-app.md` §2.1) e, embaixo, a
+   **assinatura da empresa**.
+5. **Sem barra de topo:** o caminho de volta fica na linha do título,
+   dentro da tela, e a ação da tela (Enviar, Salvar, Mais) fica no canto
+   superior direito, sem nada por cima.
+6. **Com outros módulos** (pendência no handoff): a doca cabe uns 8 itens
+   na largura mínima do computador (1024 px). Quando passar disso, os
+   módulos viram um item só, com um seletor, como no celular.
+
+**A busca** (decisão (n) da B2, 2026-10-27; referências Mintlify,
+ClickUp e o próprio Mobbin). Procura pelo código e pelo texto (o título
+da NC, a descrição dos filhos), só nos itens publicados (RN-11).
+
+- **No computador**, o Buscar da doca e o Ctrl K abrem uma janela de
+  760 px no centro. **Antes de digitar**, duas colunas: os **Recentes**
+  à esquerda (itens e buscas, guardados no navegador; é onde o ↑↓ anda)
+  e, à direita, o **Procurar em** (os seis tipos: escolher um limita a
+  busca) e o **Ir para** (Pendências e NCs, com o G P e o G N;
+  Relatórios). **Com resultados**, uma lista só, em grupos (Itens, NCs),
+  cada um com o código, o título ou o começo da descrição, o trecho que
+  bateu embaixo e o estado; as **pílulas de tipo** com a contagem ficam
+  embaixo do campo. O rodapé ensina as teclas (↑↓ mover, ↵ abrir, Esc
+  fechar) e diz o total.
+- **No celular**, a lupa da barra abre a busca em **tela cheia**: o
+  campo com o ✕ e o Cancelar, as mesmas pílulas e a lista; antes de
+  digitar, os recentes.
+- **O vazio:** "Nada com “<busca>”. Procure pelo código (NC-2026-0042)
+  ou por outra palavra."
+
+
+As alternativas (o trilho estreito à esquerda, colado ou flutuante, e o
+trilho com uma barra fina no topo) estão na mesma seção do Figma, como
+registro; o componente do trilho ficou lá, como "não escolhido".
+
+**Celular** (U2, decidida em 2026-10-22, B2; **revista na decisão (n)**,
+2026-10-27: a lupa no lugar do ＋): barra superior com o título +
+**barra flutuante** com três abas e a **lupa** ao lado. Exceção:
+a T-03 não tem a barra superior; a saudação faz o papel do título
+(decisão (j), §7.1):
 
 ```
 ┌────────────────────────┐
-│ ← NC-2026-0042      ⋯  │
+│ Minhas pendências      │
 ├────────────────────────┤
 │                        │
 │    conteúdo (1 coluna) │
 │                        │
-├────────────────────────┤
-│ Pendências  NCs  ＋  ☰ │
+│ ╭──────────────────╮ ○ │
+│ │ Pend.  NCs   Eu  │ ⌕ │
+│ ╰──────────────────╯   │
 └────────────────────────┘
 ```
 
-O **＋** abre direto a Nova NC: registrar no chão de fábrica é o uso
-principal no celular (`fluxo-app.md` §1).
+1. **As abas:** Pendências · NCs · **Eu**. A barra é uma pílula
+   flutuante, sem a faixa sólida no rodapé, acima da área do gesto do
+   iPhone, com toque de 44 px no mínimo por aba e espaço embaixo da
+   lista para o último item não ficar escondido.
+2. **A lupa ao lado da barra**, na mesma linha, clara como a barra (é
+   navegação, não a ação da tela): abre a busca em tela cheia (abaixo,
+   "A busca"). Até a decisão (n), era o ＋ da Nova NC.
+3. **A barra e a lupa só nas três telas raiz.** Nas telas internas (o
+   Detalhe da NC, os filhos, a Nova NC) eles somem e fica a seta de
+   voltar no topo; assim não brigam com a barra de ações fixa da Nova NC.
+4. **Na tela Eu, a lupa sai e a barra cresce** até a largura toda (16 px
+   de margem), com uma transição curta.
+5. **A Nova NC fica na tela de NCs** (T-04), no topo à direita, com o
+   rótulo ("＋ Nova NC"), só para `EDITOR` e `GERENTE`, como no
+   computador (decisão (n), Matthew: "o botão de criação da NC fica na
+   tela de NCs"). Com outros módulos, cada um cria na sua lista.
+6. **A tela Eu** (T-13; no computador, **Minha conta**, aberta pelo menu da
+   pessoa, decisão (l)) traz em cima a **foto** (o botão da câmera; Trocar e
+   Remover, RN-53) e **Como chamar você** (o apelido e o pedido pendente,
+   RN-52). No celular, substitui o avatar e o menu ☰:
+   perfil (nome, e-mail, papéis), **Conta** (Tela inicial), **Gestão**
+   (Relatórios para `GERENTE`; Usuários e Setores para `ADMIN`; só para
+   quem tem o papel), **Sessão** (Sair, Sair de todos os aparelhos) e a
+   assinatura da empresa embaixo. Relatórios e administração ganham
+   versão de celular (`fluxo-app.md` §1, revisto em 2026-10-22).
+
+**Com outros módulos** (pendência no handoff): a barra comporta até 5
+abas, mas com a lupa ao lado (decisão (n); antes, o ＋) só cabem 3. O
+plano: a aba NCs vira **Módulos** (ou o módulo atual, com seletor), as
+Pendências passam a juntar todos os módulos e o Eu fica. Se for preciso
+uma quarta aba, a lupa sobe para o topo da tela, à direita.
+
+Os desenhos: Figma, página Decisões (histórico), seção "Decisão (a) ·
+barra do celular (2026-10-22)" (as variantes A e B e a tela Eu). A
+proposta de 2026-10-21 para o computador (sem barra de topo, o item ativo
+com a pílula cinza) ficou confirmada pela decisão (e), acima, e o menu
+lateral saiu.
+
+**Os atalhos de teclado** (conjunto curto, pedido de Matthew, 2026-10-26;
+só no computador). Além do Tab, Enter e Esc da acessibilidade (§9):
+
+| Tecla | O que faz |
+|---|---|
+| **Ctrl K** | Abre a busca (decisão (e)) |
+| **?** | Abre a janela com a lista de atalhos |
+| **J** / **K** | Desce / sobe a linha selecionada numa lista (as gavetas da T-03, a T-04) |
+| **Enter** | Abre a linha selecionada |
+| **Esc** | Fecha a janela, a folha ou o painel aberto |
+| **G** e depois **P** / **N** | Vai para as Pendências / para as NCs |
+
+1. **Nenhum atalho age dentro de um campo de texto** (lá, as teclas
+   escrevem).
+2. **Os de uma tecla só (J, K, ?, G) podem ser desligados** num
+   interruptor da janela dos atalhos, que abre pelo **?** e pelo
+   "Atalhos de teclado" do menu da pessoa (assim quem desligou o ? ainda
+   chega lá), como pede a WCAG 2.1.4; a escolha fica no navegador. O
+   Ctrl K e o Esc continuam.
+3. **Sem ação por tecla** (aprovar, editar, comentar): cada uma pediria a
+   mesma checagem de permissão do botão, e fica fora do MVP (§11).
+4. **A janela do ?** (desenhada no item 14 da B2, 2026-10-27) segue o
+   padrão do diálogo (§8.2): os atalhos em três grupos (Ir para, Nas
+   listas, Em qualquer tela), cada tecla numa caixinha (a **Tecla**, um
+   átomo novo), o interruptor embaixo e o Fechar. O menu da pessoa ganhou
+   o **Minha conta** e o **Atalhos de teclado**. Os atalhos entram na C8.
+
+### 6.2 A personalidade: os gestos da casa
+
+Decidido com Matthew em 2026-10-23, na revisão dos wireframes: o
+Detalhe da NC no celular tinha personalidade, e as outras telas ficaram
+sem graça. A diferença não era enfeite, eram **gestos**, e eles passam a
+valer para o app todo. A personalidade vem de repetir poucos gestos com
+hierarquia, não de decorar cada tela. Os gestos 1 a 4 são estrutura (a
+revisão da B2 confere cada um); o 5 é acabamento (B3).
+
+1. **O bloco do título, com hierarquia.** Toda página de item abre com um
+   bloco que dá o "rosto" do item: o código, o título (ou o rótulo, nos
+   filhos, §10.3), o estado e quem está envolvido. **A NC é a casa**, a
+   que agrupa tudo: só ela tem o bloco **escuro** (§7.3). Os **filhos** são
+   da família: a mesma anatomia num tom **claro**, com o nome da NC em
+   cima (o caminho de volta, `CabecalhoItem`), que diz a quem pertencem.
+   Nenhuma outra tela usa o bloco escuro. **Nos filhos** (decisão (h),
+   2026-10-26), o título do bloco é o **tipo** ("Classificação"), não o
+   rótulo, que repetia o primeiro campo da página e podia contradizê-lo
+   antes do Salvar; o código fica na barra de cima. E o estado vem
+   **embaixo** do título: na NC ele fica em cima, porque embaixo dela vem
+   a etapa, que os filhos não têm. **O estado secundário** (o selo "Plano
+   aprovado", o prazo, quem salvou ou enviou) vai numa **linha de
+   indicadores** no estilo da etapa da NC (ícone e texto em cinza,
+   separados por "·"), nunca em pílula; só o ícone do prazo vencido tem
+   cor (Matthew, 2026-10-26, na Ação Corretiva).
+2. **A frase de estado.** Toda tela raiz abre com uma frase que diz o que
+   importa agora ("4 itens esperam por você · 1 vencido"; "38 abertas · 3
+   com prazo vencido"), em vez de só o título.
+3. **O número protagonista.** O número que importa aparece grande, ou
+   num medidor em segmentos (um por item, §5.1), e com o contexto ao lado ("2 de 6 atendidos", "82% (18 de 22)", "há 9
+   dias"), no estilo Número/Indicador e com dígitos tabulares (§3.2).
+4. **O formulário com ritmo.** Os campos em grupos com nome ("O que
+   aconteceu", "Onde", "Evidência"), o opcional marcado e o valor padrão
+   visível (a Nova NC já vem com "Detectada em: hoje"), em vez de uma lista
+   de campos com o mesmo peso.
+5. **Movimento e voz.** O bloco do título que encolhe ao rolar, a
+   busca da T-04 no celular que some ao rolar e volta ao subir (§7.2), as
+   transições curtas e o tom dos textos (§10.1). Entra na B3, com a cor.
 
 ---
 
 ## 7. Wireframes das telas núcleo
 
 Wireframes em texto: **posição e hierarquia**, não aparência. Viram
-frames no Figma no G1.
+frames no Figma no G1. As seis primeiras são as telas núcleo; da 7.7 em
+diante, as que completam o mapa (`fluxo-app.md` §2), escritas na B2.
 
 ### 7.1 T-03 Minhas pendências
 
-```
-Minhas pendências                                   [filtro: tipo ▾]
+A tela de chegada: é a primeira que abre para quem tem `EDITOR` ou
+`APROVADOR` (`fluxo-app.md` §3), no computador e no celular, e por isso
+precisa ser **convidativa**. Responde duas perguntas: *o que eu faço
+primeiro* (o cartão) e *como está o meu dia* (as gavetas). Decisão (j) da
+B2 (2026-10-26), a C2: o cartão da A (Asana) com o resumo da B (Deel),
+virado gavetinhas a pedido de Matthew.
 
-VENCIDAS (1)
-┌─────────────────────────────────────────────────────────────────┐
-│ ⚠ Executar ação   AC-2026-0003 · Troca do fornecedor de junta    │
-│                    NC-2026-0042        Vencido há 2 dias      →  │
-└─────────────────────────────────────────────────────────────────┘
-APROVAR (2)
-┌─────────────────────────────────────────────────────────────────┐
-│ ⧗ Aprovar         IV-2026-0007 · Vazamento na linha 3         →  │
-│ ⧗ Aprovar         NC-2026-0038 · Fechamento                   →  │
-└─────────────────────────────────────────────────────────────────┘
-TRIAGEM (1)
-┌─────────────────────────────────────────────────────────────────┐
-│ ◌ NC sem aprovador NC-2026-0045 · Rótulo ilegível   [Assumir] →  │
-└─────────────────────────────────────────────────────────────────┘
+**Computador:**
+
 ```
+(FS)  Segunda, 26 de outubro                                    [Nova NC]
+      Boa noite, Fulana
+      4 coisas esperam por você. 1 está vencida.
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ [🔧]  O mais urgente · Executar ação  ⚠ Vencido há 2 dias · o prazo era 24/10 │
+│       AC-2026-0003 · Trocar o fornecedor da junta de vedação da linha 3     │
+│       📄 NC-2026-0042 · Vazamento na linha 3   (FS)(CR) Você e Ciclano Reis │
+│                                               [Ver a NC] [Abrir a ação]     │
+└──────────────────────────────────────────────────────────────────────────┘
+
+Para você hoje                                           Suas NCs
+┌───────────────────────────────────────────────┐       ┌────────────────────┐
+│ ⚠ Vencidas                               1  ⌃ │       │ 📄 NC-2026-0042 · … │
+│     AC-2026-0003 · Trocar o fornec…  ⚠ Vencido há 2 dias ›│  ▢ Em investigação │
+│ ✓ Aprovar                                2  ⌃ │       │ 📄 NC-2026-0038 · … │
+│     IV-2026-0007 · A junta resseca…   Enviada há 1 dia › │  ▢ Aguardando apro…│
+│     NC-2026-0038 · Fechamento         Enviada há 3 dias ›│ Ver todas as suas NCs│
+│ 👤+ Triagem                              1  ⌃ │       └────────────────────┘
+│     NC-2026-0045 · Rótulo ilegível          [Assumir] │
+│ ◯✓ Corrigir, Verificar e mais 3 tipos: em dia    │
+└───────────────────────────────────────────────┘
+```
+
+**Celular:** a mesma ordem empilhada, sem a coluna Suas NCs, sem o avatar
+e sem a barra de cima (a saudação faz o papel do título; a aba
+Pendências ativa diz onde a pessoa está; é a única tela raiz sem ela). O
+cartão leva o botão **Abrir a ação** na largura toda (44 px), e tudo
+cabe numa tela.
+
+1. **A saudação:** a data (dia da semana e do mês), "Bom dia / Boa tarde /
+   Boa noite" pela hora no fuso de São Paulo, o primeiro nome (do
+   `/auth/eu`) e a frase do dia: quantas coisas esperam e quantas estão
+   vencidas.
+2. **O mais urgente:** um cartão com a primeira pendência na ordem da
+   rota (vencidos primeiro, `fluxo-app.md` T-03). No computador, com o
+   ícone do tipo, a descrição inteira, a data do prazo, a NC e os
+   responsáveis com avatar, e **Ver a NC** + **Abrir a ação**. É um
+   **atalho**: o item continua na gaveta dele, senão a contagem da gaveta
+   mentiria. Sem pendência, o cartão não aparece.
+3. **Para você hoje, em gavetinhas:** uma gaveta por grupo, na ordem dos
+   grupos abaixo, com o ícone, o nome, a contagem e o ⌄/⌃. O cabeçalho tem
+   fundo `fundo/pagina` e 48 px; o conteúdo, 16 px acima e abaixo. **No
+   celular, as gavetas começam fechadas** (um tipo só já vem aberto); **no
+   computador, abertas**. Só aparecem os grupos com itens; os tipos que a
+   pessoa pode ter e estão vazios viram uma linha **"em dia"** no fim,
+   com o ✓ (a Triagem só entra nessa conta para quem tem `APROVADOR` ou
+   `GERENTE`). Cada linha: o rótulo do item (§10.3), a NC ou o motivo
+   (Corrigir mostra o último motivo da reprovação, L7), o prazo com ícone e
+   texto (vencido em vermelho, vencendo em âmbar, F3) ou o "há quanto
+   tempo", e o › (ou o **Assumir**, na Triagem).
+4. **Suas NCs** (só no computador): até 5 NCs da visão Minhas da T-04
+   (`GET /ncs?minhas`), com a etapa, e o link **Ver todas as suas NCs**.
+5. **O vazio, em dois casos** (a `impeccable`): **em dia** ("Você está em
+   dia" + "Quando alguém pedir sua aprovação ou um prazo chegar perto,
+   aparece aqui.") e **primeiro dia** ("Aqui aparece o que espera por
+   você" + os tipos em linguagem de gente). Os dois com o **Ver as NCs** e
+   sem o selo na barra.
 
 Grupos na ordem: **Vencidas** → Aprovar → Corrigir → Verificar → Executar
 → Enviar para fechamento → Triagem → Menções → Rascunhos. "Assumir" na
 triagem define a própria pessoa como aprovadora (da NC ou do filho sem
-aprovador), sem precisar abrir o item.
+aprovador), sem precisar abrir o item. Os ícones são do lucide (o
+conjunto do shadcn): alerta, prancheta com ✓ (Aprovar), lápis (Corrigir),
+lupa com ✓ (Verificar), chave (Executar), pessoa com + (Triagem), @
+(Menções), relógio (vence em breve), círculo com ✓ (em dia).
+
+Componentes (degrau 1 do shadcn): `Card`, `Button`, `Avatar` e o
+`Accordion` (Radix: teclado e leitor de tela prontos, `type="multiple"`).
 
 ### 7.2 T-04 Lista de NCs
 
-```
-Não Conformidades                                      [＋ Nova NC]
-[🔍 código ou título      ] [Estado ▾] [Etapa ▾] [Setor ▾] [Mais filtros ▾]
-Filtros ativos: Etapa: Em investigação ✕   Só as minhas ✕
+Decisão (f) da B2, 2026-10-23, a estreia da `/desenhar` (Figma, página
+Decisões (histórico), seção "Decisão (f)"; as referências, o Qatalog e o
+Jira Cloud, no `docs/identidade/referencias-interface.md`). Comparadas a
+tabela plana com pílulas (a A, escolhida) e a lista agrupada por etapa,
+com a folha de filtros (a B, que ficou como opção do computador). O quadro
+(kanban) ficou de fora: arrastar o cartão muda a etapa, e aqui a etapa é
+calculada (`fluxo-app.md` §4), ninguém a move.
 
- Código        Título                  Estado    Etapa              Setor     Detecção
- NC-2026-0045  Rótulo ilegível         ● Aberta  Aguardando classif. Expedição 22/09/2026
- NC-2026-0042  Vazamento na linha 3    ● Aberta  Em investigação ⚠  Produção  15/09/2026
- NC-2026-0038  Atraso na calibração    ⧗ Em apr. Aguardando aprov.  Metrologia 02/09/2026
-                                                        [ Carregar mais ]
+**Revista em 2026-10-26** para o estilo das telas novas (T-03, T-08, T-09),
+a pedido de Matthew ("ficou meio dissonante"); a estrutura da decisão (f)
+continua.
+
+**Computador:** a tabela plana, com o cabeçalho no fundo leve das gavetas.
+
 ```
+Não Conformidades                                           [＋ Nova NC]
+38 abertas · ⚠ 3 com prazo vencido
+Todas 38   Minhas 9   Vencidas 3
+(⌕ código ou título) (Estado ⌄) (Etapa ⌄) (Setor ⌄) (Mais filtros ⌄)      ≡ Agrupar: nenhum ⌄
+
+ Código        Título                   Estado            Etapa                        Setor         Com quem  Detecção
+ NC-2026-0045  Rótulo ilegível          (● Aberta)        🏷 Aguardando classificação   (Expedição)   (CR)      22/09/2026
+ NC-2026-0042  Vazamento na linha 3     (● Aberta)        🔍 Em investigação            (Produção)    (FS)(CR)  15/09/2026
+               ⚠ AC vencida há 2 dias
+ NC-2026-0038  Atraso na calibração     (● Em aprovação)  🕒 Aguardando aprovação…      (Metrologia)  (FS)      02/09/2026
+ Mostrando 6 de 38                                                                    ( Carregar mais )
+```
+
+**Celular:** um cartão por NC, em três linhas justas (12 px de respiro, 2 px
+entre as linhas), todas na mesma margem.
+
+```
+┌────────────────────────────────┐
+│ NC-2026-0042 · Produção (●Aberta)
+│ Vazamento na linha 3           │
+│ ⚠ AC vencida há 2 dias         │
+│ 🔍 Em investigação     (FS)(CR) │
+└────────────────────────────────┘
+```
+
+- **O estado** é a **caixinha cinza com o ponto na cor do estado** (Aberta,
+  Em aprovação, Fechada), nos dois tamanhos.
+- **A etapa** tem **um ícone por etapa** (etiqueta: classificação; lupa:
+  investigação; escudo: contenção; bandeira: pronta para fechamento; relógio:
+  aguardando aprovação; círculo com ✓: fechada). Sem barra de progresso: a
+  etapa é a primeira regra que vale, não uma sequência (`fluxo-app.md` §4).
+- **O prazo vencido** vem com o ⚠ vermelho e o texto, embaixo do título e na
+  frase do topo.
+- **Com quem:** os avatares dos responsáveis da NC (o traço Humana da marca).
+- **Os filtros e a busca** são pílulas arredondadas; as visões ganham a
+  contagem.
+
+1. **A visão e o filtro têm caras diferentes.** As visões (Todas · Minhas
+   · Vencidas) são abas no computador e um controle segmentado no
+   celular; os filtros são pílulas com ⌄. Antes, no celular, eram pílulas
+   iguais, e o "Filtros" parecia uma quarta visão.
+2. **O filtro ativo mostra o valor e sai com um toque:** a pílula fica
+   escura, com o valor e o ✕ ("Etapa: Em investigação ✕"). Vale também
+   para os filtros que chegam prontos pelo link dos Relatórios (J12).
+3. **No celular, a pílula abre uma folha** que sobe do rodapé, com as
+   opções e a contagem de cada uma, o "Limpar" e o "Ver 20 NCs". A pílula
+   tem 32 px de desenho e **44 px de área de toque** (§9); as mais usadas
+   vêm primeiro (Etapa, Estado, Setor), porque as últimas ficam fora da
+   tela, na rolagem para o lado.
+4. **Agrupar por etapa, opcional e só no computador** ("Agrupar: nenhum"
+   por padrão): para quem gerencia a fila, os grupos por etapa com a
+   contagem ("Em investigação · 20"), e as fechadas recolhidas.
+5. **A busca fica visível.** No celular, ela some ao rolar a lista para
+   baixo e volta ao rolar para cima (o movimento é da B3, gesto 5, §6.2).
+   Sem "puxar para revelar": num app web, o gesto briga com o atualizar do
+   navegador, e o §7.3 já o reserva. Esta busca filtra só a lista; a lupa
+   da barra abre a busca geral, e a **Nova NC** fica no topo da T-04
+   (decisão (n), que tirou o ＋ da barra).
+6. **O que a API ainda não dá:** a etapa, o setor e o prazo vencido (L5) e
+   a busca por texto, na C1; e o **total e as contagens** (o "38 abertas",
+   o "Mostrando 6 de 38", o "Ver 20 NCs", a contagem dos grupos): a lista
+   devolve só a página e o cursor (`fluxo-app.md`, L10, na C1).
 
 Paginação por "Carregar mais" (a API usa cursor, não páginas numeradas).
 
 ### 7.3 T-06 Detalhe da NC (computador)
 
-```
-NC-2026-0042 · Vazamento na linha 3              ● Aberta  🔍 Em investigação
-                                                  Contenção em andamento
-[ Enviar para fechamento (bloqueado ⓘ) ]  [ Salvar ]  [ Mais ▾ ]
-┌──────────────────────────────────────────────┬─────────────────────────┐
-│ DADOS                                   [✎]  │ CHECKLIST DE FECHAMENTO │
-│ Descrição, requisito, processo, setor...     │ ✅ Classificação         │
-│                                              │ ❌ Investigação → IV-7   │
-│ CLASSIFICAÇÃO                  [+ Nova]      │ ❌ Contenção → CT-19     │
-│  CL-2026-0011  Maior   ✓ Fechada             │ ❌ Riscos revisados      │
-│ CONTENÇÃO                      [+ Nova]      │ ❌ Mudanças no SGQ       │
-│  CT-2026-0019  Corrigido  ● Aberta           │ ✅ Aprovador definido    │
-│ INVESTIGAÇÃO                   [+ Nova]      │─────────────────────────│
-│  IV-2026-0007  Vazamento...  ⧗ Em aprovação  │ ATRIBUIÇÕES             │
-│ AÇÃO CORRETIVA                 [+ Nova]      │ Aprovador: Beltrana     │
-│  (nenhuma ainda)                             │ Responsáveis: F, C, D   │
-│ VERIFICAÇÃO                                  │ [+ Adicionar]           │
-│  (nasce ao finalizar uma ação)               │─────────────────────────│
-│                                              │ ANEXOS (3)   [+ Enviar] │
-├──────────────────────────────────────────────┴─────────────────────────┤
-│ FEED                                                                   │
-│ 22/09 14:02  Fulana enviou IV-2026-0007 para aprovação                 │
-│ 21/09 09:15  Fulana: @Beltrana pode revisar a causa raiz?              │
-│ [ Escrever comentário… @ para mencionar, # para citar item ]           │
-└────────────────────────────────────────────────────────────────────────┘
-```
-
-**No celular**, a coluna lateral desce para baixo dos filhos, na ordem:
-checklist → atribuições → anexos → feed.
-
-### 7.4 T-07 Ação Corretiva (exemplo de filho)
+Revisto em 2026-10-23 (decisão (g) da B2; Figma, página Decisões
+(histórico), seção "Decisão (g)"; as referências, o Deel, o Linear, o
+incident.io e o Jira, no `docs/identidade/referencias-interface.md`).
 
 ```
-NC-2026-0042 › AC-2026-0003 · Troca do fornecedor de junta
-● Aberta   ✓ Plano aprovado   Prazo: Vencido há 2 dias
-[ Finalizar execução ]  [ Salvar ]  [ Mais ▾ ]
+┌──────────────────────────────────────────────────────────────────────┐
+│ █ NC-2026-0042 · Vazamento na linha 3     [Enviar p/ fech. ⓘ][Salvar][Mais ▾] █ │
+│ █ ● Aberta  Em investigação · Contenção em andamento  (◐◐◐◐)         █ │
+├───────────────────────────────────────────────┬──────────────────────┤
+│ DADOS                                    [✎]  │ [💬 Atividade  ① ›]   │
+│ Descrição, requisito, processo, setor, origem │ 1 comentário novo    │
+│ Classificação  (Maior) CL-2026-0011           ├──────────────────────┤
+│ Detectada em, cliente                         │ CHECKLIST            │
+├───────────────────────────────────────────────┤ ▮▮▯▯▯▯ • 2 de 6       │
+│ ITENS DA NC • 1 de 4 fechados ▮▯▯▯            │ ✓ Classificação      │
+│                [⧉] [Ordenar ▾] [☰|▦] [+ Novo item ▾] │ ⧗ Investigação ›     │
+│ › CLASSIFICAÇÃO 1 · fechada            + Nova │ ◉ Contenção ›        │
+│ ⌄ CONTENÇÃO 1                          + Nova │ ◌ Riscos revisados › │
+│   CT-2026-0019 · Isolar o lote 42…  ● Aberta  (CR) Ciclano Reis  25/09 │
+│ ⌄ INVESTIGAÇÃO 1                       + Nova ├──────────────────────┤
+│   IV-2026-0007 · A junta resseca…   ⧗ Em apr. (FS) Fulana Souza   —   │
+│ ⌄ AÇÃO CORRETIVA 1 · nasce de uma investigação aberta │ ATRIBUIÇÕES │
+│   AC-2026-0003 · Trocar o fornec…   ● Aberta  (FS) Fulana  ⚠ Vencido │
+│ › VERIFICAÇÃO 0 · nasce sozinha ao finalizar uma ação │ (BL) Beltrana [Aprovadora] │
+├───────────────────────────────────────────────┤ (FS) Fulana [Responsável] │
+│ ENVIO PARA FECHAMENTO                         │ ANEXOS (3)  [+ Anexar]│
+│ Riscos revisados · Mudanças no SGQ            │                      │
+└───────────────────────────────────────────────┴──────────────────────┘
+```
 
-PLANO (aprovado — só leitura)
-  Descrição · Prazo · Instruções de verificação
+1. **O bloco do título, escuro,** como no celular (o gesto 1 da casa,
+   §6.2): o código e o título, o estado, a etapa e os indicadores, a
+   pilha dos envolvidos e as ações à direita.
+2. **Os Dados** trazem a **classificação vigente** (a última aprovada,
+   PRD Q19) como tag, mesmo repetida nos Itens: é o que mais diz sobre a
+   NC. O ID fica em cinza ao lado da tag.
+3. **Os Itens da NC num cartão só**, na ordem do processo
+   (Classificação → Contenção → Investigação → Ação Corretiva →
+   Verificação):
+   - no cabeçalho, a contagem e o **medidor em segmentos** (um por item,
+     os fechados preenchidos; acima de 10 itens, contínuo);
+   - **Agrupar por tipo** (um botão de ícone, apertado quando ligado;
+     ligado por padrão): os grupos **abrem e fecham**, com a contagem; o
+     grupo todo fechado começa recolhido; o "+ Nova" fica no grupo, e o
+     tipo que não pode ter um novo diz o porquê (RN-49). Desligado, a
+     lista plana com o tipo como coluna;
+   - **Ordenar** por estado (os abertos e vencidos primeiro) ou por
+     criação;
+   - **Lista ou Cartões**: na lista, as colunas alinhadas (o item com o
+     ID em cinza, o estado, o responsável com o nome, o prazo); nos
+     cartões, o ID pequeno e o estado com o avatar em cima, o título
+     embaixo e o prazo quando existe. A escolha fica no navegador;
+   - **o nome do responsável fica na lista** (o "de quem é" é das colunas
+     mais lidas, e as iniciais sozinhas são ambíguas); só o avatar nos
+     cartões, onde o espaço é pouco.
+4. **O Envio para fechamento** (riscos revisados, mudanças no SGQ) vem
+   **depois** dos Itens: é o último passo.
+5. **A coluna lateral:** o botão **Atividade** em cima (cinza, com o que é
+   novo: "1 comentário novo · 6 eventos" e o selo), o **checklist** com um
+   ícone por estado (✓ atendido, ⧗ em aprovação, ◉ aberta, ◌ a preencher)
+   e a seta nos pendentes, as **atribuições** uma pessoa por linha, com o
+   avatar e a função como tag (a da aprovadora escura), e os **anexos**.
+6. **O feed não fica na página:** o botão Atividade abre um **painel à
+   direita, de 380 px, que empurra a página** (sem cobrir o conteúdo),
+   com Tudo · Comentários · Histórico, o feed inteiro e o campo de
+   comentário. **Com o painel aberto, a coluna lateral sempre se recolhe**
+   numa faixa de resumo no topo do conteúdo (o checklist com o medidor, as
+   pessoas com as tags, os anexos), de altura igual, cada parte abrindo o
+   conteúdo inteiro; com ela aberta, a tabela de itens apertava
+   (Matthew, 2026-10-23).
+7. **O feed** (nos dois tamanhos): os **dias** como cabeçalho; os
+   **eventos** numa linha do tempo, com um ícone por tipo e o código do
+   item, e o **antes → depois** nas mudanças (a `Auditoria` guarda os
+   dois); os **comentários** em cartão, com o avatar, a @menção em negrito
+   e o **Responder** (só nos comentários: responder a um evento é
+   comentar a NC). O botão do campo é "Comentar" (o "Enviar" é o nome do
+   submeter, §10.2). **O feed é só da NC** (PRD Q25, 2026-10-26): ele
+   junta os eventos de todos os filhos, e só se comenta aqui. O atalho
+   "Atividade deste item" de um filho (§7.4) abre este feed filtrado por
+   ele, com o filtro à vista (o código do filho, que se tira com um toque).
+
+**No celular** (decisão (b) da B2, 2026-10-22; Figma, página Wireframes,
+seção "Decisão (b) · Detalhe da NC no celular"): um bloco escuro com o
+título no topo e a página em quatro abas.
+
+```
+┌──────────────────────────────┐
+│ ←  NC-2026-0042            ⋯ │ ┐
+│ [● Aberta]          (◐◐◐◐)   │ │
+│ Vazamento na linha 3         │ │ bloco do título
+│ ⌕ Em investigação ·          │ │
+│   Contenção em andamento     │ ┘
+│ Resumo  Detalhes  Itens (3)  Feed │
+│──────────────────────────────│
+│ conteúdo da aba              │
+│                              │
+│ [Enviar p/ fechamento ⓘ] [Salvar] │
+└──────────────────────────────┘
+```
+
+1. **A barra do topo:** voltar, o código e o ⋯.
+2. **O bloco do título** (o "título grande" do Fresha), em
+   `fundo/destaque`, token novo para a B3: no claro, o grafite
+   (#1C1C1F); no escuro, um degrau **acima** da página e dos cartões
+   (#1D1D21), porque a página já é quase preta. Dentro dele, de cima para
+   baixo:
+   - o **estado** na caixinha e, à direita, a **pilha dos envolvidos**
+     (avatares gerados pelo nome, `docs/marca.md`; o toque abre as
+     atribuições em Detalhes; para o leitor de tela, "4 envolvidos:
+     Beltrana (aprovadora), Fulana, Ciclano, Deltrano");
+   - o **título grande e inteiro** (até 200 caracteres, `nc.schema.ts`),
+     sem corte;
+   - a **etapa** e, ao lado, os **indicadores** que valerem
+     (`fluxo-app.md` §4); com os três, a linha pode quebrar.
+3. **Ao rolar para baixo**, o bloco encolhe e o título vai para a barra
+   em 1 linha; **ao voltar ao topo**, ele reaparece inteiro (o "título
+   grande" do iOS). Sem gesto novo: puxar além do topo já é o "puxar para
+   atualizar". Com movimento reduzido, a troca acontece sem animação.
+4. **As abas** (abre no Resumo; a pendência de menção abre no Feed):
+   - **Resumo:** a descrição em até 3 linhas, com "Ler mais"; o checklist
+     de fechamento; a atividade recente (3 eventos, com "Ver tudo").
+   - **Detalhes:** a descrição inteira; os dados; o envio para fechamento
+     (riscos revisados e mudanças no SGQ, campos de texto); as
+     atribuições, uma pessoa por linha, com o avatar e a função como
+     tag (Aprovadora, Responsável); a classificação vigente como tag nos
+     dados; os anexos.
+   - **Itens (N):** o medidor e o "+ Novo item"; os grupos por tipo, que
+     abrem e fecham, com a contagem e o "+ Nova"; os itens em cartões com
+     fundo (o ID pequeno, o estado e o avatar em cima, o título, o prazo),
+     sem divisórias, porque os cartões já separam.
+   - **Feed:** completo, a mesma linha do tempo do computador (item 7,
+     acima); o campo de comentário toma o lugar da barra de ações.
+   - As **abas** são iguais na largura, a ativa em negrito com o traço
+     grosso e a contagem dos itens numa pílula (o Deel; o componente
+     `Shell/Abas do item`).
+5. **A barra de ações** (`fluxo-app.md` §7) fica fixa no rodapé no
+   Resumo, em Detalhes e em Itens.
+
+As alternativas que ficaram de fora (as abas Resumo · Itens · Feed, a
+página única no estilo do Linear e os cabeçalhos intermediários) estão na
+mesma seção do Figma, como registro. A T-07 no celular **não** segue
+este padrão: é uma página só, sem abas (decisão (h), §7.4).
+
+### 7.4 T-07 Itens filhos: o padrão, e a Ação Corretiva
+
+**O padrão dos cinco** (decisão (h) da B2, 2026-10-26; Figma, página
+Decisões, seção "Decisão (h) · o celular dos filhos"; referências: o
+Linear e o GitHub):
+
+1. **O bloco do título claro** (§6.2, gesto 1): a NC em cima (o caminho
+   de volta), o **tipo** como título, o estado e os envolvidos embaixo; o
+   código na barra de cima. No computador, as ações à direita do bloco.
+2. **No celular, tudo empilhado numa página só, sem abas:** o formulário
+   do tipo, as atribuições (uma pessoa por linha, com as tags), os anexos
+   e o atalho; a barra de ações fixa no rodapé. As abas como as da NC
+   foram a variante A, recomendada pelo Claude e não escolhida (ficaram
+   na seção da decisão).
+3. **Sem feed próprio** (PRD Q25): no lugar, o atalho **"Atividade deste
+   item · N eventos · no feed da NC"**, que abre o feed da NC filtrado por
+   ele, **sem sair do filho** (Matthew, 2026-10-26): no computador, o
+   painel Atividade da NC, empurrando a página; no celular, o mesmo painel
+   como **folha que sobe**, com o filho escurecido atrás (a alça e o "×"
+   fecham). O filtro aparece como a pílula "Só este item: CT-2026-0019 ×";
+   o "×" mostra o feed inteiro da NC, o mesmo da página da NC. Um link
+   "Feed da NC-2026-0042 ›" leva à NC de fato. Não há campo de comentário
+   no filho: o campo do painel comenta na NC.
+4. O formulário **sem cabeçalho** que repita o tipo (o título do bloco
+   já diz).
+
+**A Ação Corretiva** (revista em 2026-10-26, na B2):
+
+```
+NC-2026-0042 · Vazamento na linha 3 › AC-2026-0003
+Ação Corretiva                 [ Finalizar execução ] [ Salvar ] [ Mais ▾ ]
+● Aberta  ✓ Plano aprovado · ⚠ Vencido há 2 dias  (BL)(FS)(CR)
+
+PLANO (aprovado · só leitura), em grade de duas colunas
+  Descrição                       Instruções de verificação
+  Prazo                           Investigação  IV-2026-0007 ›
 EXECUÇÃO
-  Data de execução [ dd/mm/aaaa ]
-  Evidência        [ texto                        ]
-  Anexos           [ arraste fotos ou PDF aqui ]
-─── atribuições · feed ───
+  Executada em [dd/mm/aaaa] (Hoje) (Ontem)   ┌ área de arrastar ┐
+  Prazo do plano: 19/10 · vencido há 2 dias  │ fotos ou PDF     │
+  Para finalizar: a data e a evidência.      └──────────────────┘
+  Evidência [ o que foi feito                                    ]
+─── atribuições · anexos · Atividade deste item › ───
 ```
 
-### 7.5 T-07 Investigação A3 (só computador)
+1. **Empilhado, em toda largura:** o Plano em cima, a Execução embaixo.
+   Lado a lado, as duas colunas apertavam abaixo de 1440 e deixavam um
+   vazio embaixo do Plano só de leitura. O Plano aprovado vira um
+   **resumo em grade** (Descrição | Instruções; Prazo | Investigação), e a
+   Execução usa **as mesmas duas colunas**: a data com a ajuda (o prazo do
+   plano e o que falta para finalizar) à esquerda, a área de arrastar à
+   direita, na altura da linha; a Evidência embaixo, na largura toda.
+2. **O plano em edição** (antes da aprovação) usa a mesma grade, com os
+   campos: Descrição | Instruções; o Prazo com os atalhos Em 15 dias e Em
+   30 dias | a Investigação fixa ("o vínculo não muda", RN-49). A Execução
+   aparece fechada ("abre depois que o plano for aprovado"), e o botão é
+   **Enviar plano para aprovação**.
+3. **Finalizar execução** abre um diálogo (no celular, uma folha):
+   "A ação fecha, sem nova aprovação, e a Verificação nasce para a
+   Beltrana Lima", com **"Verificar em quantos dias?"** e a data calculada
+   embaixo (o `diasParaVerificar` da API).
+4. **Em tela menor:** abaixo de 1440, a coluna lateral vira a **faixa de
+   resumo no topo** (Atividade deste item · Atribuições · Anexos), a mesma
+   da NC com a Atividade aberta (§7.3). A regra vale para todos os
+   filhos: quem decide é a largura da coluna principal, não o aparelho.
+5. **No celular:** o Plano com as instruções e a investigação; a
+   Execução com o campo de data e a mesma ajuda; o prazo numa linha
+   própria embaixo do estado.
+
+**Dois estados do padrão** (B2, item 14, 2026-10-27): depois de uma
+**reprovação**, o item volta para aberto com um aviso no topo, "Reprovada
+pela <aprovador> em <data>", o motivo entre aspas e "Corrija e envie de
+novo" (L7; some no próximo envio e continua no feed da NC). O item
+**fechado** é só leitura: os blocos viram linhas de rótulo e valor (como
+o "Sobre a NC"), a barra de ações some, o "+ Anexar" e o "+ Adicionar
+responsável" também (RN-45, RN-47), e embaixo do título vai "Fechada em
+<data> · aprovada pela <aprovador>"; Contenção, Classificação e
+Investigação fechadas não reabrem: cria-se outra (RN-42).
+
+### 7.5 T-07 Investigação A3 (computador e celular)
 
 ```
-NC-2026-0042 › IV-2026-0007 · Vazamento na linha 3        ● Aberta
+NC-2026-0042 › IV-2026-0007 · A junta resseca antes…      ● Aberta
 [ Enviar para aprovação (bloqueado ⓘ) ]  [ Salvar ]  [ Mais ▾ ]
 ┌────────────────────┬───────────────────────────────────────────────┐
 │ ÍNDICE A3          │ REAL PROBLEMA                                 │
@@ -402,23 +975,157 @@ NC-2026-0042 › IV-2026-0007 · Vazamento na linha 3        ● Aberta
 
 O índice fica fixo ao rolar. ✓ preenchida · ◐ parcial · ○ vazia.
 
+**O computador com o desenho do celular** (B2, 2026-10-26, pedido de
+Matthew: "tenta deixar o PC parecido com o celular"). As duas visões saem do
+mesmo construtor, então são iguais por construção; muda só o que o estado
+pede (quem preenche tem os campos, o "⋯", o "+ Causa" e o "+ Hipótese").
+
+1. **O bloco claro** (com "Salva por…" ou "Enviada por…" na linha de
+   indicadores) e, como a página não tem coluna lateral, a **faixa de
+   resumo da T-06**: três cartões, a **Atividade deste item** com o mesmo
+   desenho do atalho dos outros filhos (abre o painel Atividade da NC,
+   empurrando a página, já filtrado por "Só este item"), as
+   **Atribuições** (o avatar e a etiqueta da aprovadora, a pilha e a
+   contagem dos responsáveis) e os **Anexos** (o clipe e a contagem). As
+   duas últimas abrem com o "⌄" uma lista que cai da faixa: as pessoas com
+   as etiquetas e o "+ Adicionar responsável"; os anexos com o "+ Anexar" e
+   a **área de arrastar** (o componente `AreaDeArrastar`).
+2. **Cada seção é um cartão com o título e a frase do que ela é**, as
+   mesmas das etapas do celular; os campos sem o rótulo que repetiria o
+   título.
+3. **O Ishikawa em três colunas** (duas filas de três categorias, do mesmo
+   tamanho por fila), com a anatomia da causa do celular (o número no
+   círculo, a origem embaixo) e a legenda com os ícones.
+4. **A tabela das hipóteses é a mesma nas duas visões:** o número, a
+   hipótese com o como verificar, a causa no Ishikawa e a classificação
+   (o ícone e o nome, ou "Falta classificar" em vermelho).
+5. **A causa direta mostra de onde veio:** "◆ Da hipótese 2 · causa 2 ·
+   Material" em cima do texto; sem hipótese de causa direta, a caixa
+   "Nenhuma hipótese marcada…" com o atalho para as hipóteses.
+6. **Os 5 porquês na linha do tempo do celular** (o real problema de
+   ponto de partida, os porquês ligados por um fio; na leitura, terminando
+   na causa raiz). Substitui os degraus da regra 2 abaixo.
+7. **Contramedidas e check em cartões:** a contramedida com o código, o
+   título e a linha do estado do plano, do prazo e do responsável. **O
+   check é uma linha curta por contramedida** (Matthew, 2026-10-26: com
+   várias, ele ficaria imenso): o código e o título, um **mini andamento**
+   (três ícones ligados, com o passo atual escrito) e o "⌄"; aberta, ela
+   mostra o completo num painel só, sem caixas esticadas: o como
+   verificar, **quem vai verificar e quando** (o prazo sai do Finalizar
+   execução) e o **andamento vertical** (Plano → Execução → Verificação),
+   separados por uma divisória no computador e empilhados no celular. Os
+   desenhos mostram duas ações (a AC-2026-0004, "medir a dureza no
+   recebimento", ataca a outra metade da causa raiz), uma aberta e uma
+   fechada.
+
+**As duas visões** (decisão (c) da B2, 2026-10-22), as duas no Figma:
+- **Quem preenche** (`ABERTO`, o desenho acima): o progresso no topo do
+  índice ("5 de 10 etapas completas", com uma barra), as seções como
+  campos editáveis, o "+ Hipótese", e o Enviar para aprovação bloqueado
+  com a lista do que falta aberta embaixo dele (por exemplo, "Causa raiz:
+  pelo menos 20 caracteres", "Hipótese 2: falta a classificação",
+  "Plano da AC-2026-0003: ainda em aprovação"). No "Mais", o Cancelar
+  (RN-50).
+- **O aprovador** (`EM_APROVACAO`): tudo só para leitura, com Aprovar e
+  Reprovar. **Sem "+ Nova ação corretiva"**: a ação só nasce ligada a uma
+  investigação aberta (RN-49).
+
+**Três regras das seções** (Matthew, 2026-10-22, valem nas duas visões):
+1. **O Ishikawa é numerado.** Cada causa ganha um número, e é por ele que
+   a hipótese se liga ao diagrama (o `numeroIshikawa` da hipótese é um
+   número, não a categoria); a coluna da hipótese mostra "4 · Meio
+   ambiente". Ao lado da causa, o símbolo da classificação da hipótese:
+   ◆ causa direta, ◇ fator contribuinte, × sem relação; sem símbolo, a
+   causa ainda não tem hipótese classificada. A legenda fica embaixo do
+   diagrama, e o símbolo nunca vem sozinho: a tabela das hipóteses repete
+   o texto, e o leitor de tela lê o nome. Losango e × para não confundir
+   com o ✓ ◐ ○ do índice.
+2. **Os 5 porquês em cadeia:** cada porquê ligado ao anterior por um fio,
+   numa linha do tempo, do real problema até a causa raiz (2026-10-26: no
+   lugar dos degraus, a mesma estrutura do celular nos dois tamanhos).
+3. **O check de efetividade não se preenche:** ele resume, para cada
+   contramedida, o código e o título da ação, as instruções de
+   verificação do plano (`instrucoesVerificacao`) e o andamento ("a VE
+   nasce ao finalizar a execução"; depois, a Verificação e o resultado).
+   No índice, ele conta como completo quando toda contramedida tem as
+   instruções.
+4. **Toda hipótese diz como vai ser verificada** (Matthew, 2026-10-26):
+   o campo **Como verificar** fica entre a causa no Ishikawa e a
+   classificação, que é o resultado do teste. Sem ele, a hipótese está
+   incompleta e trava o envio (PRD Q26, RN-24). O banco ainda não tem o
+   campo (`fluxo-app.md` L13, na C2).
+5. **A causa direta vem da hipótese marcada como causa direta**
+   (Matthew, 2026-10-26): a seção traz a resposta da hipótese, pronta
+   para confirmar ou ajustar a redação; com mais de uma, todas; com
+   nenhuma, a seção não pede texto, diz "Nenhuma hipótese marcada como
+   causa direta ainda" e leva às hipóteses. O envio exige ao menos uma
+   hipótese marcada como causa direta (PRD Q26, RN-24).
+
+**No celular** (decisão (i) da B2, 2026-10-26; Figma, página Decisões,
+seção "Decisão (i) · a Investigação no celular", e a seção "Celular · 4c ·
+Investigação"
+da página Wireframes; referências: Cleo AI, Chime, Shopify e Public).
+Matthew: "nem todos os trabalhadores aqui possuem computador". Revê o
+princípio 4 do `fluxo-app.md` §1.
+
+1. **Quem preenche: uma etapa por tela.** A entrada é o índice das 10
+   etapas numa lista compacta (a variante B, como a Shopify), com o
+   progresso ("5 de 10") num medidor em segmentos e o ✓ ◐ ◌ de cada
+   etapa; só as etapas pela metade dizem o que falta ("Falta classificar
+   a hipótese 2"). Embaixo, as atribuições, os anexos e o atalho da
+   atividade; no rodapé, o Enviar para aprovação bloqueado.
+2. **A tela da etapa** (como a Public): a seta para o índice, "IV-2026-0007
+   · Etapa 4 de 10", a barra de segmentos (escuro é completa) com um
+   ponto embaixo da etapa atual; o título, a frase do que a etapa é, um
+   lembrete do que veio antes e o conteúdo; no rodapé, **Anterior** e
+   **Salvar e próxima** (o salvar é sempre um botão, U4; sair com algo não
+   salvo pergunta). A última, o Check de efetividade, só tem leitura e
+   termina em "Voltar ao índice".
+3. **As etapas com estrutura:** o **Ishikawa** com um mapa das seis
+   categorias em blocos de duas colunas (do mesmo tamanho por fila) e um
+   cartão por categoria, com as causas numeradas, o "⋯" e o "+ Causa"; as
+   **Hipóteses** em cartões (o número, a causa no Ishikawa num seletor com
+   a lista numerada, o Como verificar e a classificação em pílulas com os
+   ícones); os **5 Porquês** numa linha do tempo, do real problema até o
+   link para a causa raiz.
+4. **A anatomia da causa:** o número num círculo, em negrito; o texto; e
+   uma linha de origem embaixo, com o ícone da classificação e a
+   hipótese ("◇ Fator contribuinte · hipótese 1", "Hipótese 2 · falta
+   classificar", "Sem hipótese ainda"); no mapa, a versão curta ("◇
+   hipótese 1"). Os três símbolos são ícones de 12 px, não caracteres (a
+   Figtree não os tem, e cada um saía de um tamanho).
+5. **O aprovador: uma página corrida de leitura**, com as etapas em
+   cartões, o Ishikawa no mesmo mapa, as hipóteses com a verificação e a
+   origem, os 5 porquês na linha do tempo terminando na causa raiz, e
+   Reprovar e Aprovar no rodapé; um link leva à investigação inteira no
+   computador. A variante A da entrada (os cartões, como a Cleo e a Chime)
+   ficou na seção da decisão.
+
 ### 7.6 T-05 Nova NC (celular)
+
+Revista em 2026-10-23 (o gesto 4 da casa, §6.2): os campos em grupos com
+nome, a regra como ajuda fixa e os responsáveis também no celular.
 
 ```
 ┌────────────────────────┐
 │ ✕  Nova NC             │
 ├────────────────────────┤
+│ O QUE ACONTECEU        │
 │ Título                 │
 │ [                    ] │
+│ Pelo menos 5 caracteres│
 │ Descrição              │
 │ [                    ] │
+│ Pelo menos 20 caract.  │
+│ Detectada em  [hoje   ]│
 │ Origem        [      ▾]│
+│ ONDE                   │
 │ Setor         [      ▾]│
-│ Detectada em  [hoje  ▾]│
 │ Processo afetado  ...  │
-│ Requisito violado ...  │
 │ Cliente (opcional)     │
-│ Responsáveis (opc.)    │
+│ O QUE FOI VIOLADO      │
+│ Requisito violado ...  │
+│ Responsáveis (você + …)│
 │ [📷 Tirar foto/anexar] │
 ├────────────────────────┤
 │ [Salvar rascunho][Publicar]│
@@ -426,7 +1133,392 @@ O índice fica fixo ao rolar. ✓ preenchida · ◐ parcial · ○ vazia.
 ```
 
 "Detectada em" já vem com **hoje**. O botão de anexo abre a câmera no
-celular.
+celular. A regra do título (5 caracteres) e da descrição (20) é a do
+`nc.schema.ts`, numa ajuda fixa embaixo do campo, nunca só no
+placeholder. No computador, os mesmos três grupos, com os responsáveis e
+os anexos na coluna da direita. Os responsáveis na criação ainda não
+existem na rota (a C1: "NC criada com colaboradores").
+
+### 7.7 T-01 Login
+
+```
+┌──────────────────────────────────────┐
+│                                      │
+│  andon                               │
+│                                      │
+│  Entrar                              │
+│                                      │
+│  E-mail                              │
+│  [                                 ] │
+│  Senha                               │
+│  [                             👁 ]  │
+│  [ ] Manter conectado                │
+│                                      │
+│  [            Entrar              ]  │
+│                                      │
+│  Esqueceu a senha? Peça um novo      │
+│  convite ao administrador.           │
+│                                      │
+│  ──────────────────────────────────  │
+│  [logo da empresa, monocromático]    │
+└──────────────────────────────────────┘
+```
+
+No computador, o cartão fica centralizado sobre o `--background`; no
+celular, ocupa a largura toda. É a única tela com a marca no centro
+(o logotipo provisório, `docs/marca.md`) e com a **assinatura** da
+empresa embaixo (§1), como texto de apoio.
+
+- **Erro de credencial:** uma mensagem só, no topo do formulário,
+  "E-mail ou senha incorretos." (a API não diz qual dos dois errou).
+- **Limite de tentativas** (5 por minuto, TRD §4.3): "Muitas tentativas.
+  Espere um minuto e tente de novo."
+- **Sem "esqueci minha senha"** no MVP (PRD §4.3): o caminho é o ADMIN
+  gerar um novo convite (T-10), que também serve para redefinir.
+- **Sessão expirada** (`fluxo-app.md` §8): volta para cá e, depois de
+  entrar, para onde a pessoa estava.
+
+### 7.8 T-02 Definir senha
+
+```
+┌──────────────────────────────────────┐
+│  andon                               │
+│                                      │
+│  Crie a sua senha                    │
+│  Ela vale para entrar no sistema     │
+│  daqui em diante.                    │
+│                                      │
+│  Nova senha                          │
+│  [                             👁 ]  │
+│  Mínimo de 12 caracteres             │
+│  Repita a senha                      │
+│  [                             👁 ]  │
+│                                      │
+│  [         Definir senha          ]  │
+│                                      │
+│  ──────────────────────────────────  │
+│  [logo da empresa, monocromático]    │
+└──────────────────────────────────────┘
+```
+
+Aberta pelo link do convite (`/definir-senha?token=…`, válido por 72 h).
+A tela não mostra o nome nem o e-mail da pessoa (Matthew, 2026-10-21):
+mostrar exigiria uma rota pública que lê o convite sem usá-lo, mais uma
+porta sem login para proteger, e quem manda o link é o ADMIN, que já fala
+com a pessoa.
+
+- **Regra da senha:** 12 caracteres ou mais; o limite de 72 bytes só
+  aparece se for atingido ("Senha longa demais"). "Repita a senha" é
+  conferido só na tela.
+- **Link vencido, já usado ou inválido:** uma mensagem só, "Este link
+  não vale mais. Peça um novo convite ao administrador." (F5).
+- **Sucesso:** vai para o Login, com o aviso "Senha definida. Entre com
+  o seu e-mail."
+
+### 7.9 T-07 Classificação
+
+Desenhada **como fica depois da C2** (PRD Q22, pedido de Matthew em
+2026-10-26): colaborador e aprovador excludentes por item, e a
+Classificação **sem portão**.
+
+```
+← CL-2026-0011
+NC-2026-0042 · Vazamento na linha 3 ›
+Classificação              [ Concluir classificação ]  [ Salvar ]
+● Aberta  (BL)
+
+SOBRE A NC (só leitura)                              Abrir a NC ›
+  Descrição · Requisito violado · Setor · Origem · Detectada em · Cliente
+( ) Maior   Afeta o cliente, a segurança ou um requisito legal
+( ) Menor   Desvio pontual, sem efeito no produto final
+Justificativa
+[ por que esta classificação                              ]
+Mínimo de 20 caracteres
+─── atribuições · anexos · Atividade deste item › ───
+```
+
+**Ler e depois classificar:** o cartão **Sobre a NC** vem antes do
+formulário, com os dados da NC só para leitura (Matthew, 2026-10-26: a
+tela do computador estava vazia, e quem classifica precisa ler a NC sem
+sair da página). No celular, compacto: a descrição em 3 linhas e o "Ler
+mais", como no Resumo da NC. Os dados vêm do `GET /nc/:id`.
+
+**Quem conclui:** o **papel** decide, não a etiqueta. Só quem tem o papel
+`APROVADOR` ou `GERENTE` cria, edita, publica e conclui (RN-20); para o
+`EDITOR`, a tela é só leitura e a barra de ações some. Nas atribuições, a
+pessoa que classifica aparece como **Responsável**: com a Q22, a
+Classificação não tem aprovador. "Concluir classificação" leva direto a
+`FECHADA`, como o Concluir da Verificação. **Não há Cancelar** (§7 do
+fluxo): quando a classificação muda, cria-se outra. Por isso, aberta, ela
+não tem o "Mais": nada iria nele.
+
+**A conferir na C2** (PRD Q21): ao escolher **Menor**, entra uma seção
+**Abrangência** (as NCs dos últimos 12 meses, para marcar as relacionadas,
+e a justificativa específica na 3ª ocorrência). Ainda sem desenho: no
+frame, uma nota.
+
+### 7.10 T-07 Contenção
+
+Revista em 2026-10-26 (B2, item 12).
+
+```
+NC-2026-0042 · Vazamento na linha 3 › CT-2026-0019
+Contenção          [ Enviar para aprovação (bloqueado ⓘ) ] [ Salvar ] [ Mais ▾ ]
+● Aberta  (BL)(CR)
+
+SOBRE A NC (só leitura)                                  Abrir a NC ›
+AÇÃO IMEDIATA
+  Descrição [ o que foi feito para conter o problema ]  Mínimo de 20 caracteres
+EXECUÇÃO   Preencha depois de executar: as duas são necessárias para enviar.
+  Executada em [dd/mm/aaaa] (Hoje) (Ontem)
+  Disposição   ( ) Aceito      Usado como está, com a liberação de quem pode autorizar
+               ( ) Corrigido   Ajustado ou refeito até atender ao requisito
+               ( ) Anulado     Descartado, cancelado ou recolhido
+               ( ) Em análise  Separado, esperando a decisão
+─── atribuições · anexos · Atividade deste item › ───
+```
+
+1. **Sobre a NC** antes da ação: quem contém precisa saber o que
+   aconteceu (o mesmo cartão da Classificação, com a classificação
+   vigente).
+2. **A data** com o `CampoData` (Hoje · Ontem ao lado; o campo abre o
+   calendário). **A disposição** em quatro cartões com a explicação, em
+   duas colunas no computador e empilhados no celular. As explicações são
+   uma proposta do Claude, a conferir com a analista (o PRD só diz que os
+   termos são genéricos).
+3. Publicada só com a descrição (mínimo de 20 caracteres); a data e a
+   disposição vêm depois de executar. Sem elas, o "Enviar para aprovação"
+   mostra a lista do que falta (J3). No "Mais", o Cancelar, para o
+   aprovador ou o `GERENTE`.
+4. **A Contenção nova (rascunho)**, nos dois tamanhos, vale de exemplo
+   para os cinco tipos: "Rascunho" no lugar do código, o estado Rascunho,
+   **Publicar** e Salvar, e o **Excluir rascunho** no "Mais". O aprovador da
+   NC já aparece (RN-46), e o atalho da atividade não aparece: o filho só
+   entra no feed da NC quando é publicado (RN-10).
+5. **Fechada**, a tela mostra embaixo do cabeçalho: "Não resolveu? Crie
+   uma nova contenção na NC" (RN-42: a contenção não se reabre). Ainda sem
+   desenho (item 14 da B2, os estados).
+
+### 7.11 T-07 Verificação
+
+Revista em 2026-10-26 (B2, item 12).
+
+```
+NC-2026-0029 · Rebarba no flange › VE-2026-0001
+Verificação                 [ Concluir verificação ] [ Salvar ] [ Mais ▾ ]
+● Aberta  🕒 Vence em 5 dias  (BL)
+
+SOBRE A AÇÃO AC-2026-0001 ›  (só leitura)
+  Plano · Instruções de verificação · Evidência · Executada em
+RESULTADO   ( ) Eficaz        ( ) Parcialmente eficaz      ( ) Não eficaz
+            Nada mais acontece  Cria uma nova ação          Reabre a investigação
+                                corretiva em rascunho       e a NC
+  Conclusão     [ o que foi conferido e o que se viu ]
+  Verificada em [dd/mm/aaaa] (Hoje) (Ontem)
+─── atribuições · anexos · Atividade deste item › ───
+```
+
+1. **Sobre a ação** no lugar das instruções soltas: para verificar a
+   eficácia, o que importa é a ação (o plano, as instruções, a evidência
+   e quando foi executada); a NC continua no caminho de volta.
+2. **O resultado em três colunas** no computador, com o efeito de cada
+   um; no celular, empilhado. **A data** com o `CampoData`.
+3. Nasce sozinha ao finalizar a execução da ação (J5), já aberta, nunca
+   em rascunho. Desenhada **como fica depois da C2** (PRD Q22): a pessoa
+   aparece só como **Responsável**; a Verificação não tem portão, e o
+   aprovador nela não serve para nada. Hoje o backend a cria com o
+   aprovador da ação como colaborador **e** aprovador
+   (`acao-corretiva.service.ts:82-83`), o que a Q22 proíbe: na C2, ela
+   nasce só com o colaborador (plano, linha da C2).
+4. "Concluir verificação" é só do responsável com papel `APROVADOR` (§7
+   do fluxo) e abre o `DialogoEfeito` com o efeito do resultado escolhido:
+
+```
+┌──────────────────────────────────────────────┐
+│ Concluir como Não eficaz?                    │
+│ A investigação IV-2026-0007 e a NC-2026-0042 │
+│ serão reabertas.                             │
+│                     [ Voltar ] [ Concluir ]  │
+└──────────────────────────────────────────────┘
+```
+
+Eficaz: "Nada mais acontece." Parcialmente eficaz: "Uma nova ação
+corretiva será criada em rascunho para os mesmos responsáveis."
+
+### 7.12 T-08 Relatórios
+
+O painel da gestão e a **tela inicial do `GERENTE`** (`fluxo-app.md` §3).
+Decisão (k) da B2 (2026-10-26), a C: a régua do Mercury, o "o que mudou"
+do Linear e as colunas sem caixa do Mercury, com o tom do Investment
+(`docs/identidade/referencias-interface.md`).
+
+**Computador:**
+
+```
+Segunda, 26 de outubro
+Boa noite, Beltrana
+3 itens atrasados, o mais antigo há 9 dias · 38 NCs abertas
+
+2025                                                                 2026
+ mai jun jul ago set out [nov dez jan fev mar abr mai jun jul ago set out]
+Últimos 12 meses · nov/25 a out/26
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ ∿ O que mudou nos últimos 12 meses                 Atualizado hoje, 21:00 │
+│ ↗ Produção abriu 4 NCs a mais que no período anterior: são 14 das 38.     │
+│ ✓ A eficácia das verificações subiu para 82% (eram 77%).                  │
+│ ⚠ Uma ação a mais está atrasada: a AC-2026-0002, com Deltrano Alves, há 6 dias. │
+└──────────────────────────────────────────────────────────────────────────┘
+
+NCs abertas        ↗ │ Tempo médio até fechar ↗ │ Atrasadas            ↗ │ Eficácia             ↗
+38                   │ 23 dias                  │ 3                      │ 82%
+↑ 4 a mais que no    │ ↓ 4 dias a menos que no  │ ↑ 1 a mais que no      │ ↑ 5 pontos acima · 18 de 22
+  período anterior   │   período anterior       │   período anterior     │ ███████████████▆▆▆▂
+Por setor  Por origem│ Classificação Maior 26 d │ AC-2026-0003  ⚠ 2 dias │ ■ Eficaz 18 · 82%
+Produção   14 · 37%  │ Classificação Menor 19 d │ AC-2026-0002  ⚠ 6 dias │ ■ Parcialmente eficaz 3 · 14%
+▬▬▬▬▬▬▬▬▬▬▬▬        │  ╲╱╲__╱╲__  ── Maior     │ VE-2026-0002  ⚠ 9 dias │ ■ Não eficaz 1 · 5%
+Expedição   9 · 24%  │  ┄┄┄┄┄┄┄┄  ┄┄ Menor      │                        │ Reincidência
+...                  │                          │                        │ NCs reabertas 2 ›
+```
+
+1. **A régua do período** manda em tudo embaixo: os meses dos últimos dois
+   anos, o trecho escolhido com o fundo `fundo/selecao`, e a frase do
+   período embaixo. No celular, mostra 7 meses e se arrasta para os lados.
+2. **O que mudou:** até 3 frases sobre o período, cada uma com ícone (o
+   atraso com o ⚠ vermelho). A regra de qual mudança vale uma frase fica
+   para a C7, com a analista.
+3. **As 4 colunas sem caixa**, separadas por uma linha fina: o título com
+   o **↗** (abre a lista de NCs daquele relatório, já filtrada, J12), o
+   número grande, a comparação com o período anterior (seta e texto, nunca
+   só cor), os rótulos sublinhados e a quebra. No celular, as colunas viram
+   blocos empilhados, na mesma ordem.
+4. **Os gráficos sem cor** (Grafite): barras finas para as NCs por setor ou
+   por origem (com o número e a %), a linha do tempo médio com a
+   classificação pelo traço (cheia: Maior; tracejada: Menor; com legenda),
+   a eficácia numa **barra segmentada só**, com a legenda em %. As
+   atrasadas não são gráfico: são uma lista com o prazo.
+
+Os quatro relatórios da RF-19, nessa ordem. **Todo número leva à lista de
+NCs já filtrada** (J12). Componentes: o `Tooltip` e o `Chart` do shadcn
+(sobre o **Recharts**: biblioteca nova, entra no changelog com o código,
+§1), as barras em HTML simples, e a régua, que é nossa.
+
+### 7.13 T-09 Usuários (com a T-10 e a T-11)
+
+Decisão (l) da B2 (2026-10-26): as três telas viram **uma**, a A (lista +
+painel fixo), desenhada pelo Claude depois de duas buscas no Mobbin
+recusadas. Só o `ADMIN`.
+
+**Computador:**
+
+```
+Usuários       [＋ Novo usuário] │ (BL) Beltrana Lima ● Ativa     [Gerar novo convite] [Mais ▾]
+24 ativos · 3 inativos           │      beltrana.lima@empresa.com.br · é o login, não muda
+[🏷 2 pedidos de apelido   Ver]   │ ┌ 🏷 A Beltrana pediu para ser chamada de "Bel"  [Recusar] [Aprovar] ┐
+[🔍 Nome ou e-mail          ]     │ Dados      [ Nome: Beltrana Lima ] [ Setor: Qualidade ▾ ]
+(Todos) (Ativos) (Inativos)      │ 🛡 Papéis   Ligar ou desligar vale na hora. Desligar pede confirmação.
+┌──────────────────────────────┐ │   Visualizador · Vê as NCs, sem editar                  ○
+│(BL) Beltrana Lima  Pede: Bel │ │   Aprovador · Classifica, aprova e verifica            ●
+│(CR) Ciclano Reis             │ │   ...
+│(PN) Paulo Neves     ○ Inativo│ │ 🕒 Em andamento com ela: aprovadora de 3 itens
+└──────────────────────────────┘ │   NC-2026-0042 · Vazamento na linha 3   ● Aberta   ›
+Mostrando 20 de 27               │
+```
+
+1. **A lista** (400 px): a busca, as pílulas Todos · Ativos · Inativos, as
+   pessoas com o avatar, o setor e os papéis; a escolhida com o fundo de
+   seleção. O aviso dos **pedidos de apelido** fica no topo e filtra quem
+   tem pedido (RN-52).
+2. **O painel da pessoa** (a T-10): o cabeçalho (avatar, nome, situação,
+   e-mail), **Gerar novo convite** e o **Mais** (Remover a foto, RN-53;
+   Inativar ou Reativar); os **Dados** (nome e setor; ao editar, aparece a
+   faixa "Você mudou… · Desfazer · Salvar"); os **Papéis** com
+   **interruptor**, cada um com a frase do que faz (valem na hora; desligar
+   pede confirmação); e **Em andamento com ela**, os itens de que a pessoa é
+   aprovadora, que explicam a RN-43 antes de alguém tentar inativar.
+3. **A recusa da RN-43** é uma lista do que fazer, no topo do painel:
+   "Antes de inativar a Beltrana, troque o aprovador de 3 itens", os itens
+   **dentro do aviso** com o **Trocar aprovador** (sem o papel de gerente,
+   "Ver o item"), e o andamento "0 de 3 resolvidos". O vermelho fica só no
+   aviso. As outras recusas (o último `ADMIN`, o setor desativado) usam o
+   mesmo lugar.
+4. **O Novo usuário** (a T-11) abre no mesmo painel: nome, e-mail ("é o
+   login; depois não muda"), setor (só os ativos) e os papéis desligados
+   ("escolha ao menos um"); **Cancelar · Criar e gerar convite**. Criada a
+   pessoa, o painel mostra o **convite**: o link, **Copiar link** e o aviso
+   de que ele aparece só agora.
+5. **Os diálogos:** trocar de pessoa com edição não salva pergunta
+   "Descartar as alterações?" (**Continuar editando · Descartar**); sair do
+   convite sem copiar o link pergunta o mesmo, com o texto do link.
+
+**Celular:** lista → a pessoa (o avatar grande, os papéis, os itens, e o
+**Gerar novo convite** fixo no rodapé) → o Novo usuário → o convite
+(**Pronto** no rodapé). O pedido de apelido aparece embaixo do nome, com
+**Recusar** e **Aprovar** lado a lado.
+
+### 7.14 T-10 Detalhe do usuário
+
+Virou o painel da T-09 (§7.13, decisão (l)). O endereço
+`/admin/usuarios/:id` continua e abre o painel da pessoa.
+
+### 7.15 T-11 Novo usuário
+
+Virou o painel da T-09 (§7.13, decisão (l)). O endereço
+`/admin/usuarios/novo` continua e abre o Novo usuário no painel. Sem e-mail
+no MVP: o ADMIN envia o link por fora (J11).
+
+### 7.16 T-12 Setores
+
+Decisão (m) da B2 (2026-10-27): a **lista + painel** da T-09 (§7.13).
+
+```
+Setores               [＋ Novo setor] │ [EX] Expedição [● Ativo]
+8 ativos · 1 desativado               │      Criado em 12 mar. 2026 · 4 pessoas ativas, 1 inativa
+Ativos 8   Desativados 1              │ Dados
+──────────                            │  Nome [ Expedição                      ]
+[DI] Diretoria                        │ Pessoas
+     1 pessoa ativa                   │  (JD) Joana Dias · Editor           Ver pessoa ›
+[EX] Expedição            ◀ escolhido │  …
+     4 pessoas ativas · 1 inativa     │  Inativas · 1, ficam como histórico
+[MA] Manutenção                       │  (PN) Paulo Neves · Editor  [Inativo] Ver pessoa ›
+     2 pessoas ativas                 │ ⚠ Desativar o setor
+…                                     │  Só desativa sem pessoas ativas: hoje são 4.
+                                      │  [Desativar setor]
+```
+
+As abas Ativos e Desativados (as referências: Miro) no lugar do filtro;
+o setor tem o ícone **quadrado** com as iniciais (a pessoa, redondo). O
+painel é feito de blocos (Grok): **Dados**, com o nome (o único campo);
+**Pessoas**, as ativas com o **Ver pessoa**, que abre a T-09 com ela
+escolhida (o setor de uma pessoa muda no painel dela), e as inativas à
+parte, porque são histórico e não contam para a RN-44; e **Desativar o
+setor**, a zona de perigo, que diz antes quantas pessoas ativas impedem.
+Desativar pede confirmação simples (§8.2). Com pessoas ativas, a recusa
+da RN-44 abre no topo do painel, no molde da RN-43 (§7.13): "Antes de
+desativar a Expedição, mude o setor de 4 pessoas", o "0 de 4
+resolvidas" e o Ver pessoa em cada uma. No setor desativado, o Reativar
+no lugar do Desativar, sem confirmação (é reversível). O **Novo setor**
+abre o painel vazio, com o Criar setor e o Cancelar; o nome é único, e a
+recusa sai embaixo do campo com o texto da API ("Já existe um setor com
+este nome"; se ele está desativado, "reative-o em vez de criar outro").
+
+**No celular:** a lista com as abas e a tela do setor, aberta pelo
+toque no cartão, com os mesmos blocos e a recusa no topo.
+
+A API para a C6 (B2, item 16): as contagens de pessoas ativas e
+inativas no `GET /setores`, o filtro por setor no `GET /usuarios` e o
+`criadoEm` na resposta.
+
+**No celular** (T-08 a T-12, B2, 2026-10-22; Figma, seção "Gestão e
+administração"): telas internas, abertas pela tela Eu (§6.1), com a seta
+de voltar e sem a barra de abas. As tabelas viram listas de cartões; a
+ação principal da tela (Novo usuário, Novo setor, Salvar, Criar e gerar
+convite) vai para a barra fixa no rodapé; as ações de cada setor saem da
+linha e abrem num toque no cartão. O convite gerado ganha o
+**Compartilhar**, que abre o menu do celular (WhatsApp, Teams), além do
+Copiar. Os Relatórios ficam numa coluna, com os 4 números em grade 2 × 2.
+O diálogo do efeito da Verificação vira uma folha que sobe do rodapé,
+com os botões empilhados.
 
 ---
 
@@ -450,12 +1542,55 @@ Para não perder trabalho:
 
 | Ação | Confirmação |
 |---|---|
-| Salvar, publicar, submeter, aprovar | **Nenhuma** — são reversíveis ou esperadas; confirmar tudo treina a pessoa a clicar "OK" sem ler |
+| Salvar, publicar, submeter, aprovar, retirar da aprovação | **Nenhuma** — são reversíveis ou esperadas; confirmar tudo treina a pessoa a clicar "OK" sem ler |
 | Reprovar, cancelar, reabrir | `DialogoMotivo` — motivo obrigatório |
 | Excluir rascunho | Confirmação simples ("Excluir o rascunho? Não dá pra desfazer.") |
 | Finalizar execução | `DialogoEfeito` — pede os dias até a verificação e explica que a ação fecha e a verificação é criada |
 | Concluir verificação | `DialogoEfeito` — explica o efeito do resultado escolhido (`fluxo-app.md` J7) |
 | Inativar usuário, revogar papel, desativar setor | Confirmação simples |
+
+**O menu "Mais"** (B2, item 14): guarda as ações do estado que não são o
+caminho principal: Cancelar, Retirar da aprovação, Reabrir e Excluir
+rascunho. No computador, um menu abaixo do botão, com uma linha de dica
+embaixo de cada ação (o que ela faz e se pede motivo); as que abrem
+diálogo terminam em "…". No celular, o ⋯ da barra superior abre uma
+folha que sobe do rodapé, com os itens de 44 px e o Fechar.
+
+**O diálogo, uma versão só** (pergunta de Matthew, 2026-10-27: havia
+duas, a da T-07 com medidas soltas, borda e sombra, e a da T-09 com os
+tokens). Valem cinco regras, para todo diálogo (o `DialogoMotivo`, o
+`DialogoEfeito` e a confirmação simples):
+
+1. A base é a da T-09: o fundo `fundo/card`, o raio `raio/card`, o espaço
+   `espaco/4` entre as partes, o título no estilo `Título/Seção` e o
+   texto no de apoio.
+2. Uma largura só no computador, **480 px**, com ou sem campo.
+3. **Sem borda e sem sombra**: o véu já separa o diálogo da tela. No
+   celular, o diálogo é a folha que sobe do rodapé, com os botões
+   empilhados.
+4. O botão da ação usa `acao/destrutiva` (vermelho) **só no que não se
+   desfaz**: Excluir rascunho, Descartar, Cancelar e o "Concluir como
+   Não eficaz" (que reabre a investigação e a NC). Reprovar, Reabrir e
+   Finalizar execução são reversíveis ou esperados: o botão é o
+   primário (grafite). A cor nunca é o único sinal: o nome do botão diz
+   a ação ("Cancelar a NC", nunca "OK"). É a exceção do `docs/marca.md`,
+   e vale só no botão final: o gatilho no "Mais" e na barra fica cinza.
+5. **O foco nunca começa no botão do que não se desfaz**: começa no
+   **Voltar** na confirmação simples e no campo **Motivo** no
+   `DialogoMotivo`; o Enter não confirma uma exclusão.
+
+O componente (um só, com as variantes de conteúdo) é da B3 (item 15, o
+inventário).
+
+**O `DialogoMotivo`**: o título pergunta com o código ("Cancelar a
+NC-2026-0042?"), uma frase diz o efeito, o campo **Motivo** (obrigatório,
+até 5.000 caracteres, `motivo.schema.ts`) e os botões Voltar e o da
+ação, com o nome dela ("Cancelar a NC", "Reprovar", "Reabrir a NC"). No
+celular, vira folha, com os botões empilhados. O texto de cada um:
+Cancelar, "Ela fica no histórico como cancelada e não pode ser
+reaberta"; Reprovar, "Ela volta para aberta, para <quem preenche>
+corrigir. O seu motivo aparece no topo do item até o próximo envio"
+(L7); Reabrir, "Ela volta para aberta, e o motivo fica no feed".
 
 ### 8.3 Retorno ao usuário
 
@@ -485,6 +1620,11 @@ Para não perder trabalho:
 Critérios do G2 e do G5, aplicados a **toda** tela:
 
 1. **Contraste** ≥ 4,5:1 para texto, ≥ 3:1 para ícones e bordas de campo.
+   O campo tem a **borda inteira** de 1 px em `borda/controle` (#8A8A8F
+   no claro, 3,44:1; #68686D no escuro, 3,35:1), o canto de 6 px e o foco
+   num anel de 2 px afastado 2 px; no shadcn, o `--input` e o `--ring`
+   (decisão (d) da B2, 2026-10-22). A borda clara do padrão do shadcn
+   (#D4D4D8, 1,48:1) não passa.
 2. **Nunca só cor** — badges com ícone + texto; prazos com texto
    ("Vencido há 2 dias"); campos com erro com mensagem, não só borda
    vermelha. Parte da equipe pode ter daltonismo, e o app pode ser
@@ -493,7 +1633,10 @@ Critérios do G2 e do G5, aplicados a **toda** tela:
    sempre visível (`--ring`). Os componentes Radix por trás do shadcn/ui
    já resolvem boa parte disso; o cuidado é não quebrar.
 4. **Rótulos** — todo campo com `<label>` visível (não só placeholder);
-   botões só com ícone têm nome acessível.
+   botões só com ícone têm nome acessível. Ícone sozinho (como o ↗ dos Relatórios) leva
+   uma **dica** ao passar o mouse **e** no foco do teclado, com o mesmo texto
+   do nome acessível (`Tooltip` do shadcn); no celular, onde não há mouse,
+   o toque é a linha inteira (o título e o ícone), com 44 px (decisão (k)).
 5. **Toque** — alvos ≥ 44 × 44 px no celular.
 6. **Movimento** — animações curtas e funcionais; respeitar "reduzir
    movimento" do sistema operacional.
@@ -531,12 +1674,35 @@ Critérios do G2 e do G5, aplicados a **toda** tela:
 | Aprovador | **Aprovador** | |
 | Não Conformidade | **NC** em listas e títulos, "Não Conformidade" por extenso na primeira vez de cada tela | |
 
+### 10.3 Como um item aparece numa lista ou num cabeçalho
+
+Só a NC tem título (`prisma/schema.prisma`): os cinco filhos não têm.
+Regra (Matthew, 2026-10-21): **o código + o começo do texto principal do
+tipo**, cortado com "…", e a NC no caminho de volta. Sem código (ainda em
+rascunho), "Rascunho" no lugar dele.
+
+| Tipo | Ao lado do código | Exemplo |
+|---|---|---|
+| NC | O título | `NC-2026-0042 · Vazamento na linha 3` |
+| Classificação | O valor | `CL-2026-0011 · Maior` |
+| Contenção | O começo da descrição | `CT-2026-0019 · Isolar o lote 42…` |
+| Investigação | O começo do real problema | `IV-2026-0007 · A junta resseca antes…` |
+| Ação Corretiva | O começo da descrição do plano | `AC-2026-0003 · Trocar o fornecedor da junta…` |
+| Verificação | A ação de origem | `VE-2026-0002 · da AC-2026-0003` |
+
+O rótulo vale nas listas, no feed, nas pendências e no caminho de volta.
+**No bloco do título do próprio filho, não**: lá o título é o tipo, e o
+código fica na barra de cima (decisão (h), §6.2).
+
+No front, o rótulo sai de **uma função só**: se os filhos ganharem título
+(a avaliar antes da C0, plano), muda só ela.
+
 ---
 
 ## 11. Fora do MVP de UI
 
-Tema escuro · personalização de colunas da lista · atalhos de teclado
-avançados · impressão formatada da NC (relatório para auditoria) ·
+Personalização de colunas da lista · atalhos de teclado
+além do conjunto curto (§6.1; as ações por tecla) · impressão formatada da NC (relatório para auditoria) ·
 internacionalização (só pt-BR).
 
 ---
@@ -548,7 +1714,7 @@ Com Matthew, em 2026-09-24 (além das da §1).
 | # | Pergunta | Decisão |
 |---|---|---|
 | **U1** | Textos dos botões e das atribuições | **"Enviar para aprovação"** e **"Responsável"** na tela; código e banco mantêm os nomes atuais → §10.2 |
-| **U2** | Navegação no celular | **Barra inferior**: Pendências, NCs, ＋ Nova NC, Menu → §6.1 |
+| **U2** | Navegação no celular | **Barra flutuante** com Pendências, NCs e Eu, e a lupa (a busca) ao lado; a Nova NC no topo da T-04; a tela Eu no lugar do menu (revista em 2026-10-22, B2, e na decisão (n), 2026-10-27) → §6.1 |
 | **U3** | Fonte | **Figtree** (B1, 2026-10-13); sempre servida pelo nosso servidor; `tabular-nums` nos números → §3.2 |
 | **U4** | Salvar | **Botão explícito** + cópia local no navegador → §8.1 |
 | **U5** | Quem monta o Figma | **Claude cria os wireframes** (a partir da §7) no Figma de Matthew; **Matthew faz os mockups** |
@@ -567,3 +1733,37 @@ tokens.
 | 2026-09-24 | v1 — decisões iniciais e U1–U5 |
 | 2026-09-24 | v1.1 — revisão cruzada: wireframes com os termos do glossário (U1), prefixos reais dos códigos, aprovador no checklist, triagem inclui filhos |
 | 2026-10-01 | v1.2 — etapa "Em plano de ação" removida; checklist da NC sem os planos, que passam para a investigação (PRD Q17) |
+| 2026-10-21 | v1.3 — B2: os wireframes em texto que faltavam (§7.7 a §7.16): Login, Definir senha, Classificação, Contenção, Verificação, Relatórios e as quatro de administração |
+| 2026-10-21 | v1.4 — coerência com a B1: o §1 sem as faces Dawn e Dusk como se valessem (estão suspensas), e o tema escuro sai da §11 (é do MVP desde 2026-10-13) |
+| 2026-10-21 | v1.5 — o reativar setor no T-12 (a rota existe desde a A6; o wireframe dizia que não) e a decisão do T-02 sem o nome da pessoa |
+| 2026-10-21 | v1.6 — como um item aparece (§10.3): os filhos não têm título, então o código + o começo do texto principal; os wireframes §7.1, §7.3, §7.4, §7.5, §7.9, §7.10 e §7.14 seguem a regra; o "Sair de todos os aparelhos" no menu da pessoa (§6.1) |
+| 2026-10-21 | v1.7 — B2: a proposta da barra inferior de três destinos e do avatar (muda a U2, a confirmar), o computador sem barra de topo e os grupos do menu em letra normal (§6.1) |
+| 2026-10-22 | v1.8 — B2, decisão (a): a U2 revista (a barra flutuante Pendências · NCs · Eu, o ＋ ao lado, só nas telas raiz; a tela Eu com a Gestão; o ＋ cria a coisa principal da tela) e o plano para outros módulos (§6.1) |
+| 2026-10-22 | v1.9 — B2, decisão (b): o Detalhe da NC no celular (§7.3) em quatro abas (Resumo · Detalhes · Itens · Feed), com o bloco do título no estilo do Fresha (o estado e a pilha dos envolvidos em cima, a etapa embaixo, o título inteiro que encolhe ao rolar) e o token `fundo/destaque` para a B3 |
+| 2026-10-22 | v1.10 — B2, decisão (c): a Investigação nas duas visões (§7.5), quem preenche e o aprovador; o aprovador sem "+ Nova ação corretiva" (RN-49) |
+| 2026-10-22 | v1.11 — a Investigação (§7.5): o Ishikawa numerado com o símbolo da classificação, os 5 porquês em cadeia e o check de efetividade como resumo das contramedidas |
+| 2026-10-22 | v1.12 — Relatórios e administração no celular (depois do §7.16) e o diálogo do efeito como folha |
+| 2026-10-22 | v1.13 — B2, decisão (e): a navegação do computador vira uma doca flutuante embaixo, no centro, com a busca (Ctrl K) e a pessoa no fim; 96 px livres embaixo do conteúdo; sem menu lateral nem barra de topo (§6.1) |
+| 2026-10-22 | v1.14 — B2, decisão (d): a borda dos campos (§9), a borda inteira em `borda/controle` e o anel de foco |
+| 2026-10-23 | v1.15 — O método do Design System (§2.2): o Atomic Design para organizar, os tokens em duas camadas (primitivos e semânticos), a base comum e as telas na ordem das fatias C, as cinco regras de governança e a ponte com o código; as páginas do Figma por camada (§2.1); a escada do componente (§1.1) |
+| 2026-10-23 | v1.16 — O token `marca/toque` reservado (§2.2, item 1), para a cor de uma empresa cliente, se o Andon virar SaaS |
+| 2026-10-23 | v1.17 — Os gestos da casa (§6.2): o bloco do título com hierarquia (escuro só na NC; claro nos filhos, com a NC em cima), a frase de estado, o número protagonista, o formulário com ritmo e, na B3, movimento e voz |
+| 2026-10-23 | v1.18 — Decisão (f) da B2: a T-04 (§7.2) com a tabela plana e as pílulas, as visões separadas dos filtros, o filtro ativo com o valor, a folha no celular, o agrupar por etapa opcional no computador, a busca visível que some ao rolar; o total e as contagens que a API ainda não dá |
+| 2026-10-23 | v1.19 — Decisão (g) da B2: a T-06 do computador refeita (§7.3: o bloco escuro, a classificação nos Dados, os Itens da NC agrupados ou não, em lista ou cartões, o medidor em segmentos, o Envio depois dos Itens, a Atividade num painel que empurra a página e recolhe a lateral numa faixa, o feed em linha do tempo com o Responder); no celular, as abas do Deel, os Itens em grupos e cartões, as atribuições com tags; a T-05 em grupos com a ajuda fixa (§7.6); os componentes `ItensDaNC`, `PainelAtividade` e `Medidor` (§5.1) |
+| 2026-10-26 | v1.20 — Decisão (h) da B2: a T-07 no celular empilhada, sem abas (§7.4, o padrão dos cinco filhos); no bloco do filho, o tipo como título e o estado embaixo dele (§6.2, gesto 1); o feed só na NC, com os eventos dos filhos e o atalho "Atividade deste item" (§7.3, §7.4, §5.1; PRD Q25); a Classificação refeita como fica depois da C2 (§7.9: a Q22, sem portão, "Concluir classificação"; o cartão Sobre a NC antes do formulário) |
+| 2026-10-26 | v1.21 — B2, item 12 e decisão (i): a T-07 dos cinco tipos revista (§7.4 a Ação Corretiva empilhada, com o plano em grade, o plano em edição, o diálogo do Finalizar e a faixa abaixo de 1440; §7.10 a Contenção com o Sobre a NC, a data com atalhos, a disposição em cartões e o rascunho; §7.11 a Verificação com o Sobre a ação, depois da C2); a Investigação no celular, uma etapa por tela, e a leitura do aprovador (§7.5); o Como verificar das hipóteses e a causa direta vinda da hipótese (§7.5); a linha de indicadores (§6.2, gesto 1); os componentes `AreaDeArrastar`, `CampoData` e `EtapasA3` (§5.1) |
+| 2026-10-26 | v1.22 — §7.5: a Investigação do computador com o desenho do celular (a faixa da T-06 e os três estados abertos, as seções em cartões, o Ishikawa em três colunas, a mesma tabela das hipóteses nas duas visões, a origem da causa direta, os porquês em linha do tempo, contramedidas e check em cartões com o andamento) |
+| 2026-10-26 | v1.23 — §7.4: o atalho Atividade deste item abre o feed da NC sem sair do filho (no celular, uma folha), filtrado pelo item, com o × que mostra o feed inteiro; §7.5: o check em linhas curtas com o ⌄ |
+| 2026-10-26 | v1.24 — §7.1: a T-03 Minhas pendências como tela de chegada (decisão (j) da B2, a C2): a saudação, o cartão do mais urgente, as gavetinhas do "Para você hoje" com o "em dia", Suas NCs no computador, o vazio em dois casos e os ícones do lucide; no celular, sem a barra de cima |
+| 2026-10-26 | v1.25 — §6.1: os atalhos de teclado, um conjunto curto (Ctrl K, ?, J/K, Enter, Esc, G+P/N), que não age em campo de texto e pode ser desligado (WCAG 2.1.4); §11: fora do MVP fica só o que passa disso |
+| 2026-10-26 | v1.26 — §7.12: a T-08 Relatórios (decisão (k) da B2, a C): a régua do período, o "o que mudou", as colunas sem caixa e os gráficos sem cor; §9: a dica do ícone sozinho, no mouse e no foco |
+| 2026-10-26 | v1.27 — §7.13 a §7.15: a T-09, a T-10 e a T-11 numa tela só (lista + painel), a recusa da RN-43 como lista do que fazer e os pedidos de apelido; §6.1: a T-13 com a foto e o apelido, e o Minha conta no computador (decisão (l) da B2) |
+| 2026-10-26 | v1.28 — §7.2: a T-04 revista para o estilo das telas novas (o estado na caixinha cinza com o ponto colorido, um ícone por etapa, as pílulas, o ⚠ do prazo, a coluna Com quem e o cartão do celular em três linhas) |
+| 2026-10-27 | v1.29 — §7.16: a T-12 Setores pela decisão (m) da B2: a lista + painel da T-09, com as pessoas do setor, a zona de perigo e a recusa da RN-44 como lista do que fazer |
+| 2026-10-27 | v1.30 — §8.2: o retirar da aprovação sem confirmação, o menu "Mais" (menu no computador, folha no celular) e o texto do `DialogoMotivo`; o diálogo numa versão só, com as quatro regras (B2, item 14) |
+| 2026-10-27 | v1.31 — §3 e §8.2: o vermelho só no botão final do que não se desfaz (a exceção do `marca.md`; o reprovar sai) e a quinta regra do diálogo, o foco |
+| 2026-10-27 | v1.32 — §7.4: o filho reprovado (o último motivo no topo, L7) e o filho fechado, só leitura (B2, item 14) |
+| 2026-10-27 | v1.33 — §6.1: a janela dos atalhos (o ?) desenhada, com o interruptor dos atalhos de uma tecla; o menu da pessoa com o Minha conta e o Atalhos de teclado (B2, item 14) |
+| 2026-10-27 | v1.34 — §6.1: a busca (decisão (n) da B2: no computador, a janela de duas colunas antes de digitar e a lista com as pílulas depois; no celular, a tela cheia) e a navegação do celular revista: a lupa no lugar do ＋, a Nova NC no topo da T-04 |
+| 2026-10-27 | v1.35 — §5.3: o inventário do Figma (B2, item 15), nas páginas Átomos, Moléculas e Organismos |
+| 2026-10-27 | v1.36 — revisão da fase B2: o menu da pessoa com o Minha conta e o Atalhos de teclado (§6.1), e os dois trechos que ainda falavam do ＋ da barra (§6.1, com outros módulos; §7.2, a busca da T-04) |

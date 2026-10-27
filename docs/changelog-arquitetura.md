@@ -9,6 +9,85 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Fase B2 — wireframes (branch `fase/b2-wireframes`)
+
+- **O método do Design System (2026-10-23).** Antes da B3, quatro
+  decisões com Matthew, no `ui-ux.md` §2.2: o **Atomic Design** de Brad
+  Frost para organizar e dar nome, não como ordem de construção; os tokens
+  em **duas camadas** (primitivos e semânticos; de componente só por
+  exceção); uma **base comum** (os tokens e os 5 átomos) e depois as
+  telas puxando o resto, na ordem das fatias C; cinco regras de
+  **governança** (a verdade no Figma e depois no `DESIGN.md` e no CSS,
+  quem decide, quando um componente entra, quando está pronto, registro
+  e saída); e a **ponte com o código** pelo conector, sem o Style
+  Dictionary (dependência sem motivo para uma plataforma só). O Code
+  Connect ficou a conferir na C0: a ajuda do Figma diz que ele vale no
+  plano Professional com assento Full, e o conector o recusou no plano de
+  estudante; a tabela no `DESIGN.md` é a alternativa.
+- **A skill `/desenhar` (2026-10-23).** O fluxo testado nas decisões
+  (b), (c) e (e) virou rotina: entender a tela, referências no Mobbin
+  (numa coleção da conta de Matthew, fora do repositório público), as
+  regras das skills de front, duas variantes no Figma, as **fichas de UX
+  e de factibilidade** (a API dá? o componente existe? os tokens dão?) e
+  a decisão. A pergunta do componente é uma escada: o shadcn tem →
+  compor → registro da comunidade → um pacote de fora, pesado por peso,
+  manutenção, acessibilidade, encaixe e licença → o nosso (proposta de
+  Matthew, que leva o princípio 2 do TRD para a hora do desenho).
+- **O feed mora só na NC (2026-10-26, decisão de Matthew na decisão (h)
+  da B2).** O PRD dizia "feed por item" (RF-11), e o contrato da API
+  tinha um feed por registro (`GET /registros/:id/feed`), mas o wireframe
+  da NC já mostrava os eventos dos filhos: ninguém tinha decidido se a NC
+  os juntava. Agora: **a NC tem o único feed**, com os eventos dela e de
+  todos os filhos (a Verificação entra pela ação de origem), e **só se
+  comenta na NC**; o filho não tem feed nem campo de comentário, só um
+  atalho, "Atividade deste item", que abre o feed da NC filtrado por ele.
+  O porquê: a NC é a que concentra tudo, e uma linha do tempo só é a
+  evidência mais limpa da cláusula 10.2 (nada de "onde foi que comentaram
+  isso?"). Muda o contrato da C4, que ainda não existe: o comentário
+  pertence à NC, e as rotas viram `GET /nc/:id/feed?item=` e
+  `POST /nc/:id/comentarios` (`esquema-backend.md` M4 e §6). A menção
+  `#item` continua levando à página do filho.
+- **A Investigação ganha o celular (2026-10-26, decisão (i) da B2).** O
+  princípio 4 do `fluxo-app.md` deixava a Investigação A3 só no
+  computador; Matthew o reviu: "nem todos os trabalhadores aqui possuem
+  computador". Para preencher, uma etapa por tela, com o índice das 10
+  como entrada; para aprovar, uma página corrida de leitura. Sem rota
+  nova: o estado de cada etapa sai do conteúdo da investigação, e o que
+  falta, da rota de leitura do envio (já planejada na C2).
+- **A hipótese diz como vai ser verificada, e a causa direta vem dela
+  (2026-10-26, PRD Q26).** Até aqui, a `causaDireta` era um texto solto,
+  sem ligação com as hipóteses, e a hipótese não guardava o teste que a
+  confirma. Agora: a `Hipotese` ganha o `comoVerificar` (obrigatório para
+  ela estar completa), e o envio exige ao menos uma hipótese de causa
+  direta; o front traz a resposta dela para a pessoa confirmar. A
+  `causaDireta` continua um texto, para a redação. Muda o contrato da C2
+  (`esquema-backend.md` M6).
+- **A Verificação nasce só com o colaborador (2026-10-26, a Q22 na C2).**
+  Achado na revisão da T-07: o `finalizarExecucao` dá ao aprovador da
+  ação as duas funções na Verificação (`acao-corretiva.service.ts:82-83`),
+  o que a Q22 (colaborador e aprovador excludentes) proíbe. Como a
+  Verificação não tem portão, o aprovador nela não tem função: na C2, ela
+  nasce só com o colaborador.
+
+- **O apelido e a foto da pessoa (2026-10-26, decisão (l) da B2; PRD
+  RN-52, RN-53 e Q27).** Nasceram da pergunta de Matthew sobre a tela da
+  própria pessoa: o apelido é pedido por ela e aprovado pelo `ADMIN`
+  (aparece onde ela é chamada), e a foto entra sem aprovação e pode ser
+  removida pelo `ADMIN`. Muda o banco e o contrato da C5: a migration
+  **M7** e as rotas `POST`/`DELETE /auth/eu/apelido`,
+  `/usuarios/:id/apelido/aprovar` e `/recusar`, `PUT`/`DELETE
+  /auth/eu/foto` e `DELETE /usuarios/:id/foto` (`esquema-backend.md` M7).
+- **O que as telas pedem à API (2026-10-27, itens 13 a 16 da B2).** O
+  levantamento tela por tela (`esquema-backend.md` §6.7 e §6.8) achou o
+  que as decisões de desenho acrescentaram ao contrato, cada coisa na
+  fase dela: a **busca geral** também pelo texto, com o filtro por tipo e
+  a contagem (decisão (n); C4); as **contagens de pessoas** e o `criadoEm`
+  no `GET /setores` e o filtro por setor no `GET /usuarios` (decisão (m);
+  C6); e duas faltas que nenhum documento tinha: a rota que marca como
+  **visto o aviso do apelido** (a M7 tem o campo, ninguém o preenche; C5)
+  e a lista **Em andamento com ela** da T-09, que hoje só aparece no 409
+  da RN-43 (C6). Nada disso muda código agora.
+
 ### Fase B1 — identidade visual (branch `fase/b1-identidade-visual`)
 
 - **O nome fica provisório (2026-10-20).** Matthew ainda não quer fechar

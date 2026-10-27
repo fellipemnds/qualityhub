@@ -609,6 +609,15 @@ Os plugins ligados no `.claude/settings.json` do projeto vêm destas marketplace
 
 Para cada linha: `claude plugin marketplace add <marketplace>` e depois `claude plugin install <plugin>`. O Ponytail precisa também do `~/.config/ponytail/config.json` com `{ "defaultMode": "lite" }` (regra no `CLAUDE.md`). O `/retomar` confere se algum faltou.
 
+**Skills avulsas** (fora dos plugins; a `/desenhar` usa as cinco). Ficam em `~/.claude/skills/`, uma pasta por skill, copiadas dos repositórios abaixo (em casa, em 2026-10-26: `emilkowalski/skills` em `2d22863`, `pbakaus/impeccable` em `414603b`):
+
+| Skill | Repositório (GitHub) | Pasta no repositório |
+|---|---|---|
+| `apple-design`, `mobile-native`, `emil-design-eng`, `prototype` | `emilkowalski/skills` (MIT) | `skills/<nome>/` |
+| `impeccable` | `pbakaus/impeccable` (Apache-2.0) | `.claude/skills/impeccable/` |
+
+Para instalar: `git clone --depth 1` do repositório numa pasta temporária, ler o `SKILL.md` e copiar a pasta para `~/.claude/skills/`. Valem a partir da próxima sessão do Claude Code. Na nuvem (§13) não estão.
+
 ### 12.5 Foto do ambiente: comparando os dois PCs
 
 Um script tira uma "foto" do ambiente desta máquina e a guarda no Git, em `docs/ambiente/`: versões do Ubuntu, nvm, Node (e o padrão do nvm), npm, Git, Docker, gh e Claude Code; nome e e-mail do Git; conta e escopos do `gh`; se o `.env` tem todas as chaves do `.env.example` (só os **nomes**, nunca os valores); se o banco está no ar e com as migrations em dia; e as extensões do VS Code nos dois lados (WSL e Windows).
@@ -661,7 +670,23 @@ node -v && docker info > /dev/null && echo DOCKER_OK
 npm ci && npx --no-install prisma generate
 ```
 
-**Para não repetir a cada sessão:** as duas primeiras linhas (o Node) podem ir para o **script de configuração do ambiente** (no app: o menu do ambiente na barra de título da sessão → Edit), que roda no começo de toda sessão nova. O `dockerd` e o `npm ci` o Claude roda na sessão.
+**Os plugins do Claude Code** (os 6 do §12.4): a nuvem nasce sem eles. O `.claude/settings.json` do projeto já diz de onde vêm (`extraKnownMarketplaces`, desde 2026-10-21), mas sem a confirmação de uma pessoa o CLI não cadastra as marketplaces sozinho; o `claude plugin marketplace add` direto funciona (instalados assim em 2026-10-21):
+
+```bash
+for par in "addyosmani/agent-skills agent-skills@addy-agent-skills" \
+           "DietrichGebert/ponytail ponytail@ponytail" \
+           "Leonxlnx/taste-skill taste-skill@taste-skill" \
+           "Egonex-AI/Understand-Anything understand-anything@understand-anything" \
+           "zarazhangrui/frontend-slides frontend-slides@frontend-slides" \
+           "cathrynlavery/diagram-design diagram-design@diagram-design"; do
+  set -- $par; claude plugin marketplace add "$1" && claude plugin install "$2"
+done
+mkdir -p ~/.config/ponytail && echo '{ "defaultMode": "lite" }' > ~/.config/ponytail/config.json
+```
+
+Instalados no meio da sessão, provavelmente só valem na próxima. Por isso o lugar deles é o script de configuração do ambiente (abaixo), junto do Node.
+
+**Para não repetir a cada sessão:** as duas primeiras linhas (o Node) e o bloco dos plugins podem ir para o **script de configuração do ambiente** (no app: o menu do ambiente na barra de título da sessão → Edit), que roda no começo de toda sessão nova. O `dockerd` e o `npm ci` o Claude roda na sessão.
 
 **O Docker pode cair sozinho** entre uma rodada e outra (aconteceu em 2026-10-09: a suíte seguinte falhou com `Could not find a working container runtime strategy`). Antes de cada suíte, `docker info`; se falhar, ligar o `dockerd` de novo.
 
