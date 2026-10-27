@@ -523,6 +523,67 @@ Levantadas no item 16 da B2, direto dos `*.routes.ts` e do `src/app.ts` (a busca
 | `modulos/usuario/usuario.routes.ts` | `POST /usuarios` · `GET /usuarios` · `GET /pessoas` · `GET /usuarios/:id` · `PATCH /usuarios/:id` · `POST /usuarios/:id/convite` · `POST /usuarios/:id/inativar` · `POST /usuarios/:id/reativar` · `POST /usuarios/:id/papeis` · `DELETE /usuarios/:id/papeis/:papel` | 10 |
 | **Total** | | **82** |
 
+### 6.8 As rotas que as telas pedem (B2, item 16)
+
+Tela por tela, o que ela **lê** e **faz**, a rota que responde e a
+situação conferida no código (§6.7): **existe** (serve como está),
+**muda** (Δ: existe, mas falta campo ou filtro) ou **nova** (＋). A fase
+é a fatia C que traz a tela (plano). Feito em 2026-10-27, depois das
+decisões (a) a (n) da B2. Nenhuma tela ficou sem rota; o que é só do
+front está dito.
+
+| Tela | O que lê ou faz | Rota | Situação | Fase |
+|---|---|---|---|---|
+| Casca (doca, barra, menu da pessoa) | Quem é, os papéis, a tela inicial | `GET /auth/eu` | existe | C0 |
+| | O contador das Pendências | `GET /pendencias` | nova (§4.4) | C3 |
+| | Sair, sair de todos | `POST /auth/logout` · `/auth/sair-de-todos` | existe | C0 |
+| | O apelido e a foto onde a pessoa é chamada | `GET /auth/eu` e as listas de pessoas | muda (M7) | C5 |
+| | A janela dos atalhos (o ?) | — | só front (o interruptor fica no navegador) | C8 |
+| A busca (Ctrl K, a lupa) | Itens e NCs pelo código e pelo texto, o filtro por tipo, a contagem por tipo | `GET /registros/busca` | nova; o texto, o `?tipo=` e a contagem a decidir (§6.5) | C4 |
+| | Os recentes | — | só front (o navegador) | C4 |
+| T-01 Login | Entrar | `POST /auth/login` | existe | C0 |
+| T-02 Definir senha | Definir pelo convite | `POST /auth/definir-senha` | existe | C0 |
+| T-03 Minhas pendências | As gavetas, o mais urgente (com os responsáveis) | `GET /pendencias` | nova (§4.4) | C3 |
+| | Suas NCs (computador) | `GET /nc?minhas=true` | existe | C3 |
+| | O aviso do apelido aprovado ou recusado, uma vez | `GET /auth/eu` + marcar como visto | **nova, sem rota definida**: a M7 tem o `apelidoRespostaVistaEm`, mas nenhuma rota o preenche | C5 |
+| T-04 Lista de NCs | A lista com etapa, indicadores e os responsáveis (Com quem) | `GET /nc` | muda (§6.3; os responsáveis, decisão (f) revista) | C1 |
+| | Os filtros (etapa, setor, prazo vencido, sem aprovador), a busca e as visões com o total (L10) | `GET /nc` | muda: hoje só `minhas` (`nc.schema.ts:52`) | C1 |
+| | As opções de setor | `GET /setores` | existe | C1 |
+| | Nova NC (só `EDITOR` e `GERENTE`) | `GET /auth/eu` (os papéis) | existe | C1 |
+| T-05 Nova NC | Criar, salvar, publicar | `POST /nc` · `PATCH /nc/:id` · `POST /nc/:id/publicar` | `POST` muda (os colaboradores, Q10); o resto existe | C1 |
+| | O setor e as pessoas para atribuir | `GET /setores` · `GET /pessoas` | existe | C1 |
+| | Os anexos | `POST /registros/:id/anexos` | nova | C5 |
+| T-06 Detalhe da NC | A NC com etapa, indicadores, o último motivo, a classificação vigente e o resumo dos filhos | `GET /nc/:id` | muda (§6.3, plano C1) | C1 |
+| | O checklist de fechamento | `GET /nc/:id/checklist-fechamento` | existe | C1 |
+| | Os itens da NC | `GET /<tipo>?naoConformidadeId=` | existe (ou o resumo no `GET /nc/:id`) | C1 |
+| | As atribuições: ler e mudar | `GET /registros/:id/atribuicoes` · `PUT .../aprovador` · `POST`/`DELETE .../colaboradores` | o `GET` é novo; o resto existe | C1 |
+| | Enviar, retirar, aprovar ou reprovar o fechamento, cancelar, reabrir (o "Mais", o `DialogoMotivo`) | `POST /nc/:id/submeter` · `/retirar` · `/decidir` · `/cancelar` · `/reabrir` | existe | C1 |
+| | O feed, os comentários, as menções | `GET /nc/:id/feed` · `POST /nc/:id/comentarios` · `PATCH`/`DELETE /comentarios/:id` · `POST /nc/:id/mencoes/vistas` | nova | C4 |
+| | Os anexos | `GET`/`POST /registros/:id/anexos` · `GET`/`DELETE /anexos/:id` | nova | C5 |
+| T-07 Itens filhos (os cinco) | O item com o último motivo de reprovação (o aviso L7) | `GET /<tipo>/:id` | muda (§6.4) | C2 |
+| | Criar, salvar, publicar, enviar, retirar, decidir, cancelar, excluir o rascunho | `POST /nc/:id/<tipo>` · `PATCH`/`DELETE /<tipo>/:id` · `/publicar` · `/submeter` · `/retirar` · `/decidir` · `/cancelar` | existe (as exceções da §6.4) | C2 |
+| | A Ação Corretiva: finalizar a execução | `POST /acoes-corretivas/:id/finalizar-execucao` | existe | C2 |
+| | A Verificação: concluir | `POST /verificacoes/:id/concluir` | existe | C2 |
+| | A Investigação: as hipóteses e as contramedidas | `GET /investigacoes/:id` · `POST /investigacoes/:id/hipoteses` · `PATCH`/`DELETE /hipoteses/:id` | o `GET` muda; as hipóteses são novas (L1, M6) | C2 |
+| | A Atividade deste item (o feed da NC filtrado) | `GET /nc/:id/feed?item=` | nova | C4 |
+| T-08 Relatórios | Os quatro relatórios, com o período e o anterior | `GET /relatorios/...` (4) | nova (§6.6) | C7 |
+| T-09 a T-11 Usuários | A lista, a busca, o filtro ativo ou inativo | `GET /usuarios` | existe; muda na C5 (o filtro e o total dos pedidos de apelido) | C6 |
+| | A pessoa: dados, papéis, convite, inativar e reativar | `GET`/`PATCH /usuarios/:id` · `POST /usuarios/:id/papeis` · `DELETE .../papeis/:papel` · `/convite` · `/inativar` · `/reativar` | existe | C6 |
+| | Em andamento com ela (os itens de que é aprovadora, antes de inativar) | `GET /usuarios/:id` | **muda, sem rota definida**: hoje a lista só vem no 409 da recusa (RN-43) | C6 |
+| | O apelido (aprovar, recusar) e a foto (remover) | `POST /usuarios/:id/apelido/aprovar` · `/recusar` · `DELETE /usuarios/:id/foto` | nova (M7) | C5 |
+| | Novo usuário e o convite | `POST /usuarios` | existe | C6 |
+| T-12 Setores | A lista com as contagens de pessoas ativas e inativas e o `criadoEm` | `GET /setores` | muda (decisão (m)): hoje só `id`, `nome` e `desativadoEm` | C6 |
+| | As pessoas do setor | `GET /usuarios?setorId=` | muda (decisão (m)): hoje `busca` e `situacao` | C6 |
+| | Criar, renomear, desativar, reativar | `POST /setores` · `PATCH /setores/:id` · `/desativar` · `/reativar` | existe | C6 |
+| T-13 Eu / Minha conta | Os dados e a tela inicial | `GET /auth/eu` · `PATCH /auth/eu` | existe | C3 |
+| | O apelido (pedir, cancelar) e a foto (trocar, remover) | `POST`/`DELETE /auth/eu/apelido` · `PUT`/`DELETE /auth/eu/foto` | nova (M7) | C5 |
+
+**Duas faltas que este levantamento achou** e nenhum documento tinha: a
+rota que marca como **visto o aviso do apelido** (T-03; a M7 tem o
+campo, ninguém o preenche) e a lista **Em andamento com ela** (T-09:
+os itens de que a pessoa é aprovadora, que hoje só aparecem no 409 da
+RN-43). As duas se decidem na fase de cada uma (C5 e C6).
+
 ---
 
 ## 7. Correções de comportamento
@@ -684,3 +745,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-26 | v1.62 — §6, relatórios: o que a T-08 nova pede (o período anterior para a comparação e o "O que mudou" no front), a decidir na C7 |
 | 2026-10-26 | v1.63 — M7 (C5): o apelido com o pedido e a resposta, e a foto, com as rotas (decisão (l) da B2, PRD RN-52 e RN-53) |
 | 2026-10-27 | v1.64 — B2, item 16 (fatia 1): §6.7, as 82 rotas que existem no código; as marcas ✅ conferidas contra ele (as rotas de usuários e pessoas, o `/docs`; o `/saude` existe sem conferir o banco) |
+| 2026-10-27 | v1.65 — B2, item 16 (fatia 2): §6.8, as rotas que as telas pedem, tela por tela, com a situação no código e a fase; duas faltas novas (o aviso do apelido visto, o Em andamento com ela) |
