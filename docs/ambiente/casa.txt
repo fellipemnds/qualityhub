@@ -4,14 +4,14 @@ hostname: MatthewPC
 ## Sistema e ferramentas
 ubuntu: Ubuntu 26.04.1 LTS
 nvm: 0.40.7
-nvm (node padrão): v24.20.0
-node: v24.20.0
+nvm (node padrão): v24.22.1
+node: v24.22.1
 npm: 12.0.2
 git: git version 2.53.0
-docker: Docker version 29.8.2, build 7fc2dff
-docker compose: Docker Compose version v5.6.0
-gh: gh version 2.46.0 (2025-12-13 Ubuntu 2.46.0-4)
-claude code: 2.1.301 (Claude Code)
+docker: Docker version 29.9.2, build a82e528
+docker compose: Docker Compose version v5.6.1
+gh: gh version 2.103.2 (2026-10-23)
+claude code: 2.1.311 (Claude Code)
 
 ## Contas e configuração
 git user.name: Mateus Felipe Mendes
@@ -25,7 +25,7 @@ banco (docker): postgres:17-alpine
 migrations: em dia
 
 ## VS Code — extensões no WSL
-anthropic.claude-code@2.1.301
+anthropic.claude-code@2.1.311
 biomejs.biome@3.8.1
 eamodio.gitlens@19.4.0
 github.vscode-github-actions@0.32.3
@@ -40,7 +40,7 @@ ritwickdey.liveserver@5.7.10
 usernamehw.errorlens@3.30.0
 
 ## VS Code — extensões no Windows
-anthropic.claude-code@2.1.301
+anthropic.claude-code@2.1.311
 biomejs.biome@3.8.1
 eamodio.gitlens@19.4.0
 github.vscode-github-actions@0.32.3
