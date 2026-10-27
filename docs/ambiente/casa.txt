@@ -29,7 +29,7 @@ anthropic.claude-code@2.1.311
 biomejs.biome@3.8.1
 eamodio.gitlens@19.4.0
 github.vscode-github-actions@0.32.3
-github.vscode-pull-request-github@0.170.0
+github.vscode-pull-request-github@0.172.0
 humao.rest-client@0.25.1
 miguelsolorio.symbols@0.0.26
 ms-azuretools.vscode-containers@2.5.3
@@ -44,7 +44,7 @@ anthropic.claude-code@2.1.311
 biomejs.biome@3.8.1
 eamodio.gitlens@19.4.0
 github.vscode-github-actions@0.32.3
-github.vscode-pull-request-github@0.170.0
+github.vscode-pull-request-github@0.172.0
 humao.rest-client@0.25.1
 miguelsolorio.symbols@0.0.26
 ms-azuretools.vscode-containers@2.5.3
