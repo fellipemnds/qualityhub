@@ -397,9 +397,10 @@ celular.
    §10.3). Depende do `GET /registros/busca`, planejado para a C4.
 4. **A pessoa fica no fim da doca:** o avatar gerado pelo nome
    (`docs/marca.md`) com a seta. O **menu da pessoa abre para cima**: nome,
-   setor e papel, **Tela inicial**, **Sair**, **Sair de todos os
-   aparelhos** (`fluxo-app.md` §2.1) e, embaixo, a **assinatura da
-   empresa**.
+   setor e papel, **Minha conta** (decisão (l)), **Tela inicial**,
+   **Atalhos de teclado** (abre a janela do ?, item 14 da B2), **Sair**,
+   **Sair de todos os aparelhos** (`fluxo-app.md` §2.1) e, embaixo, a
+   **assinatura da empresa**.
 5. **Sem barra de topo:** o caminho de volta fica na linha do título,
    dentro da tela, e a ação da tela (Enviar, Salvar, Mais) fica no canto
    superior direito, sem nada por cima.
@@ -478,10 +479,10 @@ a T-03 não tem a barra superior; a saudação faz o papel do título
    versão de celular (`fluxo-app.md` §1, revisto em 2026-10-22).
 
 **Com outros módulos** (pendência no handoff): a barra comporta até 5
-abas, mas a variante A (com o ＋ ao lado) só cabe com 3. O plano: a aba
-NCs vira **Módulos** (ou o módulo atual, com seletor), as Pendências
-passam a juntar todos os módulos e o Eu fica. Se for preciso uma quarta
-aba, o ＋ sobe para cima da barra, à direita (a variante B).
+abas, mas com a lupa ao lado (decisão (n); antes, o ＋) só cabem 3. O
+plano: a aba NCs vira **Módulos** (ou o módulo atual, com seletor), as
+Pendências passam a juntar todos os módulos e o Eu fica. Se for preciso
+uma quarta aba, a lupa sobe para o topo da tela, à direita.
 
 Os desenhos: Figma, página Decisões (histórico), seção "Decisão (a) ·
 barra do celular (2026-10-22)" (as variantes A e B e a tela Eu). A
@@ -717,8 +718,9 @@ entre as linhas), todas na mesma margem.
 5. **A busca fica visível.** No celular, ela some ao rolar a lista para
    baixo e volta ao rolar para cima (o movimento é da B3, gesto 5, §6.2).
    Sem "puxar para revelar": num app web, o gesto briga com o atualizar do
-   navegador, e o §7.3 já o reserva. O ＋ continua criando (§6.1, regra 5):
-   virar busca na T-04 mudaria a função do mesmo botão conforme a tela.
+   navegador, e o §7.3 já o reserva. Esta busca filtra só a lista; a lupa
+   da barra abre a busca geral, e a **Nova NC** fica no topo da T-04
+   (decisão (n), que tirou o ＋ da barra).
 6. **O que a API ainda não dá:** a etapa, o setor e o prazo vencido (L5) e
    a busca por texto, na C1; e o **total e as contagens** (o "38 abertas",
    o "Mostrando 6 de 38", o "Ver 20 NCs", a contagem dos grupos): a lista
@@ -1764,3 +1766,4 @@ tokens.
 | 2026-10-27 | v1.33 — §6.1: a janela dos atalhos (o ?) desenhada, com o interruptor dos atalhos de uma tecla; o menu da pessoa com o Minha conta e o Atalhos de teclado (B2, item 14) |
 | 2026-10-27 | v1.34 — §6.1: a busca (decisão (n) da B2: no computador, a janela de duas colunas antes de digitar e a lista com as pílulas depois; no celular, a tela cheia) e a navegação do celular revista: a lupa no lugar do ＋, a Nova NC no topo da T-04 |
 | 2026-10-27 | v1.35 — §5.3: o inventário do Figma (B2, item 15), nas páginas Átomos, Moléculas e Organismos |
+| 2026-10-27 | v1.36 — revisão da fase B2: o menu da pessoa com o Minha conta e o Atalhos de teclado (§6.1), e os dois trechos que ainda falavam do ＋ da barra (§6.1, com outros módulos; §7.2, a busca da T-04) |

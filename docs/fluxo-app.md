@@ -113,7 +113,7 @@ saídas ficam no **menu da pessoa**, que abre do fim da doca:
 | Relatórios | `GERENTE` | |
 | Administração | `ADMIN` | Usuários, Setores |
 | Tela inicial | Quem acessa mais de uma tela inicial possível | Preferência (§3) |
-| Atalhos de teclado | Todos (só no computador) | Liga e desliga os atalhos de uma tecla (`ui-ux.md` §6.1, WCAG 2.1.4); a escolha fica no navegador |
+| Atalhos de teclado | Todos (só no computador) | Abre a janela dos atalhos (o ?), onde fica o interruptor dos atalhos de uma tecla (`ui-ux.md` §6.1, WCAG 2.1.4); a escolha fica no navegador |
 | Sair | Todos | |
 | Minha conta | Todos | No computador, abre a T-13: a foto, o apelido (RN-52), a Tela inicial e a sessão (decisão (l)) |
 | Sair de todos os aparelhos | Todos | No menu da pessoa, embaixo do Sair: encerra as sessões abertas em outros computadores (`POST /auth/sair-de-todos`, pronto desde a A4; Matthew, 2026-10-21) |
@@ -627,3 +627,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-26 | v1.18 — T-04: a coluna Com quem (os responsáveis), na revisão do estilo |
 | 2026-10-27 | v1.19 — T-12 (decisão (m)): lista + painel como a T-09, com as pessoas do setor e a recusa da RN-44 como lista do que fazer |
 | 2026-10-27 | v1.20 — §2.1 e T-04: a lupa da busca na barra do celular, no lugar do ＋; a Nova NC no topo da T-04 (decisão (n)) |
+| 2026-10-27 | v1.21 — revisão da fase B2: o Atalhos de teclado do menu abre a janela do ?, com o interruptor dentro (§2.1) |

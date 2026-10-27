@@ -69,6 +69,25 @@ documento de arquitetura.
   Verificação não tem portão, o aprovador nela não tem função: na C2, ela
   nasce só com o colaborador.
 
+- **O apelido e a foto da pessoa (2026-10-26, decisão (l) da B2; PRD
+  RN-52, RN-53 e Q27).** Nasceram da pergunta de Matthew sobre a tela da
+  própria pessoa: o apelido é pedido por ela e aprovado pelo `ADMIN`
+  (aparece onde ela é chamada), e a foto entra sem aprovação e pode ser
+  removida pelo `ADMIN`. Muda o banco e o contrato da C5: a migration
+  **M7** e as rotas `POST`/`DELETE /auth/eu/apelido`,
+  `/usuarios/:id/apelido/aprovar` e `/recusar`, `PUT`/`DELETE
+  /auth/eu/foto` e `DELETE /usuarios/:id/foto` (`esquema-backend.md` M7).
+- **O que as telas pedem à API (2026-10-27, itens 13 a 16 da B2).** O
+  levantamento tela por tela (`esquema-backend.md` §6.7 e §6.8) achou o
+  que as decisões de desenho acrescentaram ao contrato, cada coisa na
+  fase dela: a **busca geral** também pelo texto, com o filtro por tipo e
+  a contagem (decisão (n); C4); as **contagens de pessoas** e o `criadoEm`
+  no `GET /setores` e o filtro por setor no `GET /usuarios` (decisão (m);
+  C6); e duas faltas que nenhum documento tinha: a rota que marca como
+  **visto o aviso do apelido** (a M7 tem o campo, ninguém o preenche; C5)
+  e a lista **Em andamento com ela** da T-09, que hoje só aparece no 409
+  da RN-43 (C6). Nada disso muda código agora.
+
 ### Fase B1 — identidade visual (branch `fase/b1-identidade-visual`)
 
 - **O nome fica provisório (2026-10-20).** Matthew ainda não quer fechar
