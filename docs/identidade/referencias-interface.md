@@ -338,3 +338,15 @@ Gumloop; Pipedrive, Melio, Supabase, Whop, Airwallex, OpenPhone) e Matthew:
 *"não gostei muito delas… quer tentar criar algo e eu avalio?"*. A A
 (lista + painel) foi desenhada pelo Claude no estilo já firmado na T-03 e
 na T-08, sem referência de fora. Nenhuma entrou na coleção.
+
+## 2026-10-27 · Miro e Grok (os Setores, decisão (m))
+
+Matthew: *"a tabela do Miro com as abas e a página de detalhe do Grok"*.
+
+- **Miro · Teams** (https://mobbin.com/screens/0224bd31-3aa6-47be-a319-e743bd4142bf):
+  a tabela com as abas **Active / Deleted** (os nossos ativos e
+  desativados), um ícone por linha e as colunas de números alinhadas.
+- **Grok · Manage Team** (https://mobbin.com/screens/c2593798-413f-4dad-9bc3-5967f757c8a1):
+  o detalhe do time em blocos: os dados com o Editar, os membros num bloco
+  próprio e a **zona de perigo** separada para a ação que não se desfaz
+  fácil (o nosso Desativar).

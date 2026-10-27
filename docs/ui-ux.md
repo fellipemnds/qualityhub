@@ -1411,21 +1411,45 @@ no MVP: o ADMIN envia o link por fora (J11).
 
 ### 7.16 T-12 Setores
 
-```
-Setores                                           [ ＋ Novo setor ]
-[ Situação: Ativos ▾ ]
+Decisão (m) da B2 (2026-10-27): a **lista + painel** da T-09 (§7.13).
 
- Nome          Situação
- Expedição     ● Ativo      [✎ Renomear]  [ Desativar ]
- Produção      ● Ativo      [✎ Renomear]  [ Desativar ]
- Almoxarifado  ○ Desativado              [ Reativar ]
+```
+Setores               [＋ Novo setor] │ [EX] Expedição [● Ativo]
+8 ativos · 1 desativado               │      Criado em 12 mar. 2026 · 4 pessoas ativas, 1 inativa
+Ativos 8   Desativados 1              │ Dados
+──────────                            │  Nome [ Expedição                      ]
+[DI] Diretoria                        │ Pessoas
+     1 pessoa ativa                   │  (JD) Joana Dias · Editor           Ver pessoa ›
+[EX] Expedição            ◀ escolhido │  …
+     4 pessoas ativas · 1 inativa     │  Inativas · 1, ficam como histórico
+[MA] Manutenção                       │  (PN) Paulo Neves · Editor  [Inativo] Ver pessoa ›
+     2 pessoas ativas                 │ ⚠ Desativar o setor
+…                                     │  Só desativa sem pessoas ativas: hoje são 4.
+                                      │  [Desativar setor]
 ```
 
-Criar e renomear acontecem na própria linha (o nome é o único campo).
-Desativar pede confirmação simples (§8.2), e a recusa da RN-44 lista
-quem ainda está no setor, com link para cada pessoa (T-10): "Mude o
-setor destas pessoas antes de desativar". Reativar devolve o setor
-às opções, sem confirmação (é reversível).
+As abas Ativos e Desativados (as referências: Miro) no lugar do filtro;
+o setor tem o ícone **quadrado** com as iniciais (a pessoa, redondo). O
+painel é feito de blocos (Grok): **Dados**, com o nome (o único campo);
+**Pessoas**, as ativas com o **Ver pessoa**, que abre a T-09 com ela
+escolhida (o setor de uma pessoa muda no painel dela), e as inativas à
+parte, porque são histórico e não contam para a RN-44; e **Desativar o
+setor**, a zona de perigo, que diz antes quantas pessoas ativas impedem.
+Desativar pede confirmação simples (§8.2). Com pessoas ativas, a recusa
+da RN-44 abre no topo do painel, no molde da RN-43 (§7.13): "Antes de
+desativar a Expedição, mude o setor de 4 pessoas", o "0 de 4
+resolvidas" e o Ver pessoa em cada uma. No setor desativado, o Reativar
+no lugar do Desativar, sem confirmação (é reversível). O **Novo setor**
+abre o painel vazio, com o Criar setor e o Cancelar; o nome é único, e a
+recusa sai embaixo do campo com o texto da API ("Já existe um setor com
+este nome"; se ele está desativado, "reative-o em vez de criar outro").
+
+**No celular:** a lista com as abas e a tela do setor, aberta pelo
+toque no cartão, com os mesmos blocos e a recusa no topo.
+
+A API para a C6 (B2, item 16): as contagens de pessoas ativas e
+inativas no `GET /setores`, o filtro por setor no `GET /usuarios` e o
+`criadoEm` na resposta.
 
 **No celular** (T-08 a T-12, B2, 2026-10-22; Figma, seção "Gestão e
 administração"): telas internas, abertas pela tela Eu (§6.1), com a seta
@@ -1634,3 +1658,4 @@ tokens.
 | 2026-10-26 | v1.26 — §7.12: a T-08 Relatórios (decisão (k) da B2, a C): a régua do período, o "o que mudou", as colunas sem caixa e os gráficos sem cor; §9: a dica do ícone sozinho, no mouse e no foco |
 | 2026-10-26 | v1.27 — §7.13 a §7.15: a T-09, a T-10 e a T-11 numa tela só (lista + painel), a recusa da RN-43 como lista do que fazer e os pedidos de apelido; §6.1: a T-13 com a foto e o apelido, e o Minha conta no computador (decisão (l) da B2) |
 | 2026-10-26 | v1.28 — §7.2: a T-04 revista para o estilo das telas novas (o estado na caixinha cinza com o ponto colorido, um ícone por etapa, as pílulas, o ⚠ do prazo, a coluna Com quem e o cartão do celular em três linhas) |
+| 2026-10-27 | v1.29 — §7.16: a T-12 Setores pela decisão (m) da B2: a lista + painel da T-09, com as pessoas do setor, a zona de perigo e a recusa da RN-44 como lista do que fazer |

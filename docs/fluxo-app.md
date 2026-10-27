@@ -86,7 +86,7 @@ flowchart TD
 | T-09 | Usuários | `/admin/usuarios` | `ADMIN` | ✅ lista + painel (decisão (l)) |
 | T-10 | Detalhe do usuário | `/admin/usuarios/:id` | `ADMIN` | ✅ o painel da T-09 (decisão (l)) |
 | T-11 | Novo usuário | `/admin/usuarios/novo` | `ADMIN` | ✅ o painel da T-09 (decisão (l)) |
-| T-12 | Setores | `/admin/setores` | `ADMIN` | ✅ (a desenhar) |
+| T-12 | Setores | `/admin/setores` | `ADMIN` | ✅ lista + painel, como a T-09 (decisão (m)) |
 | T-13 | Eu | `/eu` | Todos | ✅ no celular, a aba Eu; no computador, **Minha conta**, aberta pelo menu da pessoa (decisão (l)) |
 
 "Papel de negócio" = `VISUALIZADOR`, `EDITOR`, `APROVADOR` ou `GERENTE`.
@@ -502,7 +502,7 @@ celular, ou começa nas Pendências lá.
 - **Os pedidos de apelido** (RN-52) aparecem no topo da lista ("2 pedidos de
   apelido") e no painel da pessoa (Aprovar, Recusar); o **Mais** tem
   "Remover a foto" (RN-53) e "Inativar".
-- **T-12 Setores**: lista, criar, renomear, desativar, reativar.
+- **T-12 Setores** (decisão (m)): lista + painel, como a T-09. As abas Ativos/Desativados; o painel do setor com os **Dados** (o nome), as **Pessoas** (as ativas com o Ver pessoa, que abre a T-09 com ela escolhida; as inativas à parte) e o **Desativar o setor**, que avisa antes quantas pessoas ativas impedem. A recusa da RN-44 é uma lista do que fazer no topo do painel, como a da RN-43. O Novo setor abre o painel vazio; no setor desativado, o Reativar no lugar do Desativar.
 
 ---
 
@@ -625,3 +625,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-26 | v1.16 — T-08: a régua do período, o "O que mudou", a comparação com o período anterior e a pergunta da tela inicial do gerente no celular (decisão (k) da B2) |
 | 2026-10-26 | v1.17 — T-09 a T-11 numa tela só (lista + painel), a recusa da RN-43 como lista do que fazer, os pedidos de apelido; T-13 também no computador (Minha conta); o aviso do apelido na T-03 (decisão (l) da B2) |
 | 2026-10-26 | v1.18 — T-04: a coluna Com quem (os responsáveis), na revisão do estilo |
+| 2026-10-27 | v1.19 — T-12 (decisão (m)): lista + painel como a T-09, com as pessoas do setor e a recusa da RN-44 como lista do que fazer |
