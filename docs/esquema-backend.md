@@ -339,6 +339,14 @@ obrigatórios do schema de fechamento que faltam + aprovador definido
 "Hoje" é o **dia em `America/Sao_Paulo`**, e a comparação é por dia, não
 por instante (TRD §6, B11).
 
+**O que a T-03 pede** (decisão (j) da B2, `ui-ux.md` §7.1): a ordem acima
+já dá o cartão do mais urgente (o primeiro da lista), e as contagens e o
+"em dia" saem da própria lista no front. **A decidir na C3:** os
+responsáveis do cartão, no computador. Ou a rota passa a trazer os
+colaboradores do primeiro item, ou o cartão busca o item (uma requisição
+a mais). O Corrigir mostra o último motivo da reprovação (§4.5, L7), e
+Suas NCs usa o `GET /ncs?minhas`, que já existe.
+
 ### 4.5 Último motivo de reprovação (lacuna L7)
 
 `motivo` da última `Aprovacao` do item, se ela for `REPROVADO` — vai
@@ -626,3 +634,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-09 | v1.58 — B37 registrado e corrigido (A7, no portão): o `conteudo` da investigação sem `z.json()`, e a trava de `$ref` no `app.test.ts` |
 | 2026-10-26 | v1.59 — M4 e §6: o feed mora só na NC (Q25, B2): o `Comentario` pertence à NC, o feed junta os eventos dos filhos, e as rotas viram `GET /nc/:id/feed`, `POST /nc/:id/comentarios` e `POST /nc/:id/mencoes/vistas` |
 | 2026-10-26 | v1.60 — M6 (C2): `Hipotese.comoVerificar` e os dois requisitos novos do envio da investigação (PRD Q26); a Verificação nasce só com o colaborador (Q22) |
+| 2026-10-26 | v1.61 — §4.4: o que a T-03 nova pede (decisão (j) da B2): o cartão e as contagens saem da própria lista; os responsáveis do cartão, a decidir na C3 |

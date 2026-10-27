@@ -279,3 +279,26 @@ etapa pode ficar pela metade).
 - **A etapa:** **Public** (https://mobbin.com/screens/f350f14f-30f4-4391-9326-2633d5c38c1e):
   *"Parece bem simplista."* Só a barra segmentada no topo, a seta de
   voltar e o conteúdo limpo.
+
+## 2026-10-26 · Asana, Deel e Notion (Minhas pendências, decisão (j))
+
+Escolhidas por Matthew na decisão (j) da B2: a T-03 é a primeira tela que
+abre no computador e no celular e precisa ser **convidativa na chegada**.
+Ele seguiu a recomendação do Claude. As três estão na coleção "Andon · T-03
+Minhas pendências" do Mobbin (privada, da conta de Matthew); as imagens
+ficam lá, fora do repositório.
+
+- **Celular, o destaque:** **Asana** (https://mobbin.com/screens/53b9bc89-e6fe-4844-8476-93e1ad99d0c5):
+  a data e a saudação no topo, **um cartão com o mais urgente** e a lista
+  com o prazo à direita. Vira a variante A.
+- **Computador, o resumo por tipo:** **Deel** (https://mobbin.com/screens/6bd4989c-7a50-413e-be7e-e955b2394a29):
+  a saudação e o "Para você hoje", uma linha por tipo com o contador e a
+  ação. Vira a variante B.
+- **O vazio:** **Notion** (https://mobbin.com/screens/97a17109-8022-42e1-bbe4-c43480ba8cfe):
+  "Você está em dia", sóbrio, só com um ícone; combina com o Grafite.
+- **Visto no fluxo, não escolhido:** o "Minhas tarefas" do **Airwallex**
+  (https://mobbin.com/flows/b50c8a2b-97ab-45e4-ace2-105ebd53a2c0), em que
+  cada tipo sem pendência mostra "Em dia" com um ✓ em vez de sumir.
+- **O que ficou** (a C2, proposta de Matthew): *"Gostei desse cartão urgente
+  da A e gostei dessa lista da B"*, e o resumo virou **gavetinhas**. O
+  "em dia" do Airwallex entrou como a linha do fim das gavetas.

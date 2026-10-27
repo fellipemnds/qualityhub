@@ -86,6 +86,8 @@ As telas foram movidas, não copiadas: os links abaixo continuam valendo.
   [Decisão (h) no Figma](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=262-1342)
 - [x] **(i) A Investigação no celular** (pedido de Matthew: "nem todos os trabalhadores aqui possuem computador") — **decidida em 2026-10-26**, pela `/desenhar`, com a Cleo AI, a Chime e a Shopify (a entrada) e a Public (a etapa): para preencher, **uma etapa por tela**, com a entrada em **lista compacta** (a B) que diz o que falta só nas etapas pela metade, a barra de segmentos com o ponto na etapa atual e Anterior · Salvar e próxima; para aprovar, **uma página corrida de leitura**. O Ishikawa como molde (o mapa em blocos do mesmo tamanho por fila, o número no círculo, os símbolos como ícones, a origem embaixo de cada causa); as Hipóteses com o **Como verificar**; os 5 Porquês numa linha do tempo; a **causa direta vinda da hipótese** (PRD Q26, RN-24). Descartada: a entrada em cartões (a A), mais longa. Registrado no `ui-ux.md` §7.5 e §5.1, no `fluxo-app.md` (princípio 4, J4, T-07, L13), no PRD (Q26) e no `esquema-backend.md` (M6).
   [Decisão (i) no Figma](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=309-1428) · [as telas na página Wireframes](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=336-2311)
+- [x] **(j) A T-03 Minhas pendências convidativa** (pedido de Matthew: "é a primeira tela que abre no PC e no celular") — **decidida em 2026-10-26: a C2**, proposta de Matthew, pela `/desenhar`, com o Asana (o cartão do mais urgente), o Deel (o resumo por tipo) e o Notion (o vazio): a saudação com o primeiro nome e a frase do dia; o cartão **O mais urgente** (um atalho: o item continua na gaveta); o **Para você hoje** em **gavetinhas** (fechadas no celular, abertas no computador; os tipos vazios numa linha "em dia"); no computador, o avatar, o **Nova NC**, o cartão rico (o prazo, a NC, os responsáveis) e **Suas NCs** com a etapa; o vazio em dois casos (em dia e primeiro dia); os ícones do lucide. No caminho, o espaçamento das gavetas (o cabeçalho com fundo e o conteúdo com 16 px, achado de Matthew) e a versão do **colaborador** (só `EDITOR`), que mostra as gavetas mudando com os papéis. Descartadas: a A (só o destaque; o computador ficava vazio), a B (só o resumo; no celular, a lista ia para o meio da tela e os números apareciam duas vezes) e a C (as duas juntas, com o resumo como filtro e a conta repetida). Registrado no `ui-ux.md` §6.1 e §7.1, no `fluxo-app.md` (T-03) e no `esquema-backend.md` (§4.4).
+  [Decisão (j) no Figma](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=358-4150) · [as telas na página Wireframes: celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=336-2295) · [computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=336-2344)
 
 ## 1. Componentes
 
@@ -111,13 +113,13 @@ As telas foram movidas, não copiadas: os links abaixo continuam valendo.
 
 ## 3. NCs
 
-- [x] [T-03 Minhas pendências · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=99-31): os grupos Vencidas, Aprovar e Triagem, com as 4 pendências que batem com o contador do menu; o "Assumir" na triagem.
-- [x] [T-03 Minhas pendências · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1128): com a barra nova (decisão (a)).
+- [x] [T-03 Minhas pendências · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=372-2857) (decisão (j)): a saudação, o cartão do mais urgente, as gavetas Vencidas, Aprovar e Triagem com as 4 pendências que batem com o contador da doca, o "Assumir" na triagem e Suas NCs; ao lado, a [versão do colaborador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=372-2998).
+- [x] [T-03 Minhas pendências · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=372-2665) (decisão (j)): as gavetas fechadas (Aprovar aberta, depois do toque), sem a barra de cima; ao lado, a [versão do colaborador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=372-2744) e os vazios [em dia](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=372-2823) e [primeiro dia](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=372-2838).
 - [x] [T-13 Eu · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1180): a tela nova da decisão (a).
 - [x] [T-04 Lista de NCs · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=217-2063): as abas Todas · Minhas · Vencidas, os filtros, a tabela e o "Carregar mais".
 - [x] [T-04 Lista de NCs · celular](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=217-2192): a linha rica, e a [folha da Etapa](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=217-2257) (decisão (f)).
 
-- [ ] T-03 Minhas pendências, de novo, nos dois tamanhos: mais convidativa (pedido de Matthew, 2026-10-26; plano, B2, item 13).
+- [x] T-03 Minhas pendências, de novo, nos dois tamanhos: mais convidativa (pedido de Matthew, 2026-10-26; plano, B2, item 13). **Feita** pela decisão (j), §0.
 
   **Revista em 2026-10-23** (plano, B2, item 10): a T-13 bate com o `ui-ux.md` §6.1. A T-03 celular não tinha o filtro por tipo (posto); a T-04 virou a decisão (f), com a frase de estado e o Carregar mais no celular, que faltavam.
 - [x] [T-05 Nova NC · computador](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-192): os campos em duas colunas, os responsáveis e os anexos ao lado.
@@ -160,7 +162,7 @@ quando não sobrar linha com "—". Criadas em 2026-10-23.
 |---|---|---|---|
 | T-01 Login | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-3) | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-25) | item 9 |
 | T-02 Definir senha | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-47) | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=98-66) | item 9 |
-| T-03 Minhas pendências | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=99-31) | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1128) | item 10 |
+| T-03 Minhas pendências | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=372-2857) | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=372-2665) | item 13 (decisão (j)) |
 | T-04 Lista de NCs | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=217-2063) | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=217-2192) | item 10 |
 | T-05 Nova NC | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-192) | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-289) | item 11 |
 | T-06 Detalhe da NC | [frame](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=100-338) | [as 4 abas](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=158-1248) | item 11 |
@@ -194,6 +196,7 @@ quando não sobrar linha com "—". Criadas em 2026-10-23.
 
 - [x] As versões de celular de T-08 a T-12, com o convite e o diálogo do efeito (feitas em 2026-10-22, §5). Falta a barra nova no T-04 celular e no frame dos componentes (plano B2, item 7a).
 
+- [ ] A busca: a janela do Buscar e do Ctrl K com a doca (só existe sobre o trilho descartado, no histórico da decisão (e)) e a busca no celular, que não tem entrada geral (plano, B2, item 14).
 - [ ] As ações dentro do "Mais": Cancelar, Retirar da aprovação, Reabrir e Excluir rascunho (`fluxo-app.md` §7).
 - [ ] Os estados da tela: vazio, carregando, erro e sem permissão (`fluxo-app.md` §8). São do G4, na B3.
 - [ ] O modo escuro nas telas: chega quando elas forem refeitas com os componentes ligados aos tokens (a página Fundações já mostra o escuro).

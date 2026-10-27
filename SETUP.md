@@ -609,6 +609,15 @@ Os plugins ligados no `.claude/settings.json` do projeto vêm destas marketplace
 
 Para cada linha: `claude plugin marketplace add <marketplace>` e depois `claude plugin install <plugin>`. O Ponytail precisa também do `~/.config/ponytail/config.json` com `{ "defaultMode": "lite" }` (regra no `CLAUDE.md`). O `/retomar` confere se algum faltou.
 
+**Skills avulsas** (fora dos plugins; a `/desenhar` usa as cinco). Ficam em `~/.claude/skills/`, uma pasta por skill, copiadas dos repositórios abaixo (em casa, em 2026-10-26: `emilkowalski/skills` em `2d22863`, `pbakaus/impeccable` em `414603b`):
+
+| Skill | Repositório (GitHub) | Pasta no repositório |
+|---|---|---|
+| `apple-design`, `mobile-native`, `emil-design-eng`, `prototype` | `emilkowalski/skills` (MIT) | `skills/<nome>/` |
+| `impeccable` | `pbakaus/impeccable` (Apache-2.0) | `.claude/skills/impeccable/` |
+
+Para instalar: `git clone --depth 1` do repositório numa pasta temporária, ler o `SKILL.md` e copiar a pasta para `~/.claude/skills/`. Valem a partir da próxima sessão do Claude Code. Na nuvem (§13) não estão.
+
 ### 12.5 Foto do ambiente: comparando os dois PCs
 
 Um script tira uma "foto" do ambiente desta máquina e a guarda no Git, em `docs/ambiente/`: versões do Ubuntu, nvm, Node (e o padrão do nvm), npm, Git, Docker, gh e Claude Code; nome e e-mail do Git; conta e escopos do `gh`; se o `.env` tem todas as chaves do `.env.example` (só os **nomes**, nunca os valores); se o banco está no ar e com as migrations em dia; e as extensões do VS Code nos dois lados (WSL e Windows).

@@ -393,7 +393,9 @@ trilho com uma barra fina no topo) estão na mesma seção do Figma, como
 registro; o componente do trilho ficou lá, como "não escolhido".
 
 **Celular** (U2, decidida em 2026-10-22, B2): barra superior com o
-título + **barra flutuante** com três abas e o **＋** ao lado:
+título + **barra flutuante** com três abas e o **＋** ao lado. Exceção:
+a T-03 não tem a barra superior; a saudação faz o papel do título
+(decisão (j), §7.1):
 
 ```
 ┌────────────────────────┐
@@ -492,29 +494,85 @@ diante, as que completam o mapa (`fluxo-app.md` §2), escritas na B2.
 
 ### 7.1 T-03 Minhas pendências
 
-```
-Minhas pendências                                   [filtro: tipo ▾]
+A tela de chegada: é a primeira que abre para quem tem `EDITOR` ou
+`APROVADOR` (`fluxo-app.md` §3), no computador e no celular, e por isso
+precisa ser **convidativa**. Responde duas perguntas: *o que eu faço
+primeiro* (o cartão) e *como está o meu dia* (as gavetas). Decisão (j) da
+B2 (2026-10-26), a C2: o cartão da A (Asana) com o resumo da B (Deel),
+virado gavetinhas a pedido de Matthew.
 
-VENCIDAS (1)
-┌─────────────────────────────────────────────────────────────────┐
-│ ⚠ Executar ação   AC-2026-0003 · Trocar o fornecedor da junta…   │
-│                    NC-2026-0042        Vencido há 2 dias      →  │
-└─────────────────────────────────────────────────────────────────┘
-APROVAR (2)
-┌─────────────────────────────────────────────────────────────────┐
-│ ⧗ Aprovar         IV-2026-0007 · A junta resseca antes…       →  │
-│ ⧗ Aprovar         NC-2026-0038 · Fechamento                   →  │
-└─────────────────────────────────────────────────────────────────┘
-TRIAGEM (1)
-┌─────────────────────────────────────────────────────────────────┐
-│ ◌ NC sem aprovador NC-2026-0045 · Rótulo ilegível   [Assumir] →  │
-└─────────────────────────────────────────────────────────────────┘
+**Computador:**
+
 ```
+(FS)  Segunda, 26 de outubro                                    [Nova NC]
+      Boa noite, Fulana
+      4 coisas esperam por você. 1 está vencida.
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ [🔧]  O mais urgente · Executar ação  ⚠ Vencido há 2 dias · o prazo era 24/10 │
+│       AC-2026-0003 · Trocar o fornecedor da junta de vedação da linha 3     │
+│       📄 NC-2026-0042 · Vazamento na linha 3   (FS)(CL) Você e Ciclano Lima │
+│                                               [Ver a NC] [Abrir a ação]     │
+└──────────────────────────────────────────────────────────────────────────┘
+
+Para você hoje                                           Suas NCs
+┌───────────────────────────────────────────────┐       ┌────────────────────┐
+│ ⚠ Vencidas                               1  ⌃ │       │ 📄 NC-2026-0042 · … │
+│     AC-2026-0003 · Trocar o fornec…  ⚠ Vencido há 2 dias ›│  ▢ Em investigação │
+│ ✓ Aprovar                                2  ⌃ │       │ 📄 NC-2026-0038 · … │
+│     IV-2026-0007 · A junta resseca…   Enviada há 1 dia › │  ▢ Aguardando apro…│
+│     NC-2026-0038 · Fechamento         Enviada há 3 dias ›│ Ver todas as suas NCs│
+│ 👤+ Triagem                              1  ⌃ │       └────────────────────┘
+│     NC-2026-0045 · Rótulo ilegível          [Assumir] │
+│ ◯✓ Corrigir, Verificar e mais 3 tipos: em dia    │
+└───────────────────────────────────────────────┘
+```
+
+**Celular:** a mesma ordem empilhada, sem a coluna Suas NCs, sem o avatar
+e sem a barra de cima (a saudação faz o papel do título; a aba
+Pendências ativa diz onde a pessoa está; é a única tela raiz sem ela). O
+cartão leva o botão **Abrir a ação** na largura toda (44 px), e tudo
+cabe numa tela.
+
+1. **A saudação:** a data (dia da semana e do mês), "Bom dia / Boa tarde /
+   Boa noite" pela hora no fuso de São Paulo, o primeiro nome (do
+   `/auth/eu`) e a frase do dia: quantas coisas esperam e quantas estão
+   vencidas.
+2. **O mais urgente:** um cartão com a primeira pendência na ordem da
+   rota (vencidos primeiro, `fluxo-app.md` T-03). No computador, com o
+   ícone do tipo, a descrição inteira, a data do prazo, a NC e os
+   responsáveis com avatar, e **Ver a NC** + **Abrir a ação**. É um
+   **atalho**: o item continua na gaveta dele, senão a contagem da gaveta
+   mentiria. Sem pendência, o cartão não aparece.
+3. **Para você hoje, em gavetinhas:** uma gaveta por grupo, na ordem dos
+   grupos abaixo, com o ícone, o nome, a contagem e o ⌄/⌃. O cabeçalho tem
+   fundo `fundo/pagina` e 48 px; o conteúdo, 16 px acima e abaixo. **No
+   celular, as gavetas começam fechadas** (um tipo só já vem aberto); **no
+   computador, abertas**. Só aparecem os grupos com itens; os tipos que a
+   pessoa pode ter e estão vazios viram uma linha **"em dia"** no fim,
+   com o ✓ (a Triagem só entra nessa conta para quem tem `APROVADOR` ou
+   `GERENTE`). Cada linha: o rótulo do item (§10.3), a NC ou o motivo
+   (Corrigir mostra o último motivo da reprovação, L7), o prazo com ícone e
+   texto (vencido em vermelho, vencendo em âmbar, F3) ou o "há quanto
+   tempo", e o › (ou o **Assumir**, na Triagem).
+4. **Suas NCs** (só no computador): até 5 NCs da visão Minhas da T-04
+   (`GET /ncs?minhas`), com a etapa, e o link **Ver todas as suas NCs**.
+5. **O vazio, em dois casos** (a `impeccable`): **em dia** ("Você está em
+   dia" + "Quando alguém pedir sua aprovação ou um prazo chegar perto,
+   aparece aqui.") e **primeiro dia** ("Aqui aparece o que espera por
+   você" + os tipos em linguagem de gente). Os dois com o **Ver as NCs** e
+   sem o selo na barra.
 
 Grupos na ordem: **Vencidas** → Aprovar → Corrigir → Verificar → Executar
 → Enviar para fechamento → Triagem → Menções → Rascunhos. "Assumir" na
 triagem define a própria pessoa como aprovadora (da NC ou do filho sem
-aprovador), sem precisar abrir o item.
+aprovador), sem precisar abrir o item. Os ícones são do lucide (o
+conjunto do shadcn): alerta, prancheta com ✓ (Aprovar), lápis (Corrigir),
+lupa com ✓ (Verificar), chave (Executar), pessoa com + (Triagem), @
+(Menções), relógio (vence em breve), círculo com ✓ (em dia).
+
+Componentes (degrau 1 do shadcn): `Card`, `Button`, `Avatar` e o
+`Accordion` (Radix: teclado e leitor de tela prontos, `type="multiple"`).
 
 ### 7.2 T-04 Lista de NCs
 
@@ -1532,3 +1590,4 @@ tokens.
 | 2026-10-26 | v1.21 — B2, item 12 e decisão (i): a T-07 dos cinco tipos revista (§7.4 a Ação Corretiva empilhada, com o plano em grade, o plano em edição, o diálogo do Finalizar e a faixa abaixo de 1440; §7.10 a Contenção com o Sobre a NC, a data com atalhos, a disposição em cartões e o rascunho; §7.11 a Verificação com o Sobre a ação, depois da C2); a Investigação no celular, uma etapa por tela, e a leitura do aprovador (§7.5); o Como verificar das hipóteses e a causa direta vinda da hipótese (§7.5); a linha de indicadores (§6.2, gesto 1); os componentes `AreaDeArrastar`, `CampoData` e `EtapasA3` (§5.1) |
 | 2026-10-26 | v1.22 — §7.5: a Investigação do computador com o desenho do celular (a faixa da T-06 e os três estados abertos, as seções em cartões, o Ishikawa em três colunas, a mesma tabela das hipóteses nas duas visões, a origem da causa direta, os porquês em linha do tempo, contramedidas e check em cartões com o andamento) |
 | 2026-10-26 | v1.23 — §7.4: o atalho Atividade deste item abre o feed da NC sem sair do filho (no celular, uma folha), filtrado pelo item, com o × que mostra o feed inteiro; §7.5: o check em linhas curtas com o ⌄ |
+| 2026-10-26 | v1.24 — §7.1: a T-03 Minhas pendências como tela de chegada (decisão (j) da B2, a C2): a saudação, o cartão do mais urgente, as gavetinhas do "Para você hoje" com o "em dia", Suas NCs no computador, o vazio em dois casos e os ícones do lucide; no celular, sem a barra de cima |

@@ -364,7 +364,7 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
    regras novas da investigação, PRD Q25 e Q26). A página Wireframes
    foi **reorganizada** no mesmo dia: os blocos CELULAR e COMPUTADOR, cada um
    com as seções na ordem do fluxo (1 Acesso, 2 Início, 3 NCs, 4a a 4e os
-   filhos, 5 Gestão). **Próximo:** o item 13: a **T-03 Minhas pendências de novo**, nos dois tamanhos, para ficar mais convidativa (pedido de Matthew, 2026-10-26; é decisão de desenho, então pela `/desenhar`: Mobbin, duas variantes, a decisão (j)), depois T-08 a T-12 e o convite. Ao fechar o 13, corrigir a linha velha do checklist §6.3 (a barra nova da T-04 e dos componentes já foi feita no item 8). **Como revisar** (combinado
+   filhos, 5 Gestão). **No item 13, a T-03 está feita** (2026-10-26, em casa: a decisão **(j)**, a C2, com o cartão do mais urgente e as gavetinhas; a versão do colaborador ao lado). **Próximo:** o resto do item 13, T-08 a T-12 e o convite. Ao fechar o 13, corrigir a linha velha do checklist §6.3 (a barra nova da T-04 e dos componentes já foi feita no item 8). **Como revisar** (combinado
    em 2026-10-23): só a **estrutura** (o acabamento é da B3) e os **gestos 1 a
    4**; cada seção preenche a parte dela nas tabelas do G1 (o checklist §6);
    achado de estrutura se corrige no Figma, achado de acabamento vai para a

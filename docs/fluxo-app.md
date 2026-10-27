@@ -370,9 +370,15 @@ dessas três).
 
 ### T-03 Minhas pendências (RF-17)
 
-Uma lista única, agrupada por tipo e ordenada por urgência (vencidos
-primeiro). Cada linha tem: tipo, código, título da NC, prazo (se houver)
-e um link direto para o item.
+A tela de chegada (decisão (j) da B2, `ui-ux.md` §7.1): a saudação com o
+primeiro nome, o cartão **O mais urgente** (a primeira pendência da ordem,
+um atalho: o item continua no grupo dele) e o **Para você hoje**, uma
+gaveta por grupo, ordenada por urgência (vencidos primeiro). Cada linha
+tem: código, título da NC (ou o motivo, no Corrigir), prazo (se houver) e
+um link direto para o item. No computador, ao lado, **Suas NCs** (a visão
+Minhas da T-04, com a etapa). As gavetas dependem dos papéis da pessoa
+(a tabela abaixo): quem só tem `EDITOR` nunca vê Aprovar nem Triagem, e a
+linha **"em dia"** lista só os tipos que podem chegar a ela.
 
 | Tipo de pendência | Quem vê | Some quando |
 |---|---|---|
@@ -389,7 +395,9 @@ e um link direto para o item.
 em amarelo (F3). "Nunca só cor": o destaque também leva texto
 ("Vencido há 2 dias", "Vence em 5 dias").
 
-**Vazio:** "Nada esperando por você." com atalho para a lista de NCs.
+**Vazio, em dois casos:** **em dia** ("Você está em dia") e **primeiro
+dia** ("Aqui aparece o que espera por você", com os tipos explicados), os
+dois com o atalho para a lista de NCs.
 
 ### T-04 Lista de NCs
 
@@ -594,3 +602,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-26 | v1.11 — O feed mora só na NC, com os eventos dos filhos, e só se comenta nela (§1, J10, T-07; PRD Q25); a T-07 no celular empilhada, sem abas (decisão (h) da B2) |
 | 2026-10-26 | v1.12 — A Investigação no celular (§1, princípio 4 revisto; mapa; J4; T-07): uma etapa por tela e, para o aprovador, a leitura corrida (decisão (i) da B2); a hipótese com o como verificar, a causa direta vinda da hipótese e o envio com ao menos uma hipótese de causa direta (J4, PRD Q26); a lacuna L13 |
 | 2026-10-26 | v1.13 — J10: o atalho do filho abre o feed da NC sem sair dele (no celular, uma folha), e o × do filtro mostra o feed inteiro |
+| 2026-10-26 | v1.14 — T-03: a tela de chegada (decisão (j) da B2): o cartão do mais urgente, as gavetas por grupo conforme os papéis, o "em dia", Suas NCs no computador e o vazio em dois casos |
