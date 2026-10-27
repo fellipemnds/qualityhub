@@ -462,13 +462,18 @@ só no computador). Além do Tab, Enter e Esc da acessibilidade (§9):
 
 1. **Nenhum atalho age dentro de um campo de texto** (lá, as teclas
    escrevem).
-2. **Os de uma tecla só (J, K, ?, G) podem ser desligados** no menu da
-   pessoa ("Atalhos de teclado"), como pede a WCAG 2.1.4; a escolha fica
-   no navegador. O Ctrl K e o Esc continuam.
+2. **Os de uma tecla só (J, K, ?, G) podem ser desligados** num
+   interruptor da janela dos atalhos, que abre pelo **?** e pelo
+   "Atalhos de teclado" do menu da pessoa (assim quem desligou o ? ainda
+   chega lá), como pede a WCAG 2.1.4; a escolha fica no navegador. O
+   Ctrl K e o Esc continuam.
 3. **Sem ação por tecla** (aprovar, editar, comentar): cada uma pediria a
    mesma checagem de permissão do botão, e fica fora do MVP (§11).
-4. A janela do **?** é desenhada no item 14 da B2, com a busca; os atalhos
-   entram na C8.
+4. **A janela do ?** (desenhada no item 14 da B2, 2026-10-27) segue o
+   padrão do diálogo (§8.2): os atalhos em três grupos (Ir para, Nas
+   listas, Em qualquer tela), cada tecla numa caixinha (a **Tecla**, um
+   átomo novo), o interruptor embaixo e o Fechar. O menu da pessoa ganhou
+   o **Minha conta** e o **Atalhos de teclado**. Os atalhos entram na C8.
 
 ### 6.2 A personalidade: os gestos da casa
 
@@ -1715,3 +1720,4 @@ tokens.
 | 2026-10-27 | v1.30 — §8.2: o retirar da aprovação sem confirmação, o menu "Mais" (menu no computador, folha no celular) e o texto do `DialogoMotivo`; o diálogo numa versão só, com as quatro regras (B2, item 14) |
 | 2026-10-27 | v1.31 — §3 e §8.2: o vermelho só no botão final do que não se desfaz (a exceção do `marca.md`; o reprovar sai) e a quinta regra do diálogo, o foco |
 | 2026-10-27 | v1.32 — §7.4: o filho reprovado (o último motivo no topo, L7) e o filho fechado, só leitura (B2, item 14) |
+| 2026-10-27 | v1.33 — §6.1: a janela dos atalhos (o ?) desenhada, com o interruptor dos atalhos de uma tecla; o menu da pessoa com o Minha conta e o Atalhos de teclado (B2, item 14) |

@@ -199,7 +199,7 @@ quando não sobrar linha com "—". Criadas em 2026-10-23.
 
 - [x] As versões de celular de T-08 a T-12, com o convite e o diálogo do efeito (feitas em 2026-10-22, §5), e a barra nova no T-04 celular e no frame dos componentes (feita no item 8).
 
-- [ ] A janela dos atalhos de teclado (o ?) e o "Atalhos de teclado" no menu da pessoa (`ui-ux.md` §6.1; plano, B2, item 14).
+- [x] A [janela dos atalhos de teclado](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=427-3849) (o ?) e o "Atalhos de teclado" no [menu da pessoa](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=427-4419), que ganhou também o Minha conta (`ui-ux.md` §6.1; feitos em 2026-10-27, B2, item 14).
 - [x] Da decisão (l): o diálogo ["sair sem copiar o link"](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=425-3943) (igual ao Descartar, com outro texto; feito em 2026-10-27). O envio da foto com o recorte fica para a C5.
 - [x] Os estados do item 14 (2026-10-27): o [filho reprovado](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=423-3607) com o último motivo no topo (L7, J8), a [Contenção fechada](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=423-4120) só leitura e sem ações (RN-42, RN-45, RN-47) e o [setor desativado](https://www.figma.com/design/I84yUUH486vPHJ65Xtg08K?node-id=425-3738) com o Reativar.
 - [ ] A busca: a janela do Buscar e do Ctrl K com a doca (só existe sobre o trilho descartado, no histórico da decisão (e)) e a busca no celular, que não tem entrada geral (plano, B2, item 14).
