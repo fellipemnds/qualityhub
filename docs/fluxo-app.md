@@ -475,8 +475,13 @@ celular, tudo empilhado numa página só, sem abas (decisão (h) da B2,
 
 ### T-08 Relatórios
 
-Os quatro relatórios da RF-19, cada um com filtro de período. Os números
-levam à lista de NCs filtrada.
+Os quatro relatórios da RF-19, todos com o mesmo período, escolhido na
+**régua** do topo (decisão (k) da B2, `ui-ux.md` §7.12). Antes deles, o
+**"O que mudou"** no período, em até 3 frases, e cada relatório compara com o
+período anterior. Os números e o ↗ de cada relatório levam à lista de NCs
+filtrada. **A decidir na C7:** a T-08 é a tela inicial do `GERENTE` (§3),
+mas no celular ela abre pela tela Eu; ou o gerente ganha a T-08 na barra do
+celular, ou começa nas Pendências lá.
 
 ### T-09 a T-12 Administração
 
@@ -605,3 +610,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-26 | v1.13 — J10: o atalho do filho abre o feed da NC sem sair dele (no celular, uma folha), e o × do filtro mostra o feed inteiro |
 | 2026-10-26 | v1.14 — T-03: a tela de chegada (decisão (j) da B2): o cartão do mais urgente, as gavetas por grupo conforme os papéis, o "em dia", Suas NCs no computador e o vazio em dois casos |
 | 2026-10-26 | v1.15 — §2.1: o "Atalhos de teclado" no menu da pessoa (o conjunto curto, `ui-ux.md` §6.1) |
+| 2026-10-26 | v1.16 — T-08: a régua do período, o "O que mudou", a comparação com o período anterior e a pergunta da tela inicial do gerente no celular (decisão (k) da B2) |

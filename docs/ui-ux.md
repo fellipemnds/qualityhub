@@ -533,7 +533,7 @@ virado gavetinhas a pedido de Matthew.
 ┌──────────────────────────────────────────────────────────────────────────┐
 │ [🔧]  O mais urgente · Executar ação  ⚠ Vencido há 2 dias · o prazo era 24/10 │
 │       AC-2026-0003 · Trocar o fornecedor da junta de vedação da linha 3     │
-│       📄 NC-2026-0042 · Vazamento na linha 3   (FS)(CL) Você e Ciclano Lima │
+│       📄 NC-2026-0042 · Vazamento na linha 3   (FS)(CR) Você e Ciclano Reis │
 │                                               [Ver a NC] [Abrir a ação]     │
 └──────────────────────────────────────────────────────────────────────────┘
 
@@ -1278,39 +1278,61 @@ corretiva será criada em rascunho para os mesmos responsáveis."
 
 ### 7.12 T-08 Relatórios
 
+O painel da gestão e a **tela inicial do `GERENTE`** (`fluxo-app.md` §3).
+Decisão (k) da B2 (2026-10-26), a C: a régua do Mercury, o "o que mudou"
+do Linear e as colunas sem caixa do Mercury, com o tom do Investment
+(`docs/identidade/referencias-interface.md`).
+
+**Computador:**
+
 ```
-Relatórios                               Período: [ últimos 12 meses ▾ ]
+Segunda, 26 de outubro
+Boa noite, Beltrana
+3 itens atrasados, o mais antigo há 9 dias · 38 NCs abertas
 
- NCs abertas      Tempo médio até fechar   Ações atrasadas   Eficácia
- 14               23 dias                  3                 82%
- ↑ 2 no período   ↓ 4 dias                 → ver quais       das verificações
+2025                                                                 2026
+ mai jun jul ago set out [nov dez jan fev mar abr mai jun jul ago set out]
+Últimos 12 meses · nov/25 a out/26
 
-NCS ABERTAS                          [ por setor | por origem ]
- Produção    ████████████  6
- Expedição   ██████        3
- Metrologia  ████          2  ...
+┌──────────────────────────────────────────────────────────────────────────┐
+│ ∿ O que mudou nos últimos 12 meses                 Atualizado hoje, 21:00 │
+│ ↗ Produção abriu 4 NCs a mais que no período anterior: são 14 das 38.     │
+│ ✓ A eficácia das verificações subiu para 82% (eram 77%).                  │
+│ ⚠ Uma ação a mais está atrasada: a AC-2026-0002, com Deltrano Alves, há 6 dias. │
+└──────────────────────────────────────────────────────────────────────────┘
 
-TEMPO MÉDIO DA DETECÇÃO AO FECHAMENTO
- dias │      ╱‾‾╲            ── Maior
-      │ ‾‾‾‾╱    ‾‾‾‾        ┄┄ Menor
-      └──────────────────── meses
-
-ATRASADAS (ações e verificações)
- Item          Com quem      Vencido há
- AC-2026-0003  Fulana        2 dias     →
- VE-2026-0001  Beltrana      9 dias     →
-
-EFICÁCIA E REINCIDÊNCIA
- Eficaz 18 · Parcialmente eficaz 3 · Não eficaz 1
- NCs reabertas: 2 →
- Causas-raiz que se repetem: "junta ressecada" (3 NCs) →
+NCs abertas        ↗ │ Tempo médio até fechar ↗ │ Atrasadas            ↗ │ Eficácia             ↗
+38                   │ 23 dias                  │ 3                      │ 82%
+↑ 4 a mais que no    │ ↓ 4 dias a menos que no  │ ↑ 1 a mais que no      │ ↑ 5 pontos acima · 18 de 22
+  período anterior   │   período anterior       │   período anterior     │ ███████████████▆▆▆▂
+Por setor  Por origem│ Classificação Maior 26 d │ AC-2026-0003  ⚠ 2 dias │ ■ Eficaz 18 · 82%
+Produção   14 · 37%  │ Classificação Menor 19 d │ AC-2026-0002  ⚠ 6 dias │ ■ Parcialmente eficaz 3 · 14%
+▬▬▬▬▬▬▬▬▬▬▬▬        │  ╲╱╲__╱╲__  ── Maior     │ VE-2026-0002  ⚠ 9 dias │ ■ Não eficaz 1 · 5%
+Expedição   9 · 24%  │  ┄┄┄┄┄┄┄┄  ┄┄ Menor      │                        │ Reincidência
+...                  │                          │                        │ NCs reabertas 2 ›
 ```
 
-Os quatro relatórios da RF-19, nessa ordem, todos com o mesmo filtro de
-período. **Todo número leva à lista de NCs já filtrada** (J12). Sem cor
-nas séries (Grafite): a classificação se distingue pelo traço, linha
-cheia e tracejada, e a variação da fileira de números leva seta e texto,
-não só cor. Só no computador.
+1. **A régua do período** manda em tudo embaixo: os meses dos últimos dois
+   anos, o trecho escolhido com o fundo `fundo/selecao`, e a frase do
+   período embaixo. No celular, mostra 7 meses e se arrasta para os lados.
+2. **O que mudou:** até 3 frases sobre o período, cada uma com ícone (o
+   atraso com o ⚠ vermelho). A regra de qual mudança vale uma frase fica
+   para a C7, com a analista.
+3. **As 4 colunas sem caixa**, separadas por uma linha fina: o título com
+   o **↗** (abre a lista de NCs daquele relatório, já filtrada, J12), o
+   número grande, a comparação com o período anterior (seta e texto, nunca
+   só cor), os rótulos sublinhados e a quebra. No celular, as colunas viram
+   blocos empilhados, na mesma ordem.
+4. **Os gráficos sem cor** (Grafite): barras finas para as NCs por setor ou
+   por origem (com o número e a %), a linha do tempo médio com a
+   classificação pelo traço (cheia: Maior; tracejada: Menor; com legenda),
+   a eficácia numa **barra segmentada só**, com a legenda em %. As
+   atrasadas não são gráfico: são uma lista com o prazo.
+
+Os quatro relatórios da RF-19, nessa ordem. **Todo número leva à lista de
+NCs já filtrada** (J12). Componentes: o `Tooltip` e o `Chart` do shadcn
+(sobre o **Recharts**: biblioteca nova, entra no changelog com o código,
+§1), as barras em HTML simples, e a régua, que é nossa.
 
 ### 7.13 T-09 Usuários
 
@@ -1494,7 +1516,10 @@ Critérios do G2 e do G5, aplicados a **toda** tela:
    sempre visível (`--ring`). Os componentes Radix por trás do shadcn/ui
    já resolvem boa parte disso; o cuidado é não quebrar.
 4. **Rótulos** — todo campo com `<label>` visível (não só placeholder);
-   botões só com ícone têm nome acessível.
+   botões só com ícone têm nome acessível. Ícone sozinho (como o ↗ dos Relatórios) leva
+   uma **dica** ao passar o mouse **e** no foco do teclado, com o mesmo texto
+   do nome acessível (`Tooltip` do shadcn); no celular, onde não há mouse,
+   o toque é a linha inteira (o título e o ícone), com 44 px (decisão (k)).
 5. **Toque** — alvos ≥ 44 × 44 px no celular.
 6. **Movimento** — animações curtas e funcionais; respeitar "reduzir
    movimento" do sistema operacional.
@@ -1614,3 +1639,4 @@ tokens.
 | 2026-10-26 | v1.23 — §7.4: o atalho Atividade deste item abre o feed da NC sem sair do filho (no celular, uma folha), filtrado pelo item, com o × que mostra o feed inteiro; §7.5: o check em linhas curtas com o ⌄ |
 | 2026-10-26 | v1.24 — §7.1: a T-03 Minhas pendências como tela de chegada (decisão (j) da B2, a C2): a saudação, o cartão do mais urgente, as gavetinhas do "Para você hoje" com o "em dia", Suas NCs no computador, o vazio em dois casos e os ícones do lucide; no celular, sem a barra de cima |
 | 2026-10-26 | v1.25 — §6.1: os atalhos de teclado, um conjunto curto (Ctrl K, ?, J/K, Enter, Esc, G+P/N), que não age em campo de texto e pode ser desligado (WCAG 2.1.4); §11: fora do MVP fica só o que passa disso |
+| 2026-10-26 | v1.26 — §7.12: a T-08 Relatórios (decisão (k) da B2, a C): a régua do período, o "o que mudou", as colunas sem caixa e os gráficos sem cor; §9: a dica do ícone sozinho, no mouse e no foco |

@@ -302,3 +302,31 @@ ficam lá, fora do repositório.
 - **O que ficou** (a C2, proposta de Matthew): *"Gostei desse cartão urgente
   da A e gostei dessa lista da B"*, e o resumo virou **gavetinhas**. O
   "em dia" do Airwallex entrou como a linha do fim das gavetas.
+
+## 2026-10-26 · Mercury, Higgsfield e Linear (os Relatórios, decisão (k))
+
+Escolhidas por Matthew na decisão (k) da B2, a T-08 Relatórios (o painel
+da gestão e a tela inicial do `GERENTE`), na segunda rodada de busca:
+a primeira (Plain, Asana, Airtable, Dovetail, ClickUp, Revolut, TikTok)
+foi recusada, *"achei todos feios"*. Matthew: *"só gostei da estética"*.
+As quatro estão na coleção "Andon · T-08 Relatórios" do Mobbin (privada,
+da conta de Matthew); as imagens ficam lá, fora do repositório. O que o
+Claude tira da estética de cada uma (a base continua o **Investment**, de
+2026-10-20, acima):
+
+- **Mercury · Início** (https://mobbin.com/screens/f3cc6753-dc1c-49ec-babb-99599b85f605):
+  colunas sem caixa pesada; em cada uma, o número grande, o "vs período
+  anterior" embaixo, os rótulos **sublinhados** (como o nosso link) e a
+  quebra em barras finas com a porcentagem; a régua de meses no topo para
+  o período.
+- **Mercury · Insights** (https://mobbin.com/screens/c6574c88-b41c-417d-acf3-3bd0fc60c6b1):
+  frases que dizem **o que mudou** ao lado dos números.
+- **Higgsfield · Uso** (https://mobbin.com/screens/2884b14e-7f1f-4287-99e7-64862a439bcc):
+  as seções em cartões arredondados com o título pequeno e o ícone; a
+  distribuição numa **barra segmentada só**, com a legenda em
+  porcentagem; os números em blocos com ícone. O escuro e o verde-limão
+  dela ficam de fora (o Grafite, `docs/marca.md`).
+- **Linear · Iniciativa** (https://mobbin.com/screens/fbe66735-93b3-495b-b071-923d3d5e1bad):
+  o cartão da **última atualização**, com o estado ("No prazo") e o texto;
+  o gráfico de progresso numa coluna lateral com abas; a atividade
+  embaixo.

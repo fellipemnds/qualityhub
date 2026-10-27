@@ -474,6 +474,12 @@ a lista dela filtra por `acaoCorretivaId`. A Ação Corretiva tem ainda
 | Δ | `GET /` → `GET /saude` | Público | Confere banco e armazenamento |
 | ＋ | `GET /docs` | Só em desenvolvimento | OpenAPI navegável |
 
+**O que a T-08 pede** (decisão (k) da B2, `ui-ux.md` §7.12), a decidir na
+C7: as quatro rotas recebem o período (`de`/`ate`, dias de calendário) e
+devolvem também o **valor do período anterior** de mesmo tamanho (ou o
+front chama duas vezes); o **"O que mudou"** sai das respostas, no front,
+por uma regra combinada com a analista, sem rota nova.
+
 Relatórios aceitam `?de=&ate=` e devolvem, junto de cada número, os
 **filtros** que levam à lista de NCs correspondente (fluxo J12).
 
@@ -635,3 +641,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-26 | v1.59 — M4 e §6: o feed mora só na NC (Q25, B2): o `Comentario` pertence à NC, o feed junta os eventos dos filhos, e as rotas viram `GET /nc/:id/feed`, `POST /nc/:id/comentarios` e `POST /nc/:id/mencoes/vistas` |
 | 2026-10-26 | v1.60 — M6 (C2): `Hipotese.comoVerificar` e os dois requisitos novos do envio da investigação (PRD Q26); a Verificação nasce só com o colaborador (Q22) |
 | 2026-10-26 | v1.61 — §4.4: o que a T-03 nova pede (decisão (j) da B2): o cartão e as contagens saem da própria lista; os responsáveis do cartão, a decidir na C3 |
+| 2026-10-26 | v1.62 — §6, relatórios: o que a T-08 nova pede (o período anterior para a comparação e o "O que mudou" no front), a decidir na C7 |
