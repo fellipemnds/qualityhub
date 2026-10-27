@@ -445,6 +445,28 @@ proposta de 2026-10-21 para o computador (sem barra de topo, o item ativo
 com a pílula cinza) ficou confirmada pela decisão (e), acima, e o menu
 lateral saiu.
 
+**Os atalhos de teclado** (conjunto curto, pedido de Matthew, 2026-10-26;
+só no computador). Além do Tab, Enter e Esc da acessibilidade (§9):
+
+| Tecla | O que faz |
+|---|---|
+| **Ctrl K** | Abre a busca (decisão (e)) |
+| **?** | Abre a janela com a lista de atalhos |
+| **J** / **K** | Desce / sobe a linha selecionada numa lista (as gavetas da T-03, a T-04) |
+| **Enter** | Abre a linha selecionada |
+| **Esc** | Fecha a janela, a folha ou o painel aberto |
+| **G** e depois **P** / **N** | Vai para as Pendências / para as NCs |
+
+1. **Nenhum atalho age dentro de um campo de texto** (lá, as teclas
+   escrevem).
+2. **Os de uma tecla só (J, K, ?, G) podem ser desligados** no menu da
+   pessoa ("Atalhos de teclado"), como pede a WCAG 2.1.4; a escolha fica
+   no navegador. O Ctrl K e o Esc continuam.
+3. **Sem ação por tecla** (aprovar, editar, comentar): cada uma pediria a
+   mesma checagem de permissão do botão, e fica fora do MVP (§11).
+4. A janela do **?** é desenhada no item 14 da B2, com a busca; os atalhos
+   entram na C8.
+
 ### 6.2 A personalidade: os gestos da casa
 
 Decidido com Matthew em 2026-10-23, na revisão dos wireframes: o
@@ -1538,7 +1560,7 @@ No front, o rótulo sai de **uma função só**: se os filhos ganharem título
 ## 11. Fora do MVP de UI
 
 Personalização de colunas da lista · atalhos de teclado
-avançados · impressão formatada da NC (relatório para auditoria) ·
+além do conjunto curto (§6.1; as ações por tecla) · impressão formatada da NC (relatório para auditoria) ·
 internacionalização (só pt-BR).
 
 ---
@@ -1591,3 +1613,4 @@ tokens.
 | 2026-10-26 | v1.22 — §7.5: a Investigação do computador com o desenho do celular (a faixa da T-06 e os três estados abertos, as seções em cartões, o Ishikawa em três colunas, a mesma tabela das hipóteses nas duas visões, a origem da causa direta, os porquês em linha do tempo, contramedidas e check em cartões com o andamento) |
 | 2026-10-26 | v1.23 — §7.4: o atalho Atividade deste item abre o feed da NC sem sair do filho (no celular, uma folha), filtrado pelo item, com o × que mostra o feed inteiro; §7.5: o check em linhas curtas com o ⌄ |
 | 2026-10-26 | v1.24 — §7.1: a T-03 Minhas pendências como tela de chegada (decisão (j) da B2, a C2): a saudação, o cartão do mais urgente, as gavetinhas do "Para você hoje" com o "em dia", Suas NCs no computador, o vazio em dois casos e os ícones do lucide; no celular, sem a barra de cima |
+| 2026-10-26 | v1.25 — §6.1: os atalhos de teclado, um conjunto curto (Ctrl K, ?, J/K, Enter, Esc, G+P/N), que não age em campo de texto e pode ser desligado (WCAG 2.1.4); §11: fora do MVP fica só o que passa disso |

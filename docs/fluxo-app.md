@@ -113,6 +113,7 @@ saídas ficam no **menu da pessoa**, que abre do fim da doca:
 | Relatórios | `GERENTE` | |
 | Administração | `ADMIN` | Usuários, Setores |
 | Tela inicial | Quem acessa mais de uma tela inicial possível | Preferência (§3) |
+| Atalhos de teclado | Todos (só no computador) | Liga e desliga os atalhos de uma tecla (`ui-ux.md` §6.1, WCAG 2.1.4); a escolha fica no navegador |
 | Sair | Todos | |
 | Sair de todos os aparelhos | Todos | No menu da pessoa, embaixo do Sair: encerra as sessões abertas em outros computadores (`POST /auth/sair-de-todos`, pronto desde a A4; Matthew, 2026-10-21) |
 
@@ -603,3 +604,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-26 | v1.12 — A Investigação no celular (§1, princípio 4 revisto; mapa; J4; T-07): uma etapa por tela e, para o aprovador, a leitura corrida (decisão (i) da B2); a hipótese com o como verificar, a causa direta vinda da hipótese e o envio com ao menos uma hipótese de causa direta (J4, PRD Q26); a lacuna L13 |
 | 2026-10-26 | v1.13 — J10: o atalho do filho abre o feed da NC sem sair dele (no celular, uma folha), e o × do filtro mostra o feed inteiro |
 | 2026-10-26 | v1.14 — T-03: a tela de chegada (decisão (j) da B2): o cartão do mais urgente, as gavetas por grupo conforme os papéis, o "em dia", Suas NCs no computador e o vazio em dois casos |
+| 2026-10-26 | v1.15 — §2.1: o "Atalhos de teclado" no menu da pessoa (o conjunto curto, `ui-ux.md` §6.1) |

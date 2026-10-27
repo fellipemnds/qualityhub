@@ -196,6 +196,7 @@ quando não sobrar linha com "—". Criadas em 2026-10-23.
 
 - [x] As versões de celular de T-08 a T-12, com o convite e o diálogo do efeito (feitas em 2026-10-22, §5). Falta a barra nova no T-04 celular e no frame dos componentes (plano B2, item 7a).
 
+- [ ] A janela dos atalhos de teclado (o ?) e o "Atalhos de teclado" no menu da pessoa (`ui-ux.md` §6.1; plano, B2, item 14).
 - [ ] A busca: a janela do Buscar e do Ctrl K com a doca (só existe sobre o trilho descartado, no histórico da decisão (e)) e a busca no celular, que não tem entrada geral (plano, B2, item 14).
 - [ ] As ações dentro do "Mais": Cancelar, Retirar da aprovação, Reabrir e Excluir rascunho (`fluxo-app.md` §7).
 - [ ] Os estados da tela: vazio, carregando, erro e sem permissão (`fluxo-app.md` §8). São do G4, na B3.
