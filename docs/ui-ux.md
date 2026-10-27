@@ -340,6 +340,25 @@ em `components/` (os do shadcn/ui, em `components/ui/`).
 
 ---
 
+
+### 5.3 O inventário do Figma (B2, item 15)
+
+Feito em 2026-10-27, pelo método da §2.2: cada peça dos wireframes num
+cartão nas páginas **Átomos**, **Moléculas** e **Organismos** do Figma,
+com o estado, as contagens, o item da B3 que a constrói e um exemplo.
+Os estados: **Componente** (já é componente), **Virar componente** (se
+repete em cópias soltas), **Duas versões** (a mesma coisa com cara
+diferente: fica uma) e **Novo** (nasceu no item 14).
+
+| Camada | Componente | Virar componente | Duas versões ou mais | Novo |
+|---|---|---|---|---|
+| Átomos | Botão (falta a variante Destrutiva), Campo (falta o erro e o foco), Etapa, Prazo | Ícone (341), Avatar (285), Tag (101), Indicador (63), Contador (62), Interruptor (52) | Estado × Situação; Pílula (filtro × tipo); Aba (sublinhada × do item × controle segmentado) | Tecla |
+| Moléculas | Feed (dia, evento, comentário), Anexos | Linha de pessoa (235), Opção (60), Campo de data (32), Cartão de NC do celular (25) | Linha de pendência (o componente sem uso × as linhas da T-03) | Linha de resultado, Item de menu |
+| Organismos | Doca, Barra do celular, Menu da pessoa, Abas do item | Bloco do título (37), Barra de ações fixa (36), Gaveta (7), Folha (5) | Recusa (T-09 × T-12); o Diálogo já ficou numa versão só (§8.2) | Menu "Mais", a busca |
+
+O "Item/Estado (antigo, não usar)" (sem uso) sai na B3. A lista e a
+ordem do que construir estão no plano (B3, itens 3, 4 e 6 a 13).
+
 ## 6. Layout
 
 ### 6.1 Estrutura geral
@@ -1744,3 +1763,4 @@ tokens.
 | 2026-10-27 | v1.32 — §7.4: o filho reprovado (o último motivo no topo, L7) e o filho fechado, só leitura (B2, item 14) |
 | 2026-10-27 | v1.33 — §6.1: a janela dos atalhos (o ?) desenhada, com o interruptor dos atalhos de uma tecla; o menu da pessoa com o Minha conta e o Atalhos de teclado (B2, item 14) |
 | 2026-10-27 | v1.34 — §6.1: a busca (decisão (n) da B2: no computador, a janela de duas colunas antes de digitar e a lista com as pílulas depois; no celular, a tela cheia) e a navegação do celular revista: a lupa no lugar do ＋, a Nova NC no topo da T-04 |
+| 2026-10-27 | v1.35 — §5.3: o inventário do Figma (B2, item 15), nas páginas Átomos, Moléculas e Organismos |
