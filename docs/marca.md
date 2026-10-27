@@ -201,6 +201,14 @@ azul-violeta confunde.
 | Link, foco (`--ring`), seleção, botão principal | `#121214` | `#ECECEF` | 17,5 / 18,7 · 16,9 / 15,7 |
 | Fundo da seleção (menu, lista) | o texto a 7% sobre o card | o mesmo | — |
 
+- **A exceção: o que não se desfaz** (2026-10-27, Matthew, pensando
+  em UX). O botão **final** de um diálogo cuja ação não tem volta
+  (Excluir, Descartar, Cancelar, Concluir como Não eficaz) é vermelho
+  (`acao/destrutiva`): numa tela cinza, a cor rara avisa antes da
+  leitura. Só ali: o gatilho no "Mais" e na barra continua cinza, o foco
+  nunca começa nesse botão (o Enter não confirma o que não se desfaz) e
+  o nome do botão diz a ação, para a cor não ser o único sinal
+  (`ui-ux.md` §8.2).
 - **O link é sublinhado**, porque sem cor ele não se distingue do texto
   (e não depender só da cor é melhor para a acessibilidade).
 - **O foco** é um anel na cor do texto, com uma auréola clara dele

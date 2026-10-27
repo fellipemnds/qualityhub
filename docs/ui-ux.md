@@ -182,7 +182,7 @@ estão no `docs/marca.md` (B1) e entram aqui na B3. O contraste é conferido no 
 | `--muted` / `--muted-foreground` | Fundos secundários / texto de apoio | `slate-100` / `slate-600` |
 | `--border` | Bordas e divisórias | `slate-200` |
 | `--primary` | **Destaque**: ação principal de cada tela | o **grafite** da marca, `#121214` / `#ECECEF` (definido em 2026-10-20: sem cor de destaque, `docs/marca.md`) |
-| `--destructive` | Ações destrutivas (excluir, cancelar, reprovar) | `red-600` |
+| `--destructive` | O botão final do diálogo do que não se desfaz: excluir, descartar, cancelar, concluir como não eficaz (a exceção do `docs/marca.md`; reprovar e reabrir são reversíveis e usam o `--primary`) | `red-600` |
 | `--ring` | Contorno de foco do teclado | o grafite, como o `--primary` (2026-10-20); o link é sublinhado |
 
 **Semânticas** (nossas, adicionadas ao tema):
@@ -1500,7 +1500,7 @@ folha que sobe do rodapé, com os itens de 44 px e o Fechar.
 
 **O diálogo, uma versão só** (pergunta de Matthew, 2026-10-27: havia
 duas, a da T-07 com medidas soltas, borda e sombra, e a da T-09 com os
-tokens). Valem quatro regras, para todo diálogo (o `DialogoMotivo`, o
+tokens). Valem cinco regras, para todo diálogo (o `DialogoMotivo`, o
 `DialogoEfeito` e a confirmação simples):
 
 1. A base é a da T-09: o fundo `fundo/card`, o raio `raio/card`, o espaço
@@ -1515,7 +1515,11 @@ tokens). Valem quatro regras, para todo diálogo (o `DialogoMotivo`, o
    Não eficaz" (que reabre a investigação e a NC). Reprovar, Reabrir e
    Finalizar execução são reversíveis ou esperados: o botão é o
    primário (grafite). A cor nunca é o único sinal: o nome do botão diz
-   a ação.
+   a ação ("Cancelar a NC", nunca "OK"). É a exceção do `docs/marca.md`,
+   e vale só no botão final: o gatilho no "Mais" e na barra fica cinza.
+5. **O foco nunca começa no botão do que não se desfaz**: começa no
+   **Voltar** na confirmação simples e no campo **Motivo** no
+   `DialogoMotivo`; o Enter não confirma uma exclusão.
 
 O componente (um só, com as variantes de conteúdo) é da B3 (item 15, o
 inventário).
@@ -1699,3 +1703,4 @@ tokens.
 | 2026-10-26 | v1.28 — §7.2: a T-04 revista para o estilo das telas novas (o estado na caixinha cinza com o ponto colorido, um ícone por etapa, as pílulas, o ⚠ do prazo, a coluna Com quem e o cartão do celular em três linhas) |
 | 2026-10-27 | v1.29 — §7.16: a T-12 Setores pela decisão (m) da B2: a lista + painel da T-09, com as pessoas do setor, a zona de perigo e a recusa da RN-44 como lista do que fazer |
 | 2026-10-27 | v1.30 — §8.2: o retirar da aprovação sem confirmação, o menu "Mais" (menu no computador, folha no celular) e o texto do `DialogoMotivo`; o diálogo numa versão só, com as quatro regras (B2, item 14) |
+| 2026-10-27 | v1.31 — §3 e §8.2: o vermelho só no botão final do que não se desfaz (a exceção do `marca.md`; o reprovar sai) e a quinta regra do diálogo, o foco |
