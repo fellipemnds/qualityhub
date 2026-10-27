@@ -1484,12 +1484,51 @@ Para não perder trabalho:
 
 | Ação | Confirmação |
 |---|---|
-| Salvar, publicar, submeter, aprovar | **Nenhuma** — são reversíveis ou esperadas; confirmar tudo treina a pessoa a clicar "OK" sem ler |
+| Salvar, publicar, submeter, aprovar, retirar da aprovação | **Nenhuma** — são reversíveis ou esperadas; confirmar tudo treina a pessoa a clicar "OK" sem ler |
 | Reprovar, cancelar, reabrir | `DialogoMotivo` — motivo obrigatório |
 | Excluir rascunho | Confirmação simples ("Excluir o rascunho? Não dá pra desfazer.") |
 | Finalizar execução | `DialogoEfeito` — pede os dias até a verificação e explica que a ação fecha e a verificação é criada |
 | Concluir verificação | `DialogoEfeito` — explica o efeito do resultado escolhido (`fluxo-app.md` J7) |
 | Inativar usuário, revogar papel, desativar setor | Confirmação simples |
+
+**O menu "Mais"** (B2, item 14): guarda as ações do estado que não são o
+caminho principal: Cancelar, Retirar da aprovação, Reabrir e Excluir
+rascunho. No computador, um menu abaixo do botão, com uma linha de dica
+embaixo de cada ação (o que ela faz e se pede motivo); as que abrem
+diálogo terminam em "…". No celular, o ⋯ da barra superior abre uma
+folha que sobe do rodapé, com os itens de 44 px e o Fechar.
+
+**O diálogo, uma versão só** (pergunta de Matthew, 2026-10-27: havia
+duas, a da T-07 com medidas soltas, borda e sombra, e a da T-09 com os
+tokens). Valem quatro regras, para todo diálogo (o `DialogoMotivo`, o
+`DialogoEfeito` e a confirmação simples):
+
+1. A base é a da T-09: o fundo `fundo/card`, o raio `raio/card`, o espaço
+   `espaco/4` entre as partes, o título no estilo `Título/Seção` e o
+   texto no de apoio.
+2. Uma largura só no computador, **480 px**, com ou sem campo.
+3. **Sem borda e sem sombra**: o véu já separa o diálogo da tela. No
+   celular, o diálogo é a folha que sobe do rodapé, com os botões
+   empilhados.
+4. O botão da ação usa `acao/destrutiva` (vermelho) **só no que não se
+   desfaz**: Excluir rascunho, Descartar, Cancelar e o "Concluir como
+   Não eficaz" (que reabre a investigação e a NC). Reprovar, Reabrir e
+   Finalizar execução são reversíveis ou esperados: o botão é o
+   primário (grafite). A cor nunca é o único sinal: o nome do botão diz
+   a ação.
+
+O componente (um só, com as variantes de conteúdo) é da B3 (item 15, o
+inventário).
+
+**O `DialogoMotivo`**: o título pergunta com o código ("Cancelar a
+NC-2026-0042?"), uma frase diz o efeito, o campo **Motivo** (obrigatório,
+até 5.000 caracteres, `motivo.schema.ts`) e os botões Voltar e o da
+ação, com o nome dela ("Cancelar a NC", "Reprovar", "Reabrir a NC"). No
+celular, vira folha, com os botões empilhados. O texto de cada um:
+Cancelar, "Ela fica no histórico como cancelada e não pode ser
+reaberta"; Reprovar, "Ela volta para aberta, para <quem preenche>
+corrigir. O seu motivo aparece no topo do item até o próximo envio"
+(L7); Reabrir, "Ela volta para aberta, e o motivo fica no feed".
 
 ### 8.3 Retorno ao usuário
 
@@ -1659,3 +1698,4 @@ tokens.
 | 2026-10-26 | v1.27 — §7.13 a §7.15: a T-09, a T-10 e a T-11 numa tela só (lista + painel), a recusa da RN-43 como lista do que fazer e os pedidos de apelido; §6.1: a T-13 com a foto e o apelido, e o Minha conta no computador (decisão (l) da B2) |
 | 2026-10-26 | v1.28 — §7.2: a T-04 revista para o estilo das telas novas (o estado na caixinha cinza com o ponto colorido, um ícone por etapa, as pílulas, o ⚠ do prazo, a coluna Com quem e o cartão do celular em três linhas) |
 | 2026-10-27 | v1.29 — §7.16: a T-12 Setores pela decisão (m) da B2: a lista + painel da T-09, com as pessoas do setor, a zona de perigo e a recusa da RN-44 como lista do que fazer |
+| 2026-10-27 | v1.30 — §8.2: o retirar da aprovação sem confirmação, o menu "Mais" (menu no computador, folha no celular) e o texto do `DialogoMotivo`; o diálogo numa versão só, com as quatro regras (B2, item 14) |
