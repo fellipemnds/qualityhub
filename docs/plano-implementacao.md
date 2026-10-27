@@ -580,3 +580,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-27 | v1.59 — B2, item 14: o menu "Mais", o `DialogoMotivo`, o diálogo numa versão só, os estados que faltavam, a janela dos atalhos e a busca (decisão (n), com a navegação do celular revista: a lupa no lugar do ＋) |
 | 2026-10-27 | v1.60 — B2: o item 14 fechado (o G1 sem linha vazia) e o item 15 feito (o inventário nas páginas Átomos, Moléculas e Organismos; na B3, o item 4 com os átomos soltos) |
 | 2026-10-27 | v1.61 — B2: o item 16 feito (as rotas que as telas pedem, `esquema-backend.md` §6.7 e §6.8); falta o `/abrir-pr` |
+| 2026-10-27 | **B2 concluída** (branch `fase/b2-wireframes`, PR #13): os wireframes de todas as telas nos dois tamanhos até o G1, com as decisões de desenho (a) a (n), o diálogo numa versão só, o inventário do sistema de design e as rotas que as telas pedem; a B3 aberta na `fase/b3-fundacoes-e-mockups`, só com o registro (o `/comecar-fase` fica para outro dia) |
