@@ -4,8 +4,8 @@ hostname: Nortetel
 ## Sistema e ferramentas
 ubuntu: Ubuntu 26.04.1 LTS
 nvm: 0.40.7
-nvm (node padrão): v24.20.0
-node: v24.20.0
+nvm (node padrão): v24.22.1
+node: v24.22.1
 npm: 12.0.2
 git: git version 2.53.0
 docker: Docker version 29.9.2, build a82e528
@@ -25,7 +25,7 @@ banco (docker): postgres:17-alpine
 migrations: em dia
 
 ## VS Code — extensões no WSL
-anthropic.claude-code@2.1.310
+anthropic.claude-code@2.1.311
 biomejs.biome@3.8.1
 eamodio.gitlens@19.4.0
 github.vscode-github-actions@0.32.3
@@ -40,7 +40,7 @@ ritwickdey.liveserver@5.7.10
 usernamehw.errorlens@3.30.0
 
 ## VS Code — extensões no Windows
-anthropic.claude-code@2.1.310
+anthropic.claude-code@2.1.311
 biomejs.biome@3.8.1
 eamodio.gitlens@19.4.0
 github.vscode-github-actions@0.32.3
