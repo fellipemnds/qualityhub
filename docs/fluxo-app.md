@@ -83,11 +83,11 @@ flowchart TD
 | T-06 | Detalhe da NC | `/nc/:id` | Todos com papel de negócio | ✅ |
 | T-07 | Detalhe do item filho | `/classificacoes/:id`, `/contencoes/:id`, `/investigacoes/:id`, `/acoes-corretivas/:id`, `/verificacoes/:id` | Todos com papel de negócio | ✅ (a Investigação, uma etapa por tela, decisão (i) da B2) |
 | T-08 | Relatórios | `/relatorios` | `GERENTE` | ✅ (a desenhar) |
-| T-09 | Usuários | `/admin/usuarios` | `ADMIN` | ✅ (a desenhar) |
-| T-10 | Detalhe do usuário | `/admin/usuarios/:id` | `ADMIN` | ✅ (a desenhar) |
-| T-11 | Novo usuário | `/admin/usuarios/novo` | `ADMIN` | ✅ (a desenhar) |
+| T-09 | Usuários | `/admin/usuarios` | `ADMIN` | ✅ lista + painel (decisão (l)) |
+| T-10 | Detalhe do usuário | `/admin/usuarios/:id` | `ADMIN` | ✅ o painel da T-09 (decisão (l)) |
+| T-11 | Novo usuário | `/admin/usuarios/novo` | `ADMIN` | ✅ o painel da T-09 (decisão (l)) |
 | T-12 | Setores | `/admin/setores` | `ADMIN` | ✅ (a desenhar) |
-| T-13 | Eu | `/eu` | Todos | ✅ só no celular (no computador, o menu da pessoa faz o papel) |
+| T-13 | Eu | `/eu` | Todos | ✅ no celular, a aba Eu; no computador, **Minha conta**, aberta pelo menu da pessoa (decisão (l)) |
 
 "Papel de negócio" = `VISUALIZADOR`, `EDITOR`, `APROVADOR` ou `GERENTE`.
 Um `ADMIN` só com esse papel não vê NCs (PRD §8).
@@ -115,6 +115,7 @@ saídas ficam no **menu da pessoa**, que abre do fim da doca:
 | Tela inicial | Quem acessa mais de uma tela inicial possível | Preferência (§3) |
 | Atalhos de teclado | Todos (só no computador) | Liga e desliga os atalhos de uma tecla (`ui-ux.md` §6.1, WCAG 2.1.4); a escolha fica no navegador |
 | Sair | Todos | |
+| Minha conta | Todos | No computador, abre a T-13: a foto, o apelido (RN-52), a Tela inicial e a sessão (decisão (l)) |
 | Sair de todos os aparelhos | Todos | No menu da pessoa, embaixo do Sair: encerra as sessões abertas em outros computadores (`POST /auth/sair-de-todos`, pronto desde a A4; Matthew, 2026-10-21) |
 
 ---
@@ -396,14 +397,18 @@ linha **"em dia"** lista só os tipos que podem chegar a ela.
 em amarelo (F3). "Nunca só cor": o destaque também leva texto
 ("Vencido há 2 dias", "Vence em 5 dias").
 
+**O aviso do apelido** (RN-52): a resposta do ADMIN aparece uma vez no topo
+("O Rui aprovou o seu apelido", com ✕), fora das gavetas e da contagem.
+
 **Vazio, em dois casos:** **em dia** ("Você está em dia") e **primeiro
 dia** ("Aqui aparece o que espera por você", com os tipos explicados), os
 dois com o atalho para a lista de NCs.
 
 ### T-04 Lista de NCs
 
-- Colunas: código, título, etapa + indicadores, setor, origem,
-  classificação, data de detecção.
+- Colunas: código, título, estado, etapa + indicadores, setor, **com quem**
+  (os responsáveis, revisão de 2026-10-26), data de detecção; origem e
+  classificação nos filtros.
 - Visões: Todas · Minhas · Vencidas (abas no computador, controle
   segmentado no celular; decisão (f) da B2, `ui-ux.md` §7.2).
 - Filtros: estado, origem, classificação, período, **etapa**, setor,
@@ -485,11 +490,18 @@ celular, ou começa nas Pendências lá.
 
 ### T-09 a T-12 Administração
 
-- **T-09 Usuários**: lista com busca por nome/e-mail, filtro ativo/inativo.
-- **T-10 Detalhe**: dados, papéis (conceder/revogar), setor, inativar,
-  gerar novo convite. A recusa da RN-43 mostra a lista de itens a
-  reatribuir.
-- **T-11 Novo usuário**: formulário → mostra o link de convite para copiar.
+- **T-09 Usuários, T-10 e T-11 numa tela só** (decisão (l) da B2, `ui-ux.md`
+  §7.13): no computador, a **lista** à esquerda e o **painel** à direita, que
+  mostra a pessoa escolhida (T-10) ou o Novo usuário (T-11) e, depois de
+  criar, o convite. Os endereços continuam e só abrem o painel certo. No
+  celular, lista → a pessoa → o Novo usuário → o convite, em telas.
+  Trocar de pessoa com edição não salva pergunta antes; sair do convite sem
+  copiar o link, também.
+- **A recusa da RN-43** é uma lista do que fazer: os itens com o **Trocar
+  aprovador** (para quem é gerente) e o andamento "0 de 3".
+- **Os pedidos de apelido** (RN-52) aparecem no topo da lista ("2 pedidos de
+  apelido") e no painel da pessoa (Aprovar, Recusar); o **Mais** tem
+  "Remover a foto" (RN-53) e "Inativar".
 - **T-12 Setores**: lista, criar, renomear, desativar, reativar.
 
 ---
@@ -611,3 +623,5 @@ Com Matthew, em 2026-09-24.
 | 2026-10-26 | v1.14 — T-03: a tela de chegada (decisão (j) da B2): o cartão do mais urgente, as gavetas por grupo conforme os papéis, o "em dia", Suas NCs no computador e o vazio em dois casos |
 | 2026-10-26 | v1.15 — §2.1: o "Atalhos de teclado" no menu da pessoa (o conjunto curto, `ui-ux.md` §6.1) |
 | 2026-10-26 | v1.16 — T-08: a régua do período, o "O que mudou", a comparação com o período anterior e a pergunta da tela inicial do gerente no celular (decisão (k) da B2) |
+| 2026-10-26 | v1.17 — T-09 a T-11 numa tela só (lista + painel), a recusa da RN-43 como lista do que fazer, os pedidos de apelido; T-13 também no computador (Minha conta); o aviso do apelido na T-03 (decisão (l) da B2) |
+| 2026-10-26 | v1.18 — T-04: a coluna Com quem (os responsáveis), na revisão do estilo |

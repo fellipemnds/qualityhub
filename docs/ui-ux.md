@@ -426,7 +426,10 @@ a T-03 não tem a barra superior; a saudação faz o papel do título
    todos), abre uma escolha rápida; e, quando a tela não deixar óbvio, o
    botão leva o rótulo ("＋ Nova NC"). A escolha rápida só se constrói
    com o segundo módulo.
-6. **A tela Eu** (T-13, só no celular) substitui o avatar e o menu ☰:
+6. **A tela Eu** (T-13; no computador, **Minha conta**, aberta pelo menu da
+   pessoa, decisão (l)) traz em cima a **foto** (o botão da câmera; Trocar e
+   Remover, RN-53) e **Como chamar você** (o apelido e o pedido pendente,
+   RN-52). No celular, substitui o avatar e o menu ☰:
    perfil (nome, e-mail, papéis), **Conta** (Tela inicial), **Gestão**
    (Relatórios para `GERENTE`; Usuários e Setores para `ADMIN`; só para
    quem tem o papel), **Sessão** (Sair, Sair de todos os aparelhos) e a
@@ -606,41 +609,49 @@ com a folha de filtros (a B, que ficou como opção do computador). O quadro
 (kanban) ficou de fora: arrastar o cartão muda a etapa, e aqui a etapa é
 calculada (`fluxo-app.md` §4), ninguém a move.
 
-**Computador:** a tabela plana, com uma pílula por coluna onde o valor é
-uma categoria (o estado e o setor), e texto simples no resto.
+**Revista em 2026-10-26** para o estilo das telas novas (T-03, T-08, T-09),
+a pedido de Matthew ("ficou meio dissonante"); a estrutura da decisão (f)
+continua.
+
+**Computador:** a tabela plana, com o cabeçalho no fundo leve das gavetas.
 
 ```
 Não Conformidades                                           [＋ Nova NC]
-38 abertas · 3 com prazo vencido
-Todas   Minhas   Vencidas
-[⌕ código ou título ] [Estado ⌄] [Etapa ⌄] [Setor ⌄] [Mais filtros ⌄] [Agrupar: nenhum ⌄]
+38 abertas · ⚠ 3 com prazo vencido
+Todas 38   Minhas 9   Vencidas 3
+(⌕ código ou título) (Estado ⌄) (Etapa ⌄) (Setor ⌄) (Mais filtros ⌄)      ≡ Agrupar: nenhum ⌄
 
- Código        Título                 Estado       Etapa               Setor         Detecção
- NC-2026-0045  Rótulo ilegível        (● Aberta)   Aguardando classif. (Expedição)   22/09/2026
- NC-2026-0042  Vazamento na linha 3   (● Aberta)   Em investigação ⚠   (Produção)    15/09/2026
- NC-2026-0038  Atraso na calibração   (⧗ Em apr.)  Aguardando aprov.   (Metrologia)  02/09/2026
- Mostrando 6 de 38                                                 [ Carregar mais ]
+ Código        Título                   Estado            Etapa                        Setor         Com quem  Detecção
+ NC-2026-0045  Rótulo ilegível          (● Aberta)        🏷 Aguardando classificação   (Expedição)   (CR)      22/09/2026
+ NC-2026-0042  Vazamento na linha 3     (● Aberta)        🔍 Em investigação            (Produção)    (FS)(CR)  15/09/2026
+               ⚠ AC vencida há 2 dias
+ NC-2026-0038  Atraso na calibração     (● Em aprovação)  🕒 Aguardando aprovação…      (Metrologia)  (FS)      02/09/2026
+ Mostrando 6 de 38                                                                    ( Carregar mais )
 ```
 
-**Celular:** a linha rica (o código e o título, o estado, a etapa e o
-setor) e os filtros em pílulas que rolam para o lado.
+**Celular:** um cartão por NC, em três linhas justas (12 px de respiro, 2 px
+entre as linhas), todas na mesma margem.
 
 ```
 ┌────────────────────────────────┐
-│ Não Conformidades              │
-│ 38 abertas · 3 com prazo venc. │
-│ [⌕ código ou título          ] │
-│ [ Todas | Minhas | Vencidas  ] │
-│ (Etapa ⌄)(Estado ⌄)(Setor ⌄)(… │
-│ NC-2026-0045 · Rótulo…  ●Aberta│
-│ Aguardando classif. · Expedição│
-│ …                              │
-│ Mostrando 5 de 38              │
-│ [        Carregar mais       ] │
-│ ╭────────────────────╮ ●       │
-│ │ Pend.   NCs   Eu   │ ＋      │
+│ NC-2026-0042 · Produção (●Aberta)
+│ Vazamento na linha 3           │
+│ ⚠ AC vencida há 2 dias         │
+│ 🔍 Em investigação     (FS)(CR) │
 └────────────────────────────────┘
 ```
+
+- **O estado** é a **caixinha cinza com o ponto na cor do estado** (Aberta,
+  Em aprovação, Fechada), nos dois tamanhos.
+- **A etapa** tem **um ícone por etapa** (etiqueta: classificação; lupa:
+  investigação; escudo: contenção; bandeira: pronta para fechamento; relógio:
+  aguardando aprovação; círculo com ✓: fechada). Sem barra de progresso: a
+  etapa é a primeira regra que vale, não uma sequência (`fluxo-app.md` §4).
+- **O prazo vencido** vem com o ⚠ vermelho e o texto, embaixo do título e na
+  frase do topo.
+- **Com quem:** os avatares dos responsáveis da NC (o traço Humana da marca).
+- **Os filtros e a busca** são pílulas arredondadas; as visões ganham a
+  contagem.
 
 1. **A visão e o filtro têm caras diferentes.** As visões (Todas · Minhas
    · Vencidas) são abas no computador e um controle segmentado no
@@ -1334,88 +1345,69 @@ NCs já filtrada** (J12). Componentes: o `Tooltip` e o `Chart` do shadcn
 (sobre o **Recharts**: biblioteca nova, entra no changelog com o código,
 §1), as barras em HTML simples, e a régua, que é nossa.
 
-### 7.13 T-09 Usuários
+### 7.13 T-09 Usuários (com a T-10 e a T-11)
+
+Decisão (l) da B2 (2026-10-26): as três telas viram **uma**, a A (lista +
+painel fixo), desenhada pelo Claude depois de duas buscas no Mobbin
+recusadas. Só o `ADMIN`.
+
+**Computador:**
 
 ```
-Usuários                                          [ ＋ Novo usuário ]
-[🔍 nome ou e-mail        ] [ Situação: Ativos ▾ ]
-
- Nome          E-mail                 Setor       Papéis              Situação
- Beltrana      beltrana@empresa.com   Qualidade   Aprovador, Gerente  ● Ativa
- Fulana        fulana@empresa.com     Produção    Editor              ● Ativa
- Ciclano       ciclano@empresa.com    Expedição   Editor              ○ Inativa
-                                                   [ Carregar mais ]
+Usuários       [＋ Novo usuário] │ (BL) Beltrana Lima ● Ativa     [Gerar novo convite] [Mais ▾]
+24 ativos · 3 inativos           │      beltrana.lima@empresa.com.br · é o login, não muda
+[🏷 2 pedidos de apelido   Ver]   │ ┌ 🏷 A Beltrana pediu para ser chamada de "Bel"  [Recusar] [Aprovar] ┐
+[🔍 Nome ou e-mail          ]     │ Dados      [ Nome: Beltrana Lima ] [ Setor: Qualidade ▾ ]
+(Todos) (Ativos) (Inativos)      │ 🛡 Papéis   Ligar ou desligar vale na hora. Desligar pede confirmação.
+┌──────────────────────────────┐ │   Visualizador · Vê as NCs, sem editar                  ○
+│(BL) Beltrana Lima  Pede: Bel │ │   Aprovador · Classifica, aprova e verifica            ●
+│(CR) Ciclano Reis             │ │   ...
+│(PN) Paulo Neves     ○ Inativo│ │ 🕒 Em andamento com ela: aprovadora de 3 itens
+└──────────────────────────────┘ │   NC-2026-0042 · Vazamento na linha 3   ● Aberta   ›
+Mostrando 20 de 27               │
 ```
 
-Só o `ADMIN` (menu "Administração"). A busca procura no nome e no
-e-mail; a situação filtra ativos, inativos ou todos. A linha inteira abre
-o detalhe (T-10).
+1. **A lista** (400 px): a busca, as pílulas Todos · Ativos · Inativos, as
+   pessoas com o avatar, o setor e os papéis; a escolhida com o fundo de
+   seleção. O aviso dos **pedidos de apelido** fica no topo e filtra quem
+   tem pedido (RN-52).
+2. **O painel da pessoa** (a T-10): o cabeçalho (avatar, nome, situação,
+   e-mail), **Gerar novo convite** e o **Mais** (Remover a foto, RN-53;
+   Inativar ou Reativar); os **Dados** (nome e setor; ao editar, aparece a
+   faixa "Você mudou… · Desfazer · Salvar"); os **Papéis** com
+   **interruptor**, cada um com a frase do que faz (valem na hora; desligar
+   pede confirmação); e **Em andamento com ela**, os itens de que a pessoa é
+   aprovadora, que explicam a RN-43 antes de alguém tentar inativar.
+3. **A recusa da RN-43** é uma lista do que fazer, no topo do painel:
+   "Antes de inativar a Beltrana, troque o aprovador de 3 itens", os itens
+   **dentro do aviso** com o **Trocar aprovador** (sem o papel de gerente,
+   "Ver o item"), e o andamento "0 de 3 resolvidos". O vermelho fica só no
+   aviso. As outras recusas (o último `ADMIN`, o setor desativado) usam o
+   mesmo lugar.
+4. **O Novo usuário** (a T-11) abre no mesmo painel: nome, e-mail ("é o
+   login; depois não muda"), setor (só os ativos) e os papéis desligados
+   ("escolha ao menos um"); **Cancelar · Criar e gerar convite**. Criada a
+   pessoa, o painel mostra o **convite**: o link, **Copiar link** e o aviso
+   de que ele aparece só agora.
+5. **Os diálogos:** trocar de pessoa com edição não salva pergunta
+   "Descartar as alterações?" (**Continuar editando · Descartar**); sair do
+   convite sem copiar o link pergunta o mesmo, com o texto do link.
+
+**Celular:** lista → a pessoa (o avatar grande, os papéis, os itens, e o
+**Gerar novo convite** fixo no rodapé) → o Novo usuário → o convite
+(**Pronto** no rodapé). O pedido de apelido aparece embaixo do nome, com
+**Recusar** e **Aprovar** lado a lado.
 
 ### 7.14 T-10 Detalhe do usuário
 
-```
-Usuários › Beltrana                                       ● Ativa
-[ Salvar ]  [ Gerar novo convite ]  [ Mais ▾ ]  (Mais: Inativar)
-
-DADOS
-  Nome    [ Beltrana Souza          ]
-  E-mail  beltrana@empresa.com   (é o login; não muda)
-  Setor   [ Qualidade             ▾ ]
-PAPÉIS
-  Aprovador ✕   Gerente ✕   [ ＋ Conceder papel ▾ ]
-```
-
-Conceder e revogar papel valem na hora, um por vez (confirmação simples
-para revogar, §8.2). **Gerar novo convite** mostra o link para copiar e
-até quando vale; ele também serve para redefinir a senha. Inativa, a
-pessoa mostra **Reativar** no lugar de Inativar.
-
-A recusa da RN-43 aparece no topo, com a lista do que resolver:
-
-```
-┌────────────────────────────────────────────────────────────────┐
-│ Não dá para inativar a Beltrana: ela é aprovadora de 3 itens   │
-│ em andamento. Um gerente troca o aprovador deles, e você tenta  │
-│ de novo.                                                        │
-│  NC-2026-0042 · Vazamento na linha 3          ● Aberta       →  │
-│  IV-2026-0007 · A junta resseca antes…        ⧗ Em aprovação →  │
-│  CT-2026-0019 · Isolar o lote 42…              ● Aberta       →  │
-└────────────────────────────────────────────────────────────────┘
-```
-
-As outras recusas usam o mesmo lugar: o último `ADMIN` ativo ("Não dá
-para inativar o último administrador") e a pessoa num setor desativado
-("Mude o setor antes de reativar", RN-44).
+Virou o painel da T-09 (§7.13, decisão (l)). O endereço
+`/admin/usuarios/:id` continua e abre o painel da pessoa.
 
 ### 7.15 T-11 Novo usuário
 
-```
-Usuários › Novo usuário
-
-  Nome    [                          ]
-  E-mail  [                          ]
-  Setor   [ escolha               ▾ ]
-  Papéis  [ ] Visualizador — vê as NCs, sem editar
-          [ ] Editor       — registra e trabalha nas NCs
-          [ ] Aprovador    — classifica, aprova e verifica
-          [ ] Gerente      — cancela, reatribui, relatórios
-          [ ] Administrador — contas, papéis e setores
-  [ Cancelar ]                          [ Criar e gerar convite ]
-```
-
-O setor só oferece os ativos; ao menos um papel. Depois de criar, a
-mesma tela mostra o convite:
-
-```
-┌────────────────────────────────────────────────────────────┐
-│ ✓ Fulana foi criada. Envie este link a ela (vale 72 h):    │
-│ [ https://…/definir-senha?token=…           ] [ Copiar ]   │
-│ O link aparece só agora. Depois, só gerando outro.          │
-│                              [ Ir para o usuário ]          │
-└────────────────────────────────────────────────────────────┘
-```
-
-Sem e-mail no MVP: o ADMIN envia o link por fora (J11).
+Virou o painel da T-09 (§7.13, decisão (l)). O endereço
+`/admin/usuarios/novo` continua e abre o Novo usuário no painel. Sem e-mail
+no MVP: o ADMIN envia o link por fora (J11).
 
 ### 7.16 T-12 Setores
 
@@ -1640,3 +1632,5 @@ tokens.
 | 2026-10-26 | v1.24 — §7.1: a T-03 Minhas pendências como tela de chegada (decisão (j) da B2, a C2): a saudação, o cartão do mais urgente, as gavetinhas do "Para você hoje" com o "em dia", Suas NCs no computador, o vazio em dois casos e os ícones do lucide; no celular, sem a barra de cima |
 | 2026-10-26 | v1.25 — §6.1: os atalhos de teclado, um conjunto curto (Ctrl K, ?, J/K, Enter, Esc, G+P/N), que não age em campo de texto e pode ser desligado (WCAG 2.1.4); §11: fora do MVP fica só o que passa disso |
 | 2026-10-26 | v1.26 — §7.12: a T-08 Relatórios (decisão (k) da B2, a C): a régua do período, o "o que mudou", as colunas sem caixa e os gráficos sem cor; §9: a dica do ícone sozinho, no mouse e no foco |
+| 2026-10-26 | v1.27 — §7.13 a §7.15: a T-09, a T-10 e a T-11 numa tela só (lista + painel), a recusa da RN-43 como lista do que fazer e os pedidos de apelido; §6.1: a T-13 com a foto e o apelido, e o Minha conta no computador (decisão (l) da B2) |
+| 2026-10-26 | v1.28 — §7.2: a T-04 revista para o estilo das telas novas (o estado na caixinha cinza com o ponto colorido, um ícone por etapa, as pílulas, o ⚠ do prazo, a coluna Com quem e o cartão do celular em três linhas) |

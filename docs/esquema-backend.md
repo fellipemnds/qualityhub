@@ -208,6 +208,26 @@ dá ao aprovador da ação as duas funções na Verificação gerada
 excludentes, ela passa a nascer **só com o colaborador**: sem portão, o
 aprovador nela não serve para nada.
 
+### M7 — `Usuario`: apelido e foto (nova, C5)
+
+Decidida na B2 (decisão (l), PRD Q27, RN-52 e RN-53), entra na C5 com os
+anexos (a foto usa o mesmo armazenamento da M3):
+
+| Tabela | Campo | Observações |
+|---|---|---|
+| `Usuario` | `apelido String?` | O aprovado. Teto curto (ex.: 40); aparece onde a pessoa é chamada |
+| `Usuario` | `apelidoPedido String?` | O pedido pendente; nulo sem pedido. Aprovar copia para o `apelido`; recusar e cancelar limpam |
+| `Usuario` | `apelidoResposta` (`APROVADO`/`RECUSADO`, nulo) + `apelidoRespostaVistaEm DateTime?` | O aviso de uma vez na T-03: aparece enquanto `vistaEm` for nulo |
+| `Usuario` | `foto` (a chave no armazenamento, nula) | Sem foto, o avatar gerado pelo nome. Imagem só (JPEG, PNG ou WebP), tamanho com teto, validada pelo conteúdo como os anexos |
+
+Rotas novas: `POST /auth/eu/apelido` (pedir) e `DELETE /auth/eu/apelido`
+(cancelar), da própria pessoa; `POST /usuarios/:id/apelido/aprovar` e
+`/recusar`, do `ADMIN`; `PUT /auth/eu/foto` e `DELETE /auth/eu/foto`, da
+própria pessoa; `DELETE /usuarios/:id/foto`, do `ADMIN`; no
+`GET /usuarios`, o filtro "com pedido de apelido" e o total de pedidos.
+Tudo auditado. O `euRespostaSchema` e a resposta do usuário ganham o
+apelido e a foto.
+
 ### M5 — Limpeza
 
 Apagar os modelos antigos `Anexo` e `Comentario` que estão **comentados**
@@ -642,3 +662,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-26 | v1.60 — M6 (C2): `Hipotese.comoVerificar` e os dois requisitos novos do envio da investigação (PRD Q26); a Verificação nasce só com o colaborador (Q22) |
 | 2026-10-26 | v1.61 — §4.4: o que a T-03 nova pede (decisão (j) da B2): o cartão e as contagens saem da própria lista; os responsáveis do cartão, a decidir na C3 |
 | 2026-10-26 | v1.62 — §6, relatórios: o que a T-08 nova pede (o período anterior para a comparação e o "O que mudou" no front), a decidir na C7 |
+| 2026-10-26 | v1.63 — M7 (C5): o apelido com o pedido e a resposta, e a foto, com as rotas (decisão (l) da B2, PRD RN-52 e RN-53) |

@@ -330,3 +330,11 @@ Claude tira da estética de cada uma (a base continua o **Investment**, de
   o cartão da **última atualização**, com o estado ("No prazo") e o texto;
   o gráfico de progresso numa coluna lateral com abas; a atividade
   embaixo.
+
+## 2026-10-26 · Usuários numa tela só (decisão (l)): referências recusadas
+
+Duas buscas no Mobbin (Mintlify, Plain, Bloom, Sprig, Exa, Toggl,
+Gumloop; Pipedrive, Melio, Supabase, Whop, Airwallex, OpenPhone) e Matthew:
+*"não gostei muito delas… quer tentar criar algo e eu avalio?"*. A A
+(lista + painel) foi desenhada pelo Claude no estilo já firmado na T-03 e
+na T-08, sem referência de fora. Nenhuma entrou na coleção.
