@@ -480,7 +480,7 @@ a lista dela filtra por `acaoCorretivaId`. A Ação Corretiva tem ainda
 | ＋ | `POST /nc/:id/mencoes/vistas` | Marca as menções à pessoa nesta NC como vistas (ao abrir o feed) |
 | ＋ | `GET /registros/:id/anexos` · `POST /registros/:id/anexos` | Lista / envia (multipart) |
 | ＋ | `GET /anexos/:id` · `DELETE /anexos/:id` | Baixa / remove (TRD §8.3) |
-| ＋ | `GET /registros/busca?q=` | Busca por código — alimenta o `#` do feed. Só itens publicados (RN-11) |
+| ＋ | `GET /registros/busca?q=` | Busca por código — alimenta o `#` do feed. Só itens publicados (RN-11). **A busca geral** (decisão (n) da B2) pede também o texto (o título da NC, a descrição dos filhos), o filtro `?tipo=` das pílulas e a contagem por tipo: o índice e a forma da resposta decididos na C4 |
 
 ### 6.6 Pendências, relatórios, sistema
 

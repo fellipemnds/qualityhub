@@ -100,7 +100,7 @@ Prefixos reais dos códigos: `NC`, `CL` (Classificação), `CT` (Contenção),
 ### 2.1 Menu principal
 
 Aparecem só os itens que o papel permite. No celular, eles se dividem
-entre a barra flutuante (Pendências, NCs, Eu) e a tela **Eu** (T-13:
+entre a barra flutuante (Pendências, NCs, Eu, com a **lupa** da busca ao lado; decisão (n)) e a tela **Eu** (T-13:
 Tela inicial, a Gestão para quem tem o papel e as duas saídas;
 `ui-ux.md` §6.1). No computador, os destinos ficam na **doca** flutuante
 embaixo, com o **Buscar** em primeiro (Ctrl K), e Tela inicial e as
@@ -416,7 +416,7 @@ dois com o atalho para a lista de NCs.
   "só as minhas" já existe (o `minhas` do `nc.schema.ts`) e virou a visão
   Minhas. Agrupar por etapa, opcional, só no computador.
 - Busca por código ou por palavra no título.
-- Botão **Nova NC** para `EDITOR`/`GERENTE`.
+- Botão **Nova NC** para `EDITOR`/`GERENTE` (no celular, no topo da tela, no lugar do ＋ flutuante; decisão (n) da B2).
 - No celular, vira uma lista de linhas ricas (código, título, estado,
   etapa e setor), com os filtros em pílulas que abrem uma folha.
 
@@ -626,3 +626,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-26 | v1.17 — T-09 a T-11 numa tela só (lista + painel), a recusa da RN-43 como lista do que fazer, os pedidos de apelido; T-13 também no computador (Minha conta); o aviso do apelido na T-03 (decisão (l) da B2) |
 | 2026-10-26 | v1.18 — T-04: a coluna Com quem (os responsáveis), na revisão do estilo |
 | 2026-10-27 | v1.19 — T-12 (decisão (m)): lista + painel como a T-09, com as pessoas do setor e a recusa da RN-44 como lista do que fazer |
+| 2026-10-27 | v1.20 — §2.1 e T-04: a lupa da busca na barra do celular, no lugar do ＋; a Nova NC no topo da T-04 (decisão (n)) |

@@ -350,3 +350,20 @@ Matthew: *"a tabela do Miro com as abas e a página de detalhe do Grok"*.
   o detalhe do time em blocos: os dados com o Editar, os membros num bloco
   próprio e a **zona de perigo** separada para a ação que não se desfaz
   fácil (o nosso Desativar).
+
+## 2026-10-27 · Mintlify, ClickUp e o próprio Mobbin (a busca, decisão (n))
+
+Matthew: *"Mintlify e ClickUp, e inclusive a pesquisa do próprio Mobbin
+é boa"*.
+
+- **Mintlify · a busca do ⌘K** (https://mobbin.com/screens/7c7ad31f-9dfe-4be7-83d7-6002fe31d4d0):
+  a janela enxuta, o "Esc" no campo, os grupos com o título pequeno, uma
+  linha de contexto embaixo de cada resultado e o rodapé que ensina as
+  teclas (selecionar, abrir).
+- **ClickUp · a busca no celular** (https://mobbin.com/screens/b86be07c-0f16-46c4-bd1b-2d46b8a83390):
+  a folha cheia com o campo e o Cancelar, as abas por tipo, as pílulas de
+  filtro ("Assigned to me") e os recentes com o ícone do estado.
+- **Mobbin · a busca** (https://mobbin.com/screens/f98fab0b-6e73-4ee4-80a3-eb653586a481,
+  ao fundo, atrás do diálogo): antes de digitar, a busca abre um painel
+  largo com **colunas de atalhos** (Categorias, Telas, Elementos, Fluxos):
+  o que dá para procurar já aparece, sem a pessoa adivinhar.

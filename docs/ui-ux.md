@@ -388,12 +388,34 @@ celular.
    na largura mínima do computador (1024 px). Quando passar disso, os
    módulos viram um item só, com um seletor, como no celular.
 
+**A busca** (decisão (n) da B2, 2026-10-27; referências Mintlify,
+ClickUp e o próprio Mobbin). Procura pelo código e pelo texto (o título
+da NC, a descrição dos filhos), só nos itens publicados (RN-11).
+
+- **No computador**, o Buscar da doca e o Ctrl K abrem uma janela de
+  760 px no centro. **Antes de digitar**, duas colunas: os **Recentes**
+  à esquerda (itens e buscas, guardados no navegador; é onde o ↑↓ anda)
+  e, à direita, o **Procurar em** (os seis tipos: escolher um limita a
+  busca) e o **Ir para** (Pendências e NCs, com o G P e o G N;
+  Relatórios). **Com resultados**, uma lista só, em grupos (Itens, NCs),
+  cada um com o código, o título ou o começo da descrição, o trecho que
+  bateu embaixo e o estado; as **pílulas de tipo** com a contagem ficam
+  embaixo do campo. O rodapé ensina as teclas (↑↓ mover, ↵ abrir, Esc
+  fechar) e diz o total.
+- **No celular**, a lupa da barra abre a busca em **tela cheia**: o
+  campo com o ✕ e o Cancelar, as mesmas pílulas e a lista; antes de
+  digitar, os recentes.
+- **O vazio:** "Nada com “<busca>”. Procure pelo código (NC-2026-0042)
+  ou por outra palavra."
+
+
 As alternativas (o trilho estreito à esquerda, colado ou flutuante, e o
 trilho com uma barra fina no topo) estão na mesma seção do Figma, como
 registro; o componente do trilho ficou lá, como "não escolhido".
 
-**Celular** (U2, decidida em 2026-10-22, B2): barra superior com o
-título + **barra flutuante** com três abas e o **＋** ao lado. Exceção:
+**Celular** (U2, decidida em 2026-10-22, B2; **revista na decisão (n)**,
+2026-10-27: a lupa no lugar do ＋): barra superior com o título +
+**barra flutuante** com três abas e a **lupa** ao lado. Exceção:
 a T-03 não tem a barra superior; a saudação faz o papel do título
 (decisão (j), §7.1):
 
@@ -404,8 +426,8 @@ a T-03 não tem a barra superior; a saudação faz o papel do título
 │                        │
 │    conteúdo (1 coluna) │
 │                        │
-│ ╭──────────────────╮ ● │
-│ │ Pend.  NCs   Eu  │ ＋│
+│ ╭──────────────────╮ ○ │
+│ │ Pend.  NCs   Eu  │ ⌕ │
 │ ╰──────────────────╯   │
 └────────────────────────┘
 ```
@@ -414,18 +436,18 @@ a T-03 não tem a barra superior; a saudação faz o papel do título
    flutuante, sem a faixa sólida no rodapé, acima da área do gesto do
    iPhone, com toque de 44 px no mínimo por aba e espaço embaixo da
    lista para o último item não ficar escondido.
-2. **O ＋ ao lado da barra**, na mesma linha (variante A), em grafite
-   como o botão primário (sem cor de destaque, `docs/marca.md`).
-3. **A barra e o ＋ só nas três telas raiz.** Nas telas internas (o
+2. **A lupa ao lado da barra**, na mesma linha, clara como a barra (é
+   navegação, não a ação da tela): abre a busca em tela cheia (abaixo,
+   "A busca"). Até a decisão (n), era o ＋ da Nova NC.
+3. **A barra e a lupa só nas três telas raiz.** Nas telas internas (o
    Detalhe da NC, os filhos, a Nova NC) eles somem e fica a seta de
    voltar no topo; assim não brigam com a barra de ações fixa da Nova NC.
-4. **Na tela Eu, o ＋ sai e a barra cresce** até a largura toda (16 px
+4. **Na tela Eu, a lupa sai e a barra cresce** até a largura toda (16 px
    de margem), com uma transição curta.
-5. **O ＋ cria a coisa principal da tela.** Hoje é sempre Nova NC. Com
-   outros módulos, cria no módulo atual; nas Pendências (que juntam
-   todos), abre uma escolha rápida; e, quando a tela não deixar óbvio, o
-   botão leva o rótulo ("＋ Nova NC"). A escolha rápida só se constrói
-   com o segundo módulo.
+5. **A Nova NC fica na tela de NCs** (T-04), no topo à direita, com o
+   rótulo ("＋ Nova NC"), só para `EDITOR` e `GERENTE`, como no
+   computador (decisão (n), Matthew: "o botão de criação da NC fica na
+   tela de NCs"). Com outros módulos, cada um cria na sua lista.
 6. **A tela Eu** (T-13; no computador, **Minha conta**, aberta pelo menu da
    pessoa, decisão (l)) traz em cima a **foto** (o botão da câmera; Trocar e
    Remover, RN-53) e **Como chamar você** (o apelido e o pedido pendente,
@@ -1671,7 +1693,7 @@ Com Matthew, em 2026-09-24 (além das da §1).
 | # | Pergunta | Decisão |
 |---|---|---|
 | **U1** | Textos dos botões e das atribuições | **"Enviar para aprovação"** e **"Responsável"** na tela; código e banco mantêm os nomes atuais → §10.2 |
-| **U2** | Navegação no celular | **Barra flutuante** com Pendências, NCs e Eu, e o ＋ Nova NC ao lado; a tela Eu no lugar do menu (revista em 2026-10-22, B2) → §6.1 |
+| **U2** | Navegação no celular | **Barra flutuante** com Pendências, NCs e Eu, e a lupa (a busca) ao lado; a Nova NC no topo da T-04; a tela Eu no lugar do menu (revista em 2026-10-22, B2, e na decisão (n), 2026-10-27) → §6.1 |
 | **U3** | Fonte | **Figtree** (B1, 2026-10-13); sempre servida pelo nosso servidor; `tabular-nums` nos números → §3.2 |
 | **U4** | Salvar | **Botão explícito** + cópia local no navegador → §8.1 |
 | **U5** | Quem monta o Figma | **Claude cria os wireframes** (a partir da §7) no Figma de Matthew; **Matthew faz os mockups** |
@@ -1721,3 +1743,4 @@ tokens.
 | 2026-10-27 | v1.31 — §3 e §8.2: o vermelho só no botão final do que não se desfaz (a exceção do `marca.md`; o reprovar sai) e a quinta regra do diálogo, o foco |
 | 2026-10-27 | v1.32 — §7.4: o filho reprovado (o último motivo no topo, L7) e o filho fechado, só leitura (B2, item 14) |
 | 2026-10-27 | v1.33 — §6.1: a janela dos atalhos (o ?) desenhada, com o interruptor dos atalhos de uma tecla; o menu da pessoa com o Minha conta e o Atalhos de teclado (B2, item 14) |
+| 2026-10-27 | v1.34 — §6.1: a busca (decisão (n) da B2: no computador, a janela de duas colunas antes de digitar e a lista com as pílulas depois; no celular, a tela cheia) e a navegação do celular revista: a lupa no lugar do ＋, a Nova NC no topo da T-04 |
