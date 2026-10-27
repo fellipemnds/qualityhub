@@ -407,15 +407,15 @@ Os caminhos abaixo são mostrados **sem** o prefixo `/api`.
 | | Método e caminho | Quem | O que faz |
 |---|---|---|---|
 | = | `POST /usuarios` | `ADMIN` | Cria e devolve o token do convite (já é assim); o frontend monta o link |
-| ＋ | `GET /usuarios` | `ADMIN` | Lista com busca (nome/e-mail) e filtro ativo/inativo |
-| ＋ | `GET /usuarios/:id` | `ADMIN` | Detalhe com papéis |
-| ＋ | `PATCH /usuarios/:id` | `ADMIN` | Nome, setor |
-| ＋ | `POST /usuarios/:id/papeis` | `ADMIN` | Concede um papel |
-| ＋ | `DELETE /usuarios/:id/papeis/:papel` | `ADMIN` | Revoga — **recusa** se a pessoa for aprovadora de item aberto e o papel for `APROVADOR`, listando os itens (RN-43) |
-| ＋ | `POST /usuarios/:id/inativar` | `ADMIN` | Mesma trava; preenche `desativadoEm` e soma 1 à `versaoSessao` |
-| ＋ | `POST /usuarios/:id/reativar` | `ADMIN` | Limpa `desativadoEm` (E2) |
+| ＋ ✅ | `GET /usuarios` | `ADMIN` | Lista com busca (nome/e-mail) e filtro ativo/inativo |
+| ＋ ✅ | `GET /usuarios/:id` | `ADMIN` | Detalhe com papéis |
+| ＋ ✅ | `PATCH /usuarios/:id` | `ADMIN` | Nome, setor |
+| ＋ ✅ | `POST /usuarios/:id/papeis` | `ADMIN` | Concede um papel |
+| ＋ ✅ | `DELETE /usuarios/:id/papeis/:papel` | `ADMIN` | Revoga — **recusa** se a pessoa for aprovadora de item aberto e o papel for `APROVADOR`, listando os itens (RN-43) |
+| ＋ ✅ | `POST /usuarios/:id/inativar` | `ADMIN` | Mesma trava; preenche `desativadoEm` e soma 1 à `versaoSessao` |
+| ＋ ✅ | `POST /usuarios/:id/reativar` | `ADMIN` | Limpa `desativadoEm` (E2) |
 | ＋ ✅ | `POST /usuarios/:id/convite` | `ADMIN` | Gera novo link (o anterior expirou, se perdeu, ou a pessoa esqueceu a senha) e **invalida os convites anteriores não usados** (`revogadoEm`); derruba as sessões; inativo → 409. Resposta `{ tokenConvite, expiraEm }`, `no-store` |
-| ＋ | `GET /pessoas` | Papéis de negócio | Busca leve (id, nome, setor — E3) de usuários **ativos**, com filtro `?papel=APROVADOR` — alimenta o painel de atribuições e o `@` do feed |
+| ＋ ✅ | `GET /pessoas` | Papéis de negócio | Busca leve (id, nome, setor — E3) de usuários **ativos**, com filtro `?papel=APROVADOR` — alimenta o painel de atribuições e o `@` do feed |
 | ＋ ✅ | `GET /setores` | Logado | Setores ativos (o `ADMIN` pode pedir os inativos também) |
 | ＋ ✅ | `POST /setores` · `PATCH /setores/:id` | `ADMIN` | Criar, renomear |
 | ＋ ✅ | `POST /setores/:id/desativar` · `/reativar` | `ADMIN` | RN-44 |
@@ -491,8 +491,8 @@ a lista dela filtra por `acaoCorretivaId`. A Ação Corretiva tem ainda
 | ＋ | `GET /relatorios/tempo-fechamento` | `GERENTE` | Média detecção → fechamento, por período e classificação |
 | ＋ | `GET /relatorios/atrasados` | `GERENTE` | Ações e verificações vencidas, com responsáveis |
 | ＋ | `GET /relatorios/eficacia` | `GERENTE` | Resultados de verificação, NCs reabertas, causas-raiz recorrentes |
-| Δ | `GET /` → `GET /saude` | Público | Confere banco e armazenamento |
-| ＋ | `GET /docs` | Só em desenvolvimento | OpenAPI navegável |
+| Δ | `GET /` → `GET /saude` | Público | Confere banco e armazenamento. **Existe** desde a A5 (`src/app.ts`), mas só responde `ok`: conferir o banco e o armazenamento fica para a D1 |
+| ＋ ✅ | `GET /docs` | Só em desenvolvimento | OpenAPI navegável (`src/interface-documentacao.ts`) |
 
 **O que a T-08 pede** (decisão (k) da B2, `ui-ux.md` §7.12), a decidir na
 C7: as quatro rotas recebem o período (`de`/`ate`, dias de calendário) e
@@ -502,6 +502,26 @@ por uma regra combinada com a analista, sem rota nova.
 
 Relatórios aceitam `?de=&ate=` e devolvem, junto de cada número, os
 **filtros** que levam à lista de NCs correspondente (fluxo J12).
+
+
+### 6.7 As rotas que existem (o código em 2026-10-27)
+
+Levantadas no item 16 da B2, direto dos `*.routes.ts` e do `src/app.ts` (a busca inteira, a regra do "existe ou não existe"). São **82**, todas sob `/api`; a página do OpenAPI (`/api/docs`) é só de desenvolvimento e não entra na conta. É a lista que o Orval vai ler na C0; as marcas ✅ das tabelas acima foram conferidas contra ela no mesmo dia.
+
+| Arquivo | Rotas | Quantas |
+|---|---|---|
+| `src/app.ts` | `GET /saude` | 1 |
+| `compartilhado/atribuicao/atribuicao.routes.ts` | `PUT /registros/:id/aprovador` · `POST /registros/:id/colaboradores` · `DELETE /registros/:id/colaboradores` | 3 |
+| `modulos/auth/auth.routes.ts` | `POST /auth/definir-senha` · `POST /auth/login` · `GET /auth/eu` · `PATCH /auth/eu` · `POST /auth/logout` · `POST /auth/sair-de-todos` | 6 |
+| `modulos/nc/acao-corretiva/acao-corretiva.routes.ts` | `POST /nc/:naoConformidadeId/acoes-corretivas` · `PATCH /acoes-corretivas/:id` · `DELETE /acoes-corretivas/:id` · `POST /acoes-corretivas/:id/publicar` · `POST /acoes-corretivas/:id/submeter` · `POST /acoes-corretivas/:id/retirar` · `POST /acoes-corretivas/:id/decidir` · `POST /acoes-corretivas/:id/finalizar-execucao` · `POST /acoes-corretivas/:id/cancelar` · `GET /acoes-corretivas/:id` · `GET /acoes-corretivas` | 11 |
+| `modulos/nc/classificacao/classificacao.routes.ts` | `POST /nc/:naoConformidadeId/classificacoes` · `PATCH /classificacoes/:id` · `DELETE /classificacoes/:id` · `POST /classificacoes/:id/publicar` · `POST /classificacoes/:id/submeter` · `POST /classificacoes/:id/retirar` · `POST /classificacoes/:id/decidir` · `GET /classificacoes/:id` · `GET /classificacoes` | 9 |
+| `modulos/nc/contencao/contencao.routes.ts` | `POST /nc/:naoConformidadeId/contencoes` · `PATCH /contencoes/:id` · `DELETE /contencoes/:id` · `POST /contencoes/:id/publicar` · `POST /contencoes/:id/submeter` · `POST /contencoes/:id/retirar` · `POST /contencoes/:id/decidir` · `POST /contencoes/:id/cancelar` · `GET /contencoes/:id` · `GET /contencoes` | 10 |
+| `modulos/nc/investigacao/investigacao.routes.ts` | `POST /nc/:naoConformidadeId/investigacoes` · `PATCH /investigacoes/:id` · `DELETE /investigacoes/:id` · `POST /investigacoes/:id/publicar` · `POST /investigacoes/:id/submeter` · `POST /investigacoes/:id/retirar` · `POST /investigacoes/:id/decidir` · `POST /investigacoes/:id/cancelar` · `GET /investigacoes/:id` · `GET /investigacoes` | 10 |
+| `modulos/nc/nc/nc.routes.ts` | `POST /nc` · `PATCH /nc/:id` · `DELETE /nc/:id` · `POST /nc/:id/publicar` · `POST /nc/:id/submeter` · `POST /nc/:id/retirar` · `GET /nc/:id/checklist-fechamento` · `POST /nc/:id/decidir` · `POST /nc/:id/reabrir` · `POST /nc/:id/cancelar` · `GET /nc/:id` · `GET /nc` | 12 |
+| `modulos/nc/verificacao/verificacao.routes.ts` | `PATCH /verificacoes/:id` · `POST /verificacoes/:id/concluir` · `POST /verificacoes/:id/cancelar` · `GET /verificacoes/:id` · `GET /verificacoes` | 5 |
+| `modulos/setor/setor.routes.ts` | `GET /setores` · `POST /setores` · `PATCH /setores/:id` · `POST /setores/:id/desativar` · `POST /setores/:id/reativar` | 5 |
+| `modulos/usuario/usuario.routes.ts` | `POST /usuarios` · `GET /usuarios` · `GET /pessoas` · `GET /usuarios/:id` · `PATCH /usuarios/:id` · `POST /usuarios/:id/convite` · `POST /usuarios/:id/inativar` · `POST /usuarios/:id/reativar` · `POST /usuarios/:id/papeis` · `DELETE /usuarios/:id/papeis/:papel` | 10 |
+| **Total** | | **82** |
 
 ---
 
@@ -663,3 +683,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-26 | v1.61 — §4.4: o que a T-03 nova pede (decisão (j) da B2): o cartão e as contagens saem da própria lista; os responsáveis do cartão, a decidir na C3 |
 | 2026-10-26 | v1.62 — §6, relatórios: o que a T-08 nova pede (o período anterior para a comparação e o "O que mudou" no front), a decidir na C7 |
 | 2026-10-26 | v1.63 — M7 (C5): o apelido com o pedido e a resposta, e a foto, com as rotas (decisão (l) da B2, PRD RN-52 e RN-53) |
+| 2026-10-27 | v1.64 — B2, item 16 (fatia 1): §6.7, as 82 rotas que existem no código; as marcas ✅ conferidas contra ele (as rotas de usuários e pessoas, o `/docs`; o `/saude` existe sem conferir o banco) |
