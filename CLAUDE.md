@@ -47,32 +47,8 @@ assinatura dela (fase B1, `docs/marca.md`). O nome **Andon** é
 o nome e o símbolo são uma pendência só, sem prazo. No front, o nome é
 uma constante só; o código continua `qualityhub`.
 
-**Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B37; os
-corrigidos têm ✅). A A3 corrigiu B1–B6 e B8–B18, e a RN-48 entrou como
-regra nova (fase fechada em 2026-10-02, PR #4). A A4 corrigiu o B19
-(transições sem trava sob concorrência) e o B7 (papéis no token), os
-dois em 2026-10-05, e o B21 (erro 4xx do Fastify respondia 500) e o B20
-(a API aceitava corpo `text/plain`), em 2026-10-06 (fase fechada em
-2026-10-06, PR #6). A A5 corrigiu o B23 (as rotas aceitavam o `id` de
-um item de outro tipo) e o B24 (editar não mudava o `atualizadoEm`), em
-2026-10-07, e o B22 (dia de calendário saía com hora na resposta), no
-mesmo dia, com os schemas de resposta. O B25 (o `finalizar-execucao`
-aceitava o `id` de outro tipo, a rota que escapou do B23) foi achado e
-corrigido em 2026-10-08, pela trava do B23 no `app.test.ts`, e o B26
-(e-mail sem teto, que deixava um anônimo encher a memória pela chave do
-limite de tentativas), no mesmo dia, na revisão de segurança da fase
-(fase fechada em 2026-10-08, PR #8). A A6 corrigiu o B27 (um login feito
-durante a derrubada das sessões sobrevivia a ela; a data virou a
-`versaoSessao`), em 2026-10-08, e o B28 (uma pessoa inativa podia ser
-designada aprovadora ou colaboradora, o que contornava a trava da
-RN-43), em 2026-10-09, achado na revisão da fase (fase fechada em
-2026-10-09, PR #9). A A7 corrigiu o B29
-(o filho novo nascia com a NC em aprovação ou fechada; RN-51) e o
-B30–B36 (sete regras que conferem outras linhas quebravam com duas
-requisições ao mesmo tempo), em 2026-10-09, achados na revisão de
-concorrência da A6, e o B37 (o OpenAPI tinha `$ref` sem destino no
-`conteudo` da investigação), no mesmo dia, ao conferir o portão (fase
-fechada em 2026-10-09, PR #10). **Nenhum bug aberto.** O bloco A fechou
+**Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B37; os corrigidos
+têm ✅, com a fase e o teste). **Nenhum bug aberto.** O bloco A fechou
 em 2026-10-13 (portão "fundação pronta"); o passeio guiado (Matthew explicar a
 A4, a A6 e a A7) vai em sessões curtas durante o Bloco B e é condição para o C0.
 
@@ -114,13 +90,12 @@ quer codar **tudo o que puder ser codado**, inclusive configuração
 (Vitest, CI, scripts); Claude só gera o que é **repetição** de um padrão
 que Matthew já escreveu e validou.
 
-**Divisão revista em 2026-09-28 (a partir da A1):** Matthew escreve o
-que ensina conceito novo — o teste "pronto quando" da A1, o teste de
-concorrência da A2 e o B9 (primeiro TDD) da A3; Claude faz o resto,
+**A divisão:** Matthew escreve o que ensina conceito novo (os itens 🧑
+do plano); Claude faz o resto,
 **na ordem do plano**. **Antes de cada item**, Claude diz se é algo que
 Matthew já aprendeu (e aponta o que tiver de novo) e **só executa
-depois de ele confirmar** (desde 2026-10-28, num item 🤖 Claude avisa e
-segue, sem esperar; ver "Commit e push sem pedir"). Matthew revisa tudo e pode pegar qualquer
+depois de ele confirmar** (num item 🤖, Claude avisa e segue, sem
+esperar; ver "Commit e push sem pedir"). Matthew revisa tudo e pode pegar qualquer
 item de volta. **Ao propor
 mudanças, prefira explicar o raciocínio e perguntar antes de reescrever
 grandes blocos.**
@@ -150,13 +125,12 @@ A partir do plano de implementação:
   documentos. Motivo: em 2026-10-21, um `head` escondeu a rota de reativar
   setor, e um wireframe deu título à Ação Corretiva, que não tem.
 - Cada fase termina com o checklist "pronto quando" (plano §1.1).
-- **Commit e push sem pedir** (desde 2026-10-28, autorização de Matthew;
-  antes, pedia-se antes de cada commit): depois da `/verificar`, Claude
-  commita, dá o push na branch de trabalho e mostra o que entrou. Vale
-  sobre o "peça antes de cada commit" e o "espere o ok" das skills.
-  **Perguntar só o que for muito importante:** decisão de produto ou de
-  marca, algo difícil de desfazer, qualquer `--force`, afrouxar a régua
-  do `CONSTRAINTS.md`. O resto, Claude decide, faz e conta depois.
+- **Commit e push sem pedir** (autorização de Matthew, 2026-10-28):
+  depois da `/verificar`, Claude commita, dá o push na branch de trabalho
+  e mostra o que entrou. **Perguntar só o que for muito importante:**
+  decisão de produto ou de marca, algo difícil de desfazer, qualquer
+  `--force`, afrouxar a régua do `CONSTRAINTS.md`, reescrever um bloco
+  grande de código de Matthew. O resto, Claude decide, faz e conta depois.
 - Commit de formatação automática sempre **separado** das mudanças de
   código, para o diff de lógica ficar legível.
 
@@ -245,8 +219,7 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   `podeExecutar` (`compartilhado/permissoes/pode-executar.ts`) combina
   **duas**, o papel e a atribuição (colaborador **ou** aprovador); o
   estado é conferido antes, por quem chama (o `cicloVidaService`, que
-  responde 409). Corrigido em 2026-10-21, no passeio da A4: o texto dizia
-  "as três". Algumas transições usam checagem
+  responde 409). Algumas transições usam checagem
   estrita manual (`decidir` exige ser especificamente o aprovador
   designado, não qualquer `APROVADOR`).
 - **Edição permitida em `RASCUNHO` e `ABERTO`**, bloqueada a partir de
@@ -310,7 +283,7 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   `NAO_EFICAZ` reabre a `Investigacao` e a `NaoConformidade`
   automaticamente.
 - **Guarda de fechamento da NC** (`submeterNC`, RN-21 revista na PRD
-  Q17, **implementada na 8c/8d**): a função pura `avaliarFechamentoNC`
+  Q17): a função pura `avaliarFechamentoNC`
   (`nc/nc/avaliar-fechamento.ts`, escrita por Matthew) devolve um item
   por requisito, em dois grupos (filhos e envio); o service carrega os
   dados e a usa no submeter (409 com os não atendidos em `error`, como
@@ -322,18 +295,18 @@ Matthew usa a extensão do Biome no VS Code (Prettier desinstalado).
   reabrir a NC via o mecanismo acima. Quem confere os planos de ação é a
   **Investigação** — ela só é submetida com toda `AcaoCorretiva` não
   cancelada ligada a ela com plano aprovado, e pode fechar sem nenhuma
-  ação (RN-24, **implementada na 8e**, com a função pura
+  ação (RN-24, com a função pura
   `avaliarSubmissaoInvestigacao` no validador do submeter); a ação
   nasce ligada a uma investigação `ABERTA` da mesma NC, e
-  o vínculo não se apaga (RN-49, **já implementada na 8b**, com
+  o vínculo não se apaga (RN-49, com
   `investigacaoId` `NOT NULL`; exceção: a do `PARCIALMENTE_EFICAZ`);
   cancelar a investigação exige as ações dela canceladas ou fechadas
-  (RN-50, **implementada na 8f**: o `cicloVidaService.cancelar` aceita um
+  (RN-50: o `cicloVidaService.cancelar` aceita um
   validador opcional, chamado depois de estado e permissão, como o do
   `submeter`).
   `NAO_EFICAZ` reabre só o que estiver fechado (B4) e
   `PARCIALMENTE_EFICAZ` copia todos os colaboradores da ação anterior
-  (B6), os dois corrigidos.
+  (B6).
 
 ## Testes
 
@@ -353,10 +326,8 @@ leva ~15 s.
   URL ser trocada.
 - `fileParallelism: false`: todos os arquivos usam o mesmo banco.
 
-Os testes manuais antigos (`testes/old/*.http`, REST Client) foram
-aposentados na A2 (2026-09-30): tudo o que exercitavam tem teste
-automático. Fica o `testes/setup-usuarios-teste.sql` (7 usuários
-cobrindo cada combinação de papel — base das fábricas).
+O `testes/setup-usuarios-teste.sql` (7 usuários cobrindo cada combinação
+de papel) é a base das fábricas.
 
 ## O que falta
 

@@ -82,7 +82,7 @@ Quando Matthew disser que a fase acabou:
    Mostre os achados por severidade. O obrigatório se resolve antes de sair do rascunho: bug
    pelo `/bug` (com o teste que falha primeiro), documento errado consertado. O que fica para
    depois vai para o plano, na fase certa, com o ok de Matthew; o opcional é decisão dele.
-   Mudou algo: commit pedido, push, CI de novo (passo 6).
+   Mudou algo: commit, push, CI de novo (passo 6).
 2. Confira o "pronto quando" do `docs/plano-implementacao.md` §1.1, item por item, e mostre
    o resultado. O último item ("Matthew consegue explicar o que a fase mudou e por quê") é dele:
    ofereça umas perguntas rápidas sobre a fase.

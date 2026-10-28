@@ -6,7 +6,7 @@ description: Rotina de começo de fase — lê a seção da fase no plano com Ma
 # Começar a fase
 
 Nada de código aqui: a skill termina no primeiro item da fase, na regra do `CLAUDE.md`.
-Peça antes de cada commit.
+Commit e push sem pedir (`CLAUDE.md`).
 
 ## 0. Preparar o shell
 
@@ -55,5 +55,5 @@ O PR nasce agora, não no fim. Ele precisa de pelo menos um commit na branch (o 
 
 ## 6. Retomar
 
-O primeiro item da fase pela `/item`, que começa dizendo se é algo que Matthew já aprendeu e
-espera a confirmação antes de executar.
+O primeiro item da fase pela `/item`, que começa dizendo se é algo que Matthew já aprendeu e,
+num item 🧑, espera a confirmação antes de executar.
