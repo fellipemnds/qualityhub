@@ -13,7 +13,7 @@
 // - espaço: o degrau do `espaco/*` (ou do `layout/*`, como a folga da doca) mais perto, se a
 //   diferença for de até 4 px;
 // - raio: o de meia altura ou mais é `raio/pilula`; até 4 é `raio/chip`, até 7 `raio/controle`,
-//   até 16 `raio/card`.
+//   até 16 `raio/card`, até 24 `raio/folha` (os cantos da folha que sobe no celular).
 // As cópias de componente ficam de fora (o principal é acabado onde mora), e as máscaras também.
 
 export async function acabar(alvo) {
@@ -106,7 +106,9 @@ export async function acabar(alvo) {
                 ? "raio/controle"
                 : r <= 16
                   ? "raio/card"
-                  : null;
+                  : r <= 24
+                    ? "raio/folha"
+                    : null;
 
     const feito = { cor: 0, texto: 0, espaco: 0, raio: 0 };
     const sobras = [];
