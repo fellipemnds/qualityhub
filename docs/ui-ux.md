@@ -1251,8 +1251,10 @@ no computador, atrás do cartão, o **Estuary** do asciify (correntes de
 letras em meio-tom que o cursor acende): Halftone, Hover Fluid, 0,4×,
 célula de 9 px, opacidade de 20%, em grafite (`texto/principal`), o
 organismo **Fundo do acesso** no Figma. É decorativo (`aria-hidden`), para
-com o "reduzir movimento" (fica um quadro parado) e não existe no celular,
-onde o formulário ocupa a tela. A cor dele espera a marca: a iridescência
+com o "reduzir movimento" (fica um quadro parado). No celular, onde o
+formulário ocupa a tela, só uma **faixa no topo**, de 150 px, que se desfaz
+antes do logo (a variante A, escolhida por Matthew; a B, o cartão sobre o
+fundo, apertava os campos); o toque faz o papel do cursor. A cor dele espera a marca: a iridescência
 é uma direção do símbolo (`docs/marca.md`). No código (C0): o pacote
 `asciify-engine` (MIT, um mantenedor, dependências de GIF e vídeo; medir o
 peso) ou o nosso, umas 100 linhas de canvas.
@@ -1861,4 +1863,4 @@ tokens.
 | 2026-10-28 | v1.40 — §5.3: os átomos todos prontos (B3, item 4) |
 | 2026-10-28 | v1.41 — §2.1: a arrumação das páginas de componentes (o inventário em cima, o quadro Componentes com um cartão por peça embaixo; a vitrine nunca cinza) |
 | 2026-10-28 | v1.42 — §2.2, regra 4: as três regras da retrospectiva da B3 (a variante por cópia conferida, o miolo que estica, a foto nos dois modos) |
-| 2026-10-28 | v1.43 — §7.7: o fundo da T-01 e da T-02 no computador (decisão (o): o Estuary em meio-tom, em grafite) |
+| 2026-10-28 | v1.43 — §7.7: o fundo da T-01 e da T-02 (decisão (o): o Estuary em meio-tom, em grafite; no celular, a faixa do topo) |

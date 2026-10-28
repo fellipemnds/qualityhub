@@ -185,7 +185,7 @@ trazia continua, dentro da Palpável ("à vista").
 - **Contraste:** 4,5:1 para texto nos dois modos (claro e escuro).
 - **O fundo do login** (decisão (o), 2026-10-28): a única tela com
   movimento só de enfeite, porque é a porta de entrada: o Estuary do
-  asciify em meio-tom, em **grafite** a 20%, só no computador (`ui-ux.md`
+  asciify em meio-tom, em **grafite** a 20%; no celular, só uma faixa no topo, que se desfaz antes do logo (`ui-ux.md`
   §7.7). A cor dele espera o símbolo.
 
 ## Paleta (sessão 2)
