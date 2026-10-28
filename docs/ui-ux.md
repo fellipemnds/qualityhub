@@ -168,10 +168,11 @@ A ordem é puxada pelas telas, sobre uma base de tokens.
 
 ### 3.1 Cores
 
-Os nomes abaixo são os **semânticos** (a função, não a cor), que na B3
-passam a apontar para os **primitivos** (§2.2). Os valores são **provisórios** (tons
-da paleta padrão do Tailwind); os da marca, com o contraste conferido,
-estão no `docs/marca.md` (B1) e entram aqui na B3. O contraste é conferido no G2.
+Os nomes abaixo são os **semânticos** (a função, não a cor), que desde
+2026-10-28 apontam para os **primitivos** (§2.2; a tabela e o contraste
+na §3.1.1). As colunas "provisório" das duas tabelas abaixo (tons do
+Tailwind) ficaram como histórico: os valores que valem são os da §3.1.1,
+iguais aos das coleções **Primitivos** e **Cor** do Figma.
 
 **Base** (mapeiam direto nas variáveis do shadcn/ui):
 
@@ -200,6 +201,66 @@ Por que o destaque provisório é **quase preto e não uma cor**: em uma
 ferramenta de trabalho, o que deve chamar atenção é o **estado** das
 coisas (vencido, reprovado, aguardando você). Um botão principal colorido
 competiria com os badges.
+
+#### 3.1.1 Primitivos e contraste (B3, item 1, 2026-10-28)
+
+**Os primitivos** (coleção **Primitivos** do Figma, um modo, escondida
+dos seletores: só os semânticos apontam para eles). Os 18 cinzas que os
+semânticos usavam viraram uma escala de 12 degraus: os tons quase iguais
+se juntaram (decisão de Matthew), com o contraste conferido abaixo.
+
+| Primitivo | Hex | Claro: quem aponta | Escuro: quem aponta |
+|---|---|---|---|
+| `grafite/0` | `#FFFFFF` | `fundo/card`, `acao/primaria-texto` | — |
+| `grafite/25` | `#FBFBFC` | `fundo/lateral` | — |
+| `grafite/50` | `#F7F7F8` | `fundo/pagina` | — |
+| `grafite/100` | `#ECECEF` | `fundo/selecao` (antes `#EEEEEF`) | `texto/principal`, `acao/primaria`, `foco/anel`, `marca/toque` |
+| `grafite/150` | `#E6E6EA` | `borda/padrao` | — |
+| `grafite/400` | `#A1A1AA` | — | `texto/apoio` (antes `#9C9CA5`), `estado/rascunho` |
+| `grafite/500` | `#8A8A8F` | `borda/controle` | — |
+| `grafite/600` | `#68686D` | `texto/apoio` (antes `#62626B`), `estado/rascunho` (antes `#6B6B75`) | `borda/controle` |
+| `grafite/800` | `#25252A` | — | `borda/padrao`, `fundo/selecao` (antes `#222225`) |
+| `grafite/900` | `#121214` | `texto/principal`, `acao/primaria`, `foco/anel`, `marca/toque` | `fundo/card` (antes `#131316`) |
+| `grafite/925` | `#0E0E11` | — | `fundo/lateral` |
+| `grafite/950` | `#09090B` | — | `fundo/pagina`, `acao/primaria-texto` |
+
+As cores, uma por estado e modo, com os valores do `docs/marca.md`:
+`azul/600` `#2E6FE0` e `azul/400` `#6AA6FF` (aberta), `violeta/600`
+`#7C4FE0` e `violeta/400` `#AE92FF` (em aprovação), `verde/700` `#16883F`
+e `verde/400` `#4CD486` (fechada), `ambar/800` `#975700` e `ambar/400`
+`#F5B83D` (vence em breve), `vermelho/600` `#D12E2E` e `vermelho/400`
+`#FF7B73` (vencida e `acao/destrutiva`). O primeiro de cada par é o do
+claro.
+
+**`marca/toque`** (reservado, §2.2, item 1) aponta para o grafite do
+texto nos dois modos, até a sessão do SaaS decidir outra coisa.
+
+**O contraste** (WCAG 2; texto ≥ 4,5:1, ícone e borda de controle ≥
+3:1), o pior caso entre os quatro fundos (página, card, lateral e
+seleção):
+
+| Par | Claro | Escuro | Mínimo |
+|---|---|---|---|
+| `texto/principal` | 15,87 (seleção) | 12,94 (seleção) | 4,5 ✅ |
+| `texto/apoio` | 4,70 (seleção) | 5,95 (seleção) | 4,5 ✅ |
+| `acao/primaria-texto` sobre `acao/primaria` | 18,71 | 16,87 | 4,5 ✅ |
+| Texto do botão sobre `acao/destrutiva` | 5,07 (branco) | 7,89 (`grafite/950`) | 4,5 ✅ |
+| `foco/anel` | 15,87 | 12,94 | 3 ✅ |
+| `estado/rascunho` | 4,70 | 5,95 | 3 ✅ |
+| `estado/aberta` | 3,99 | 6,18 | 3 ✅ |
+| `estado/em-aprovacao` | 4,40 | 6,07 | 3 ✅ |
+| `estado/fechada` | 3,85 | 8,04 | 3 ✅ |
+| `estado/vence-em-breve` | 4,84 | 8,58 | 3 ✅ |
+| `estado/vencida` | 4,30 | 6,05 | 3 ✅ |
+| `borda/controle` (página, card, lateral) | 3,21 | 3,38 | 3 ✅ |
+| `borda/controle` sobre `fundo/selecao` | 2,91 | 2,75 | 3 ⚠️ |
+
+As cores dos estados são de **ícone** (≥ 3:1): o rótulo ao lado vai em
+`texto/principal`, e nada é dito só por cor (G2). No claro, como texto,
+só o `vence-em-breve` e o `rascunho` passariam de 4,5 em todos os
+fundos. **O ⚠️:** a borda de um campo dentro de uma linha selecionada
+fica abaixo de 3:1, e já ficava antes dos primitivos (2,96 e 2,86). Fica
+para o G2: só vale se uma tela puser um campo numa linha selecionada.
 
 ### 3.2 Tipografia
 
@@ -1767,3 +1828,4 @@ tokens.
 | 2026-10-27 | v1.34 — §6.1: a busca (decisão (n) da B2: no computador, a janela de duas colunas antes de digitar e a lista com as pílulas depois; no celular, a tela cheia) e a navegação do celular revista: a lupa no lugar do ＋, a Nova NC no topo da T-04 |
 | 2026-10-27 | v1.35 — §5.3: o inventário do Figma (B2, item 15), nas páginas Átomos, Moléculas e Organismos |
 | 2026-10-27 | v1.36 — revisão da fase B2: o menu da pessoa com o Minha conta e o Atalhos de teclado (§6.1), e os dois trechos que ainda falavam do ＋ da barra (§6.1, com outros módulos; §7.2, a busca da T-04) |
+| 2026-10-28 | v1.37 — §3.1.1: os primitivos (a escala do Grafite em 12 degraus e as cores dos estados), os semânticos como alias e a tabela de contraste (B3, item 1) |

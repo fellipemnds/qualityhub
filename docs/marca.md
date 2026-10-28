@@ -227,11 +227,11 @@ azul no topo), Q2 Planning e Flowio (a luz ambiente no claro).
 | Token | Claro | Escuro |
 |---|---|---|
 | `--background` · fundo | `#F7F7F8` | `#09090B` |
-| `--card` | `#FFFFFF` | `#131316` |
+| `--card` | `#FFFFFF` | `#121214` (antes `#131316`) |
 | `--sidebar` · lateral | `#FBFBFC` | `#0E0E11` |
 | `--border` | `#E6E6EA` | `#25252A` |
 | `--foreground` · texto | `#121214` | `#ECECEF` |
-| `--muted-foreground` · texto de apoio | `#62626B` | `#9C9CA5` |
+| `--muted-foreground` · texto de apoio | `#68686D` (antes `#62626B`) | `#A1A1AA` (antes `#9C9CA5`) |
 | `--primary` / `--primary-foreground` · botão principal | `#121214` / `#FFFFFF` | `#ECECEF` / `#09090B` |
 
 | A face | Dawn claro | Dawn escuro | Dusk claro | Dusk escuro |
@@ -242,14 +242,17 @@ azul no topo), Q2 Planning e Flowio (a luz ambiente no claro).
 
 | Estado (ícone) | Claro | Escuro |
 |---|---|---|
-| Rascunho | `#6B6B75` | `#A1A1AA` |
+| Rascunho | `#68686D` (antes `#6B6B75`) | `#A1A1AA` |
 | Aberta | `#2E6FE0` | `#6AA6FF` |
 | Em aprovação | `#7C4FE0` | `#AE92FF` |
 | Fechada | `#16883F` | `#4CD486` |
 | Vence em breve | `#975700` | `#F5B83D` |
 | Vencida | `#D12E2E` | `#FF7B73` |
 
-Contraste conferido em 2026-10-13: texto ≥ 4,5:1 e ícone ≥ 3:1 nas quatro
+Em 2026-10-28 (B3, item 1), os cinzas viraram uma escala de 12
+primitivos (`ui-ux.md` §3.1.1), e seis tons se juntaram ao vizinho
+quase igual (os "antes" nas tabelas acima), com o contraste conferido de
+novo. Contraste conferido em 2026-10-13: texto ≥ 4,5:1 e ícone ≥ 3:1 nas quatro
 combinações (a página `docs/identidade/paleta.html`, que mostrava a conferência,
 saiu em 2026-10-16: o visual da marca fica só no Figma). No Figma
 (arquivo "Andon — Identidade", time "Andon" desde 2026-10-23, "Designing" desde 2026-10-20; antes no time Work, e antes "Dusk & Dawn — Identidade"), as cores eram *Variables*
