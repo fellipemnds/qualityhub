@@ -276,6 +276,11 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
   (opcional), o glossário e o prefixo. Barato fazer já: a empresa como
   dado, nunca escrita no código. 🐴 O mínimo para o MVP: o glossário e a
   assinatura.
+  **Na mesma sessão** (Matthew confirmou o SaaS como plano, 2026-10-28), rever o que hoje "não se
+  aplica" da lista dos 111 itens e das anotações do WhatsApp: os dados de cada empresa separados, o
+  login pela conta da empresa (SSO/OAuth), a LGPD por empresa (o contrato de tratamento de dados), mais
+  de um servidor (escala horizontal, o limite de login fora da memória), *feature flags*, SLOs e alertas,
+  a cobrança (Stripe) e os termos de uso.
 - **Ideia para refinar (`idea-refine`) antes da C3: a atividade recente
   na tela inicial** (2026-10-20, da referência do Flowio,
   `docs/identidade/referencias-interface.md`). O que aconteceu nas NCs que
