@@ -146,9 +146,13 @@ A partir do plano de implementação:
   documentos. Motivo: em 2026-10-21, um `head` escondeu a rota de reativar
   setor, e um wireframe deu título à Ação Corretiva, que não tem.
 - Cada fase termina com o checklist "pronto quando" (plano §1.1).
-- **Pedir antes de cada commit**, inclusive dentro da branch da fase,
-  mostrando o que entra (Matthew pode pedir o diff antes). O push, Claude
-  dá depois do commit (regra em "Ambiente").
+- **Commit e push sem pedir** (desde 2026-10-28, autorização de Matthew;
+  antes, pedia-se antes de cada commit): depois da `/verificar`, Claude
+  commita, dá o push na branch de trabalho e mostra o que entrou. Vale
+  sobre o "peça antes de cada commit" e o "espere o ok" das skills.
+  **Perguntar só o que for muito importante:** decisão de produto ou de
+  marca, algo difícil de desfazer, qualquer `--force`, afrouxar a régua
+  do `CONSTRAINTS.md`. O resto, Claude decide, faz e conta depois.
 - Commit de formatação automática sempre **separado** das mudanças de
   código, para o diff de lógica ficar legível.
 
