@@ -10,7 +10,8 @@
 // - cor: a semântica da coleção Cor mais perto no modo Claro, entre as que servem para aquilo
 //   (fundo de quadro, texto ou borda); a distância é a do RGB;
 // - texto: o estilo de texto mais perto pelo tamanho e, no empate, pelo peso;
-// - espaço: o degrau do `espaco/*` mais perto, se a diferença for de até 4 px;
+// - espaço: o degrau do `espaco/*` (ou do `layout/*`, como a folga da doca) mais perto, se a
+//   diferença for de até 4 px;
 // - raio: o de meia altura ou mais é `raio/pilula`; até 4 é `raio/chip`, até 7 `raio/controle`,
 //   até 16 `raio/card`.
 // As cópias de componente ficam de fora (o principal é acabado onde mora), e as máscaras também.
@@ -87,7 +88,7 @@ export async function acabar(alvo) {
             .map((s) => [s, Math.abs(s.fontSize - tamanho) * 10 + Math.abs(peso(s.fontName.style) - p) / 100])
             .sort((a, b) => a[1] - b[1])[0][0];
     const ESPACOS = Object.keys(V)
-        .filter((n) => n.startsWith("espaco/"))
+        .filter((n) => n.startsWith("espaco/") || n.startsWith("layout/"))
         .map((n) => [n, V[n].valuesByMode[Object.keys(V[n].valuesByMode)[0]]]);
     const espacoPerto = (valor) => {
         const [nome, val] = ESPACOS.map(([n, v]) => [n, v]).sort(
