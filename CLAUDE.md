@@ -119,7 +119,8 @@ que ensina conceito novo — o teste "pronto quando" da A1, o teste de
 concorrência da A2 e o B9 (primeiro TDD) da A3; Claude faz o resto,
 **na ordem do plano**. **Antes de cada item**, Claude diz se é algo que
 Matthew já aprendeu (e aponta o que tiver de novo) e **só executa
-depois de ele confirmar**. Matthew revisa tudo e pode pegar qualquer
+depois de ele confirmar** (desde 2026-10-28, num item 🤖 Claude avisa e
+segue, sem esperar; ver "Commit e push sem pedir"). Matthew revisa tudo e pode pegar qualquer
 item de volta. **Ao propor
 mudanças, prefira explicar o raciocínio e perguntar antes de reescrever
 grandes blocos.**
