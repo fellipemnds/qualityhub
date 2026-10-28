@@ -603,9 +603,9 @@ Os plugins ligados no `.claude/settings.json` do projeto vêm destas marketplace
 | `agent-skills@addy-agent-skills` | `addyosmani/agent-skills` |
 | `taste-skill@taste-skill` | `Leonxlnx/taste-skill` |
 | `understand-anything@understand-anything` | `Egonex-AI/Understand-Anything` |
-| `frontend-slides@frontend-slides` | `zarazhangrui/frontend-slides` |
 | `ponytail@ponytail` | `DietrichGebert/ponytail` |
-| `diagram-design@diagram-design` | `cathrynlavery/diagram-design` |
+
+O `frontend-slides` e o `diagram-design` saíram em 2026-10-28 (nunca usados; os artifacts e o FigJam fazem o mesmo). Num PC que ainda os tenha: `claude plugin uninstall -s project <plugin>`, depois `-s user`, e `claude plugin marketplace remove <marketplace>`.
 
 Para cada linha: `claude plugin marketplace add <marketplace>` e depois `claude plugin install <plugin>`. O Ponytail precisa também do `~/.config/ponytail/config.json` com `{ "defaultMode": "lite" }` (regra no `CLAUDE.md`). O `/retomar` confere se algum faltou.
 
@@ -670,15 +670,13 @@ node -v && docker info > /dev/null && echo DOCKER_OK
 npm ci && npx --no-install prisma generate
 ```
 
-**Os plugins do Claude Code** (os 6 do §12.4): a nuvem nasce sem eles. O `.claude/settings.json` do projeto já diz de onde vêm (`extraKnownMarketplaces`, desde 2026-10-21), mas sem a confirmação de uma pessoa o CLI não cadastra as marketplaces sozinho; o `claude plugin marketplace add` direto funciona (instalados assim em 2026-10-21):
+**Os plugins do Claude Code** (os 4 do §12.4): a nuvem nasce sem eles. O `.claude/settings.json` do projeto já diz de onde vêm (`extraKnownMarketplaces`, desde 2026-10-21), mas sem a confirmação de uma pessoa o CLI não cadastra as marketplaces sozinho; o `claude plugin marketplace add` direto funciona (instalados assim em 2026-10-21):
 
 ```bash
 for par in "addyosmani/agent-skills agent-skills@addy-agent-skills" \
            "DietrichGebert/ponytail ponytail@ponytail" \
            "Leonxlnx/taste-skill taste-skill@taste-skill" \
-           "Egonex-AI/Understand-Anything understand-anything@understand-anything" \
-           "zarazhangrui/frontend-slides frontend-slides@frontend-slides" \
-           "cathrynlavery/diagram-design diagram-design@diagram-design"; do
+           "Egonex-AI/Understand-Anything understand-anything@understand-anything"; do
   set -- $par; claude plugin marketplace add "$1" && claude plugin install "$2"
 done
 mkdir -p ~/.config/ponytail && echo '{ "defaultMode": "lite" }' > ~/.config/ponytail/config.json

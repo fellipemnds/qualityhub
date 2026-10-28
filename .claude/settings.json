@@ -4,8 +4,6 @@
     "agent-skills@addy-agent-skills": true,
     "taste-skill@taste-skill": true,
     "understand-anything@understand-anything": true,
-    "frontend-slides@frontend-slides": true,
-    "diagram-design@diagram-design": true,
     "typescript-lsp@qualityhub": true
   },
   "extraKnownMarketplaces": {
@@ -20,12 +18,6 @@
     },
     "understand-anything": {
       "source": { "source": "github", "repo": "Egonex-AI/Understand-Anything" }
-    },
-    "frontend-slides": {
-      "source": { "source": "github", "repo": "zarazhangrui/frontend-slides" }
-    },
-    "diagram-design": {
-      "source": { "source": "github", "repo": "cathrynlavery/diagram-design" }
     },
     "qualityhub": {
       "source": { "source": "directory", "path": "/home/matthew/projects/qualityhub/.claude/marketplace" }
