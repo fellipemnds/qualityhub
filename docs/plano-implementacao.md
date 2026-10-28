@@ -586,3 +586,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-28 | v1.65 — B3: o item 4 feito pelo Claude, com Matthew observando (o Ícone, o Estado com a Situação, a Etapa, o Prazo, os átomos novos e o Campo Preenchido); a base comum pronta para a conferência de Matthew |
 | 2026-10-28 | v1.66 — B3: a conferência da base comum feita (a Tecla sem fundo) |
 | 2026-10-28 | v1.67 — B3: os componentes saíram da Wireframes (a Vitrine tinha crescido para cima da T-01 e da T-02): os átomos (Botão, Campos, Estado, Etapa, Prazo) para a página Átomos, a Linha de pendência e a Área de arrastar para a Moléculas, a Doca, o Menu da pessoa, as Barras do celular e as Abas do item para a Organismos, como pede o `ui-ux.md` §2.1; as cópias continuam ligadas |
+| 2026-10-28 | v1.68 — B3: as páginas Átomos, Moléculas e Organismos num padrão só (o cartão por peça, `ui-ux.md` §2.1); os exemplos do inventário em `fundo/card`, porque o cinza escondia as peças cinza |

@@ -78,6 +78,16 @@ As páginas de componentes seguem o Atomic Design (§2.2; revisto em
 | **Mockups** | As mesmas telas com os componentes e as fundações aplicados, e os estados do G4 |
 | **Decisões (histórico)** | Uma seção por decisão de desenho, com as variantes comparadas e o "Antes" (skill `/desenhar`) |
 
+**A arrumação das páginas Átomos, Moléculas e Organismos** (2026-10-28,
+pedido de Matthew: "deixa tudo padronizado"): em cima, o inventário da
+B2 (o retrato, só com cópias); embaixo, a 160 px, o quadro
+**Componentes**, com **um cartão por peça** ("Componente · Nome": o
+título em `Título/Seção`, uma frase de uso em `Apoio/Padrão` e o
+componente), em `fundo/card` com a borda `borda/padrao`, na ordem do
+inventário. **A vitrine de uma peça nunca é cinza:** o `fundo/selecao`
+some com a Tag, o Contador, o Estado e a Área de arrastar. A Wireframes
+fica só com as telas.
+
 Em todas: as variantes têm os nomes do enum (`RASCUNHO`, `EM_APROVACAO`...),
 e o componente tem o nome do componente React (§5), assim o handoff é
 mecânico: o nome no Figma é a chave no código.
@@ -1833,3 +1843,4 @@ tokens.
 | 2026-10-28 | v1.38 — §2.2, regra 4: o caminho do script de valor solto (B3, item 2) |
 | 2026-10-28 | v1.39 — §5.3: o Botão (Tipo × Estado, com o Destrutivo) e os quatro Campos (Estado: Padrão, Foco, Erro, Desabilitado) prontos (B3, item 3) |
 | 2026-10-28 | v1.40 — §5.3: os átomos todos prontos (B3, item 4) |
+| 2026-10-28 | v1.41 — §2.1: a arrumação das páginas de componentes (o inventário em cima, o quadro Componentes com um cartão por peça embaixo; a vitrine nunca cinza) |
