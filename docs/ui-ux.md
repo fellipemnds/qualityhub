@@ -132,8 +132,9 @@ A ordem é puxada pelas telas, sobre uma base de tokens.
       licença) → escrever o nosso. Degrau 4 ou 5 vai para o changelog
       (§1.1).
    4. **Quando um componente está pronto:** toda cor e medida ligada a
-      uma variável, sem valor solto (Claude confere pelo conector, com um
-      script que lista o que está sem variável); os estados que fizerem
+      uma variável, sem valor solto (Claude confere pelo conector, com o
+      script `docs/identidade/figma/valor-solto.js`, que lista o que
+      está sem variável); os estados que fizerem
       sentido (padrão, hover, foco, desabilitado, erro); claro e escuro,
       com o contraste conferido; a descrição de uso no Figma; o nome no
       padrão (§2.1).
@@ -1829,3 +1830,4 @@ tokens.
 | 2026-10-27 | v1.35 — §5.3: o inventário do Figma (B2, item 15), nas páginas Átomos, Moléculas e Organismos |
 | 2026-10-27 | v1.36 — revisão da fase B2: o menu da pessoa com o Minha conta e o Atalhos de teclado (§6.1), e os dois trechos que ainda falavam do ＋ da barra (§6.1, com outros módulos; §7.2, a busca da T-04) |
 | 2026-10-28 | v1.37 — §3.1.1: os primitivos (a escala do Grafite em 12 degraus e as cores dos estados), os semânticos como alias e a tabela de contraste (B3, item 1) |
+| 2026-10-28 | v1.38 — §2.2, regra 4: o caminho do script de valor solto (B3, item 2) |

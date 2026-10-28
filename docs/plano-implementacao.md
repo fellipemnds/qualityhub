@@ -373,7 +373,7 @@ permissão), nos dois tamanhos e nos dois modos, com o gesto 5 da casa
 | # | Entrega | Aceite | Quem |
 |---|---|---|---|
 | 1 | Os primitivos: a coleção nova (a escala do Grafite e os tons dos estados) e os 18 semânticos da coleção Cor apontando para ela; e o semântico **`marca/toque` reservado** (`ui-ux.md` §2.2, item 1), começando no cinza. **Feito** (2026-10-28): a coleção **Primitivos** (12 degraus do Grafite, os 18 cinzas de antes com os quase iguais juntados, decisão de Matthew; 10 cores dos estados) e os 18 semânticos como alias, mais o `marca/toque` no grafite do texto; a tabela e o contraste no `ui-ux.md` §3.1.1. Para o G2: a borda de controle sobre a seleção fica abaixo de 3:1 (já ficava antes) | Nenhum semântico com valor direto; o contraste dos pares numa tabela, nos dois modos | 🤖 |
-| 2 | O script de valor solto (lista toda cor e medida sem variável) e as páginas Átomos, Moléculas, Organismos e Mockups | Acha um retângulo solto plantado de propósito (a prova de quebra) e passa limpo na Fundações | 🤖 |
+| 2 | O script de valor solto (lista toda cor e medida sem variável) e as páginas Átomos, Moléculas, Organismos e Mockups **Feito** (2026-10-28): o `docs/identidade/figma/valor-solto.js` (cor, espaço, raio e texto sem estilo; as cópias de componente ficam de fora, conferidas no principal), uma função que o Claude passa ao conector; o lint do Biome cobre o arquivo. A prova de quebra: um quadro de teste com um retângulo ligado e um solto, e só o solto apareceu (a cor e o raio). A Fundações tinha 260 valores soltos e ficou em 0: os espaços e os raios ligados ao `espaco/*` e ao `raio/*` (o 6 e o 14, sem degrau, arredondados para 8 e 16), e a Tipografia ligada ao `fundo/card` e ao `texto/principal`. As páginas Átomos, Moléculas e Organismos já existiam (B2, item 15); a **Mockups** foi criada, depois da Wireframes | Acha um retângulo solto plantado de propósito (a prova de quebra) e passa limpo na Fundações | 🤖 |
 | 3 | Átomos I: o Botão de Matthew conferido contra o "pronto quando" (`ui-ux.md` §2.2, regra 4) e o Campo, com o erro e o foco (achado 6) | O script limpo; os estados e os dois modos | 🧑 |
 | 4 | Átomos II: Estado/Etapa/Prazo (achado 5; a **Situação** de pessoas e setores vira variante do Estado e o "Item/Estado (antigo, não usar)" sai, item 15 da B2), Ícone (os SVG do Lucide) e Avatar (gerado pelo nome, `docs/marca.md`); e os átomos que o inventário achou soltos: **Tag, Contador, Indicador, Interruptor, Tecla, Pílula** (uma, com o estado ativo) e **Aba** (a Aba e o Controle segmentado) | O mesmo; o badge cobre os 5 estados (G2); os **72 chevrons de texto** do arquivo (›, ⌄, ∨, as letras da Figtree fazendo papel de ícone, achado de Matthew em 2026-10-23) trocados pelo ícone; o ícone do olho do `Campo/Senha` reavaliado (Matthew, 2026-10-23: o do Lucide é o padrão do Android); o `Item/Estado` já virou um conjunto com os ícones SVG (2026-10-23, na B2): falta ligá-lo às cores dos estados | 🧑 |
 | | **Conferência:** a base comum pronta | | 🧑 |
@@ -396,8 +396,7 @@ no fim de cada seção); o cansaço, porque os componentes são de Matthew (um
 `/desenhar` puxar escopo novo (o que a API não tem vira "escopo novo", com a
 fase anotada, não trabalho agora).
 
-**Em aberto:** a sessão do SaaS antes da C0 (linha da C0), que pode mudar o uso do `marca/toque`; onde o script de valor solto mora no repositório (proposta:
-`docs/identidade/figma/`, versionado para os dois PCs); se a B4 começa
+**Em aberto:** a sessão do SaaS antes da C0 (linha da C0), que pode mudar o uso do `marca/toque`; ~~onde o script de valor solto mora~~ (decidido no item 2: `docs/identidade/figma/valor-solto.js`); se a B4 começa
 antes do fim da B3 (o teste com colegas só precisa das telas até o item
 10); e a parada 2 do passeio da A7, condição para a C0, numa sessão
 descansada antes dela.
@@ -582,3 +581,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-27 | v1.61 — B2: o item 16 feito (as rotas que as telas pedem, `esquema-backend.md` §6.7 e §6.8); falta o `/abrir-pr` |
 | 2026-10-27 | **B2 concluída** (branch `fase/b2-wireframes`, PR #13): os wireframes de todas as telas nos dois tamanhos até o G1, com as decisões de desenho (a) a (n), o diálogo numa versão só, o inventário do sistema de design e as rotas que as telas pedem; a B3 aberta na `fase/b3-fundacoes-e-mockups`, só com o registro (o `/comecar-fase` fica para outro dia) |
 | 2026-10-28 | v1.62 — B3: o item 1 feito (os primitivos, os semânticos como alias e o `marca/toque`) |
+| 2026-10-28 | v1.63 — B3: o item 2 feito (o script de valor solto em `docs/identidade/figma/`, a Fundações limpa e a página Mockups) |
