@@ -81,7 +81,7 @@ export async function valorSolto(alvo, limite = 60) {
             for (const lado of ["paddingTop", "paddingRight", "paddingBottom", "paddingLeft"])
                 conferirMedida(no, lado, "espaço");
         }
-        if ("topLeftRadius" in no) {
+        if ("topLeftRadius" in no && no.type !== "SECTION") {
             const soltos = CANTOS.filter((canto) => solto(no, canto)).map((canto) => no[canto]);
             if (soltos.length) anotar(no, "raio", `${[...new Set(soltos)].join("/")} em ${soltos.length} canto(s)`);
         }
