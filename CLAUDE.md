@@ -139,6 +139,9 @@ A partir do plano de implementação:
   "pronto quando") → merge → `/fechar-fase`. Decisão de desenho de tela
   ou componente (Mobbin + Figma + skills de front): `/desenhar`; o método
   do Design System está no `ui-ux.md` §2.2.
+- **Estudo** (desde 2026-10-28): `/teach` (skill avulsa, `SETUP.md` §12.4)
+  guarda o espaço de estudo em `docs/estudo/`, nunca na raiz do projeto;
+  `/nao-entendi` explica de novo, do zero e mais simples.
 - **Bug começa por um teste que falha.**
 - **"Existe" ou "não existe"** (rota, campo, função, regra): Claude só
   afirma depois de ler a busca **inteira**, sem `head`/`tail`, e cita

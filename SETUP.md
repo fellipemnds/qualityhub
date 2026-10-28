@@ -609,12 +609,13 @@ O `frontend-slides` e o `diagram-design` saíram em 2026-10-28 (nunca usados; os
 
 Para cada linha: `claude plugin marketplace add <marketplace>` e depois `claude plugin install <plugin>`. O Ponytail precisa também do `~/.config/ponytail/config.json` com `{ "defaultMode": "lite" }` (regra no `CLAUDE.md`). O `/retomar` confere se algum faltou.
 
-**Skills avulsas** (fora dos plugins; a `/desenhar` usa as cinco). Ficam em `~/.claude/skills/`, uma pasta por skill, copiadas dos repositórios abaixo (em casa, em 2026-10-26: `emilkowalski/skills` em `2d22863`, `pbakaus/impeccable` em `414603b`):
+**Skills avulsas** (fora dos plugins; a `/desenhar` usa as cinco de design, e a `teach` é do estudo, `CLAUDE.md`). Ficam em `~/.claude/skills/`, uma pasta por skill, copiadas dos repositórios abaixo (em casa, em 2026-10-26: `emilkowalski/skills` em `2d22863`, `pbakaus/impeccable` em `414603b`; em 2026-10-28: `mattpocock/skills` em `59db609`):
 
 | Skill | Repositório (GitHub) | Pasta no repositório |
 |---|---|---|
 | `apple-design`, `mobile-native`, `emil-design-eng`, `prototype` | `emilkowalski/skills` (MIT) | `skills/<nome>/` |
 | `impeccable` | `pbakaus/impeccable` (Apache-2.0) | `.claude/skills/impeccable/` |
+| `teach` | `mattpocock/skills` (MIT) | `skills/productivity/teach/` |
 
 Para instalar: `git clone --depth 1` do repositório numa pasta temporária, ler o `SKILL.md` e copiar a pasta para `~/.claude/skills/`. Valem a partir da próxima sessão do Claude Code. Na nuvem (§13) não estão.
 
