@@ -133,6 +133,12 @@ símbolo do PT a todos no teste: ela fica **arredondada** (o raio da barra),
 se repete. O caminho e os testes: `docs/identidade/referencias.md`,
 "2026-10-16".
 
+**Uma direção a explorar** (Matthew, 2026-10-28): a **iridescência**, a
+luz que se abre em prisma, como na imagem do Apple Music da página Logo
+("eu gosto muito da iridescência"). Ela fica na marca, e não na interface,
+onde o "o que evitar" continua valendo; quando o símbolo a tiver, o fundo
+do login pode herdar a mesma luz.
+
 ## Suspenso: o dia inteiro, em duas luzes (Dusk & Dawn)
 
 A direção de 2026-10-13, guardada como estava. Motivo da suspensão: a
@@ -177,6 +183,10 @@ trazia continua, dentro da Palpável ("à vista").
   **microinterações** sutis, de 150 a 250 ms, sempre com uma função e
   desligadas quando o sistema pede para reduzir o movimento.
 - **Contraste:** 4,5:1 para texto nos dois modos (claro e escuro).
+- **O fundo do login** (decisão (o), 2026-10-28): a única tela com
+  movimento só de enfeite, porque é a porta de entrada: o Estuary do
+  asciify em meio-tom, em **grafite** a 20%, só no computador (`ui-ux.md`
+  §7.7). A cor dele espera o símbolo.
 
 ## Paleta (sessão 2)
 

@@ -1246,6 +1246,17 @@ celular, ocupa a largura toda. É a única tela com a marca no centro
 (o logotipo provisório, `docs/marca.md`) e com a **assinatura** da
 empresa embaixo (§1), como texto de apoio.
 
+**O fundo** (decisão (o) da B3, 2026-10-28; o checklist da revisão, §0):
+no computador, atrás do cartão, o **Estuary** do asciify (correntes de
+letras em meio-tom que o cursor acende): Halftone, Hover Fluid, 0,4×,
+célula de 9 px, opacidade de 20%, em grafite (`texto/principal`), o
+organismo **Fundo do acesso** no Figma. É decorativo (`aria-hidden`), para
+com o "reduzir movimento" (fica um quadro parado) e não existe no celular,
+onde o formulário ocupa a tela. A cor dele espera a marca: a iridescência
+é uma direção do símbolo (`docs/marca.md`). No código (C0): o pacote
+`asciify-engine` (MIT, um mantenedor, dependências de GIF e vídeo; medir o
+peso) ou o nosso, umas 100 linhas de canvas.
+
 - **Erro de credencial:** uma mensagem só, no topo do formulário,
   "E-mail ou senha incorretos." (a API não diz qual dos dois errou).
 - **Limite de tentativas** (5 por minuto, TRD §4.3): "Muitas tentativas.
@@ -1850,3 +1861,4 @@ tokens.
 | 2026-10-28 | v1.40 — §5.3: os átomos todos prontos (B3, item 4) |
 | 2026-10-28 | v1.41 — §2.1: a arrumação das páginas de componentes (o inventário em cima, o quadro Componentes com um cartão por peça embaixo; a vitrine nunca cinza) |
 | 2026-10-28 | v1.42 — §2.2, regra 4: as três regras da retrospectiva da B3 (a variante por cópia conferida, o miolo que estica, a foto nos dois modos) |
+| 2026-10-28 | v1.43 — §7.7: o fundo da T-01 e da T-02 no computador (decisão (o): o Estuary em meio-tom, em grafite) |

@@ -367,3 +367,23 @@ Matthew: *"Mintlify e ClickUp, e inclusive a pesquisa do próprio Mobbin
   ao fundo, atrás do diálogo): antes de digitar, a busca abre um painel
   largo com **colunas de atalhos** (Categorias, Telas, Elementos, Fluxos):
   o que dá para procurar já aparece, sem a pessoa adivinhar.
+
+## 2026-10-28 · Fabric, Luma e o asciify (o fundo do login, decisão (o))
+
+Pedido de Matthew na retrospectiva da B3: "falta alguma cor, mas não na
+interface. Talvez um backdrop?". Coleção no Mobbin: "Andon · T-01 Login
+(o fundo)".
+
+- **Fabric · o login partido** (https://mobbin.com/screens/e5a30e9f-9ba7-4b4a-b480-ae07cf8d3cbf):
+  a luz desfocada num painel ao lado, sem nada escrito por cima.
+- **Luma · Dream Machine** (https://mobbin.com/screens/a9fff2d5-1798-40e1-aabb-0b126f2b8763):
+  a luz que vem do topo e se dissolve antes do conteúdo.
+- **asciify.org · os fundos animados** (https://asciify.org/backgrounds): Matthew
+  gostou do Swell (pontos em ondas lentas), do Drift (abre em volta do
+  conteúdo) e do Mesh (a malha de cor em letras), e escolheu o **Estuary**
+  (correntes de letras que o cursor acende), configurado por ele: Halftone,
+  Hover Fluid, 0,4×, 9 px, 20%.
+- **Apple Music · a luz que se abre em prisma** (a imagem 9 da página Logo
+  do Figma; fora do repositório): "eu queria aquela iridescência". Foi para
+  a pendência da marca.
+
