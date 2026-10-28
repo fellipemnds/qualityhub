@@ -71,7 +71,8 @@ export async function valorSolto(alvo, limite = 60) {
             copiasPuladas++;
             return;
         }
-        if (no.type !== "SECTION") {
+        // a máscara usa só a transparência da tinta, nunca a cor
+        if (no.type !== "SECTION" && !no.isMask) {
             conferirTintas(no, "fills");
             conferirTintas(no, "strokes");
         }
