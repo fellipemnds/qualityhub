@@ -144,7 +144,8 @@ A ordem é puxada pelas telas, sobre uma base de tokens.
    4. **Quando um componente está pronto:** toda cor e medida ligada a
       uma variável, sem valor solto (Claude confere pelo conector, com o
       script `docs/identidade/figma/valor-solto.js`, que lista o que
-      está sem variável); os estados que fizerem
+      está sem variável; o `acabar.js`, ao lado, faz o primeiro conserto
+      do que vem solto do wireframe); os estados que fizerem
       sentido (padrão, hover, foco, desabilitado, erro); claro e escuro,
       com o contraste conferido; a descrição de uso no Figma; o nome no
       padrão (§2.1). Da retrospectiva da B3 (item 5, 2026-10-28,
@@ -1864,3 +1865,4 @@ tokens.
 | 2026-10-28 | v1.41 — §2.1: a arrumação das páginas de componentes (o inventário em cima, o quadro Componentes com um cartão por peça embaixo; a vitrine nunca cinza) |
 | 2026-10-28 | v1.42 — §2.2, regra 4: as três regras da retrospectiva da B3 (a variante por cópia conferida, o miolo que estica, a foto nos dois modos) |
 | 2026-10-28 | v1.43 — §7.7: o fundo da T-01 e da T-02 (decisão (o): o Estuary em meio-tom, em grafite; no celular, a faixa do topo) |
+| 2026-10-28 | v1.44 — §2.2, regra 4: o `acabar.js` (B3, item 6) |
