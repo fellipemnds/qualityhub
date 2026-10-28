@@ -414,7 +414,7 @@ diferente: fica uma) e **Novo** (nasceu no item 14).
 
 | Camada | Componente | Virar componente | Duas versões ou mais | Novo |
 |---|---|---|---|---|
-| Átomos | Botão (falta a variante Destrutiva), Campo (falta o erro e o foco), Etapa, Prazo | Ícone (341), Avatar (285), Tag (101), Indicador (63), Contador (62), Interruptor (52) | Estado × Situação; Pílula (filtro × tipo); Aba (sublinhada × do item × controle segmentado) | Tecla |
+| Átomos | Botão e Campo (prontos na B3, item 3: os estados, os tokens e os dois modos), Etapa, Prazo | Ícone (341), Avatar (285), Tag (101), Indicador (63), Contador (62), Interruptor (52) | Estado × Situação; Pílula (filtro × tipo); Aba (sublinhada × do item × controle segmentado) | Tecla |
 | Moléculas | Feed (dia, evento, comentário), Anexos | Linha de pessoa (235), Opção (60), Campo de data (32), Cartão de NC do celular (25) | Linha de pendência (o componente sem uso × as linhas da T-03) | Linha de resultado, Item de menu |
 | Organismos | Doca, Barra do celular, Menu da pessoa, Abas do item | Bloco do título (37), Barra de ações fixa (36), Gaveta (7), Folha (5) | Recusa (T-09 × T-12); o Diálogo já ficou numa versão só (§8.2) | Menu "Mais", a busca |
 
@@ -1831,3 +1831,4 @@ tokens.
 | 2026-10-27 | v1.36 — revisão da fase B2: o menu da pessoa com o Minha conta e o Atalhos de teclado (§6.1), e os dois trechos que ainda falavam do ＋ da barra (§6.1, com outros módulos; §7.2, a busca da T-04) |
 | 2026-10-28 | v1.37 — §3.1.1: os primitivos (a escala do Grafite em 12 degraus e as cores dos estados), os semânticos como alias e a tabela de contraste (B3, item 1) |
 | 2026-10-28 | v1.38 — §2.2, regra 4: o caminho do script de valor solto (B3, item 2) |
+| 2026-10-28 | v1.39 — §5.3: o Botão (Tipo × Estado, com o Destrutivo) e os quatro Campos (Estado: Padrão, Foco, Erro, Desabilitado) prontos (B3, item 3) |
