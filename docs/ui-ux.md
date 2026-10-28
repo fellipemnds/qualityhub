@@ -147,7 +147,12 @@ A ordem é puxada pelas telas, sobre uma base de tokens.
       está sem variável); os estados que fizerem
       sentido (padrão, hover, foco, desabilitado, erro); claro e escuro,
       com o contraste conferido; a descrição de uso no Figma; o nome no
-      padrão (§2.1).
+      padrão (§2.1). Da retrospectiva da B3 (item 5, 2026-10-28,
+      aprovadas por Matthew): **a variante feita por cópia é conferida
+      numa cópia de teste** (o Figma perde as ligações das camadas com
+      as propriedades); **o miolo estica com quem usa** (nada de largura
+      fixa por dentro); e **toda mudança termina numa foto nos dois
+      modos**.
    5. **Registro e saída:** toda mudança numa tabela de histórico do
       `DESIGN.md` (data, o quê, por quê), sem número de versão (um
       produto e um time: o histórico e o Git bastam). O componente que sai
@@ -1844,3 +1849,4 @@ tokens.
 | 2026-10-28 | v1.39 — §5.3: o Botão (Tipo × Estado, com o Destrutivo) e os quatro Campos (Estado: Padrão, Foco, Erro, Desabilitado) prontos (B3, item 3) |
 | 2026-10-28 | v1.40 — §5.3: os átomos todos prontos (B3, item 4) |
 | 2026-10-28 | v1.41 — §2.1: a arrumação das páginas de componentes (o inventário em cima, o quadro Componentes com um cartão por peça embaixo; a vitrine nunca cinza) |
+| 2026-10-28 | v1.42 — §2.2, regra 4: as três regras da retrospectiva da B3 (a variante por cópia conferida, o miolo que estica, a foto nos dois modos) |
