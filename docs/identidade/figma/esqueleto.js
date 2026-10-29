@@ -83,6 +83,17 @@ export async function esqueleto(alvo, manter = ["Shell/Doca", "Shell/Barra infer
             feito.bloco++;
             return;
         }
+        // a barra de um gráfico é um retângulo na cor do texto: vira cinza, no mesmo lugar
+        if (
+            no.type === "RECTANGLE" &&
+            no.fills.some((t) =>
+                ["texto/principal", "texto/apoio"].some((n) => t.boundVariables?.color?.id === V[n].id),
+            )
+        ) {
+            no.fills = [tinta];
+            feito.bloco++;
+            return;
+        }
         // um chip ou um selo feito à mão (um quadro baixo, com fundo ou contorno, só com texto ou
         // ícone dentro) é um bloco, como o componente que ele imita
         const temTinta = (campo) => Array.isArray(no[campo]) && no[campo].some((t) => t.visible !== false);
