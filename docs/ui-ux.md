@@ -840,7 +840,7 @@ incident.io e o Jira, no `docs/identidade/referencias-interface.md`).
 
 1. **O bloco do título, escuro,** como no celular (o gesto 1 da casa,
    §6.2): o código e o título, o estado, a etapa e os indicadores, a
-   pilha dos envolvidos e as ações à direita.
+   fila dos envolvidos e as ações à direita.
 2. **Os Dados** trazem a **classificação vigente** (a última aprovada,
    PRD Q19) como tag, mesmo repetida nos Itens: é o que mais diz sobre a
    NC. O ID fica em cinza ao lado da tag.
@@ -914,8 +914,9 @@ título no topo e a página em quatro abas.
    (#1C1C1F); no escuro, um degrau **acima** da página e dos cartões
    (#1D1D21), porque a página já é quase preta. Dentro dele, de cima para
    baixo:
-   - o **estado** na caixinha e, à direita, a **pilha dos envolvidos**
-     (avatares gerados pelo nome, `docs/marca.md`; o toque abre as
+   - o **estado** na caixinha e, à direita, a **fila dos envolvidos**
+     (o `Avatar` de 24 px lado a lado, a 4 px, sem sobrepor: sobreposto, ele
+     escondia a primeira letra do vizinho; gerados pelo nome, `docs/marca.md`; o toque abre as
      atribuições em Detalhes; para o leitor de tela, "4 envolvidos:
      Beltrana (aprovadora), Fulana, Ciclano, Deltrano");
    - o **título grande e inteiro** (até 200 caracteres, `nc.schema.ts`),
@@ -1866,3 +1867,4 @@ tokens.
 | 2026-10-28 | v1.42 — §2.2, regra 4: as três regras da retrospectiva da B3 (a variante por cópia conferida, o miolo que estica, a foto nos dois modos) |
 | 2026-10-28 | v1.43 — §7.7: o fundo da T-01 e da T-02 (decisão (o): o Estuary em meio-tom, em grafite; no celular, a faixa do topo) |
 | 2026-10-28 | v1.44 — §2.2, regra 4: o `acabar.js` (B3, item 6) |
+| 2026-10-28 | v1.45 — §7.3 e §7.4: a fila dos envolvidos com o `Avatar` lado a lado, sem sobrepor (B3, item 9) |
