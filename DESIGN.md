@@ -24,8 +24,11 @@
 6. **Os estados de cada tela** (o G4, `docs/fluxo-app.md` §8): Vazio, Carregando (o esqueleto
    cinza, pulsando), Erro (com o Tentar de novo), Sem permissão e Não encontrado, pelo organismo
    **Estado da tela**. Erro em tela inteira só quando não há tela para mostrar.
-7. **Variante é enum.** As variantes do Figma usam os valores dos enums do backend
-   (`src/compartilhado/entidades/`), e o componente do Figma tem o nome do componente React.
+7. **Variante é enum.** Cada valor de um enum do backend (`src/compartilhado/entidades/`) tem
+   uma variante, com o rótulo da tela: `ABERTO` é "Aberta", porque todo item é feminino (a NC,
+   a Contenção, a Ação Corretiva...). Onde o backend não tem enum, a variante vem de um valor
+   calculado: a situação de pessoas e setores sai de campos como o `desativadoEm`, e o prazo, da
+   data. O componente do Figma tem o nome do componente React.
 8. **Nada solto:** toda cor e medida vem de um token. No Figma, o
    `docs/identidade/figma/valor-solto.js` confere; a Mockups terminou a B3 com zero.
 
