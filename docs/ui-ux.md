@@ -413,7 +413,7 @@ em `components/` (os do shadcn/ui, em `components/ui/`).
 | Componente | Base | Uso |
 |---|---|---|
 | `EstadoVazio` | — | Ícone + frase + ação que resolve |
-| `Esqueleto` | Skeleton | Forma da tela enquanto carrega |
+| `Esqueleto` | Skeleton | Forma da tela enquanto carrega. **Em ASCII** (decisão (t), 2026-10-29): no lugar das barras cinza, os blocos `░▒▓█` do esqueleto do ASCII Reveal (https://quanhoangindex.github.io/ascii-reveal/, o Dither), em `texto/apoio`, com a faixa que varre devagar, parada com o "reduzir movimento"; a mesma forma de cada tela do `esqueleto.js`. A **revelação** (o texto que decodifica) só nas artes de pontos do Estado da tela, uma vez ao abrir; **nunca nos dados** (códigos, datas e prazos embaralhados, mesmo por 400 ms, ferem o Confiável). O pacote ou o nosso, na C0 |
 | `ErroComRetry` | Alert | Mensagem + "Tentar de novo" |
 | `SemPermissao` / `NaoEncontrado` | — | Página inteira com link de volta |
 
@@ -1913,3 +1913,4 @@ tokens.
 | 2026-10-29 | v1.48 — §7.7: a decisão (r), o fundo do login é o Prism do React Bits, na tela inteira, também no celular |
 | 2026-10-29 | v1.49 — §6.2 e §7.3: a decisão (s), a capa da NC sem a barra preta, com a luz do Prism no canto (parada ou em movimento, a escolha na Minha conta) |
 | 2026-10-29 | v1.50 — §6.2 e §7.3: a (s) revista, a capa numa barra de vidro líquido (refração, sombra interna sutil), com a luz no canto esquerdo |
+| 2026-10-29 | v1.51 — §5.2: a decisão (t), o `Esqueleto` em ASCII; a revelação só nas artes de pontos |
