@@ -137,7 +137,9 @@ se repete. O caminho e os testes: `docs/identidade/referencias.md`,
 luz que se abre em prisma, como na imagem do Apple Music da página Logo
 ("eu gosto muito da iridescência"). Ela fica na marca, e não na interface,
 onde o "o que evitar" continua valendo; quando o símbolo a tiver, o fundo
-do login pode herdar a mesma luz.
+do login pode herdar a mesma luz. **Em 2026-10-29** (decisão (r)), ela entrou
+na porta pelo Prism (o espectro original, que se abre em prisma), e, dentro do
+app, só como um fio de luz no topo do título (o lugar espera a decisão (s)).
 
 ## Suspenso: o dia inteiro, em duas luzes (Dusk & Dawn)
 
@@ -183,11 +185,11 @@ trazia continua, dentro da Palpável ("à vista").
   **microinterações** sutis, de 150 a 250 ms, sempre com uma função e
   desligadas quando o sistema pede para reduzir o movimento.
 - **Contraste:** 4,5:1 para texto nos dois modos (claro e escuro).
-- **O fundo do login** (decisão (o), 2026-10-28; **suspensa no mesmo dia**, a iridescência
-  vai ser analisada no fim da B3, `ui-ux.md` §7.7): a única tela com
-  movimento só de enfeite, porque é a porta de entrada: o Estuary do
-  asciify em meio-tom, em **grafite** a 20%; no celular, só uma faixa no topo, que se desfaz antes do logo (`ui-ux.md`
-  §7.7). A cor dele espera o símbolo.
+- **O fundo do login** (decisão (r), 2026-10-29, no lugar da (o)): a única tela com
+  movimento só de enfeite, porque é a porta de entrada: o **Prism** do React Bits, um
+  prisma de luz que gira devagar, no espectro original, na tela inteira (computador e
+  celular), parado com o "reduzir movimento" (`ui-ux.md` §7.7). É **onde a iridescência
+  mora**: a cor fica na porta, e a interface continua Grafite.
 
 ## Paleta (sessão 2)
 
@@ -279,7 +281,9 @@ páginas Marca, Fonte e Símbolo foram juntadas na página "Arquivo · B1".
   seleção é uma **borda sólida** na cor do brilho.
 - Gradiente atrás de texto ou de tabela: a luz fica **só no topo**, como
   ambiente, e se dissolve antes do conteúdo.
-- O orbe com gradiente girando como enfeite.
+- O orbe com gradiente girando como enfeite. **Exceção** (decisão (r), 2026-10-29,
+  de Matthew): o Prism do fundo do login, porque é luz refinada, e não um degradê
+  simples, e porque fica só na porta de entrada.
 - Pintar a superfície com a cor da face: o fundo é sempre neutro.
 
 ## Fonte (sessão 3)

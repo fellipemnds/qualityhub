@@ -1249,7 +1249,19 @@ celular, ocupa a largura toda. É a única tela com a marca no centro
 (o logotipo provisório, `docs/marca.md`) e com a **assinatura** da
 empresa embaixo (§1), como texto de apoio.
 
-**O fundo** (decisão (o) da B3, 2026-10-28; o checklist da revisão, §0). **Suspensa no mesmo dia** (Matthew): as telas
+**O fundo** (decisão **(r)** da B3, 2026-10-29, que substitui a (o); o checklist da revisão, §0). Atrás do cartão,
+na **tela inteira**, no computador e no celular (Matthew testou o tablet em pé: "ficou lindo"), o **Prism** do React Bits:
+um prisma de luz em WebGL que gira em 3D devagar (`animationType="3drotate"`, `timeScale` 0,25), no **espectro
+original** (sem os tons da marca), com a resolução em 0,4 (o efeito é difuso; mais baixo pesa menos) e, no claro, a
+luz desenhada como tinta (`lightMode`). Os outros valores, os do exemplo do React Bits (`height` 4,1, `baseWidth` 6,7,
+`scale` 3,6, `colorFrequency` 2,5, `glow` 1,3, `hoverStrength` 0,7, `inertia` 0,11). É decorativo (o canvas é
+`aria-hidden`) e, com o "reduzir movimento", fica parado, sem a entrada nem o giro. **Sem WebGL2**, o fundo liso. O
+protótipo descartável: https://claude.ai/artifact/WKunQ3US2x77UHBkYZcfKy. É a **exceção** ao "orbe girando como enfeite" do `docs/marca.md` (a regra continua
+valendo no resto) e ao critério de licença da escada (MIT + Commons Clause: pode usar no produto, até pago, mas não
+revender o componente); as duas, decisão de Matthew. O caminho até ele (o tecido e o prisma no Figma, que não mostra
+shader) fica na seção da decisão.
+
+**Antes, a (o)** (2026-10-28), **suspensa no mesmo dia** (Matthew): as telas
 de acesso ficam sem fundo (o organismo e a faixa escondidos no Figma, não apagados; no celular, o conteúdo começa a 80 px
 do topo, `espaco/10` além do padding da tela), e a **iridescência** (o tecido de holograma que ele trouxe do Threads,
 como o *Iridescent Foil* do dqnamo's kitchen) vai ser analisada no fim da B3, junto com a (p). O que a (o) decidiu:
@@ -1874,3 +1886,4 @@ tokens.
 | 2026-10-28 | v1.45 — §7.3 e §7.4: a fila dos envolvidos com o `Avatar` lado a lado, sem sobrepor (B3, item 9) |
 | 2026-10-28 | v1.46 — §2.2, regra 4: o `esqueleto.js` (o Carregando com a forma da tela, como a §5.2 já pedia; B3, item 10) |
 | 2026-10-28 | v1.47 — §7.7: a decisão (o), o fundo do login, suspensa; a iridescência para o fim da B3 |
+| 2026-10-29 | v1.48 — §7.7: a decisão (r), o fundo do login é o Prism do React Bits, na tela inteira, também no celular |

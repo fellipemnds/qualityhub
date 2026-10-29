@@ -387,3 +387,18 @@ interface. Talvez um backdrop?". Coleção no Mobbin: "Andon · T-01 Login
   do Figma; fora do repositório): "eu queria aquela iridescência". Foi para
   a pendência da marca.
 
+## 2026-10-29 · Portrait e o Prism do React Bits (a iridescência, decisão (r))
+
+Pedido de Matthew: a iridescência na porta de entrada e um fio no app, com a
+vibe do tecido do Threads (um holograma claro) e do prisma do Apple Music.
+Coleção no Mobbin: "Andon · T-01 Login (o fundo)".
+
+- **Portrait · o véu pastel** (https://mobbin.com/screens/a9311893-ff3a-452c-8389-fa9991708af7):
+  um véu iridescente leve no fundo e um anel de luz só no logo e num botão.
+  Matthew: "só o Portrait, mas ainda não do jeito que imaginei".
+- **React Bits · Prism** (https://www.reactbits.dev/backgrounds/prism): um
+  prisma de luz em WebGL que gira e se abre em espectro. Achado por Matthew:
+  "ficou perfeito". Foi o escolhido.
+- **React Bits · Iridescence** (https://www.reactbits.dev/backgrounds/iridescence)
+  e **Paper Shaders** (https://shaders.paper.design/, Apache-2.0): os dois
+  candidatos levantados pelo Claude; ficaram de fora quando o Prism apareceu.
