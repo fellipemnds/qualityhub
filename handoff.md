@@ -371,10 +371,10 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
 ## 6. Próximo passo
 
 **Agora (2026-10-29, tarde, depois da sessão na nuvem):** a B3 está com todos os itens feitos e o PR #14 ainda em rascunho. Falta o passo 7 do `/abrir-pr`:
-1. **As revisões da fase** no diff inteiro (`git diff origin/main...HEAD`): qualidade e documentos contra o código; a de segurança provavelmente não se aplica (nada de login, sessão nem CI).
-2. **O achado do Figma** para Matthew decidir: na T-07 Investigação A3 do computador, "quem preenche (em aprovação)", o botão principal diz "Finalizar execução" (é da Ação Corretiva).
-3. **O "pronto quando"** (plano §1.1) item por item, e as perguntas rápidas para Matthew explicar a fase.
-4. Com o ok dele: `gh pr ready 14`, o CI e a mensagem do merge (passo 8).
+1. ~~As revisões da fase~~ (feitas na nuvem: a regra 7 do `DESIGN.md` corrigida; o resto sem achado; a troca conferida contra o Wireframes, três telas com botões que deviam estar ocultos, consertadas).
+2. ~~O "pronto quando" e as perguntas~~ (Matthew respondeu; a dúvida da luz foi para a B4, e o PDF virou a Q28 do PRD, em aberto, para levar à analista).
+3. Com o ok dele: `gh pr ready 14`, o CI e a mensagem do merge (passo 8).
+4. Pendência antiga vista no caminho: na NC fechada e na Contenção fechada, o `Item/Estado` está na variante "Aberta" com o texto "Fechada" (já assim no Wireframes).
 5. Nota para quem gerar Carregando de novo: o `esqueleto.js` transforma uma instância num bloco só, e o bloco do título e o atalho agora são instâncias (as 10 cópias das telas de Carregando continuam como estavam).
 
 **Antes (2026-10-28, fim do dia em casa; o próximo é no trabalho):**
