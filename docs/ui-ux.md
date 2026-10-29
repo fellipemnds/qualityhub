@@ -146,9 +146,7 @@ A ordem é puxada pelas telas, sobre uma base de tokens.
       script `docs/identidade/figma/valor-solto.js`, que lista o que
       está sem variável; o `acabar.js`, ao lado, faz o primeiro conserto
       do que vem solto do wireframe, e o `esqueleto.js` monta o Carregando
-      de cada tela a partir de uma cópia dela, já em ASCII, §5.2; o
-      `asciificar` do mesmo arquivo passa para ASCII um Carregando ainda
-      cinza); os estados que fizerem
+      de cada tela a partir de uma cópia dela, §5.2); os estados que fizerem
       sentido (padrão, hover, foco, desabilitado, erro); claro e escuro,
       com o contraste conferido; a descrição de uso no Figma; o nome no
       padrão (§2.1). Da retrospectiva da B3 (item 5, 2026-10-28,
@@ -429,7 +427,7 @@ em `components/` (os do shadcn/ui, em `components/ui/`).
 | Componente | Base | Uso |
 |---|---|---|
 | `EstadoVazio` | — | Ícone + frase + ação que resolve |
-| `Esqueleto` | Skeleton | Forma da tela enquanto carrega. **Em ASCII** (decisão (t), 2026-10-29): no lugar das barras cinza, os blocos `░▒▓█` do esqueleto do ASCII Reveal (https://quanhoangindex.github.io/ascii-reveal/, o Dither), em `texto/apoio`, com a faixa que varre devagar, parada com o "reduzir movimento"; a mesma forma de cada tela do `esqueleto.js`. No Figma, o `esqueleto.js` desenha os caracteres na IBM Plex Mono (o `░` vira meio-tom de pontos), nos estilos `Esqueleto/ASCII` e `Esqueleto/ASCII grande`, com a faixa `▒▓` parada numa diagonal a partir do canto superior esquerdo; no código, a `ui-monospace` do sistema, sem fonte nova. A **revelação** (o texto que decodifica) só nas artes de pontos do Estado da tela, uma vez ao abrir; **nunca nos dados** (códigos, datas e prazos embaralhados, mesmo por 400 ms, ferem o Confiável). O pacote ou o nosso, na C0 |
+| `Esqueleto` | Skeleton | Forma da tela enquanto carrega, em `fundo/selecao`, com a pulsação suave do shadcn (parada com o "reduzir movimento"). O ASCII do ASCII Reveal foi testado e ficou de fora (decisão (t), 2026-10-29) |
 | `ErroComRetry` | Alert | Mensagem + "Tentar de novo" |
 | `SemPermissao` / `NaoEncontrado` | — | Página inteira com link de volta |
 
@@ -1934,4 +1932,4 @@ tokens.
 | 2026-10-29 | v1.50 — §6.2 e §7.3: a (s) revista, a capa numa barra de vidro líquido (refração, sombra interna sutil), com a luz no canto esquerdo |
 | 2026-10-29 | v1.51 — §5.2: a decisão (t), o `Esqueleto` em ASCII; a revelação só nas artes de pontos |
 | 2026-10-29 | v1.52 — §3.1: os tokens do vidro e da luz, sem o `fundo/destaque`; §6.2 e §7.3: no celular, a barra do topo branca e o bloco do título de vidro, com a luz atrás (B3, item 14) |
-| 2026-10-29 | v1.53 — §2.2 e §5.2: o `esqueleto.js` em ASCII (IBM Plex Mono só no Figma) |
+| 2026-10-29 | v1.53 — §2.2 e §5.2: o ASCII testado no Figma e animado, e deixado de lado; o `Esqueleto` volta ao cinza pulsando |

@@ -551,7 +551,7 @@ comportamento:
 
 | Situação | Comportamento |
 |---|---|
-| **Carregando** | Esqueleto da tela, em ASCII (decisão (t), `ui-ux.md` §5.2), sem piscar conteúdo antigo |
+| **Carregando** | Esqueleto da tela (cinza, pulsando; `ui-ux.md` §5.2), sem piscar conteúdo antigo |
 | **Vazio** | Frase explicando o vazio + a ação que resolve, se houver ("Nenhuma NC ainda. **Registrar a primeira**") |
 | **Erro de rede/servidor** | Mensagem + **Tentar de novo**. Formulários **não perdem** o que foi digitado |
 | **Erro de validação** | Mensagem ao lado de cada campo, como o backend devolveu |
@@ -632,4 +632,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-27 | v1.21 — revisão da fase B2: o Atalhos de teclado do menu abre a janela do ?, com o interruptor dentro (§2.1) |
 | 2026-10-28 | v1.22 — §8: onde cada erro aparece (a tela inteira só para não abrir, não encontrado, sem permissão e o erro inesperado; o resto no lugar) |
 | 2026-10-29 | v1.23 — T-06 na capa da NC (decisão (s)) e a luz da NC na Minha conta |
-| 2026-10-29 | v1.24 — §8: o Carregando em ASCII (decisão (t)) |
+| 2026-10-29 | v1.24 — §8: o Carregando em ASCII (decisão (t)), testado e desfeito no mesmo dia |
