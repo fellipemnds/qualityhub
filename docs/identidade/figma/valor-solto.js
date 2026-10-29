@@ -7,7 +7,7 @@
 // total, a contagem por tipo e os primeiros achados, com o caminho de cada um.
 //
 // O que conta como solto:
-// - cor: preenchimento ou traço sólido sem variável (gradiente também);
+// - cor: preenchimento ou traço sólido sem variável, ou gradiente com alguma parada sem variável;
 // - espaço: gap e padding acima de 0 sem variável (o `espaco/*`);
 // - raio: canto acima de 0 sem variável (o `raio/*`);
 // - texto: sem estilo de texto.
@@ -50,8 +50,8 @@ export async function valorSolto(alvo, limite = 60) {
                     )
                     .join("");
                 anotar(no, "cor", `${campo} #${hex}`);
-            } else if (t.type.startsWith("GRADIENT")) {
-                anotar(no, "cor", `${campo} com gradiente`);
+            } else if (t.type.startsWith("GRADIENT") && !t.gradientStops.every((p) => p.boundVariables?.color)) {
+                anotar(no, "cor", `${campo} com gradiente sem variável`);
             }
         }
     };
