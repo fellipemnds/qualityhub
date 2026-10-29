@@ -21,6 +21,7 @@ próprio, com aprovação de Matthew (`CONSTRAINTS.md` §6).
 | `docs/prd.md` | O quê e por quê: escopo do MVP, regras de negócio RN-xx, permissões, decisões com a analista |
 | `docs/fluxo-app.md` | Telas, navegação, etapa calculada da NC, jornadas, ações por estado, "Minhas pendências" |
 | `docs/ui-ux.md` | Fundações visuais, componentes (shadcn/ui), wireframes em texto, textos da tela |
+| `DESIGN.md` | O sistema de design como contrato (fim da B3): as regras de toda tela, os tokens, a tabela componente do Figma → arquivo React e o histórico. **Ler antes de montar uma tela** |
 | `docs/marca.md` | A marca Andon: ideia, nome, paleta (o **Grafite**, sem cor de destaque), fonte (Figtree), logotipo provisório e a assinatura da empresa |
 | `docs/trd.md` | Stack, sessão, API, anexos, testes, infraestrutura, hospedagem, ADR-33 a ADR-38 |
 | `docs/esquema-backend.md` | Modelo de dados, mudanças M1–M5, valores calculados, contrato da API, correções B1–B37 |
