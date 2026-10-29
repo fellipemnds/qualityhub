@@ -603,18 +603,19 @@ Os plugins ligados no `.claude/settings.json` do projeto vêm destas marketplace
 | `agent-skills@addy-agent-skills` | `addyosmani/agent-skills` |
 | `taste-skill@taste-skill` | `Leonxlnx/taste-skill` |
 | `understand-anything@understand-anything` | `Egonex-AI/Understand-Anything` |
-| `frontend-slides@frontend-slides` | `zarazhangrui/frontend-slides` |
 | `ponytail@ponytail` | `DietrichGebert/ponytail` |
-| `diagram-design@diagram-design` | `cathrynlavery/diagram-design` |
+
+O `frontend-slides` e o `diagram-design` saíram em 2026-10-28 (nunca usados; os artifacts e o FigJam fazem o mesmo). Num PC que ainda os tenha: `claude plugin uninstall -s project <plugin>`, depois `-s user`, e `claude plugin marketplace remove <marketplace>`.
 
 Para cada linha: `claude plugin marketplace add <marketplace>` e depois `claude plugin install <plugin>`. O Ponytail precisa também do `~/.config/ponytail/config.json` com `{ "defaultMode": "lite" }` (regra no `CLAUDE.md`). O `/retomar` confere se algum faltou.
 
-**Skills avulsas** (fora dos plugins; a `/desenhar` usa as cinco). Ficam em `~/.claude/skills/`, uma pasta por skill, copiadas dos repositórios abaixo (em casa, em 2026-10-26: `emilkowalski/skills` em `2d22863`, `pbakaus/impeccable` em `414603b`):
+**Skills avulsas** (fora dos plugins; a `/desenhar` usa as cinco de design, e a `teach` é do estudo, `CLAUDE.md`). Ficam em `~/.claude/skills/`, uma pasta por skill, copiadas dos repositórios abaixo (em casa, em 2026-10-26: `emilkowalski/skills` em `2d22863`, `pbakaus/impeccable` em `414603b`; em 2026-10-28: `mattpocock/skills` em `59db609`):
 
 | Skill | Repositório (GitHub) | Pasta no repositório |
 |---|---|---|
 | `apple-design`, `mobile-native`, `emil-design-eng`, `prototype` | `emilkowalski/skills` (MIT) | `skills/<nome>/` |
 | `impeccable` | `pbakaus/impeccable` (Apache-2.0) | `.claude/skills/impeccable/` |
+| `teach` | `mattpocock/skills` (MIT) | `skills/productivity/teach/` |
 
 Para instalar: `git clone --depth 1` do repositório numa pasta temporária, ler o `SKILL.md` e copiar a pasta para `~/.claude/skills/`. Valem a partir da próxima sessão do Claude Code. Na nuvem (§13) não estão.
 
@@ -670,15 +671,13 @@ node -v && docker info > /dev/null && echo DOCKER_OK
 npm ci && npx --no-install prisma generate
 ```
 
-**Os plugins do Claude Code** (os 6 do §12.4): a nuvem nasce sem eles. O `.claude/settings.json` do projeto já diz de onde vêm (`extraKnownMarketplaces`, desde 2026-10-21), mas sem a confirmação de uma pessoa o CLI não cadastra as marketplaces sozinho; o `claude plugin marketplace add` direto funciona (instalados assim em 2026-10-21):
+**Os plugins do Claude Code** (os 4 do §12.4): a nuvem nasce sem eles. O `.claude/settings.json` do projeto já diz de onde vêm (`extraKnownMarketplaces`, desde 2026-10-21), mas sem a confirmação de uma pessoa o CLI não cadastra as marketplaces sozinho; o `claude plugin marketplace add` direto funciona (instalados assim em 2026-10-21):
 
 ```bash
 for par in "addyosmani/agent-skills agent-skills@addy-agent-skills" \
            "DietrichGebert/ponytail ponytail@ponytail" \
            "Leonxlnx/taste-skill taste-skill@taste-skill" \
-           "Egonex-AI/Understand-Anything understand-anything@understand-anything" \
-           "zarazhangrui/frontend-slides frontend-slides@frontend-slides" \
-           "cathrynlavery/diagram-design diagram-design@diagram-design"; do
+           "Egonex-AI/Understand-Anything understand-anything@understand-anything"; do
   set -- $par; claude plugin marketplace add "$1" && claude plugin install "$2"
 done
 mkdir -p ~/.config/ponytail && echo '{ "defaultMode": "lite" }' > ~/.config/ponytail/config.json

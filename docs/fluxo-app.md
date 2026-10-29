@@ -115,7 +115,7 @@ saídas ficam no **menu da pessoa**, que abre do fim da doca:
 | Tela inicial | Quem acessa mais de uma tela inicial possível | Preferência (§3) |
 | Atalhos de teclado | Todos (só no computador) | Abre a janela dos atalhos (o ?), onde fica o interruptor dos atalhos de uma tecla (`ui-ux.md` §6.1, WCAG 2.1.4); a escolha fica no navegador |
 | Sair | Todos | |
-| Minha conta | Todos | No computador, abre a T-13: a foto, o apelido (RN-52), a Tela inicial e a sessão (decisão (l)) |
+| Minha conta | Todos | No computador, abre a T-13: a foto, o apelido (RN-52), a Tela inicial, a sessão (decisão (l)) e a **luz da NC** (parada ou em movimento, guardada no aparelho; decisão (s)) |
 | Sair de todos os aparelhos | Todos | No menu da pessoa, embaixo do Sair: encerra as sessões abertas em outros computadores (`POST /auth/sair-de-todos`, pronto desde a A4; Matthew, 2026-10-21) |
 
 ---
@@ -460,7 +460,7 @@ Os dados também mostram a **classificação vigente** (a última aprovada,
 PRD Q19), e o envio para fechamento vem **depois** dos filhos.
 
 No celular, as mesmas partes em quatro abas, Resumo · Detalhes · Itens ·
-Feed, com o cabeçalho num bloco escuro (`ui-ux.md` §7.3).
+Feed, com o cabeçalho na capa da NC, sem a barra escura e com a luz no canto (decisão (s), `ui-ux.md` §7.3).
 
 ### T-07 Detalhe do item filho
 
@@ -551,13 +551,15 @@ comportamento:
 
 | Situação | Comportamento |
 |---|---|
-| **Carregando** | Esqueleto da tela, sem piscar conteúdo antigo |
+| **Carregando** | Esqueleto da tela (cinza, pulsando; `ui-ux.md` §5.2), sem piscar conteúdo antigo |
 | **Vazio** | Frase explicando o vazio + a ação que resolve, se houver ("Nenhuma NC ainda. **Registrar a primeira**") |
 | **Erro de rede/servidor** | Mensagem + **Tentar de novo**. Formulários **não perdem** o que foi digitado |
 | **Erro de validação** | Mensagem ao lado de cada campo, como o backend devolveu |
 | **Sem permissão** (URL digitada à mão) | "Você não tem acesso a esta página" + link para a tela inicial |
 | **Não encontrado** | "Este item não existe ou foi excluído" (rascunho excluído) + link para a lista |
 | **Sessão expirada** | Volta para o login e, depois de entrar, retorna para onde a pessoa estava |
+
+**Onde cada erro aparece** (pedido de Matthew, 2026-10-28, B3): a **tela inteira**, no lugar do conteúdo e com a casca de pé (a doca, a barra), só quando **não há tela para mostrar**: não deu para abrir (rede ou 5xx ao carregar), não encontrado (404), sem permissão (403) e o erro inesperado do próprio app. Esses quatro ganham a **ilustração** (a decisão (q) da B3, arte em ASCII, a escolher). O resto aparece **no lugar**, sem tirar a pessoa do que estava fazendo: a validação (400) no campo; a falha ao salvar ou enviar num aviso no formulário, com **Tentar de novo** e nada perdido; o conflito (409: alguém mexeu antes, ou falta algo para enviar) no diálogo ou na lista do que falta; o excesso de tentativas do login (429) na própria T-01; a sessão expirada (401) na volta ao login; a falta de rede numa faixa no topo, enquanto durar; o convite vencido na T-02.
 
 ---
 
@@ -628,3 +630,6 @@ Com Matthew, em 2026-09-24.
 | 2026-10-27 | v1.19 — T-12 (decisão (m)): lista + painel como a T-09, com as pessoas do setor e a recusa da RN-44 como lista do que fazer |
 | 2026-10-27 | v1.20 — §2.1 e T-04: a lupa da busca na barra do celular, no lugar do ＋; a Nova NC no topo da T-04 (decisão (n)) |
 | 2026-10-27 | v1.21 — revisão da fase B2: o Atalhos de teclado do menu abre a janela do ?, com o interruptor dentro (§2.1) |
+| 2026-10-28 | v1.22 — §8: onde cada erro aparece (a tela inteira só para não abrir, não encontrado, sem permissão e o erro inesperado; o resto no lugar) |
+| 2026-10-29 | v1.23 — T-06 na capa da NC (decisão (s)) e a luz da NC na Minha conta |
+| 2026-10-29 | v1.24 — §8: o Carregando em ASCII (decisão (t)), testado e desfeito no mesmo dia |

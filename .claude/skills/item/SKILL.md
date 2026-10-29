@@ -7,18 +7,19 @@ description: O ciclo de um item da fase, do planejamento ao commit — escolhe o
 
 O roteiro chama as skills do `agent-skills` **pelo nome**, no momento certo, e acrescenta só o
 que é do projeto. Não copie o conteúdo delas para cá: o plugin é atualizado e a cópia
-envelheceria. Peça antes de cada commit. O push, Claude dá depois da `/verificar` (`CLAUDE.md`, "Ambiente").
+envelheceria. Commit e push sem pedir, depois da `/verificar` (`CLAUDE.md`, "Commit e push sem pedir").
 
 ## 1. Escolher o item
 
 - O próximo pela ordem: o "Próximo passo" do `handoff.md` e a tabela da fase no
   `docs/plano-implementacao.md` (o que não está **Feito**). Matthew pode escolher outro.
 - Diga, em poucas linhas (regra do `CLAUDE.md`):
-  - **de quem é**: 🧑 (Matthew escreve, no passo a passo combinado em 2026-10-05) ou 🤖;
+  - **de quem é**: 🧑 (Matthew escreve, no passo a passo do `CLAUDE.md`) ou 🤖;
   - **o que tem de novo** para Matthew, ou "já aprendido" (e onde: o `handoff.md` §2 lista o
     que ele aprendeu na fase);
   - **que arquivos** o item toca, depois de ler o código (não pelo nome).
-- **Espere o "pode"** antes de seguir. Matthew pode pegar um item 🤖 de volta.
+- Item 🧑: **espere o "pode"** antes de seguir. Item 🤖: avise e siga. Matthew pode pegar um
+  item 🤖 de volta.
 
 ## 2. Antes do código (só o que o item pedir)
 
@@ -84,8 +85,8 @@ ela mudou.
      descreve;
    - `handoff.md`: o "Próximo passo", o número da suíte (§2) e o que Matthew aprendeu.
 2. **Commits:** código e documentação em commits separados (`feat:`/`fix:`/`refactor:` e
-   `docs:`), formatação automática à parte. Mostre os arquivos e as mensagens, com o resumo da
-   `/verificar`, e espere o ok.
+   `docs:`), formatação automática à parte. Depois do commit e do push, mostre os arquivos e as
+   mensagens, com o resumo da `/verificar`.
 3. **PR:** depois do push, atualize a descrição do PR da fase com o item, sem pedir (pedido de
    Matthew, 2026-10-08): "O que entra", a entrega marcada e a verificação, no formato do
    `/abrir-pr` §5 (`gh pr edit <n> --body-file -`).

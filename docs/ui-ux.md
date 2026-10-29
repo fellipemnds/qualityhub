@@ -78,6 +78,16 @@ As páginas de componentes seguem o Atomic Design (§2.2; revisto em
 | **Mockups** | As mesmas telas com os componentes e as fundações aplicados, e os estados do G4 |
 | **Decisões (histórico)** | Uma seção por decisão de desenho, com as variantes comparadas e o "Antes" (skill `/desenhar`) |
 
+**A arrumação das páginas Átomos, Moléculas e Organismos** (2026-10-28,
+pedido de Matthew: "deixa tudo padronizado"): em cima, o inventário da
+B2 (o retrato, só com cópias); embaixo, a 160 px, o quadro
+**Componentes**, com **um cartão por peça** ("Componente · Nome": o
+título em `Título/Seção`, uma frase de uso em `Apoio/Padrão` e o
+componente), em `fundo/card` com a borda `borda/padrao`, na ordem do
+inventário. **A vitrine de uma peça nunca é cinza:** o `fundo/selecao`
+some com a Tag, o Contador, o Estado e a Área de arrastar. A Wireframes
+fica só com as telas.
+
 Em todas: as variantes têm os nomes do enum (`RASCUNHO`, `EM_APROVACAO`...),
 e o componente tem o nome do componente React (§5), assim o handoff é
 mecânico: o nome no Figma é a chave no código.
@@ -132,11 +142,19 @@ A ordem é puxada pelas telas, sobre uma base de tokens.
       licença) → escrever o nosso. Degrau 4 ou 5 vai para o changelog
       (§1.1).
    4. **Quando um componente está pronto:** toda cor e medida ligada a
-      uma variável, sem valor solto (Claude confere pelo conector, com um
-      script que lista o que está sem variável); os estados que fizerem
+      uma variável, sem valor solto (Claude confere pelo conector, com o
+      script `docs/identidade/figma/valor-solto.js`, que lista o que
+      está sem variável; o `acabar.js`, ao lado, faz o primeiro conserto
+      do que vem solto do wireframe, e o `esqueleto.js` monta o Carregando
+      de cada tela a partir de uma cópia dela, §5.2); os estados que fizerem
       sentido (padrão, hover, foco, desabilitado, erro); claro e escuro,
       com o contraste conferido; a descrição de uso no Figma; o nome no
-      padrão (§2.1).
+      padrão (§2.1). Da retrospectiva da B3 (item 5, 2026-10-28,
+      aprovadas por Matthew): **a variante feita por cópia é conferida
+      numa cópia de teste** (o Figma perde as ligações das camadas com
+      as propriedades); **o miolo estica com quem usa** (nada de largura
+      fixa por dentro); e **toda mudança termina numa foto nos dois
+      modos**.
    5. **Registro e saída:** toda mudança numa tabela de histórico do
       `DESIGN.md` (data, o quê, por quê), sem número de versão (um
       produto e um time: o histórico e o Git bastam). O componente que sai
@@ -168,10 +186,11 @@ A ordem é puxada pelas telas, sobre uma base de tokens.
 
 ### 3.1 Cores
 
-Os nomes abaixo são os **semânticos** (a função, não a cor), que na B3
-passam a apontar para os **primitivos** (§2.2). Os valores são **provisórios** (tons
-da paleta padrão do Tailwind); os da marca, com o contraste conferido,
-estão no `docs/marca.md` (B1) e entram aqui na B3. O contraste é conferido no G2.
+Os nomes abaixo são os **semânticos** (a função, não a cor), que desde
+2026-10-28 apontam para os **primitivos** (§2.2; a tabela e o contraste
+na §3.1.1). As colunas "provisório" das duas tabelas abaixo (tons do
+Tailwind) ficaram como histórico: os valores que valem são os da §3.1.1,
+iguais aos das coleções **Primitivos** e **Cor** do Figma.
 
 **Base** (mapeiam direto nas variáveis do shadcn/ui):
 
@@ -200,6 +219,90 @@ Por que o destaque provisório é **quase preto e não uma cor**: em uma
 ferramenta de trabalho, o que deve chamar atenção é o **estado** das
 coisas (vencido, reprovado, aguardando você). Um botão principal colorido
 competiria com os badges.
+
+#### 3.1.1 Primitivos e contraste (B3, item 1, 2026-10-28)
+
+**Os primitivos** (coleção **Primitivos** do Figma, um modo, escondida
+dos seletores: só os semânticos apontam para eles). Os 18 cinzas que os
+semânticos usavam viraram uma escala de 12 degraus: os tons quase iguais
+se juntaram (decisão de Matthew), com o contraste conferido abaixo.
+
+| Primitivo | Hex | Claro: quem aponta | Escuro: quem aponta |
+|---|---|---|---|
+| `grafite/0` | `#FFFFFF` | `fundo/card`, `acao/primaria-texto` | — |
+| `grafite/25` | `#FBFBFC` | `fundo/lateral` | — |
+| `grafite/50` | `#F7F7F8` | `fundo/pagina` | — |
+| `grafite/100` | `#ECECEF` | `fundo/selecao` (antes `#EEEEEF`) | `texto/principal`, `acao/primaria`, `foco/anel`, `marca/toque` |
+| `grafite/150` | `#E6E6EA` | `borda/padrao` | — |
+| `grafite/400` | `#A1A1AA` | — | `texto/apoio` (antes `#9C9CA5`), `estado/rascunho` |
+| `grafite/500` | `#8A8A8F` | `borda/controle` | — |
+| `grafite/600` | `#68686D` | `texto/apoio` (antes `#62626B`), `estado/rascunho` (antes `#6B6B75`) | `borda/controle` |
+| `grafite/800` | `#25252A` | — | `borda/padrao`, `fundo/selecao` (antes `#222225`) |
+| `grafite/900` | `#121214` | `texto/principal`, `acao/primaria`, `foco/anel`, `marca/toque` | `fundo/card` (antes `#131316`) |
+| `grafite/925` | `#0E0E11` | — | `fundo/lateral` |
+| `grafite/950` | `#09090B` | — | `fundo/pagina`, `acao/primaria-texto` |
+
+As cores, uma por estado e modo, com os valores do `docs/marca.md`:
+`azul/600` `#2E6FE0` e `azul/400` `#6AA6FF` (aberta), `violeta/600`
+`#7C4FE0` e `violeta/400` `#AE92FF` (em aprovação), `verde/700` `#16883F`
+e `verde/400` `#4CD486` (fechada), `ambar/800` `#975700` e `ambar/400`
+`#F5B83D` (vence em breve), `vermelho/600` `#D12E2E` e `vermelho/400`
+`#FF7B73` (vencida e `acao/destrutiva`). O primeiro de cada par é o do
+claro.
+
+**`marca/toque`** (reservado, §2.2, item 1) aponta para o grafite do
+texto nos dois modos, até a sessão do SaaS decidir outra coisa.
+
+**O vidro e a luz** (decisão (s), B3, item 14, 2026-10-29). Primitivos
+novos, com transparência: `vidro/branco-50`, `vidro/grafite-45`,
+`sombra/grafite-5`, `sombra/preto-25`, `brilho/branco-30` e
+`brilho/branco-3`; e o espectro da luz, `luz/vermelho`, `luz/ambar`,
+`luz/verde`, `luz/ciano`, `luz/azul` e `luz/magenta` (só para a
+aproximação do Prism no Figma, o componente **Luz do Prism**; no código, a
+luz é o shader). Semânticos: `vidro/tinta` (o fundo da barra de vidro;
+branco a 50% no claro, `#161618` a 45% no escuro), `vidro/sombra-interna`
+e `vidro/brilho-interno` (as cores das sombras internas); o raio
+`raio/vidro` (20 px); e o estilo de efeito **Vidro/Capa da NC** (o Glass do
+Figma, que mostra a refração, e as duas sombras internas). Saíram o
+`fundo/destaque` e o `texto/sobre-destaque`, da barra escura, que ninguém
+mais usa.
+
+**O contraste** (WCAG 2; texto ≥ 4,5:1, ícone e borda de controle ≥
+3:1), o pior caso entre os quatro fundos (página, card, lateral e
+seleção):
+
+| Par | Claro | Escuro | Mínimo |
+|---|---|---|---|
+| `texto/principal` | 15,87 (seleção) | 12,94 (seleção) | 4,5 ✅ |
+| `texto/apoio` | 4,70 (seleção) | 5,95 (seleção) | 4,5 ✅ |
+| `acao/primaria-texto` sobre `acao/primaria` | 18,71 | 16,87 | 4,5 ✅ |
+| Texto do botão sobre `acao/destrutiva` | 5,07 (branco) | 7,89 (`grafite/950`) | 4,5 ✅ |
+| `foco/anel` | 15,87 | 12,94 | 3 ✅ |
+| `estado/rascunho` | 4,70 | 5,95 | 3 ✅ |
+| `estado/aberta` | 3,99 | 6,18 | 3 ✅ |
+| `estado/em-aprovacao` | 4,40 | 6,07 | 3 ✅ |
+| `estado/fechada` | 3,85 | 8,04 | 3 ✅ |
+| `estado/vence-em-breve` | 4,84 | 8,58 | 3 ✅ |
+| `estado/vencida` | 4,30 | 6,05 | 3 ✅ |
+| `borda/controle` (página, card, lateral) | 3,21 | 3,38 | 3 ✅ |
+| `borda/controle` sobre `fundo/selecao` | 2,91 | 2,75 | 3 ⚠️ |
+
+As cores dos estados são de **ícone** (≥ 3:1): o rótulo ao lado vai em
+`texto/principal`, e nada é dito só por cor (G2). No claro, como texto,
+só o `vence-em-breve` e o `rascunho` passariam de 4,5 em todos os
+fundos. **O ⚠️:** a borda de um campo dentro de uma linha selecionada
+fica abaixo de 3:1, e já ficava antes dos primitivos (2,96 e 2,86). Fica
+para o G2: só vale se uma tela puser um campo numa linha selecionada.
+
+**Sobre o vidro** (a capa da NC, decisão (s); G2 conferido em 2026-10-29,
+no pior ponto da luz, com a cor dela na opacidade da cópia e a tinta do
+vidro por cima): o `texto/principal` passa folgado (12,3:1 no claro, 8,9:1
+no escuro); o `texto/apoio` não (3,5:1 e 3,8:1), e engrossar a tinta não
+resolve sem acabar com o vidro (a 70%, 4,1:1). **A regra: sobre o vidro,
+texto só em `texto/principal`, sem opacidade**; ícone em `texto/apoio`
+passa (≥ 3:1). O botão bloqueado fica no cinza dele: controle
+desabilitado está fora da regra de contraste do WCAG, e o cinza é o que
+diz que ele está bloqueado.
 
 ### 3.2 Tipografia
 
@@ -326,6 +429,7 @@ em `components/` (os do shadcn/ui, em `components/ui/`).
 | `ItemPendencia` | Card | Uma linha de "Minhas pendências" |
 | `ItensDaNC` | Collapsible, ToggleGroup, DropdownMenu | Os itens filhos no Detalhe da NC: agrupados por tipo ou não, em lista ou cartões, ordenados por estado ou criação, com o medidor em segmentos (§7.3) |
 | `PainelAtividade` | Sheet (sem véu, empurrando a página) | O feed inteiro da NC à direita (com os eventos dos filhos, PRD Q25), com Tudo · Comentários · Histórico; ao abrir, a coluna lateral vira a faixa de resumo (§7.3). Aberto pelo atalho de um filho, vem filtrado por ele |
+| `AtalhoAtividade` | Button | O atalho da Atividade num filho: o ícone, "Atividade deste item" e quantos eventos há no feed da NC; abre o `PainelAtividade` filtrado pelo item. No Figma, `Atalho/Atividade deste item` (B3, item 14) |
 | `Medidor` | — | O progresso em segmentos: um por item, os feitos preenchidos; contínuo acima de 10 (os itens, o checklist) |
 | `FiltrosNC` | Select, Popover, Calendar | Filtros da lista de NCs, refletidos na URL (dá pra compartilhar um link filtrado) |
 
@@ -334,7 +438,7 @@ em `components/` (os do shadcn/ui, em `components/ui/`).
 | Componente | Base | Uso |
 |---|---|---|
 | `EstadoVazio` | — | Ícone + frase + ação que resolve |
-| `Esqueleto` | Skeleton | Forma da tela enquanto carrega |
+| `Esqueleto` | Skeleton | Forma da tela enquanto carrega, em `fundo/selecao`, com a pulsação suave do shadcn (parada com o "reduzir movimento"). O ASCII do ASCII Reveal foi testado e ficou de fora (decisão (t), 2026-10-29) |
 | `ErroComRetry` | Alert | Mensagem + "Tentar de novo" |
 | `SemPermissao` / `NaoEncontrado` | — | Página inteira com link de volta |
 
@@ -352,7 +456,7 @@ diferente: fica uma) e **Novo** (nasceu no item 14).
 
 | Camada | Componente | Virar componente | Duas versões ou mais | Novo |
 |---|---|---|---|---|
-| Átomos | Botão (falta a variante Destrutiva), Campo (falta o erro e o foco), Etapa, Prazo | Ícone (341), Avatar (285), Tag (101), Indicador (63), Contador (62), Interruptor (52) | Estado × Situação; Pílula (filtro × tipo); Aba (sublinhada × do item × controle segmentado) | Tecla |
+| Átomos | **Todos prontos na B3** (itens 3 e 4, 2026-10-28): Botão, Campo, Estado (com a Situação), Etapa, Prazo, Ícone, Avatar, Tag, Contador, Indicador, Interruptor, Tecla, Pílula, Aba e Controle segmentado. As colunas ao lado são o retrato da B2 | Ícone (341), Avatar (285), Tag (101), Indicador (63), Contador (62), Interruptor (52) | Estado × Situação; Pílula (filtro × tipo); Aba (sublinhada × do item × controle segmentado) | Tecla |
 | Moléculas | Feed (dia, evento, comentário), Anexos | Linha de pessoa (235), Opção (60), Campo de data (32), Cartão de NC do celular (25) | Linha de pendência (o componente sem uso × as linhas da T-03) | Linha de resultado, Item de menu |
 | Organismos | Doca, Barra do celular, Menu da pessoa, Abas do item | Bloco do título (37), Barra de ações fixa (36), Gaveta (7), Folha (5) | Recusa (T-09 × T-12); o Diálogo já ficou numa versão só (§8.2) | Menu "Mais", a busca |
 
@@ -529,10 +633,14 @@ revisão da B2 confere cada um); o 5 é acabamento (B3).
 1. **O bloco do título, com hierarquia.** Toda página de item abre com um
    bloco que dá o "rosto" do item: o código, o título (ou o rótulo, nos
    filhos, §10.3), o estado e quem está envolvido. **A NC é a casa**, a
-   que agrupa tudo: só ela tem o bloco **escuro** (§7.3). Os **filhos** são
+   que agrupa tudo: só ela tem a **luz** (decisão (s), 2026-10-29: a barra
+   escura saiu, pesada demais para a Calma; no computador, o título fica
+   numa **barra de vidro**, e a luz do Prism, parada, acende o canto
+   superior esquerdo atrás dela; no celular, também, com a barra do topo
+   branca acima, §7.3). Os **filhos** são
    da família: a mesma anatomia num tom **claro**, com o nome da NC em
    cima (o caminho de volta, `CabecalhoItem`), que diz a quem pertencem.
-   Nenhuma outra tela usa o bloco escuro. **Nos filhos** (decisão (h),
+   Nenhuma outra tela usa a luz. **Nos filhos** (decisão (h),
    2026-10-26), o título do bloco é o **tipo** ("Classificação"), não o
    rótulo, que repetia o primeiro campo da página e podia contradizê-lo
    antes do Salvar; o código fica na barra de cima. E o estado vem
@@ -760,9 +868,27 @@ incident.io e o Jira, no `docs/identidade/referencias-interface.md`).
 └───────────────────────────────────────────────┴──────────────────────┘
 ```
 
-1. **O bloco do título, escuro,** como no celular (o gesto 1 da casa,
-   §6.2): o código e o título, o estado, a etapa e os indicadores, a
-   pilha dos envolvidos e as ações à direita.
+1. **A capa da NC** (decisão (s), 2026-10-29, no lugar do bloco escuro; o
+   gesto 1 da casa, §6.2): o código e o título, o estado, a etapa e os
+   indicadores, a fila dos envolvidos e as ações à direita, numa **barra de
+   vidro líquido** (o bloco de sempre, com cantos de 20 px e sem borda). Atrás
+   dela, no **canto superior esquerdo**, a luz do Prism (o mesmo do login,
+   §7.7, no espectro original e na resolução 0,4), desfeita por uma máscara
+   antes dos cartões. O vidro: a tinta dos cartões translúcida por cima
+   (branco a 50% no claro, o cinza dos cartões a 45% no escuro), a luz
+   **refratada** por baixo (desenhada de novo dentro da barra, passando por
+   uma lente: aumenta 5% no meio e se curva nas bordas, 28 px dos lados e
+   22 px em cima e embaixo; feito por nós, e não pelo filtro do navegador,
+   para valer também no Safari), uma **sombra interna bem sutil** (em cima,
+   escura; embaixo, clara) e uma sombra externa leve. **Bem sutil no
+   escuro, sutil no claro** (o brilho a 0,45 e a 0,7 do login). **Parada**
+   por padrão (desenhada uma vez, sem custo); **em movimento** (gira
+   devagar, `timeScale` 0,15) se a pessoa escolher, na Minha conta (T-13),
+   guardado no aparelho. Com o "reduzir movimento", sempre parada; sem
+   WebGL2, sem a luz e sem a refração (fica a tinta). Decorativa
+   (`aria-hidden`). **A conferir no G2:** o título passa sobre a luz no
+   canto esquerdo, então o contraste do texto sobre o vidro tem de chegar a
+   4,5:1 no pior ponto da luz. O protótipo: https://claude.ai/artifact/E6KQoDA3W9KhUGnkqrFC8t.
 2. **Os Dados** trazem a **classificação vigente** (a última aprovada,
    PRD Q19) como tag, mesmo repetida nos Itens: é o que mais diz sobre a
    NC. O ID fica em cinza ao lado da tag.
@@ -831,13 +957,19 @@ título no topo e a página em quatro abas.
 ```
 
 1. **A barra do topo:** voltar, o código e o ⋯.
-2. **O bloco do título** (o "título grande" do Fresha), em
+2. **O bloco do título** (o "título grande" do Fresha). **Desde a decisão
+   (s)** (2026-10-29), sem o fundo escuro: a **barra do topo** (o voltar,
+   o código e o ⋯) fica **branca e sólida** (`fundo/card`; Matthew:
+   "mantém a barra branca nos celulares"), e o bloco do título embaixo
+   dela é a **barra de vidro**, com os cantos de baixo em `raio/vidro` e a
+   luz do Prism atrás, no canto esquerdo, como no computador. Antes, em
    `fundo/destaque`, token novo para a B3: no claro, o grafite
    (#1C1C1F); no escuro, um degrau **acima** da página e dos cartões
    (#1D1D21), porque a página já é quase preta. Dentro dele, de cima para
    baixo:
-   - o **estado** na caixinha e, à direita, a **pilha dos envolvidos**
-     (avatares gerados pelo nome, `docs/marca.md`; o toque abre as
+   - o **estado** na caixinha e, à direita, a **fila dos envolvidos**
+     (o `Avatar` de 24 px lado a lado, a 4 px, sem sobrepor: sobreposto, ele
+     escondia a primeira letra do vizinho; gerados pelo nome, `docs/marca.md`; o toque abre as
      atribuições em Detalhes; para o leitor de tela, "4 envolvidos:
      Beltrana (aprovadora), Fulana, Ciclano, Deltrano");
    - o **título grande e inteiro** (até 200 caracteres, `nc.schema.ts`),
@@ -1168,6 +1300,34 @@ No computador, o cartão fica centralizado sobre o `--background`; no
 celular, ocupa a largura toda. É a única tela com a marca no centro
 (o logotipo provisório, `docs/marca.md`) e com a **assinatura** da
 empresa embaixo (§1), como texto de apoio.
+
+**O fundo** (decisão **(r)** da B3, 2026-10-29, que substitui a (o); o checklist da revisão, §0). Atrás do cartão,
+na **tela inteira**, no computador e no celular (Matthew testou o tablet em pé: "ficou lindo"), o **Prism** do React Bits:
+um prisma de luz em WebGL que gira em 3D devagar (`animationType="3drotate"`, `timeScale` 0,25), no **espectro
+original** (sem os tons da marca), com a resolução em 0,4 (o efeito é difuso; mais baixo pesa menos) e, no claro, a
+luz desenhada como tinta (`lightMode`). Os outros valores, os do exemplo do React Bits (`height` 4,1, `baseWidth` 6,7,
+`scale` 3,6, `colorFrequency` 2,5, `glow` 1,3, `hoverStrength` 0,7, `inertia` 0,11). É decorativo (o canvas é
+`aria-hidden`) e, com o "reduzir movimento", fica parado, sem a entrada nem o giro. **Sem WebGL2**, o fundo liso. O
+protótipo descartável: https://claude.ai/artifact/WKunQ3US2x77UHBkYZcfKy. É a **exceção** ao "orbe girando como enfeite" do `docs/marca.md` (a regra continua
+valendo no resto) e ao critério de licença da escada (MIT + Commons Clause: pode usar no produto, até pago, mas não
+revender o componente); as duas, decisão de Matthew. O caminho até ele (o tecido e o prisma no Figma, que não mostra
+shader) fica na seção da decisão.
+
+**Antes, a (o)** (2026-10-28), **suspensa no mesmo dia** (Matthew): as telas
+de acesso ficam sem fundo (o organismo e a faixa escondidos no Figma, não apagados; no celular, o conteúdo começa a 80 px
+do topo, `espaco/10` além do padding da tela), e a **iridescência** (o tecido de holograma que ele trouxe do Threads,
+como o *Iridescent Foil* do dqnamo's kitchen) foi analisada na (r), junto com a (p), que a (s) substituiu. O que a (o) decidiu:
+no computador, atrás do cartão, o **Estuary** do asciify (correntes de
+letras em meio-tom que o cursor acende): Halftone, Hover Fluid, 0,4×,
+célula de 9 px, opacidade de 20%, em grafite (`texto/principal`), o
+organismo **Fundo do acesso** no Figma. É decorativo (`aria-hidden`), para
+com o "reduzir movimento" (fica um quadro parado). No celular, onde o
+formulário ocupa a tela, só uma **faixa no topo**, de 150 px, que se desfaz
+antes do logo (a variante A, escolhida por Matthew; a B, o cartão sobre o
+fundo, apertava os campos); o toque faz o papel do cursor. A cor dele espera a marca: a iridescência
+é uma direção do símbolo (`docs/marca.md`). No código (C0): o pacote
+`asciify-engine` (MIT, um mantenedor, dependências de GIF e vídeo; medir o
+peso) ou o nosso, umas 100 linhas de canvas.
 
 - **Erro de credencial:** uma mensagem só, no topo do formulário,
   "E-mail ou senha incorretos." (a API não diz qual dos dois errou).
@@ -1767,3 +1927,22 @@ tokens.
 | 2026-10-27 | v1.34 — §6.1: a busca (decisão (n) da B2: no computador, a janela de duas colunas antes de digitar e a lista com as pílulas depois; no celular, a tela cheia) e a navegação do celular revista: a lupa no lugar do ＋, a Nova NC no topo da T-04 |
 | 2026-10-27 | v1.35 — §5.3: o inventário do Figma (B2, item 15), nas páginas Átomos, Moléculas e Organismos |
 | 2026-10-27 | v1.36 — revisão da fase B2: o menu da pessoa com o Minha conta e o Atalhos de teclado (§6.1), e os dois trechos que ainda falavam do ＋ da barra (§6.1, com outros módulos; §7.2, a busca da T-04) |
+| 2026-10-28 | v1.37 — §3.1.1: os primitivos (a escala do Grafite em 12 degraus e as cores dos estados), os semânticos como alias e a tabela de contraste (B3, item 1) |
+| 2026-10-28 | v1.38 — §2.2, regra 4: o caminho do script de valor solto (B3, item 2) |
+| 2026-10-28 | v1.39 — §5.3: o Botão (Tipo × Estado, com o Destrutivo) e os quatro Campos (Estado: Padrão, Foco, Erro, Desabilitado) prontos (B3, item 3) |
+| 2026-10-28 | v1.40 — §5.3: os átomos todos prontos (B3, item 4) |
+| 2026-10-28 | v1.41 — §2.1: a arrumação das páginas de componentes (o inventário em cima, o quadro Componentes com um cartão por peça embaixo; a vitrine nunca cinza) |
+| 2026-10-28 | v1.42 — §2.2, regra 4: as três regras da retrospectiva da B3 (a variante por cópia conferida, o miolo que estica, a foto nos dois modos) |
+| 2026-10-28 | v1.43 — §7.7: o fundo da T-01 e da T-02 (decisão (o): o Estuary em meio-tom, em grafite; no celular, a faixa do topo) |
+| 2026-10-28 | v1.44 — §2.2, regra 4: o `acabar.js` (B3, item 6) |
+| 2026-10-28 | v1.45 — §7.3 e §7.4: a fila dos envolvidos com o `Avatar` lado a lado, sem sobrepor (B3, item 9) |
+| 2026-10-28 | v1.46 — §2.2, regra 4: o `esqueleto.js` (o Carregando com a forma da tela, como a §5.2 já pedia; B3, item 10) |
+| 2026-10-28 | v1.47 — §7.7: a decisão (o), o fundo do login, suspensa; a iridescência para o fim da B3 |
+| 2026-10-29 | v1.48 — §7.7: a decisão (r), o fundo do login é o Prism do React Bits, na tela inteira, também no celular |
+| 2026-10-29 | v1.49 — §6.2 e §7.3: a decisão (s), a capa da NC sem a barra preta, com a luz do Prism no canto (parada ou em movimento, a escolha na Minha conta) |
+| 2026-10-29 | v1.50 — §6.2 e §7.3: a (s) revista, a capa numa barra de vidro líquido (refração, sombra interna sutil), com a luz no canto esquerdo |
+| 2026-10-29 | v1.51 — §5.2: a decisão (t), o `Esqueleto` em ASCII; a revelação só nas artes de pontos |
+| 2026-10-29 | v1.52 — §3.1: os tokens do vidro e da luz, sem o `fundo/destaque`; §6.2 e §7.3: no celular, a barra do topo branca e o bloco do título de vidro, com a luz atrás (B3, item 14) |
+| 2026-10-29 | v1.53 — §2.2 e §5.2: o ASCII testado no Figma e animado, e deixado de lado; o `Esqueleto` volta ao cinza pulsando |
+| 2026-10-29 | v1.54 — §3.1: o contraste sobre o vidro (G2): texto só em `texto/principal` |
+| 2026-10-29 | v1.55 — §5.1: o `AtalhoAtividade`; §7.7: a (p) fechada pela (s) (B3, item 14) |

@@ -7,7 +7,7 @@ description: Rotina depois do merge de um Pull Request — volta para a main atu
 
 Nunca apague branch remota sem pedido explícito. O push da branch nova, Claude dá
 (`CLAUDE.md`, "Ambiente").
-Peça antes de cada commit.
+Commit e push sem pedir (`CLAUDE.md`).
 
 ## 0. Preparar o shell
 
@@ -48,8 +48,8 @@ Ache o PR da branch atual: `gh pr list --head <branch> --state all --json number
   no mesmo formato das linhas das fases anteriores.
 - `docs/changelog-arquitetura.md`: confira se existe a seção `### Fase <ID> — ...`. Se não
   existir, avise (não invente decisões: elas vêm da conversa e dos commits).
-- `CLAUDE.md`: frases sobre o estado da fase ("Falta fechar a fase", PR em aberto, bugs da
-  fase) passam para o passado.
+- `CLAUDE.md`: frases sobre o estado da fase que fechou saem (o registro fica no plano e no
+  changelog).
 
 **Sempre:**
 
@@ -57,8 +57,8 @@ Ache o PR da branch atual: `gh pr list --head <branch> --state all --json number
   mudança" e "Próximo passo" (o primeiro item da fase nova, na ordem do plano). As mesmas
   6 seções.
 
-Mostre os arquivos e a mensagem (`docs: <ID> concluída e abertura da <próxima>`, ou
-`docs: abertura da <próxima>`) e espere o ok para o commit.
+Commit com a mensagem (`docs: <ID> concluída e abertura da <próxima>`, ou
+`docs: abertura da <próxima>`) e mostre os arquivos.
 
 ## 5. Rever as skills (fim de bloco)
 

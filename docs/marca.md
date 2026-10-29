@@ -133,6 +133,18 @@ símbolo do PT a todos no teste: ela fica **arredondada** (o raio da barra),
 se repete. O caminho e os testes: `docs/identidade/referencias.md`,
 "2026-10-16".
 
+**Uma direção a explorar** (Matthew, 2026-10-28): a **iridescência**, a
+luz que se abre em prisma, como na imagem do Apple Music da página Logo
+("eu gosto muito da iridescência"). Ela fica na marca, e não na interface,
+onde o "o que evitar" continua valendo; quando o símbolo a tiver, o fundo
+do login pode herdar a mesma luz. **Em 2026-10-29** (decisão (r)), ela entrou
+na porta pelo Prism (o espectro original, que se abre em prisma), e, dentro do
+app, só na **capa da NC**, no computador (decisão (s)): a mesma luz, parada e
+sutil, no canto superior esquerdo, vista através de uma barra de vidro e
+desfeita antes do conteúdo. No celular, igual, com a barra do topo branca acima. A regra: **a luz é um lugar
+(a porta, a capa da NC), nunca um componente**; os botões e o resto continuam
+Grafite.
+
 ## Suspenso: o dia inteiro, em duas luzes (Dusk & Dawn)
 
 A direção de 2026-10-13, guardada como estava. Motivo da suspensão: a
@@ -177,6 +189,11 @@ trazia continua, dentro da Palpável ("à vista").
   **microinterações** sutis, de 150 a 250 ms, sempre com uma função e
   desligadas quando o sistema pede para reduzir o movimento.
 - **Contraste:** 4,5:1 para texto nos dois modos (claro e escuro).
+- **O fundo do login** (decisão (r), 2026-10-29, no lugar da (o)): a única tela com
+  movimento só de enfeite, porque é a porta de entrada: o **Prism** do React Bits, um
+  prisma de luz que gira devagar, no espectro original, na tela inteira (computador e
+  celular), parado com o "reduzir movimento" (`ui-ux.md` §7.7). É **onde a iridescência
+  mora**: a cor fica na porta, e a interface continua Grafite.
 
 ## Paleta (sessão 2)
 
@@ -227,11 +244,11 @@ azul no topo), Q2 Planning e Flowio (a luz ambiente no claro).
 | Token | Claro | Escuro |
 |---|---|---|
 | `--background` · fundo | `#F7F7F8` | `#09090B` |
-| `--card` | `#FFFFFF` | `#131316` |
+| `--card` | `#FFFFFF` | `#121214` (antes `#131316`) |
 | `--sidebar` · lateral | `#FBFBFC` | `#0E0E11` |
 | `--border` | `#E6E6EA` | `#25252A` |
 | `--foreground` · texto | `#121214` | `#ECECEF` |
-| `--muted-foreground` · texto de apoio | `#62626B` | `#9C9CA5` |
+| `--muted-foreground` · texto de apoio | `#68686D` (antes `#62626B`) | `#A1A1AA` (antes `#9C9CA5`) |
 | `--primary` / `--primary-foreground` · botão principal | `#121214` / `#FFFFFF` | `#ECECEF` / `#09090B` |
 
 | A face | Dawn claro | Dawn escuro | Dusk claro | Dusk escuro |
@@ -242,14 +259,17 @@ azul no topo), Q2 Planning e Flowio (a luz ambiente no claro).
 
 | Estado (ícone) | Claro | Escuro |
 |---|---|---|
-| Rascunho | `#6B6B75` | `#A1A1AA` |
+| Rascunho | `#68686D` (antes `#6B6B75`) | `#A1A1AA` |
 | Aberta | `#2E6FE0` | `#6AA6FF` |
 | Em aprovação | `#7C4FE0` | `#AE92FF` |
 | Fechada | `#16883F` | `#4CD486` |
 | Vence em breve | `#975700` | `#F5B83D` |
 | Vencida | `#D12E2E` | `#FF7B73` |
 
-Contraste conferido em 2026-10-13: texto ≥ 4,5:1 e ícone ≥ 3:1 nas quatro
+Em 2026-10-28 (B3, item 1), os cinzas viraram uma escala de 12
+primitivos (`ui-ux.md` §3.1.1), e seis tons se juntaram ao vizinho
+quase igual (os "antes" nas tabelas acima), com o contraste conferido de
+novo. Contraste conferido em 2026-10-13: texto ≥ 4,5:1 e ícone ≥ 3:1 nas quatro
 combinações (a página `docs/identidade/paleta.html`, que mostrava a conferência,
 saiu em 2026-10-16: o visual da marca fica só no Figma). No Figma
 (arquivo "Andon — Identidade", time "Andon" desde 2026-10-23, "Designing" desde 2026-10-20; antes no time Work, e antes "Dusk & Dawn — Identidade"), as cores eram *Variables*
@@ -265,7 +285,9 @@ páginas Marca, Fonte e Símbolo foram juntadas na página "Arquivo · B1".
   seleção é uma **borda sólida** na cor do brilho.
 - Gradiente atrás de texto ou de tabela: a luz fica **só no topo**, como
   ambiente, e se dissolve antes do conteúdo.
-- O orbe com gradiente girando como enfeite.
+- O orbe com gradiente girando como enfeite. **Exceção** (decisão (r), 2026-10-29,
+  de Matthew): o Prism do fundo do login, porque é luz refinada, e não um degradê
+  simples, e porque fica só na porta de entrada.
 - Pintar a superfície com a cor da face: o fundo é sempre neutro.
 
 ## Fonte (sessão 3)

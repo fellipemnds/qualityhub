@@ -82,9 +82,9 @@ do `CLAUDE.md` (carregado sozinho) e do código, lido quando o item começar.
 ## 5. Registrar
 
 Anote no `handoff.md` ("Última atualização" e o que a comparação mostrou).
-Commit só com o ok.
+Commit e push sem pedir.
 
 ## 6. Retomar
 
-O "Próximo passo" pela `/item`, que diz se o item é algo que Matthew já aprendeu e espera a
-confirmação antes de executar.
+O "Próximo passo" pela `/item`, que diz se o item é algo que Matthew já aprendeu e, num item
+🧑, espera a confirmação antes de executar.

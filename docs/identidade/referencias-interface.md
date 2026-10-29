@@ -367,3 +367,38 @@ Matthew: *"Mintlify e ClickUp, e inclusive a pesquisa do próprio Mobbin
   ao fundo, atrás do diálogo): antes de digitar, a busca abre um painel
   largo com **colunas de atalhos** (Categorias, Telas, Elementos, Fluxos):
   o que dá para procurar já aparece, sem a pessoa adivinhar.
+
+## 2026-10-28 · Fabric, Luma e o asciify (o fundo do login, decisão (o))
+
+Pedido de Matthew na retrospectiva da B3: "falta alguma cor, mas não na
+interface. Talvez um backdrop?". Coleção no Mobbin: "Andon · T-01 Login
+(o fundo)".
+
+- **Fabric · o login partido** (https://mobbin.com/screens/e5a30e9f-9ba7-4b4a-b480-ae07cf8d3cbf):
+  a luz desfocada num painel ao lado, sem nada escrito por cima.
+- **Luma · Dream Machine** (https://mobbin.com/screens/a9fff2d5-1798-40e1-aabb-0b126f2b8763):
+  a luz que vem do topo e se dissolve antes do conteúdo.
+- **asciify.org · os fundos animados** (https://asciify.org/backgrounds): Matthew
+  gostou do Swell (pontos em ondas lentas), do Drift (abre em volta do
+  conteúdo) e do Mesh (a malha de cor em letras), e escolheu o **Estuary**
+  (correntes de letras que o cursor acende), configurado por ele: Halftone,
+  Hover Fluid, 0,4×, 9 px, 20%.
+- **Apple Music · a luz que se abre em prisma** (a imagem 9 da página Logo
+  do Figma; fora do repositório): "eu queria aquela iridescência". Foi para
+  a pendência da marca.
+
+## 2026-10-29 · Portrait e o Prism do React Bits (a iridescência, decisão (r))
+
+Pedido de Matthew: a iridescência na porta de entrada e um fio no app, com a
+vibe do tecido do Threads (um holograma claro) e do prisma do Apple Music.
+Coleção no Mobbin: "Andon · T-01 Login (o fundo)".
+
+- **Portrait · o véu pastel** (https://mobbin.com/screens/a9311893-ff3a-452c-8389-fa9991708af7):
+  um véu iridescente leve no fundo e um anel de luz só no logo e num botão.
+  Matthew: "só o Portrait, mas ainda não do jeito que imaginei".
+- **React Bits · Prism** (https://www.reactbits.dev/backgrounds/prism): um
+  prisma de luz em WebGL que gira e se abre em espectro. Achado por Matthew:
+  "ficou perfeito". Foi o escolhido.
+- **React Bits · Iridescence** (https://www.reactbits.dev/backgrounds/iridescence)
+  e **Paper Shaders** (https://shaders.paper.design/, Apache-2.0): os dois
+  candidatos levantados pelo Claude; ficaram de fora quando o Prism apareceu.

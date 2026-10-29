@@ -8,7 +8,7 @@ description: Registra um bug novo ou fecha um bug corrigido nos documentos do pr
 Só documentos: o teste que falha e o conserto seguem a regra do `CLAUDE.md` ("bug começa por
 um teste que falha"), com a skill `agent-skills:test-driven-development` (o padrão Prove-It).
 Copie o formato das linhas vizinhas; não invente um novo.
-Peça antes do commit.
+Commit e push sem pedir (`CLAUDE.md`).
 
 ## Registrar
 
@@ -36,7 +36,7 @@ Só depois do teste verde, da suíte completa e do commit `fix:` (o número do b
    Correção, `**Corrigido na <fase>** (<AAAA-MM-DD>): <o que mudou>. Testes: <nome do
    teste e arquivo>`.
 2. **`esquema-backend.md`, histórico:** `| <AAAA-MM-DD> | v<x.yy> — Bxx corrigido (<fase>): <resumo> |`.
-3. **`CLAUDE.md`, "Bugs conhecidos":** o bug sai dos abertos e entra na frase dos corrigidos.
+3. **`CLAUDE.md`, "Bugs conhecidos":** o bug sai dos abertos (o histórico fica no esquema §7).
    Se ele mudou uma regra que a seção de arquitetura ou de entidades descreve, atualize lá
    também.
 4. **`handoff.md`:** o bug sai do "Próximo passo".
@@ -44,5 +44,5 @@ Só depois do teste verde, da suíte completa e do commit `fix:` (o número do b
 ## Conferir
 
 `git grep -n "Bxx"`: todo lugar onde o bug aparece está coerente com o estado novo (aberto ou
-✅)? Mostre os arquivos e a mensagem (`docs: Bxx registrado` ou `docs: Bxx corrigido`) e
-espere o ok.
+✅)? Commit com a mensagem `docs: Bxx registrado` ou `docs: Bxx corrigido`, push, e mostre os
+arquivos.

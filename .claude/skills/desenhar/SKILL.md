@@ -8,7 +8,7 @@ description: O fluxo de uma decisão de desenho, de uma tela ou de um componente
 Roda **só quando a tela pede uma decisão**. Na revisão tela por tela, Matthew responde "ok" ou
 uma frase por frame, e o fluxo entra só se a frase abrir uma dúvida de desenho. Matthew decide;
 Claude conduz, recomenda e diz o porquê. O roteiro chama as skills **pelo nome**, sem copiar o
-conteúdo delas. Testado em 2026-10-22, nas decisões (b), (c) e (e) da B2; fechado em 2026-10-23.
+conteúdo delas.
 
 ## 0. Preparar
 
@@ -94,4 +94,4 @@ descartável pela skill `prototype`, só para aquela pergunta, fora do repositó
 3. Os documentos, cada um com a linha do histórico: o `ui-ux.md` (a seção da tela), o
    `fluxo-app.md` (se mudar navegação, ação ou jornada), o plano (o item da fase) e o checklist
    (§0, com o link da seção).
-4. Commit só de documentos, pedido antes (`CLAUDE.md`), e o push depois.
+4. Commit só de documentos e o push, sem pedir (`CLAUDE.md`).

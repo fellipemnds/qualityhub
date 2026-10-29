@@ -5,8 +5,7 @@ description: Rotina de fim de sessão — verificações, foto do ambiente, hand
 
 # Encerrar (fim de sessão ou troca de computador)
 
-Nunca dê merge: é de Matthew. Peça antes de cada commit; o push, Claude dá (`CLAUDE.md`,
-"Ambiente").
+Nunca dê merge: é de Matthew. Commit e push sem pedir (`CLAUDE.md`).
 
 ## 0. Preparar o shell
 
@@ -48,8 +47,8 @@ Se Matthew vai **trocar de computador**, diga em "Chegando no outro PC" o que el
 
 ## 6. Commit
 
-Mostre os arquivos e a mensagem `docs: foto do ambiente de <máquina> e handoff de <AAAA-MM-DD>`,
-e espere o ok. Se estiver na `main` (protegida), proponha uma branch antes.
+Commit com a mensagem `docs: foto do ambiente de <máquina> e handoff de <AAAA-MM-DD>` e mostre
+os arquivos. Se estiver na `main` (protegida), proponha uma branch antes.
 
 ## 7. Push
 
