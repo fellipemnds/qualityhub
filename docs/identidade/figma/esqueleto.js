@@ -27,8 +27,18 @@ export async function esqueleto(alvo, manter = ["Shell/Doca", "Shell/Barra infer
         "color",
         V["fundo/selecao"],
     );
+    // dentro do bloco escuro do título (o `fundo/destaque`), o cinza claro gritaria: lá vai o apoio, bem apagado
+    const noEscuro = { ...figma.variables.setBoundVariableForPaint(tinta, "color", V["texto/apoio"]), opacity: 0.35 };
+    const dentroDoDestaque = (no) => {
+        for (let p = no.parent; p && p.type !== "PAGE"; p = p.parent) {
+            if (Array.isArray(p.fills) && p.fills.some((t) => t.boundVariables?.color?.id === V["fundo/destaque"].id)) {
+                return true;
+            }
+        }
+        return false;
+    };
     const pintar = (no, raio) => {
-        no.fills = [tinta];
+        no.fills = [dentroDoDestaque(no) ? noEscuro : tinta];
         for (const canto of ["topLeftRadius", "topRightRadius", "bottomLeftRadius", "bottomRightRadius"]) {
             no.setBoundVariable(canto, V[raio]);
         }
