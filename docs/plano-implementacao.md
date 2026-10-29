@@ -605,3 +605,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-29 | v1.84 — B3: a (t) desfeita, o Carregando volta ao cinza |
 | 2026-10-29 | v1.85 — B3, item 14: o bloco do título e o atalho da Atividade como organismos, e as cópias da Mockups como instâncias; o anel e a dica de foco para a C0 |
 | 2026-10-29 | v1.86 — B3: as revisões da fase e a troca conferida contra o Wireframes; na B4, a dúvida da luz (PRD Q28, o PDF, em aberto) |
+| 2026-10-29 | **B3 concluída** (branch `fase/b3-fundacoes-e-mockups`, PR #14): os tokens em duas camadas, os átomos, as moléculas e os organismos (com o bloco do título e o atalho da Atividade), as telas T-01 a T-13 em mockup com os estados do G4 e o escuro, as decisões de desenho (o) a (t), os scripts do Figma e o `DESIGN.md` como contrato; os portões G2 e G4 fechados |
