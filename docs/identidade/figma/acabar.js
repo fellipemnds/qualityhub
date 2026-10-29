@@ -112,12 +112,15 @@ export async function acabar(alvo) {
 
     const feito = { cor: 0, texto: 0, espaco: 0, raio: 0 };
     const sobras = [];
-    const tingir = (paint, nome) =>
-        figma.variables.setBoundVariableForPaint(
+    // o setBoundVariableForPaint devolve a tinta com opacidade 100%: a transparência (um véu, por exemplo) volta à mão
+    const tingir = (paint, nome) => ({
+        ...figma.variables.setBoundVariableForPaint(
             { ...paint, color: { r: RGB[nome].r, g: RGB[nome].g, b: RGB[nome].b } },
             "color",
             V[nome],
-        );
+        ),
+        opacity: paint.opacity ?? 1,
+    });
     const ligarTintas = (no, campo, tipo) => {
         const tintas = no[campo];
         if (!Array.isArray(tintas) || !tintas.length) return;
