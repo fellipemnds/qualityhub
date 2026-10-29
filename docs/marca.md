@@ -139,9 +139,9 @@ luz que se abre em prisma, como na imagem do Apple Music da página Logo
 onde o "o que evitar" continua valendo; quando o símbolo a tiver, o fundo
 do login pode herdar a mesma luz. **Em 2026-10-29** (decisão (r)), ela entrou
 na porta pelo Prism (o espectro original, que se abre em prisma), e, dentro do
-app, só na **capa da NC** (decisão (s)): a mesma luz, parada e sutil, no canto
-superior esquerdo, vista através de uma barra de vidro e desfeita antes do
-conteúdo. A regra: **a luz é um lugar
+app, só na **capa da NC**, no computador (decisão (s)): a mesma luz, parada e
+sutil, no canto superior esquerdo, vista através de uma barra de vidro e
+desfeita antes do conteúdo. No celular, a barra é branca, sem a luz. A regra: **a luz é um lugar
 (a porta, a capa da NC), nunca um componente**; os botões e o resto continuam
 Grafite.
 

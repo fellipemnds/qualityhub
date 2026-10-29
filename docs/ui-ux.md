@@ -253,6 +253,20 @@ claro.
 **`marca/toque`** (reservado, §2.2, item 1) aponta para o grafite do
 texto nos dois modos, até a sessão do SaaS decidir outra coisa.
 
+**O vidro e a luz** (decisão (s), B3, item 14, 2026-10-29). Primitivos
+novos, com transparência: `vidro/branco-50`, `vidro/grafite-45`,
+`sombra/grafite-5`, `sombra/preto-25`, `brilho/branco-30` e
+`brilho/branco-3`; e o espectro da luz, `luz/vermelho`, `luz/ambar`,
+`luz/verde`, `luz/ciano`, `luz/azul` e `luz/magenta` (só para a
+aproximação do Prism no Figma, o componente **Luz do Prism**; no código, a
+luz é o shader). Semânticos: `vidro/tinta` (o fundo da barra de vidro;
+branco a 50% no claro, `#161618` a 45% no escuro), `vidro/sombra-interna`
+e `vidro/brilho-interno` (as cores das sombras internas); o raio
+`raio/vidro` (20 px); e o estilo de efeito **Vidro/Capa da NC** (o Glass do
+Figma, que mostra a refração, e as duas sombras internas). Saíram o
+`fundo/destaque` e o `texto/sobre-destaque`, da barra escura, que ninguém
+mais usa.
+
 **O contraste** (WCAG 2; texto ≥ 4,5:1, ícone e borda de controle ≥
 3:1), o pior caso entre os quatro fundos (página, card, lateral e
 seleção):
@@ -609,9 +623,9 @@ revisão da B2 confere cada um); o 5 é acabamento (B3).
    bloco que dá o "rosto" do item: o código, o título (ou o rótulo, nos
    filhos, §10.3), o estado e quem está envolvido. **A NC é a casa**, a
    que agrupa tudo: só ela tem a **luz** (decisão (s), 2026-10-29: a barra
-   escura saiu, pesada demais para a Calma; o título fica numa **barra de
-   vidro**, e a luz do Prism, parada, acende o canto superior esquerdo atrás
-   dela, §7.3). Os **filhos** são
+   escura saiu, pesada demais para a Calma; no computador, o título fica
+   numa **barra de vidro**, e a luz do Prism, parada, acende o canto
+   superior esquerdo atrás dela; no celular, a barra é branca, §7.3). Os **filhos** são
    da família: a mesma anatomia num tom **claro**, com o nome da NC em
    cima (o caminho de volta, `CabecalhoItem`), que diz a quem pertencem.
    Nenhuma outra tela usa a luz. **Nos filhos** (decisão (h),
@@ -932,8 +946,9 @@ título no topo e a página em quatro abas.
 
 1. **A barra do topo:** voltar, o código e o ⋯.
 2. **O bloco do título** (o "título grande" do Fresha). **Desde a decisão
-   (s)** (2026-10-29), sem o fundo escuro: a mesma anatomia na barra de
-   vidro líquido, com a luz no canto superior esquerdo atrás dela, como no
+   (s)** (2026-10-29), sem o fundo escuro: no celular, a barra fica
+   **branca e sólida** (`fundo/card`), sem o vidro e sem a luz (Matthew:
+   "mantém a barra branca nos celulares"); o vidro e a luz são do
    computador. Antes, em
    `fundo/destaque`, token novo para a B3: no claro, o grafite
    (#1C1C1F); no escuro, um degrau **acima** da página e dos cartões
@@ -1914,3 +1929,4 @@ tokens.
 | 2026-10-29 | v1.49 — §6.2 e §7.3: a decisão (s), a capa da NC sem a barra preta, com a luz do Prism no canto (parada ou em movimento, a escolha na Minha conta) |
 | 2026-10-29 | v1.50 — §6.2 e §7.3: a (s) revista, a capa numa barra de vidro líquido (refração, sombra interna sutil), com a luz no canto esquerdo |
 | 2026-10-29 | v1.51 — §5.2: a decisão (t), o `Esqueleto` em ASCII; a revelação só nas artes de pontos |
+| 2026-10-29 | v1.52 — §3.1: os tokens do vidro e da luz, sem o `fundo/destaque`; §6.2 e §7.3: no celular, a barra da NC branca (B3, item 14) |
