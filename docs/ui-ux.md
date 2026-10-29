@@ -625,7 +625,8 @@ revisão da B2 confere cada um); o 5 é acabamento (B3).
    que agrupa tudo: só ela tem a **luz** (decisão (s), 2026-10-29: a barra
    escura saiu, pesada demais para a Calma; no computador, o título fica
    numa **barra de vidro**, e a luz do Prism, parada, acende o canto
-   superior esquerdo atrás dela; no celular, a barra é branca, §7.3). Os **filhos** são
+   superior esquerdo atrás dela; no celular, a barra é branca, com a luz
+   por cima, §7.3). Os **filhos** são
    da família: a mesma anatomia num tom **claro**, com o nome da NC em
    cima (o caminho de volta, `CabecalhoItem`), que diz a quem pertencem.
    Nenhuma outra tela usa a luz. **Nos filhos** (decisão (h),
@@ -947,9 +948,11 @@ título no topo e a página em quatro abas.
 1. **A barra do topo:** voltar, o código e o ⋯.
 2. **O bloco do título** (o "título grande" do Fresha). **Desde a decisão
    (s)** (2026-10-29), sem o fundo escuro: no celular, a barra fica
-   **branca e sólida** (`fundo/card`), sem o vidro e sem a luz (Matthew:
-   "mantém a barra branca nos celulares"); o vidro e a luz são do
-   computador. Antes, em
+   **branca e sólida** (`fundo/card`), sem o vidro (Matthew: "mantém a
+   barra branca nos celulares"), e a luz do Prism acende o canto
+   superior esquerdo **por cima** dela, recortada na barra, em
+   **multiplicar** no claro (o branco ganha a cor, o texto continua preto)
+   e **clarear** (`screen`) no escuro. Antes, em
    `fundo/destaque`, token novo para a B3: no claro, o grafite
    (#1C1C1F); no escuro, um degrau **acima** da página e dos cartões
    (#1D1D21), porque a página já é quase preta. Dentro dele, de cima para
@@ -1929,4 +1932,4 @@ tokens.
 | 2026-10-29 | v1.49 — §6.2 e §7.3: a decisão (s), a capa da NC sem a barra preta, com a luz do Prism no canto (parada ou em movimento, a escolha na Minha conta) |
 | 2026-10-29 | v1.50 — §6.2 e §7.3: a (s) revista, a capa numa barra de vidro líquido (refração, sombra interna sutil), com a luz no canto esquerdo |
 | 2026-10-29 | v1.51 — §5.2: a decisão (t), o `Esqueleto` em ASCII; a revelação só nas artes de pontos |
-| 2026-10-29 | v1.52 — §3.1: os tokens do vidro e da luz, sem o `fundo/destaque`; §6.2 e §7.3: no celular, a barra da NC branca (B3, item 14) |
+| 2026-10-29 | v1.52 — §3.1: os tokens do vidro e da luz, sem o `fundo/destaque`; §6.2 e §7.3: no celular, a barra da NC branca, com a luz por cima (B3, item 14) |
