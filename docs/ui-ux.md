@@ -1249,7 +1249,10 @@ celular, ocupa a largura toda. É a única tela com a marca no centro
 (o logotipo provisório, `docs/marca.md`) e com a **assinatura** da
 empresa embaixo (§1), como texto de apoio.
 
-**O fundo** (decisão (o) da B3, 2026-10-28; o checklist da revisão, §0):
+**O fundo** (decisão (o) da B3, 2026-10-28; o checklist da revisão, §0). **Suspensa no mesmo dia** (Matthew): as telas
+de acesso ficam sem fundo (o organismo e a faixa escondidos no Figma, não apagados; no celular, o conteúdo começa a 80 px
+do topo, `espaco/10` além do padding da tela), e a **iridescência** (o tecido de holograma que ele trouxe do Threads,
+como o *Iridescent Foil* do dqnamo's kitchen) vai ser analisada no fim da B3, junto com a (p). O que a (o) decidiu:
 no computador, atrás do cartão, o **Estuary** do asciify (correntes de
 letras em meio-tom que o cursor acende): Halftone, Hover Fluid, 0,4×,
 célula de 9 px, opacidade de 20%, em grafite (`texto/principal`), o
@@ -1870,3 +1873,4 @@ tokens.
 | 2026-10-28 | v1.44 — §2.2, regra 4: o `acabar.js` (B3, item 6) |
 | 2026-10-28 | v1.45 — §7.3 e §7.4: a fila dos envolvidos com o `Avatar` lado a lado, sem sobrepor (B3, item 9) |
 | 2026-10-28 | v1.46 — §2.2, regra 4: o `esqueleto.js` (o Carregando com a forma da tela, como a §5.2 já pedia; B3, item 10) |
+| 2026-10-28 | v1.47 — §7.7: a decisão (o), o fundo do login, suspensa; a iridescência para o fim da B3 |

@@ -86,15 +86,22 @@ export async function esqueleto(alvo, manter = ["Shell/Doca", "Shell/Barra infer
         // um chip ou um selo feito à mão (um quadro baixo, com fundo ou contorno, só com texto ou
         // ícone dentro) é um bloco, como o componente que ele imita
         const temTinta = (campo) => Array.isArray(no[campo]) && no[campo].some((t) => t.visible !== false);
+        // e um botão feito à mão na cor de ação também, mesmo com mais de um nível dentro
+        const deAcao =
+            Array.isArray(no.fills) &&
+            no.fills.some((t) =>
+                ["acao/primaria", "acao/destrutiva"].some((n) => t.boundVariables?.color?.id === V[n].id),
+            );
         if (
             no.type === "FRAME" &&
-            no.height <= 44 &&
-            (temTinta("fills") || temTinta("strokes")) &&
-            no.children.every((c) => ["TEXT", "VECTOR", "BOOLEAN_OPERATION", "ELLIPSE"].includes(c.type))
+            no.height <= 48 &&
+            (deAcao ||
+                ((temTinta("fills") || temTinta("strokes")) &&
+                    no.children.every((c) => ["TEXT", "VECTOR", "BOOLEAN_OPERATION", "ELLIPSE"].includes(c.type))))
         ) {
             const bloco = figma.createRectangle();
-            ocupar(no, bloco);
-            pintar(bloco, no.height <= 28 ? "raio/pilula" : "raio/controle");
+            ocupar(no, bloco); // o `no` sai daqui: a altura vem do bloco, que ficou com ela
+            pintar(bloco, bloco.height <= 28 ? "raio/pilula" : "raio/controle");
             feito.bloco++;
             return;
         }

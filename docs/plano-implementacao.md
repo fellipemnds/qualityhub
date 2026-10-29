@@ -396,7 +396,7 @@ no fim de cada seção); o cansaço, porque os componentes são de Matthew (um
 `/desenhar` puxar escopo novo (o que a API não tem vira "escopo novo", com a
 fase anotada, não trabalho agora).
 
-**Em aberto:** a sessão do SaaS antes da C0 (linha da C0), que pode mudar o uso do `marca/toque`; ~~onde o script de valor solto mora~~ (decidido no item 2: `docs/identidade/figma/valor-solto.js`); se a B4 começa
+**Em aberto:** **no fim da B3, antes do item 14, a iridescência** (pedido de Matthew, 2026-10-28: o fundo do login, a decisão (o), foi suspenso para ela; junto com a proposta (p), o acento do cabeçalho, e o ASCII Reveal); a sessão do SaaS antes da C0 (linha da C0), que pode mudar o uso do `marca/toque`; ~~onde o script de valor solto mora~~ (decidido no item 2: `docs/identidade/figma/valor-solto.js`); se a B4 começa
 antes do fim da B3 (o teste com colegas só precisa das telas até o item
 10); e a parada 2 do passeio da A7, condição para a C0, numa sessão
 descansada antes dela.
