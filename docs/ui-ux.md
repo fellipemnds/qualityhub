@@ -609,8 +609,9 @@ revisão da B2 confere cada um); o 5 é acabamento (B3).
    bloco que dá o "rosto" do item: o código, o título (ou o rótulo, nos
    filhos, §10.3), o estado e quem está envolvido. **A NC é a casa**, a
    que agrupa tudo: só ela tem a **luz** (decisão (s), 2026-10-29: a barra
-   escura saiu, pesada demais para a Calma; o título fica sobre a superfície
-   e a luz do Prism, parada, acende o canto superior direito, §7.3). Os **filhos** são
+   escura saiu, pesada demais para a Calma; o título fica numa **barra de
+   vidro**, e a luz do Prism, parada, acende o canto superior esquerdo atrás
+   dela, §7.3). Os **filhos** são
    da família: a mesma anatomia num tom **claro**, com o nome da NC em
    cima (o caminho de volta, `CabecalhoItem`), que diz a quem pertencem.
    Nenhuma outra tela usa a luz. **Nos filhos** (decisão (h),
@@ -843,17 +844,25 @@ incident.io e o Jira, no `docs/identidade/referencias-interface.md`).
 
 1. **A capa da NC** (decisão (s), 2026-10-29, no lugar do bloco escuro; o
    gesto 1 da casa, §6.2): o código e o título, o estado, a etapa e os
-   indicadores, a fila dos envolvidos e as ações à direita, **sobre a
-   superfície da tela**, com mais ar em cima e embaixo. Atrás dela, no
-   **canto superior direito**, a luz do Prism (o mesmo do login, §7.7, no
-   espectro original e na resolução 0,4), recortada por uma máscara que a
-   desfaz antes dos cartões: nunca atrás de texto de cartão ou de tabela.
-   **Bem sutil no escuro, sutil no claro** (o brilho a 0,45 e a 0,7 do
-   login). **Parada** por padrão (desenhada uma vez, sem custo); **em
-   movimento** (gira devagar, `timeScale` 0,15) se a pessoa escolher, na
-   Minha conta (T-13), guardado no aparelho. Com o "reduzir movimento",
-   sempre parada; sem WebGL2, sem a luz. Decorativa (`aria-hidden`). O
-   protótipo: https://claude.ai/artifact/E6KQoDA3W9KhUGnkqrFC8t.
+   indicadores, a fila dos envolvidos e as ações à direita, numa **barra de
+   vidro líquido** (o bloco de sempre, com cantos de 20 px e sem borda). Atrás
+   dela, no **canto superior esquerdo**, a luz do Prism (o mesmo do login,
+   §7.7, no espectro original e na resolução 0,4), desfeita por uma máscara
+   antes dos cartões. O vidro: a tinta dos cartões translúcida por cima
+   (branco a 50% no claro, o cinza dos cartões a 45% no escuro), a luz
+   **refratada** por baixo (desenhada de novo dentro da barra, passando por
+   uma lente: aumenta 5% no meio e se curva nas bordas, 28 px dos lados e
+   22 px em cima e embaixo; feito por nós, e não pelo filtro do navegador,
+   para valer também no Safari), uma **sombra interna bem sutil** (em cima,
+   escura; embaixo, clara) e uma sombra externa leve. **Bem sutil no
+   escuro, sutil no claro** (o brilho a 0,45 e a 0,7 do login). **Parada**
+   por padrão (desenhada uma vez, sem custo); **em movimento** (gira
+   devagar, `timeScale` 0,15) se a pessoa escolher, na Minha conta (T-13),
+   guardado no aparelho. Com o "reduzir movimento", sempre parada; sem
+   WebGL2, sem a luz e sem a refração (fica a tinta). Decorativa
+   (`aria-hidden`). **A conferir no G2:** o título passa sobre a luz no
+   canto esquerdo, então o contraste do texto sobre o vidro tem de chegar a
+   4,5:1 no pior ponto da luz. O protótipo: https://claude.ai/artifact/E6KQoDA3W9KhUGnkqrFC8t.
 2. **Os Dados** trazem a **classificação vigente** (a última aprovada,
    PRD Q19) como tag, mesmo repetida nos Itens: é o que mais diz sobre a
    NC. O ID fica em cinza ao lado da tag.
@@ -923,8 +932,8 @@ título no topo e a página em quatro abas.
 
 1. **A barra do topo:** voltar, o código e o ⋯.
 2. **O bloco do título** (o "título grande" do Fresha). **Desde a decisão
-   (s)** (2026-10-29), sem o fundo escuro: a mesma anatomia sobre a
-   superfície, com a luz no canto superior direito da tela, como no
+   (s)** (2026-10-29), sem o fundo escuro: a mesma anatomia na barra de
+   vidro líquido, com a luz no canto superior esquerdo atrás dela, como no
    computador. Antes, em
    `fundo/destaque`, token novo para a B3: no claro, o grafite
    (#1C1C1F); no escuro, um degrau **acima** da página e dos cartões
@@ -1903,3 +1912,4 @@ tokens.
 | 2026-10-28 | v1.47 — §7.7: a decisão (o), o fundo do login, suspensa; a iridescência para o fim da B3 |
 | 2026-10-29 | v1.48 — §7.7: a decisão (r), o fundo do login é o Prism do React Bits, na tela inteira, também no celular |
 | 2026-10-29 | v1.49 — §6.2 e §7.3: a decisão (s), a capa da NC sem a barra preta, com a luz do Prism no canto (parada ou em movimento, a escolha na Minha conta) |
+| 2026-10-29 | v1.50 — §6.2 e §7.3: a (s) revista, a capa numa barra de vidro líquido (refração, sombra interna sutil), com a luz no canto esquerdo |

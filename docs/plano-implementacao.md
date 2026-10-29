@@ -396,7 +396,7 @@ no fim de cada seção); o cansaço, porque os componentes são de Matthew (um
 `/desenhar` puxar escopo novo (o que a API não tem vira "escopo novo", com a
 fase anotada, não trabalho agora).
 
-**Em aberto:** ~~a iridescência~~ (2026-10-29, a decisão **(r)**: o Prism do React Bits no fundo do login; o fio da (p) aceito); ~~a decisão (s)~~ (2026-10-29: a capa da NC sem a barra preta, com a luz do Prism no canto; o fio da (p) saiu; o brilho de conclusão foi testado e descartado), e o **ASCII Reveal** (onde cabe, se cabe: é um efeito de carregamento, mexe no Carregando); a sessão do SaaS antes da C0 (linha da C0), que pode mudar o uso do `marca/toque`; ~~onde o script de valor solto mora~~ (decidido no item 2: `docs/identidade/figma/valor-solto.js`); se a B4 começa
+**Em aberto:** ~~a iridescência~~ (2026-10-29, a decisão **(r)**: o Prism do React Bits no fundo do login; o fio da (p) aceito); ~~a decisão (s)~~ (2026-10-29: a capa da NC numa barra de vidro líquido, com a luz do Prism refratada no canto esquerdo; o fio da (p) saiu; o brilho de conclusão foi testado e descartado), e o **ASCII Reveal** (onde cabe, se cabe: é um efeito de carregamento, mexe no Carregando); a sessão do SaaS antes da C0 (linha da C0), que pode mudar o uso do `marca/toque`; ~~onde o script de valor solto mora~~ (decidido no item 2: `docs/identidade/figma/valor-solto.js`); se a B4 começa
 antes do fim da B3 (o teste com colegas só precisa das telas até o item
 10); e a parada 2 do passeio da A7, condição para a C0, numa sessão
 descansada antes dela.
@@ -600,3 +600,4 @@ planilha. Vale escolher a data de corte quando houver poucas abertas.
 | 2026-10-28 | v1.79 — B3: o item 13 feito (a T-08 com a `dataviz` e o Vazio dos relatórios) |
 | 2026-10-29 | v1.80 — B3: a decisão (r), a iridescência (o Prism do React Bits no fundo do login, no lugar da (o)); a (s), a barra preta do título, antes do item 14 |
 | 2026-10-29 | v1.81 — B3: a decisão (s), a capa da NC com a luz no canto; a troca na Mockups vai no item 14 |
+| 2026-10-29 | v1.82 — B3: a (s) revista, a barra de vidro líquido com a luz no canto esquerdo |
