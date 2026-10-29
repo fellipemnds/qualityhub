@@ -145,7 +145,8 @@ A ordem é puxada pelas telas, sobre uma base de tokens.
       uma variável, sem valor solto (Claude confere pelo conector, com o
       script `docs/identidade/figma/valor-solto.js`, que lista o que
       está sem variável; o `acabar.js`, ao lado, faz o primeiro conserto
-      do que vem solto do wireframe); os estados que fizerem
+      do que vem solto do wireframe, e o `esqueleto.js` monta o Carregando
+      de cada tela a partir de uma cópia dela, §5.2); os estados que fizerem
       sentido (padrão, hover, foco, desabilitado, erro); claro e escuro,
       com o contraste conferido; a descrição de uso no Figma; o nome no
       padrão (§2.1). Da retrospectiva da B3 (item 5, 2026-10-28,
@@ -1868,3 +1869,4 @@ tokens.
 | 2026-10-28 | v1.43 — §7.7: o fundo da T-01 e da T-02 (decisão (o): o Estuary em meio-tom, em grafite; no celular, a faixa do topo) |
 | 2026-10-28 | v1.44 — §2.2, regra 4: o `acabar.js` (B3, item 6) |
 | 2026-10-28 | v1.45 — §7.3 e §7.4: a fila dos envolvidos com o `Avatar` lado a lado, sem sobrepor (B3, item 9) |
+| 2026-10-28 | v1.46 — §2.2, regra 4: o `esqueleto.js` (o Carregando com a forma da tela, como a §5.2 já pedia; B3, item 10) |
