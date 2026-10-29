@@ -559,6 +559,8 @@ comportamento:
 | **Não encontrado** | "Este item não existe ou foi excluído" (rascunho excluído) + link para a lista |
 | **Sessão expirada** | Volta para o login e, depois de entrar, retorna para onde a pessoa estava |
 
+**Onde cada erro aparece** (pedido de Matthew, 2026-10-28, B3): a **tela inteira**, no lugar do conteúdo e com a casca de pé (a doca, a barra), só quando **não há tela para mostrar**: não deu para abrir (rede ou 5xx ao carregar), não encontrado (404), sem permissão (403) e o erro inesperado do próprio app. Esses quatro ganham a **ilustração** (a decisão (q) da B3, arte em ASCII, a escolher). O resto aparece **no lugar**, sem tirar a pessoa do que estava fazendo: a validação (400) no campo; a falha ao salvar ou enviar num aviso no formulário, com **Tentar de novo** e nada perdido; o conflito (409: alguém mexeu antes, ou falta algo para enviar) no diálogo ou na lista do que falta; o excesso de tentativas do login (429) na própria T-01; a sessão expirada (401) na volta ao login; a falta de rede numa faixa no topo, enquanto durar; o convite vencido na T-02.
+
 ---
 
 ## 9. Lacunas encontradas no backend
@@ -628,3 +630,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-27 | v1.19 — T-12 (decisão (m)): lista + painel como a T-09, com as pessoas do setor e a recusa da RN-44 como lista do que fazer |
 | 2026-10-27 | v1.20 — §2.1 e T-04: a lupa da busca na barra do celular, no lugar do ＋; a Nova NC no topo da T-04 (decisão (n)) |
 | 2026-10-27 | v1.21 — revisão da fase B2: o Atalhos de teclado do menu abre a janela do ?, com o interruptor dentro (§2.1) |
+| 2026-10-28 | v1.22 — §8: onde cada erro aparece (a tela inteira só para não abrir, não encontrado, sem permissão e o erro inesperado; o resto no lugar) |
