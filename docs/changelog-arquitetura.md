@@ -9,6 +9,53 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Fase B3 — fundações e mockups (branch `fase/b3-fundacoes-e-mockups`, PR #14)
+
+- **Os tokens em duas camadas, aplicados (2026-10-28).** A coleção
+  **Primitivos** guarda os valores (12 degraus do Grafite, juntando os 18
+  cinzas parecidos de antes, e os tons dos estados) e não aparece nos
+  seletores; os semânticos da coleção Cor apontam para ela, nos dois modos.
+  Nenhum semântico com valor direto (`ui-ux.md` §3.1.1). Token de
+  componente só por exceção: o `fundo/destaque` entrou para o bloco escuro
+  do título e **saiu** com a decisão (s), quando ninguém mais o usava.
+- **A conferência do Figma por código (2026-10-28).** Três scripts em
+  `docs/identidade/figma/`, rodados pelo conector: o `valor-solto.js` (toda
+  cor, espaço, raio e texto sem variável ou estilo; a regra 8 do
+  `DESIGN.md`), o `acabar.js` (liga às variáveis o que vem solto do
+  wireframe) e o `esqueleto.js` (o Carregando com a forma da tela). Cada
+  um com a prova de quebra. A Mockups terminou a fase com zero valor solto.
+- **O `DESIGN.md` como contrato (2026-10-29).** Na raiz, para os agentes
+  lerem antes de montar uma tela: as oito regras, os tokens, a ponte
+  proposta com as variáveis do shadcn (a conferir na C0) e a **tabela
+  componente do Figma → arquivo React**, no lugar do Code Connect enquanto
+  ele não funcionar pelo conector (B2). Uma mudança de token mexe no Figma,
+  no `DESIGN.md` e no CSS no mesmo commit.
+- **Código de fora com licença diferente: o Prism do React Bits (2026-10-29,
+  decisão (r)).** O fundo do login e a luz da capa da NC são o Prism, um
+  componente de registro da comunidade (degrau 3 da escada da `/desenhar`),
+  sem dependência, só WebGL2. A licença é **MIT + Commons Clause** (pode ir
+  no produto, até pago, mas não se revende o componente): **exceção
+  decidida por Matthew** ao critério de licença. Entra no código na C0,
+  decorativo (`aria-hidden`), parado com o "reduzir movimento" e com o
+  fundo liso sem WebGL2. Substituiu o Estuary do asciify (decisão (o)).
+- **A capa da NC de vidro, com a refração desenhada por nós (2026-10-29,
+  decisão (s)).** A barra preta saiu; ficou uma barra de vidro líquido com
+  a luz atrás. O Liquid Glass de verdade só funciona no Chrome, então a
+  refração é desenhada por nós, para ficar igual em todo navegador. Só a NC tem a luz ("a luz é
+  um lugar, nunca um componente").
+- **Testado e desfeito: o ASCII Reveal (2026-10-29, decisão (t)).** O
+  esqueleto em ASCII foi feito nos 14 Carregando e desfeito no mesmo dia
+  ("não curti"). O Carregando é o `skeleton` do shadcn, cinza e pulsando;
+  o pacote ficou de fora. As artes em pontos das telas de erro (decisão
+  (q)) viram SVG ou *canvas* na C0.
+- **O bloco do título e o atalho da Atividade como componentes
+  (2026-10-29, item 14).** Eram 118 cópias soltas na Mockups. Viraram os
+  organismos `Bloco do título` (quatro variantes; as listas que variam de
+  tela para tela, como envolvidos, indicadores e ações, ligam e desligam
+  por propriedade, porque o Figma não tem *slots*) e `Atalho/Atividade
+  deste item`, com as linhas deles na tabela do `DESIGN.md`. O anel e a
+  dica de foco ficam para a C0, onde vêm prontos do shadcn.
+
 ### Fase B2 — wireframes (branch `fase/b2-wireframes`)
 
 - **O método do Design System (2026-10-23).** Antes da B3, quatro

@@ -429,6 +429,7 @@ em `components/` (os do shadcn/ui, em `components/ui/`).
 | `ItemPendencia` | Card | Uma linha de "Minhas pendências" |
 | `ItensDaNC` | Collapsible, ToggleGroup, DropdownMenu | Os itens filhos no Detalhe da NC: agrupados por tipo ou não, em lista ou cartões, ordenados por estado ou criação, com o medidor em segmentos (§7.3) |
 | `PainelAtividade` | Sheet (sem véu, empurrando a página) | O feed inteiro da NC à direita (com os eventos dos filhos, PRD Q25), com Tudo · Comentários · Histórico; ao abrir, a coluna lateral vira a faixa de resumo (§7.3). Aberto pelo atalho de um filho, vem filtrado por ele |
+| `AtalhoAtividade` | Button | O atalho da Atividade num filho: o ícone, "Atividade deste item" e quantos eventos há no feed da NC; abre o `PainelAtividade` filtrado pelo item. No Figma, `Atalho/Atividade deste item` (B3, item 14) |
 | `Medidor` | — | O progresso em segmentos: um por item, os feitos preenchidos; contínuo acima de 10 (os itens, o checklist) |
 | `FiltrosNC` | Select, Popover, Calendar | Filtros da lista de NCs, refletidos na URL (dá pra compartilhar um link filtrado) |
 
@@ -1315,7 +1316,7 @@ shader) fica na seção da decisão.
 **Antes, a (o)** (2026-10-28), **suspensa no mesmo dia** (Matthew): as telas
 de acesso ficam sem fundo (o organismo e a faixa escondidos no Figma, não apagados; no celular, o conteúdo começa a 80 px
 do topo, `espaco/10` além do padding da tela), e a **iridescência** (o tecido de holograma que ele trouxe do Threads,
-como o *Iridescent Foil* do dqnamo's kitchen) vai ser analisada no fim da B3, junto com a (p). O que a (o) decidiu:
+como o *Iridescent Foil* do dqnamo's kitchen) foi analisada na (r), junto com a (p), que a (s) substituiu. O que a (o) decidiu:
 no computador, atrás do cartão, o **Estuary** do asciify (correntes de
 letras em meio-tom que o cursor acende): Halftone, Hover Fluid, 0,4×,
 célula de 9 px, opacidade de 20%, em grafite (`texto/principal`), o
@@ -1944,3 +1945,4 @@ tokens.
 | 2026-10-29 | v1.52 — §3.1: os tokens do vidro e da luz, sem o `fundo/destaque`; §6.2 e §7.3: no celular, a barra do topo branca e o bloco do título de vidro, com a luz atrás (B3, item 14) |
 | 2026-10-29 | v1.53 — §2.2 e §5.2: o ASCII testado no Figma e animado, e deixado de lado; o `Esqueleto` volta ao cinza pulsando |
 | 2026-10-29 | v1.54 — §3.1: o contraste sobre o vidro (G2): texto só em `texto/principal` |
+| 2026-10-29 | v1.55 — §5.1: o `AtalhoAtividade`; §7.7: a (p) fechada pela (s) (B3, item 14) |

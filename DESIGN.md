@@ -203,7 +203,8 @@ com os componentes do shadcn/ui em `components/ui/` e os nossos em `components/`
 | `Feed/Dia`, `Feed/Evento`, `Feed/Comentário` | Evento: Enviou, Aprovou, Publicou, Mudou | `components/Feed.tsx` |
 | `Estado da tela` | Vazio, Carregando, Erro, Sem permissão, Não encontrado, Erro inesperado | `components/EstadoVazio.tsx`, `components/Esqueleto.tsx` (o `skeleton`), `components/ErroComRetry.tsx`, `components/SemPermissao.tsx`, `components/NaoEncontrado.tsx` |
 | `Luz do Prism` | — | `components/Prism.tsx` (o Prism do React Bits, licença MIT + Commons Clause, exceção decidida por Matthew), usado no fundo do acesso e na capa da NC |
-| A capa da NC (as cópias na Mockups, com o estilo `Vidro/Capa da NC`) | — | `components/CapaNC.tsx` (o `CabecalhoItem` da NC: o vidro, a refração e a luz) |
+| `Bloco do título` | Tipo: NC · computador, NC · celular, Filho · computador, Filho · celular · Envolvido 2, 3 e 4 · Indicadores · Indicador 2 · Ação 3 · Espera · Nota | NC: `components/CapaNC.tsx` (o vidro do estilo `Vidro/Capa da NC`, a refração e a luz). Filho: `components/CabecalhoItem.tsx` (o caminho de volta, o título, o estado e os envolvidos). Os indicadores são o `Indicador`; as ações, a `BarraDeAcoes` |
+| `Atalho/Atividade deste item` | — | `components/AtalhoAtividade.tsx`: abre o `PainelAtividade` filtrado pelo item |
 | `Fundo do acesso` | — | **não usar**: era o Estuary da decisão (o), trocado pelo Prism na (r) |
 
 Os componentes de domínio sem peça própria no Figma (o `DialogoMotivo`, o `ChecklistFechamento`,
@@ -223,3 +224,4 @@ shadcn de cada um.
 | 2026-10-29 | O `Fundo do acesso` marcado "não usar" | O Prism do React Bits entrou no lugar do Estuary (decisão (r)) |
 | 2026-10-29 | O esqueleto em ASCII, testado e desfeito; os estilos `Esqueleto/ASCII` saíram | Matthew viu no Figma e animado, e preferiu o cinza (decisão (t)) |
 | 2026-10-29 | Este arquivo | O fim da B3: o contrato que a fase C lê |
+| 2026-10-29 | Os organismos `Bloco do título` e `Atalho/Atividade deste item`; as 65 cópias do bloco e as 43 do atalho na Mockups viraram instâncias | Eram 118 cópias soltas: uma mudança no bloco precisava ser refeita à mão em cada tela, e a fase C não sabia que a peça existia. As 10 das telas de Carregando ficam como estão (são o esqueleto) |
