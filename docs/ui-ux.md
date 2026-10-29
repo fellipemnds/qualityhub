@@ -608,10 +608,12 @@ revisão da B2 confere cada um); o 5 é acabamento (B3).
 1. **O bloco do título, com hierarquia.** Toda página de item abre com um
    bloco que dá o "rosto" do item: o código, o título (ou o rótulo, nos
    filhos, §10.3), o estado e quem está envolvido. **A NC é a casa**, a
-   que agrupa tudo: só ela tem o bloco **escuro** (§7.3). Os **filhos** são
+   que agrupa tudo: só ela tem a **luz** (decisão (s), 2026-10-29: a barra
+   escura saiu, pesada demais para a Calma; o título fica sobre a superfície
+   e a luz do Prism, parada, acende o canto superior direito, §7.3). Os **filhos** são
    da família: a mesma anatomia num tom **claro**, com o nome da NC em
    cima (o caminho de volta, `CabecalhoItem`), que diz a quem pertencem.
-   Nenhuma outra tela usa o bloco escuro. **Nos filhos** (decisão (h),
+   Nenhuma outra tela usa a luz. **Nos filhos** (decisão (h),
    2026-10-26), o título do bloco é o **tipo** ("Classificação"), não o
    rótulo, que repetia o primeiro campo da página e podia contradizê-lo
    antes do Salvar; o código fica na barra de cima. E o estado vem
@@ -839,9 +841,19 @@ incident.io e o Jira, no `docs/identidade/referencias-interface.md`).
 └───────────────────────────────────────────────┴──────────────────────┘
 ```
 
-1. **O bloco do título, escuro,** como no celular (o gesto 1 da casa,
-   §6.2): o código e o título, o estado, a etapa e os indicadores, a
-   fila dos envolvidos e as ações à direita.
+1. **A capa da NC** (decisão (s), 2026-10-29, no lugar do bloco escuro; o
+   gesto 1 da casa, §6.2): o código e o título, o estado, a etapa e os
+   indicadores, a fila dos envolvidos e as ações à direita, **sobre a
+   superfície da tela**, com mais ar em cima e embaixo. Atrás dela, no
+   **canto superior direito**, a luz do Prism (o mesmo do login, §7.7, no
+   espectro original e na resolução 0,4), recortada por uma máscara que a
+   desfaz antes dos cartões: nunca atrás de texto de cartão ou de tabela.
+   **Bem sutil no escuro, sutil no claro** (o brilho a 0,45 e a 0,7 do
+   login). **Parada** por padrão (desenhada uma vez, sem custo); **em
+   movimento** (gira devagar, `timeScale` 0,15) se a pessoa escolher, na
+   Minha conta (T-13), guardado no aparelho. Com o "reduzir movimento",
+   sempre parada; sem WebGL2, sem a luz. Decorativa (`aria-hidden`). O
+   protótipo: https://claude.ai/artifact/E6KQoDA3W9KhUGnkqrFC8t.
 2. **Os Dados** trazem a **classificação vigente** (a última aprovada,
    PRD Q19) como tag, mesmo repetida nos Itens: é o que mais diz sobre a
    NC. O ID fica em cinza ao lado da tag.
@@ -910,7 +922,10 @@ título no topo e a página em quatro abas.
 ```
 
 1. **A barra do topo:** voltar, o código e o ⋯.
-2. **O bloco do título** (o "título grande" do Fresha), em
+2. **O bloco do título** (o "título grande" do Fresha). **Desde a decisão
+   (s)** (2026-10-29), sem o fundo escuro: a mesma anatomia sobre a
+   superfície, com a luz no canto superior direito da tela, como no
+   computador. Antes, em
    `fundo/destaque`, token novo para a B3: no claro, o grafite
    (#1C1C1F); no escuro, um degrau **acima** da página e dos cartões
    (#1D1D21), porque a página já é quase preta. Dentro dele, de cima para
@@ -1887,3 +1902,4 @@ tokens.
 | 2026-10-28 | v1.46 — §2.2, regra 4: o `esqueleto.js` (o Carregando com a forma da tela, como a §5.2 já pedia; B3, item 10) |
 | 2026-10-28 | v1.47 — §7.7: a decisão (o), o fundo do login, suspensa; a iridescência para o fim da B3 |
 | 2026-10-29 | v1.48 — §7.7: a decisão (r), o fundo do login é o Prism do React Bits, na tela inteira, também no celular |
+| 2026-10-29 | v1.49 — §6.2 e §7.3: a decisão (s), a capa da NC sem a barra preta, com a luz do Prism no canto (parada ou em movimento, a escolha na Minha conta) |
