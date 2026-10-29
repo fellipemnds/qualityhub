@@ -294,6 +294,16 @@ fundos. **O ⚠️:** a borda de um campo dentro de uma linha selecionada
 fica abaixo de 3:1, e já ficava antes dos primitivos (2,96 e 2,86). Fica
 para o G2: só vale se uma tela puser um campo numa linha selecionada.
 
+**Sobre o vidro** (a capa da NC, decisão (s); G2 conferido em 2026-10-29,
+no pior ponto da luz, com a cor dela na opacidade da cópia e a tinta do
+vidro por cima): o `texto/principal` passa folgado (12,3:1 no claro, 8,9:1
+no escuro); o `texto/apoio` não (3,5:1 e 3,8:1), e engrossar a tinta não
+resolve sem acabar com o vidro (a 70%, 4,1:1). **A regra: sobre o vidro,
+texto só em `texto/principal`, sem opacidade**; ícone em `texto/apoio`
+passa (≥ 3:1). O botão bloqueado fica no cinza dele: controle
+desabilitado está fora da regra de contraste do WCAG, e o cinza é o que
+diz que ele está bloqueado.
+
 ### 3.2 Tipografia
 
 - **Fonte:** **Figtree** (decidida na B1, 2026-10-13; `docs/marca.md`).
@@ -1933,3 +1943,4 @@ tokens.
 | 2026-10-29 | v1.51 — §5.2: a decisão (t), o `Esqueleto` em ASCII; a revelação só nas artes de pontos |
 | 2026-10-29 | v1.52 — §3.1: os tokens do vidro e da luz, sem o `fundo/destaque`; §6.2 e §7.3: no celular, a barra do topo branca e o bloco do título de vidro, com a luz atrás (B3, item 14) |
 | 2026-10-29 | v1.53 — §2.2 e §5.2: o ASCII testado no Figma e animado, e deixado de lado; o `Esqueleto` volta ao cinza pulsando |
+| 2026-10-29 | v1.54 — §3.1: o contraste sobre o vidro (G2): texto só em `texto/principal` |
