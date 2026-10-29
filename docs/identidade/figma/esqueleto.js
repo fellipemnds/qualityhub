@@ -1,14 +1,17 @@
 // Esqueleto: transforma uma cópia de tela no seu estado Carregando, com a cara da própria tela
 // (pedido de Matthew, 2026-10-28: as barras no meio não lembravam a tela). Cada texto vira uma
 // barra por linha, e cada cópia de componente (botão, chip, avatar) ou ícone vira um bloco do mesmo
-// tamanho; tudo no `fundo/selecao`, com o raio do `raio/*`. O que estiver dentro de um nó com o
-// nome na lista `manter` (a doca, a barra do celular) fica como está.
+// tamanho; tudo no `fundo/selecao`, com o raio do `raio/*`. O que estiver dentro de um nó cujo
+// nome começa por um da lista `manter` (a doca, as barras do celular) fica como está.
 //
 // Como rodar: o Claude passa este arquivo para o `use_figma` sem o `export` e com a chamada no
 // fim: `return await esqueleto("123:456")`. O alvo é o id da cópia que vai virar o Carregando:
 // a troca não tem volta, então nunca no quadro original.
 
-export async function esqueleto(alvo, manter = ["Shell/Doca", "Shell/Barra inferior", "Barra superior"]) {
+export async function esqueleto(
+    alvo,
+    manter = ["Shell/Doca", "Shell/Barra inferior", "Shell/Barra superior", "Barra superior"],
+) {
     const raiz = await figma.getNodeByIdAsync(alvo);
     if (!raiz) throw new Error(`Alvo não achado: ${alvo}`);
     let pagina = raiz;
@@ -52,7 +55,7 @@ export async function esqueleto(alvo, manter = ["Shell/Doca", "Shell/Barra infer
 
     const feito = { texto: 0, bloco: 0 };
     const visitar = (no) => {
-        if (no.visible === false || manter.includes(no.name)) return;
+        if (no.visible === false || manter.some((m) => no.name.startsWith(m))) return;
         if (no.type === "TEXT") {
             const tamanho = typeof no.fontSize === "number" ? no.fontSize : 14;
             const linhas = Math.max(1, Math.round(no.height / (tamanho * 1.45)));
