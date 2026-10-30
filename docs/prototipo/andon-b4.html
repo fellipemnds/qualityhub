@@ -169,12 +169,11 @@
 
     /* Barra inferior flutuante (celular) */
     .barra-inf { position: fixed; z-index: 20; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); width: min(100%, 430px); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; gap: 12px; pointer-events: none; }
-    .barra-inf > * { pointer-events: auto; }
-    .abas-app { flex: 1; display: flex; padding: 6px; border-radius: 999px; background: var(--card); border: 1px solid var(--borda); box-shadow: 0 6px 24px rgb(0 0 0 / 0.08); }
+    .abas-app { pointer-events: auto; flex: 1; display: flex; padding: 6px; border-radius: 999px; background: var(--card); border: 1px solid var(--borda); box-shadow: 0 6px 24px rgb(0 0 0 / 0.08); }
     .aba-app { flex: 1; display: grid; justify-items: center; gap: 2px; padding: 6px 0; border-radius: 999px; font-size: 12px; color: var(--apoio); position: relative; }
     .aba-app[aria-current="page"] { background: var(--selecao); color: var(--texto); font-weight: 500; }
     .aba-app .bolha { position: absolute; top: 2px; left: calc(50% + 4px); min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; background: var(--primaria); color: var(--primaria-texto); font-size: 10px; line-height: 16px; font-weight: 600; }
-    .lupa { width: 62px; height: 62px; display: grid; place-items: center; border-radius: 50%; background: var(--card); border: 1px solid var(--borda); box-shadow: 0 6px 24px rgb(0 0 0 / 0.08); }
+    .lupa { pointer-events: auto; width: 62px; height: 62px; display: grid; place-items: center; border-radius: 50%; background: var(--card); border: 1px solid var(--borda); box-shadow: 0 6px 24px rgb(0 0 0 / 0.08); }
     .folga-barra { height: calc(110px + env(safe-area-inset-bottom, 0px)); }
 
     /* Cabeçalhos */
