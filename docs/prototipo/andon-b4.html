@@ -134,6 +134,7 @@
     .contador { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--selecao); font-size: 12px; font-weight: 600; }
     .alerta { color: var(--vencida); display: inline-flex; align-items: center; gap: 4px; }
     .alerta svg.ic { width: 14px; height: 14px; }
+    .et { display: inline-flex; align-items: center; gap: 6px; }
     .link { text-decoration: underline; text-underline-offset: 3px; }
 
     /* A luz da porta (DESIGN.md §2.5): só na T-03 */
@@ -188,7 +189,10 @@
     .segmentado { margin-top: 12px; display: flex; padding: 4px; border-radius: 8px; background: var(--selecao); }
     .segmentado button { flex: 1; height: 36px; border-radius: 6px; color: var(--apoio); }
     .segmentado button[aria-pressed="true"] { background: var(--card); color: var(--texto); font-weight: 500; }
-    .chips { margin-top: 12px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+    /* a fila dos filtros corre até a borda da tela e some num esmaecido: mostra que rola para o lado */
+    .chips { margin-top: 12px; margin-inline: -16px; padding-inline: 16px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent); }
+    .chips::-webkit-scrollbar { display: none; }
+    .chips::after { content: ""; flex: 0 0 24px; }
     .chip { display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--borda); background: var(--card); flex: none; }
     .cartoes { margin-top: 12px; border: 1px solid var(--borda); border-radius: 8px; background: var(--card); overflow: hidden; }
     .cartao { width: 100%; display: grid; gap: 4px; padding: 14px 16px; text-align: left; }
@@ -519,7 +523,7 @@
     };
     const avatares = (siglas) => `<span class="avs">${siglas.map((s) => `<span class="av" title="${esc(nomeDe(s))}">${esc(s)}</span>`).join("")}</span>`;
     const nomeDe = (s) => (s === "FS" ? "Fulana Souza (você)" : PESSOAS.find((p) => p.sigla === s)?.nome || s);
-    const etapa = (nome) => `<span>${ic(ETAPAS[nome] || "info")}${esc(nome)}</span>`;
+    const etapa = (nome) => `<span class="et">${ic(ETAPAS[nome] || "info")}${esc(nome)}</span>`;
 
     function contarPendencias() {
         return 1 + E.aprovacoes.length + 1 + (E.rascunho ? 1 : 0);
