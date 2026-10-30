@@ -370,6 +370,11 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
 
 ## 6. Próximo passo
 
+**Agora (2026-10-30, fim da tarde, no trabalho):** a B4 tem o protótipo (`docs/prototipo/andon-b4.html`, https://claude.ai/artifact/6ookPCHR7vF4D7nbur4h6D) e o roteiro (`docs/prototipo/roteiro-teste.md`) prontos; o teste com os 3 colegas é na **terça, 2026-11-03** (Matthew compartilha a página pelo Share antes). **Próximo, numa sessão nova** (pedido de Matthew; esta passou de 580 mil tokens de contexto):
+1. **O item 5 do §11 do `docs/fluxo-de-trabalho.md`**: os agentes `buscador`, `implementador`, `planejador` e `revisor` em `.claude/agents/` (🧑, Matthew escreve, passo a passo; conferir o cabeçalho na documentação do Claude Code antes). Hoje nenhum existe, e o protótipo foi todo feito na sessão principal, sem delegação nem revisão em contexto limpo (Matthew perguntou; a resposta honesta foi "não").
+2. **Um jeito de acompanhar os processos na interface do Claude** (pedido de Matthew): um mod do app (a skill `plugin-authoring`: painel, faixa ou barra de status) que mostre o que está rodando, quem do time fez o quê (a linha "Time:") e o uso da janela de 5 horas e da semana. Conversar antes o que mostrar, e conferir o que o app já mostra (a lista de tarefas, o cartão de uso) para não repetir.
+3. Antes de terça: a **revisão do protótipo em contexto limpo** (o revisor, Opus), contra a Mockups e o roteiro.
+
 **Agora (2026-10-29, fim da tarde, na nuvem):** a **B3 fechou** (PR #14 mesclado por Matthew, `cda5fab`; `/fechar-fase` rodado na nuvem). **Próximo: o `/comecar-fase` da B4** na `fase/b4-prototipo-e-teste` (já criada e enviada): ler a linha da B4 no plano, decidir o formato do protótipo (HTML ou o próprio Figma, decisão (n)) e abrir o PR em rascunho. No PC, antes: `git fetch` e `git switch fase/b4-prototipo-e-teste` (a branch local da B3 pode ser apagada com `git branch -d`).
 
 **Antes (2026-10-29, tarde, depois da sessão na nuvem):** a B3 estava com todos os itens feitos e o PR #14 em rascunho. Faltava o passo 7 do `/abrir-pr`:
