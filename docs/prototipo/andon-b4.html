@@ -395,6 +395,21 @@
     const ORIGENS = ["Auditoria interna", "Auditoria externa", "Operação", "Reclamação de cliente"];
     const SETORES = ["Expedição", "Metrologia", "Montagem", "Produção", "Recebimento"];
 
+    // As datas dos dados contam a partir de hoje: o feed combina com o "Enviada há 1 dia" em qualquer dia do teste
+    const DIAS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+    const MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+    function haDias(n) {
+        const d = new Date();
+        d.setDate(d.getDate() - n);
+        return d;
+    }
+    const diaFeed = (n) => {
+        const d = haDias(n);
+        return `${DIAS[d.getDay()]}, ${d.getDate()} de ${MESES[d.getMonth()]}`;
+    };
+    const dataCurta = (n) => haDias(n).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+    const dataLonga = (n) => haDias(n).toLocaleDateString("pt-BR");
+
     function estadoInicial() {
         return {
             tela: "pendencias",
@@ -431,7 +446,7 @@
                         ["Processo afetado", "Montagem do cabeçote"],
                         ["Origem", "Operação"],
                         ["Classificação", { tag: "Maior", codigo: "CL-2026-0011" }],
-                        ["Detectada em", "15/09/2026"],
+                        ["Detectada em", dataLonga(14)],
                         ["Requisito violado", "IT-042, item 5.3 (estanqueidade)"],
                         ["Cliente", "—"],
                     ],
@@ -442,24 +457,24 @@
                         ["ok", "Classificação fechada"],
                         ["ampulheta", "Investigação em aprovação"],
                         ["ponto", "Contenção aberta"],
-                        ["pendente", "Riscos revisados"],
-                        ["pendente", "Mudanças no SGQ"],
+                        ["pendente", "Revisar os riscos"],
+                        ["pendente", "Registrar as mudanças no SGQ"],
                         ["ok", "Aprovador definido"],
                     ],
                     itens: [
                         { tipo: "Classificação", lista: [{ codigo: "CL-2026-0011", texto: "Maior", estado: "Fechada", quem: "BL" }] },
-                        { tipo: "Contenção", lista: [{ codigo: "CT-2026-0019", texto: "Isolar o lote 42…", estado: "Aberta", quem: "CR", extra: "25/09/2026" }] },
+                        { tipo: "Contenção", lista: [{ codigo: "CT-2026-0019", texto: "Isolar o lote 42…", estado: "Aberta", quem: "CR", extra: dataLonga(-5) }] },
                         { tipo: "Investigação", lista: [{ codigo: "IV-2026-0007", texto: "A junta resseca antes…", estado: "Em aprovação", quem: "FS" }] },
                         { tipo: "Ação corretiva", nota: "nasce de uma investigação aberta", lista: [{ codigo: "AC-2026-0003", texto: "Trocar o fornecedor da junta…", estado: "Aberta", quem: "FS", vencido: "Vencido há 2 dias" }] },
                         { tipo: "Verificação", nota: "nasce sozinha ao finalizar uma ação", lista: [] },
                     ],
                     feed: [
-                        { dia: "Ter, 22 de set", tipo: "evento", icone: "enviar", texto: "Fulana Souza enviou a IV-2026-0007 para aprovação", hora: "14:02" },
-                        { dia: "Seg, 21 de set", tipo: "evento", icone: "editar", texto: "Ciclano Reis mudou o prazo da CT-2026-0019: 23/09 → 25/09", hora: "10:30" },
-                        { dia: "Seg, 21 de set", tipo: "comentario", quem: "Fulana Souza", sigla: "FS", texto: "@Beltrana, pode revisar a causa raiz?", hora: "09:15" },
-                        { dia: "Dom, 20 de set", tipo: "evento", icone: "criar", texto: "Ciclano Reis publicou a CT-2026-0019", hora: "16:40" },
-                        { dia: "Sex, 18 de set", tipo: "evento", icone: "feito", texto: "Beltrana Lima aprovou a CL-2026-0011 (Maior)", hora: "11:05" },
-                        { dia: "Ter, 15 de set", tipo: "evento", icone: "criar", texto: "Fulana Souza publicou a NC-2026-0042", hora: "08:40" },
+                        { dia: diaFeed(1), tipo: "evento", icone: "enviar", texto: "Fulana Souza enviou a IV-2026-0007 para aprovação", hora: "14:02" },
+                        { dia: diaFeed(8), tipo: "evento", icone: "editar", texto: `Ciclano Reis mudou o prazo da CT-2026-0019: ${dataCurta(-3)} → ${dataCurta(-5)}`, hora: "10:30" },
+                        { dia: diaFeed(8), tipo: "comentario", quem: "Fulana Souza", sigla: "FS", texto: "@Beltrana, pode revisar a causa raiz?", hora: "09:15" },
+                        { dia: diaFeed(9), tipo: "evento", icone: "criar", texto: "Ciclano Reis publicou a CT-2026-0019", hora: "16:40" },
+                        { dia: diaFeed(11), tipo: "evento", icone: "feito", texto: "Beltrana Lima aprovou a CL-2026-0011 (Maior)", hora: "11:05" },
+                        { dia: diaFeed(14), tipo: "evento", icone: "criar", texto: "Fulana Souza publicou a NC-2026-0042", hora: "08:40" },
                     ],
                     barra: "fechamento",
                 },
@@ -470,6 +485,7 @@
                     setor: "Metrologia",
                     estado: "Em aprovação",
                     etapa: "Aguardando aprovação do fechamento",
+                    indicador: "AC vencida há 6 dias",
                     resp: ["FS", "DA"],
                     minha: true,
                     detalhe: true,
@@ -480,7 +496,7 @@
                         ["Processo afetado", "Inspeção final"],
                         ["Origem", "Auditoria interna"],
                         ["Classificação", { tag: "Menor", codigo: "CL-2026-0009" }],
-                        ["Detectada em", "02/10/2026"],
+                        ["Detectada em", dataLonga(28)],
                         ["Requisito violado", "PR-07, item 4.2 (calibração em dia)"],
                         ["Cliente", "—"],
                     ],
@@ -503,10 +519,10 @@
                         { tipo: "Verificação", nota: "nasce sozinha ao finalizar uma ação", lista: [] },
                     ],
                     feed: [
-                        { dia: "Sex, 23 de out", tipo: "evento", icone: "enviar", texto: "Deltrano Alves enviou a NC-2026-0038 para fechamento", hora: "16:20" },
-                        { dia: "Qui, 22 de out", tipo: "evento", icone: "feito", texto: "Beltrana Lima aprovou a IV-2026-0005", hora: "10:12" },
-                        { dia: "Ter, 13 de out", tipo: "evento", icone: "criar", texto: "Deltrano Alves publicou a CT-2026-0016", hora: "08:30" },
-                        { dia: "Seg, 5 de out", tipo: "evento", icone: "criar", texto: "Deltrano Alves publicou a NC-2026-0038", hora: "09:00" },
+                        { dia: diaFeed(3), tipo: "evento", icone: "enviar", texto: "Deltrano Alves enviou a NC-2026-0038 para fechamento", hora: "16:20" },
+                        { dia: diaFeed(4), tipo: "evento", icone: "feito", texto: "Beltrana Lima aprovou a IV-2026-0005", hora: "10:12" },
+                        { dia: diaFeed(17), tipo: "evento", icone: "criar", texto: "Deltrano Alves publicou a CT-2026-0016", hora: "08:30" },
+                        { dia: diaFeed(25), tipo: "evento", icone: "criar", texto: "Deltrano Alves publicou a NC-2026-0038", hora: "09:00" },
                     ],
                     barra: "decidir",
                 },
@@ -607,7 +623,7 @@
                 ${aba("ncs", "NCs", "ncs")}
                 ${aba("eu", "Eu", "eu")}
             </div>
-            <button class="lupa" data-acao="fora" aria-label="Buscar">${ic("busca", "gg")}</button>
+            <button class="lupa" data-acao="lupa" aria-label="Buscar">${ic("busca", "gg")}</button>
         </nav>`;
     }
 
@@ -700,7 +716,7 @@
             .join("");
         return `<header class="barra-sup pad"><h1 class="t">Não Conformidades</h1><button class="btn btn-pri btn-barra" data-acao="nova">${ic("criar")}Nova NC</button></header>
         <main class="pad">
-            <div class="resumo-lista t-apoio"><span class="num">${abertas} abertas</span><span class="alerta">${ic("alerta")}3 com prazo vencido</span></div>
+            <div class="resumo-lista t-apoio"><span class="num">${abertas} abertas</span><span class="alerta">${ic("alerta")}${E.ordem.filter((id) => E.ncs[id].indicador).length} com prazo vencido</span></div>
             <label class="busca">${ic("busca")}<span class="sr">Buscar por código ou título</span><input id="busca-ncs" type="search" placeholder="Código ou título" value="${esc(E.termo)}" autocomplete="off"></label>
             <div class="segmentado" role="group" aria-label="Quais NCs">
                 ${["Todas", "Minhas", "Vencidas"].map((f) => `<button data-acao="filtro" data-id="${f}" aria-pressed="${E.filtro === f}">${f}</button>`).join("")}
@@ -822,12 +838,12 @@
                 envio: { riscos: "—", mudancas: "—" },
                 atribuicoes: [["FS", "Responsável"]],
                 checklist: [
-                    ["pendente", "Classificação fechada"],
-                    ["pendente", "Investigação fechada"],
+                    ["pendente", "Fechar a classificação"],
+                    ["pendente", "Fechar a investigação"],
                     ["ok", "Nenhuma contenção pendente"],
-                    ["pendente", "Riscos revisados"],
-                    ["pendente", "Mudanças no SGQ"],
-                    ["pendente", "Aprovador definido"],
+                    ["pendente", "Revisar os riscos"],
+                    ["pendente", "Registrar as mudanças no SGQ"],
+                    ["pendente", "Definir o aprovador"],
                 ],
                 itens: [
                     { tipo: "Classificação", nota: "quem classifica é a qualidade", lista: [] },
@@ -868,7 +884,7 @@
             `<div class="dado"><span class="k">${k}</span><span class="v">${typeof v === "object" ? `<span class="tag">${esc(v.tag)}</span><span class="t-apoio num">${esc(v.codigo)}</span>` : esc(v)}</span></div>`;
         let corpo = "";
         if (E.aba === "resumo") {
-            const destino = (t) => (/Riscos|Mudanças|Aprovador/.test(t) ? "detalhes" : "itens");
+            const destino = (t) => (/riscos|mudanças|aprovador/i.test(t) ? "detalhes" : "itens");
             corpo = `
                 <section class="cartao-s"><h2 class="t-secao">Descrição</h2><p class="t-longo">${esc(nc.descricao)}</p></section>
                 <section class="cartao-s"><h2 class="t-secao">Checklist de fechamento</h2>
@@ -1018,6 +1034,7 @@
         const fim = ta.selectionStart;
         const texto = `${ta.value.slice(0, sug.inicio)}${sug.gatilho}${s.chave} ${ta.value.slice(fim)}`;
         ta.value = texto;
+        E.rascunhoComentario = texto;
         const pos = sug.inicio + s.chave.length + 2;
         ta.setSelectionRange(pos, pos);
         if (s.sigla && !E.mencionados.includes(s.rotulo)) E.mencionados.push(s.rotulo);
@@ -1039,6 +1056,7 @@
         E.rascunhoComentario = "";
         E.mencionados = [];
         desenhar();
+        document.querySelector(".feed .evento")?.scrollIntoView({ block: "center" });
         if (chamados.length === 1) avisar(`Comentário publicado. ${chamados[0]} vai ver na pendência dele.`);
         else if (chamados.length > 1) avisar(`Comentário publicado. ${chamados.join(" e ")} vão ver na pendência.`);
         else avisar("Comentário publicado.");
@@ -1176,6 +1194,10 @@
         switch (acao) {
             case "aba-app":
                 trocarAba(tela);
+                break;
+            case "lupa":
+                trocarAba("ncs");
+                document.getElementById("busca-ncs")?.focus();
                 break;
             case "gaveta":
                 E.gavetas[id] = !E.gavetas[id];

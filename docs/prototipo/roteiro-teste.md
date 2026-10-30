@@ -70,6 +70,9 @@ está certo. Faça o que precisa ser feito."
 gaveta Aprovar) ou pela lista de NCs? Lê o checklist antes de decidir? Hesita entre Aprovar e
 Reprovar?
 
+Se ele **reprovar por engano**, anote e siga para a tarefa 3: a NC-2026-0038 fica sem os botões e
+não dá para refazer. O "Recomeçar o protótipo" (aba Eu) volta tudo antes do próximo colega.
+
 ### Tarefa 3 · Comentar com menção (J10)
 
 "Na NC do vazamento na linha 3, peça para o **Ciclano Reis** conferir se o lote 42 já foi
