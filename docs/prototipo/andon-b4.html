@@ -129,6 +129,9 @@
     .btn-bloq { background: var(--selecao); color: var(--apoio); }
     .btn[disabled] { opacity: 0.6; cursor: default; }
     .btn-full { width: 100%; }
+    /* o toque vai a 44 px sem mudar o desenho (ui-ux §9): uma área invisível, centrada no botão */
+    .btn, .segmentado button, .chip, .link-sec, button.check, .grupo-bt, .responder, .link { position: relative; }
+    :is(.btn, .segmentado button, .chip, .link-sec, button.check, .grupo-bt, .responder, .link)::before { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, 44px); height: max(100%, 44px); transform: translate(-50%, -50%); }
     .estado { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px; border-radius: 4px; background: var(--selecao); font-size: 12px; line-height: 16px; font-weight: 500; white-space: nowrap; }
     .estado i { width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
     .estado svg.ic { width: 14px; height: 14px; color: var(--c); }
@@ -193,7 +196,7 @@
     .segmentado button { flex: 1; height: 36px; border-radius: 6px; color: var(--apoio); }
     .segmentado button[aria-pressed="true"] { background: var(--card); color: var(--texto); font-weight: 500; }
     /* a fila dos filtros corre até a borda da tela e some num esmaecido: mostra que rola para o lado */
-    .chips { margin-top: 12px; margin-inline: -16px; padding-inline: 16px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent); }
+    .chips { margin-block: 6px -6px; margin-inline: -16px; padding: 6px 16px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent); }
     .chips::-webkit-scrollbar { display: none; }
     .chips::after { content: ""; flex: 0 0 24px; }
     .chip { display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--borda); background: var(--card); flex: none; }
