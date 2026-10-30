@@ -248,6 +248,8 @@
     .cartao-s { border: 1px solid var(--borda); border-radius: 8px; background: var(--card); padding: 16px; display: grid; gap: 10px; }
     .check { width: 100%; display: flex; align-items: center; gap: 10px; min-height: 36px; text-align: left; }
     .check .txt { flex: 1; }
+    .linhas { display: grid; }
+    .linhas.pessoas { gap: 4px; }
     .check .chev { color: var(--apoio); }
     .progresso-linha { display: flex; align-items: center; gap: 8px; }
     .progresso { display: inline-flex; align-items: center; gap: 4px; }
@@ -827,13 +829,13 @@
                 <section class="cartao-s"><h2 class="t-secao">Descrição</h2><p class="t-longo">${esc(nc.descricao)}</p></section>
                 <section class="cartao-s"><h2 class="t-secao">Checklist de fechamento</h2>
                     <div class="progresso-linha">${segmentos(atendidos, 6)}<span class="t-apoio">·</span><span class="t-apoio num">${atendidos} de 6 atendidos</span></div>
-                    ${nc.checklist
+                    <div class="linhas">${nc.checklist
                         .map(([i, t]) =>
                             i === "ok"
                                 ? `<div class="check">${ic(i, "g")}<span class="txt">${esc(t)}</span></div>`
                                 : `<button class="check" data-acao="ir-aba" data-id="${destino(t)}">${ic(i, "g")}<span class="txt">${esc(t)}</span><span class="chev">${ic("direita")}</span></button>`,
                         )
-                        .join("")}
+                        .join("")}</div>
                 </section>
                 <section class="cartao-s"><div class="cab-cartao"><h2 class="t-secao">Atividade recente</h2><button class="link-sec" data-acao="ir-aba" data-id="feed">Ver tudo</button></div>
                     ${listaFeed(nc.feed.slice(0, 2), true)}
@@ -848,7 +850,7 @@
                     <div class="dados">${linhaDado("Riscos revisados", nc.envio.riscos)}${linhaDado("Mudanças no SGQ", nc.envio.mudancas)}</div>
                     <p class="t-apoio">Preenchidos antes de enviar para fechamento.</p></section>
                 <section class="cartao-s"><div class="cab-cartao"><h2 class="t-secao">Atribuições</h2><button class="link-sec" data-acao="fora">+ Adicionar responsável</button></div>
-                    ${nc.atribuicoes.map(([s, f]) => `<div class="pessoa-linha"><span class="av m">${s}</span><span class="txt">${esc(nomeDe(s).replace(" (você)", ""))}</span>${funcao(f)}</div>`).join("")}</section>
+                    <div class="linhas pessoas">${nc.atribuicoes.map(([s, f]) => `<div class="pessoa-linha"><span class="av m">${s}</span><span class="txt">${esc(nomeDe(s).replace(" (você)", ""))}</span>${funcao(f)}</div>`).join("")}</div></section>
                 <section class="cartao-s"><div class="cab-cartao"><h2 class="t-secao">Anexos (${nc.anexos.length})</h2><button class="link-sec" data-acao="fora">+ Anexar</button></div>
                     ${nc.anexos.length ? nc.anexos.map(([n, t]) => `<div class="dado anexo-linha"><span class="k">${esc(n)}</span><span class="v num">${esc(t)}</span></div>`).join("") : '<p class="t-apoio">Nenhum anexo.</p>'}</section>`;
         } else if (E.aba === "itens") {
