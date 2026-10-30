@@ -113,7 +113,10 @@
     .t-longo { font-size: 16px; line-height: 24px; }
     .num { font-variant-numeric: tabular-nums; }
 
-    svg.ic { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    /* o traço fica em 1,5 px na tela, em qualquer tamanho do ícone (o Lucide desenha em 24 px com traço 2;
+       encolhido para 12 ou 16 px, o traço caía entre os pixels e borrava) */
+    svg.ic { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
+    svg.ic * { vector-effect: non-scaling-stroke; }
     svg.ic.g { width: 20px; height: 20px; }
     svg.ic.gg { width: 24px; height: 24px; }
 
@@ -127,7 +130,7 @@
     .btn-full { width: 100%; }
     .estado { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px; border-radius: 4px; background: var(--selecao); font-size: 12px; line-height: 16px; font-weight: 500; white-space: nowrap; }
     .estado i { width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
-    .estado svg.ic { width: 12px; height: 12px; color: var(--c); }
+    .estado svg.ic { width: 14px; height: 14px; color: var(--c); }
     .av { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--selecao); border: 1px solid var(--borda); font-size: 10px; font-weight: 600; flex: none; }
     .av.m { width: 32px; height: 32px; font-size: 12px; }
     .avs { display: flex; gap: 4px; }
