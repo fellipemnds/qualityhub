@@ -288,6 +288,10 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
   indústria pequena ou média, e o software mais perto é a Qualyteam, não o ETQ. Levar para a
   sessão as 5 lacunas de lá (o relatório 8D, ERP, e-mail e SSO, fornecedor de uma
   pessoa só, Part 11) e pedir cotação à Qualyteam e à SoftExpert antes de fixar o preço.
+  **O 8D é ampliação de escopo** (Matthew, 2026-10-30; conversar depois): a pergunta é "vamos
+  vender para fornecedor automotivo?". Se sim, faltam a exportação no formato 8D, a causa de
+  **não detecção** na Investigação e a D7 (FMEA, plano de controle, levar a correção a produtos
+  parecidos); o mapa D1–D8 × Andon está no documento.
 - **Ideia para refinar (`idea-refine`) antes da C3: a atividade recente
   na tela inicial** (2026-10-20, da referência do Flowio,
   `docs/identidade/referencias-interface.md`). O que aconteceu nas NCs que
