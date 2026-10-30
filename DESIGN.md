@@ -12,15 +12,19 @@
 
 1. **Grafite, sem cor de destaque.** A interface é neutra; a cor diz **estado** (o ícone do
    estado, ≥ 3:1) e nunca vem sozinha: o rótulo ao lado vai em `texto/principal` (`docs/marca.md`).
-2. **A luz é um lugar, nunca um componente.** Ela aparece em dois lugares: a **porta de entrada**
-   (o Prism atrás do login, na tela inteira) e a **capa da NC** (a barra de vidro, com a luz parada
-   no canto superior esquerdo). Botões, campos e o resto ficam no Grafite.
-3. **Contraste:** texto ≥ 4,5:1 e ícone ou borda de controle ≥ 3:1, nos dois modos. **Sobre o
-   vidro, texto só em `texto/principal`**, sem opacidade (o `texto/apoio` fica em 3,5:1 no pior
-   ponto da luz). O controle desabilitado fica no cinza dele (fora da regra do WCAG).
+2. **A luz é um lugar, nunca um componente.** Ela aparece em dois lugares, os dois na porta: o
+   **login** (o Prism atrás, na tela inteira) e a **T-03 Minhas pendências**, a primeira tela
+   depois dele (o `Brilho iridescente`, parado, no canto superior esquerdo, que some antes do meio
+   da tela). As telas de trabalho (a NC, os filhos, as listas) ficam todas no Grafite, sem luz.
+   Botões, campos e o resto também. A única peça que conversa com a luz é a **borda que pega a
+   luz** do cartão "O mais urgente", sob o brilho: um fio na cor do texto, sem cor própria, só no
+   canto de onde a luz vem (decisão (u)).
+3. **Contraste:** texto ≥ 4,5:1 e ícone ou borda de controle ≥ 3:1, nos dois modos. **Sobre a
+   luz da T-03**, conferir o `texto/apoio` no pior ponto do brilho na C3. O controle desabilitado
+   fica no cinza dele (fora da regra do WCAG).
 4. **Uma fonte só:** a Figtree, servida pelo nosso servidor.
 5. **Movimento** de 150 a 250 ms, sempre com uma função, e desligado com o "reduzir movimento"
-   (o Prism fica parado; o esqueleto não pulsa).
+   (o Prism fica parado; o esqueleto não pulsa). A luz da T-03 é sempre parada.
 6. **Os estados de cada tela** (o G4, `docs/fluxo-app.md` §8): Vazio, Carregando (o esqueleto
    cinza, pulsando), Erro (com o Tentar de novo), Sem permissão e Não encontrado, pelo organismo
    **Estado da tela**. Erro em tela inteira só quando não há tela para mostrar.
@@ -55,13 +59,10 @@ componente usam só os semânticos.
 | `grafite/925` | `#0E0E11` | | | |
 | `grafite/950` | `#09090B` | | | |
 
-Com transparência (o vidro da capa da NC): `vidro/branco-50` `#FFFFFF` a 50%,
-`vidro/grafite-45` `#161618` a 45%, `sombra/grafite-5` `#121214` a 5%, `sombra/preto-25`
-`#000000` a 25%, `brilho/branco-30` `#FFFFFF` a 30%, `brilho/branco-3` `#FFFFFF` a 3%.
-
-A luz (só para a aproximação do Prism no Figma, o componente **Luz do Prism**; no código, a luz
-é o shader): `luz/vermelho` `#FF5E7E`, `luz/ambar` `#FFB547`, `luz/verde` `#7CF29A`,
-`luz/ciano` `#4FD8F0`, `luz/azul` `#5B7CFF`, `luz/magenta` `#C86BFF`.
+A luz: `luz/vermelho` `#FF5E7E`, `luz/ambar` `#FFB547`, `luz/verde` `#7CF29A`,
+`luz/ciano` `#4FD8F0`, `luz/azul` `#5B7CFF`, `luz/magenta` `#C86BFF`. No Figma, eles desenham a
+aproximação do Prism (o componente **Luz do Prism**, no login) e o **Brilho iridescente** (a T-03);
+no código, o Prism é o shader, e o brilho, gradientes de CSS com estas cores.
 
 ### 2.2 Semânticos de cor
 
@@ -71,7 +72,7 @@ A luz (só para a aproximação do Prism no Figma, o componente **Luz do Prism**
 | `fundo/card` | `grafite/0` | `grafite/900` | Cartões, painéis, campos; a barra do topo do celular |
 | `fundo/lateral` | `grafite/25` | `grafite/925` | O menu lateral |
 | `fundo/selecao` | `grafite/100` | `grafite/800` | Item ativo, linha selecionada; o esqueleto |
-| `texto/principal` | `grafite/900` | `grafite/100` | O texto principal; todo texto sobre o vidro |
+| `texto/principal` | `grafite/900` | `grafite/100` | O texto principal; o fio da borda que pega a luz |
 | `texto/apoio` | `grafite/600` | `grafite/400` | Rótulos, datas, texto secundário |
 | `borda/padrao` | `grafite/150` | `grafite/800` | Bordas de cartão e divisórias |
 | `borda/controle` | `grafite/500` | `grafite/600` | A borda de campo (≥ 3:1) |
@@ -86,9 +87,11 @@ A luz (só para a aproximação do Prism no Figma, o componente **Luz do Prism**
 | `estado/vence-em-breve` | `ambar/800` | `ambar/400` | O prazo em até 7 dias |
 | `estado/vencida` | `vermelho/600` | `vermelho/400` | O prazo vencido |
 | `marca/toque` | `grafite/900` | `grafite/100` | Reservado: a cor de uma empresa cliente, se o Andon virar SaaS |
-| `vidro/tinta` | `vidro/branco-50` | `vidro/grafite-45` | O fundo da barra de vidro |
-| `vidro/sombra-interna` | `sombra/grafite-5` | `sombra/preto-25` | A sombra interna de cima do vidro |
-| `vidro/brilho-interno` | `brilho/branco-30` | `brilho/branco-3` | O brilho interno de baixo do vidro |
+
+Sob a luz da T-03, o cartão "O mais urgente" usa o `fundo/card` translúcido (55% no escuro, 70% no
+claro), para a luz passar por ele. No Figma é a opacidade da tinta; no código, o `fundo/card`
+com transparência (`color-mix` ou `/55`). Se mais uma peça pedir, vira o token
+`superficie/translucida`.
 
 O contraste de cada par está no `docs/ui-ux.md` §3.1.
 
@@ -101,8 +104,7 @@ O contraste de cada par está no `docs/ui-ux.md` §3.1.
 | `raio/controle` | 6 | Botão, campo |
 | `raio/card` | 8 | Cartão, painel |
 | `raio/pilula` | 999 | Pílula, avatar |
-| `raio/folha` | 20 | Os cantos de cima da folha que sobe no celular |
-| `raio/vidro` | 20 | A barra de vidro da capa da NC |
+| `raio/folha` | 20 | Os cantos de cima da folha que sobe no celular; os de baixo da capa da NC no celular |
 | `altura/controle` | 36 | Botão |
 | `altura/campo` | 40 | Campo |
 | `altura/toque` | 44 | O alvo de toque mínimo no celular |
@@ -125,12 +127,19 @@ O contraste de cada par está no `docs/ui-ux.md` §3.1.
 
 ### 2.5 Efeitos
 
-**`Vidro/Capa da NC`**: no Figma, o efeito **Glass** (refração 0,5, profundidade 20, luz 0,4 a
-−45°, dispersão 0,4, desfoque 4) e duas sombras internas (em cima, `0 1px 4px`
-`vidro/sombra-interna`; embaixo, `0 −1px 3px` `vidro/brilho-interno`), com o fundo em
-`vidro/tinta` e os cantos em `raio/vidro`. **No código**, a refração é desenhada por nós sobre o
-Prism (a luz passa por uma lente: aumenta 5% no meio e se curva nas bordas), porque o Liquid Glass
-do navegador só funciona no Chrome (`docs/ui-ux.md` §7.3); as sombras viram `box-shadow: inset`.
+**O `Brilho iridescente`** (a T-03): manchas suaves das cores `luz/*`, uma ao lado da outra a
+partir do canto superior esquerdo, na ordem de um holograma (rosa, âmbar, verde, ciano, azul,
+violeta), com desfoque. **No escuro**, a camada soma como luz (`mix-blend-mode: screen`, 60%);
+**no claro**, normal (32%). No computador, a mesma peça maior (2,6×, a 50% e 28%). **No código**,
+`radial-gradient` sobrepostos num `div` decorativo (`aria-hidden`), sem shader.
+
+**A borda que pega a luz** (o cartão "O mais urgente"): um fio de 1 px em `texto/principal` (45%
+no escuro, 25% no claro) sob uma **máscara** em degradê, que o deixa visível só no canto de cima,
+de onde a luz vem. **No código**, uma borda com `mask-image: linear-gradient(...)`.
+
+**Hachura** (a régua da T-08 e a eficácia): listras diagonais de 1,25 a 1,5 px a cada 4 ou 5 px,
+na cor do texto. Quer dizer "o recorte": o período escolhido na régua, o Parcialmente eficaz na
+barra. **No código**, `repeating-linear-gradient(45deg, ...)`.
 
 ### 2.6 A ponte com o código (na C0)
 
@@ -153,7 +162,7 @@ proposta, **a conferir na documentação do shadcn na C0**:
 | `--destructive` | `acao/destrutiva` |
 | `--radius` | `raio/card` |
 
-Os `estado/*`, o `marca/toque` e os `vidro/*` não têm par no shadcn: viram variáveis próprias.
+Os `estado/*`, o `marca/toque` e os `luz/*` não têm par no shadcn: viram variáveis próprias.
 
 ## 3. Os componentes: Figma → React
 
@@ -205,8 +214,10 @@ com os componentes do shadcn/ui em `components/ui/` e os nossos em `components/`
 | `Shell/Abas do item` | Ativa: Resumo, Detalhes, Itens, Feed | `components/AbasDoItem.tsx` (`tabs`) |
 | `Feed/Dia`, `Feed/Evento`, `Feed/Comentário` | Evento: Enviou, Aprovou, Publicou, Mudou | `components/Feed.tsx` |
 | `Estado da tela` | Vazio, Carregando, Erro, Sem permissão, Não encontrado, Erro inesperado | `components/EstadoVazio.tsx`, `components/Esqueleto.tsx` (o `skeleton`), `components/ErroComRetry.tsx`, `components/SemPermissao.tsx`, `components/NaoEncontrado.tsx` |
-| `Luz do Prism` | — | `components/Prism.tsx` (o Prism do React Bits, licença MIT + Commons Clause, exceção decidida por Matthew), usado no fundo do acesso e na capa da NC |
-| `Bloco do título` | Tipo: NC · computador, NC · celular, Filho · computador, Filho · celular · Envolvido 2, 3 e 4 · Indicadores · Indicador 2 · Ação 3 · Espera · Nota | NC: `components/CapaNC.tsx` (o vidro do estilo `Vidro/Capa da NC`, a refração e a luz). Filho: `components/CabecalhoItem.tsx` (o caminho de volta, o título, o estado e os envolvidos). Os indicadores são o `Indicador`; as ações, a `BarraDeAcoes` |
+| `Luz do Prism` | — | `components/Prism.tsx` (o Prism do React Bits, licença MIT + Commons Clause, exceção decidida por Matthew), só no fundo do acesso |
+| `Brilho iridescente` | — | `components/BrilhoIridescente.tsx` (gradientes de CSS, §2.5), só na T-03 |
+| `Bloco do título` | Tipo: NC · computador, NC · celular, Filho · computador, Filho · celular · Envolvido 2, 3 e 4 · Indicadores · Indicador 2 · Ação 3 · Espera · Nota | `components/CabecalhoItem.tsx`, o mesmo para a NC e os filhos (a capa plana: `fundo/card`, o fio `borda/padrao` embaixo, o estado e os avatares em `fundo/selecao`; no celular, os cantos de baixo em `raio/folha`; decisão (u)). Os indicadores são o `Indicador`; as ações, a `BarraDeAcoes` |
+| `Régua do período` (na T-08) | — | `components/ReguaDoPeriodo.tsx`: o trilho dos 24 meses, o período hachurado, a marca com a dica e as pontas; embaixo, os atalhos (`toggle-group`). No computador, a marca se arrasta (`slider`) e dá o período livre |
 | `Atalho/Atividade deste item` | — | `components/AtalhoAtividade.tsx`: abre o `PainelAtividade` filtrado pelo item |
 | `Fundo do acesso` | — | **não usar**: era o Estuary da decisão (o), trocado pelo Prism na (r) |
 
@@ -228,3 +239,5 @@ shadcn de cada um.
 | 2026-10-29 | O esqueleto em ASCII, testado e desfeito; os estilos `Esqueleto/ASCII` saíram | Matthew viu no Figma e animado, e preferiu o cinza (decisão (t)) |
 | 2026-10-29 | Este arquivo | O fim da B3: o contrato que a fase C lê |
 | 2026-10-29 | Os organismos `Bloco do título` e `Atalho/Atividade deste item`; as 65 cópias do bloco e as 43 do atalho na Mockups viraram instâncias | Eram 118 cópias soltas: uma mudança no bloco precisava ser refeita à mão em cada tela, e a fase C não sabia que a peça existia. As 10 das telas de Carregando ficam como estão (são o esqueleto) |
+| 2026-10-30 | **Saíram** `vidro/*`, `sombra/*`, `brilho/*`, `raio/vidro` e o estilo `Vidro/Capa da NC`; a capa da NC ficou plana, igual à dos filhos | "Fomos perdendo a vibe minimalista" (Matthew): a luz sai das telas de trabalho (decisão (u)) |
+| 2026-10-30 | O organismo `Brilho iridescente`, a borda que pega a luz e a hachura (§2.5); a régua da T-08 com os atalhos | A luz vai para a T-03, a porta do app; a régua segue a barra da referência de Matthew (decisão (u)) |
