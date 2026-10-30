@@ -182,7 +182,7 @@ do `CLAUDE.md`); 🤖 é do Claude.
 | 2 | `npm run verificar` | 🧑 | script de shell com código de saída |
 | 3 | O pre-commit versionado e o `core.hooksPath` no `preparar` | 🧑 | hook do Git |
 | 4 | Os bloqueios no `.claude/settings.json` | 🧑 (repete o do `agy`) | permissões do Claude Code |
-| 5 | Os agentes `buscador`, `implementador`, `planejador` e `revisor` em `.claude/agents/` | 🧑 (dita); conferir o cabeçalho na documentação antes | agentes e frontmatter |
+| 5 | ~~Os agentes `buscador`, `implementador`, `planejador` e `revisor` em `.claude/agents/`~~ (feito em 2026-10-30, `4cf1ca8`: Matthew pediu que Claude escrevesse e explicasse; o cabeçalho conferido na documentação; o buscador sem o `CLAUDE.md`, `omitClaudeMd`; só aparecem numa sessão nova) | 🧑 (dita); conferir o cabeçalho na documentação antes | agentes e frontmatter |
 | 6 | As skills (`/item`, `/comecar-fase`, `/retomar`, `/encerrar`, `/abrir-pr`) e o `AGENTS.md` seguindo este documento | 🤖 implementador | — |
 | 7 | O `CLAUDE.md` abaixo de 200 linhas e o `.claude/rules/` | 🤖 implementador; o revisor confere que nenhuma regra se perdeu | — |
 | 8 | O hook `SessionStart` e a barra de status | 🧑 | hooks do Claude Code |
@@ -200,3 +200,4 @@ curtas. **Nunca** a revisão.
 |---|---|
 | 2026-10-21 | v0 — proposta: os quatro papéis, o ciclo do item e da fase, e os portões que faltam (Playwright, `axe`, rollback, congelamento) |
 | 2026-10-30 | v1 — aprovada: o degrau 0 (automáticos), o Haiku só no que se confere, o revisor sempre Opus, o modelo da sessão por tipo de fase escolhido ao abrir, a delegação de 2026-10-28, o protocolo do limite (70% e 90%), a passagem para o Antigravity numa branch `agy/`, o contexto enxuto e o que falta construir. Desenhada com Matthew, revisada por um agente adversário em contexto limpo |
+| 2026-10-30 | v1.1 — o item 5 do §11 feito: os quatro agentes em `.claude/agents/` |
