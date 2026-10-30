@@ -286,7 +286,7 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
   **A análise de mercado** (2026-10-30, documento privado "Andon no mercado de QMS",
   https://claude.ai/artifact/SpBHxdP3z3Jzg4fAwyk4cu): o concorrente real é a planilha numa
   indústria pequena ou média, e o software mais perto é a Qualyteam, não o ETQ. Levar para a
-  sessão as 5 lacunas de lá (8D e os outros métodos, ERP, e-mail e SSO, fornecedor de uma
+  sessão as 5 lacunas de lá (o relatório 8D, ERP, e-mail e SSO, fornecedor de uma
   pessoa só, Part 11) e pedir cotação à Qualyteam e à SoftExpert antes de fixar o preço.
 - **Ideia para refinar (`idea-refine`) antes da C3: a atividade recente
   na tela inicial** (2026-10-20, da referência do Flowio,
