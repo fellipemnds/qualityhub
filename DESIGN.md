@@ -192,7 +192,7 @@ com os componentes do shadcn/ui em `components/ui/` e os nossos em `components/`
 | `Aba` | Ativa · contagem | `components/ui/tabs.tsx` |
 | `Controle segmentado` | Opção ativa | `components/ui/toggle-group.tsx` |
 | `Tecla` | — | `components/ui/kbd.tsx` |
-| `Ícone/*` (53) | — | o ícone de mesmo desenho do `lucide-react` |
+| `Ícone/*` (53) | — | o ícone de mesmo desenho do `lucide-react`, com o traço fixo na tela (`absoluteStrokeWidth`): encolhido de 24 para 12 ou 16 px, o traço de 2 caía entre os pixels e borrava (o protótipo da B4 usa 1,5 px). Na C0, conferir o traço do Figma e fixar o mesmo |
 
 ### 3.2 Moléculas
 
