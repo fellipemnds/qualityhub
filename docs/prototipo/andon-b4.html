@@ -11,7 +11,7 @@
 <style>
     /* O celular, uma coluna de 430 px no máximo; os tokens do DESIGN.md §2 */
     :root {
-        --pagina: #fbfbfc;
+        --pagina: #f7f7f8;
         --card: #ffffff;
         --selecao: #ececef;
         --texto: #121214;
@@ -36,7 +36,7 @@
     }
     @media (prefers-color-scheme: dark) {
         :root:not([data-theme="light"]) {
-            --pagina: #0e0e11;
+            --pagina: #09090b;
             --card: #121214;
             --selecao: #25252a;
             --texto: #ececef;
@@ -61,7 +61,7 @@
         }
     }
     :root[data-theme="dark"] {
-        --pagina: #0e0e11;
+        --pagina: #09090b;
         --card: #121214;
         --selecao: #25252a;
         --texto: #ececef;
@@ -390,6 +390,7 @@
         "Pronta para fechamento": "pronta",
         "Aguardando aprovação do fechamento": "relogio",
         Fechada: "ok",
+        "Fechada · ação em execução": "acao",
     };
     const ORIGENS = ["Auditoria interna", "Auditoria externa", "Operação", "Reclamação de cliente"];
     const SETORES = ["Expedição", "Metrologia", "Montagem", "Produção", "Recebimento"];
@@ -400,7 +401,7 @@
             historico: [],
             ncId: null,
             aba: "resumo",
-            gavetas: { rascunhos: true, vencidas: false, aprovar: true, triagem: false },
+            gavetas: { rascunhos: false, vencidas: false, aprovar: true, triagem: false },
             grupos: {},
             filtro: "Todas",
             termo: "",
@@ -450,7 +451,7 @@
                         { tipo: "Contenção", lista: [{ codigo: "CT-2026-0019", texto: "Isolar o lote 42…", estado: "Aberta", quem: "CR", extra: "25/09/2026" }] },
                         { tipo: "Investigação", lista: [{ codigo: "IV-2026-0007", texto: "A junta resseca antes…", estado: "Em aprovação", quem: "FS" }] },
                         { tipo: "Ação corretiva", nota: "nasce de uma investigação aberta", lista: [{ codigo: "AC-2026-0003", texto: "Trocar o fornecedor da junta…", estado: "Aberta", quem: "FS", vencido: "Vencido há 2 dias" }] },
-                        { tipo: "Verificação", nota: "0 · nasce sozinha ao finalizar uma ação", lista: [] },
+                        { tipo: "Verificação", nota: "nasce sozinha ao finalizar uma ação", lista: [] },
                     ],
                     feed: [
                         { dia: "Ter, 22 de set", tipo: "evento", icone: "enviar", texto: "Fulana Souza enviou a IV-2026-0007 para aprovação", hora: "14:02" },
@@ -499,7 +500,7 @@
                         { tipo: "Contenção", lista: [{ codigo: "CT-2026-0016", texto: "Reinspecionar as peças da semana…", estado: "Fechada", quem: "DA" }] },
                         { tipo: "Investigação", lista: [{ codigo: "IV-2026-0005", texto: "O controle de calibração não avisava…", estado: "Fechada", quem: "DA" }] },
                         { tipo: "Ação corretiva", nota: "continua depois do fechamento", lista: [{ codigo: "AC-2026-0002", texto: "Alerta de vencimento no sistema de calibração…", estado: "Aberta", quem: "DA", vencido: "Vencido há 6 dias" }] },
-                        { tipo: "Verificação", nota: "0 · nasce sozinha ao finalizar uma ação", lista: [] },
+                        { tipo: "Verificação", nota: "nasce sozinha ao finalizar uma ação", lista: [] },
                     ],
                     feed: [
                         { dia: "Sex, 23 de out", tipo: "evento", icone: "enviar", texto: "Deltrano Alves enviou a NC-2026-0038 para fechamento", hora: "16:20" },
@@ -520,16 +521,53 @@
     const app = document.getElementById("app");
 
     // Navegação
+    // O voltar do aparelho (o gesto do Android, o deslize do iPhone) passa pelo histórico do navegador:
+    // cada tela é um passo, e um passo de reserva no começo segura o colega dentro do protótipo.
+    let comHistorico = true;
+    function empilhar() {
+        try {
+            history.pushState(null, "");
+        } catch {
+            comHistorico = false;
+        }
+    }
     function ir(tela, extra = {}) {
         E.historico.push({ tela: E.tela, ncId: E.ncId, aba: E.aba });
+        empilhar();
         Object.assign(E, { tela }, extra);
         desenhar(true);
     }
+    let voltandoPeloApp = false;
     function voltar() {
-        const ant = E.historico.pop() || { tela: "pendencias" };
-        Object.assign(E, ant);
+        if (comHistorico && E.historico.length) {
+            voltandoPeloApp = true;
+            history.back();
+        } else voltarNaTela();
+    }
+    function voltarNaTela() {
+        const peloAparelho = !voltandoPeloApp;
+        voltandoPeloApp = false;
+        // pelo gesto, uma folha aberta fecha primeiro, e a Nova NC com conteúdo pergunta antes de sair
+        if (peloAparelho && E.folha) {
+            empilhar();
+            E.folha = null;
+            desenhar();
+            return;
+        }
+        if (peloAparelho && E.tela === "nova" && temConteudo(lerForm())) {
+            empilhar();
+            E.form = lerForm();
+            E.folha = { tipo: "sair" };
+            desenhar();
+            return;
+        }
+        const ant = E.historico.pop();
+        if (!ant) empilhar();
+        Object.assign(E, ant || { tela: "pendencias", ncId: null, aba: "resumo" });
         desenhar(true);
     }
+    empilhar();
+    window.addEventListener("popstate", voltarNaTela);
     function trocarAba(tela) {
         E.historico = [];
         Object.assign(E, { tela, ncId: null, aba: "resumo" });
@@ -573,6 +611,12 @@
         </nav>`;
     }
 
+    // O sv-SE escreve a data como AAAA-MM-DD, no fuso do aparelho (o toISOString seria o de Greenwich)
+    const hojeIso = () => new Date().toLocaleDateString("sv-SE");
+    function hojePorExtenso() {
+        const t = new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" }).replace("-feira", "");
+        return t[0].toUpperCase() + t.slice(1);
+    }
     function saudacaoHora() {
         const h = new Date().getHours();
         return h < 12 ? "Bom dia" : h < 18 ? "Boa tarde" : "Boa noite";
@@ -614,7 +658,7 @@
                 <span style="--c:#c86bff;left:270px;top:110px"></span>
             </div>
             <header class="saudacao">
-                <p class="t-rotulo">Segunda, 26 de outubro</p>
+                <p class="t-rotulo">${hojePorExtenso()}</p>
                 <h1 class="t-pagina">${saudacaoHora()}, Fulana</h1>
                 <p class="t-apoio">${n} coisas esperam por você. 1 está vencida.</p>
             </header>
@@ -626,10 +670,10 @@
             </section>
             <h2 class="t-secao secao-titulo">Para você hoje</h2>
             <div class="gavetas">
-                ${r ? gaveta("rascunhos", "rascunho", "Rascunhos", 1, linha("continuar", "", "Continuar rascunho", esc(r.titulo?.trim() || "Sem título"), "Salvo hoje · só você vê")) : ""}
                 ${gaveta("vencidas", "alerta", "Vencidas", 1, linha("fora", "", "AC-2026-0003 · Trocar o fornecedor da junta…", "Executar ação · NC-2026-0042", '<span class="alerta">Vencido há 2 dias</span>'), true)}
                 ${E.aprovacoes.length ? gaveta("aprovar", "aprovar", "Aprovar", E.aprovacoes.length, aprovar.join("")) : ""}
                 ${gaveta("triagem", "triagem", "Triagem", 1, linha("fora", "", "NC-2026-0045 · Rótulo ilegível", "NC sem aprovador · publicada hoje"))}
+                ${r ? gaveta("rascunhos", "rascunho", "Rascunhos", 1, linha("continuar", "", "Continuar rascunho", esc(r.titulo?.trim() || "Sem título"), "Salvo hoje · só você vê")) : ""}
                 <div class="em-dia">${ic("ok", "g")}<span>Corrigir, Verificar e mais 3 tipos: em dia</span></div>
             </div>
             <div class="folga-barra"></div>
@@ -688,7 +732,7 @@
                     <h2 class="t-secao">O que aconteceu</h2>
                     ${campo("titulo", "Título", `<input id="f-titulo" name="titulo" maxlength="200" placeholder="Ex.: Vazamento na linha 3" value="${esc(f.titulo)}" ${desc("titulo")}>`, "Pelo menos 5 caracteres")}
                     ${campo("descricao", "Descrição", `<textarea id="f-descricao" name="descricao" placeholder="O que aconteceu, onde e quando" ${desc("descricao")}>${esc(f.descricao)}</textarea>`, "Pelo menos 20 caracteres: o que aconteceu, onde e quando")}
-                    ${campo("data", "Detectada em", `<input id="f-data" name="data" type="date" value="${esc(f.data || "2026-10-26")}" max="2026-10-26" ${desc("data")}>`, "")}
+                    ${campo("data", "Detectada em", `<input id="f-data" name="data" type="date" value="${esc(f.data || hojeIso())}" max="${hojeIso()}" ${desc("data")}>`, "")}
                     ${campo("origem", "Origem", `<select id="f-origem" name="origem" ${desc("origem")}>${opcoes(ORIGENS, f.origem)}</select>`, "")}
                 </div>
                 <div class="grupo">
@@ -790,7 +834,7 @@
                     { tipo: "Contenção", nota: "0", lista: [] },
                     { tipo: "Investigação", nota: "0", lista: [] },
                     { tipo: "Ação corretiva", nota: "0 · nasce de uma investigação aberta", lista: [] },
-                    { tipo: "Verificação", nota: "0 · nasce sozinha ao finalizar uma ação", lista: [] },
+                    { tipo: "Verificação", nota: "nasce sozinha ao finalizar uma ação", lista: [] },
                 ],
                 feed: [{ dia: "Hoje", tipo: "evento", icone: "criar", texto: `Você publicou a ${codigo}`, hora: horaAgora() }],
                 barra: "fechamento",
@@ -1003,7 +1047,7 @@
     // A decisão (J8)
     function aprovar() {
         const nc = E.ncs[E.ncId];
-        Object.assign(nc, { estado: "Fechada", etapa: "Fechada", reprovacao: "" });
+        Object.assign(nc, { estado: "Fechada", etapa: "Fechada · ação em execução", reprovacao: "" });
         nc.checklist = nc.checklist.map(([, t]) => ["ok", t]);
         nc.feed.unshift({ dia: "Hoje", tipo: "evento", icone: "feito", texto: `Você aprovou o fechamento da ${nc.codigo}`, hora: horaAgora() });
         E.aprovacoes = E.aprovacoes.filter((id) => id !== nc.codigo);
@@ -1163,7 +1207,7 @@
                 desenhar();
                 break;
             case "nova":
-                ir("nova", { form: { data: "2026-10-26" }, erros: {}, erroGeral: "" });
+                ir("nova", { form: { data: hojeIso() }, erros: {}, erroGeral: "" });
                 break;
             case "continuar":
                 ir("nova", { form: { ...E.rascunho, deRascunho: true }, erros: {}, erroGeral: "" });
@@ -1183,7 +1227,6 @@
                 delete E.rascunho.deRascunho;
                 Object.assign(E, { form: null, erros: {}, folha: null });
                 E.historico = [];
-                E.gavetas.rascunhos = true;
                 Object.assign(E, { tela: "pendencias" });
                 desenhar(true);
                 avisar("Rascunho salvo. Ele está nas suas pendências.");
