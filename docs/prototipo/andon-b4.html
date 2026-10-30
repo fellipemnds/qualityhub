@@ -182,7 +182,7 @@
     body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--card); }
 
     /* T-04 Lista de NCs */
-    .lista-cab { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; }
+    .btn-barra { height: 36px; padding: 0 12px; }
     .resumo-lista { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
     .busca { margin-top: 12px; display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px; border: 1px solid var(--controle); border-radius: 6px; background: var(--card); color: var(--apoio); }
     .busca input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font-size: 16px; color: var(--texto); }
@@ -624,8 +624,8 @@
                 </button>`,
             )
             .join("");
-        return `<main class="pad">
-            <div class="lista-cab"><h1 class="t-pagina" style="font-size:20px">Não Conformidades</h1><button class="btn btn-pri" data-acao="nova">${ic("criar")}Nova NC</button></div>
+        return `<header class="barra-sup pad"><h1 class="t">Não Conformidades</h1><button class="btn btn-pri btn-barra" data-acao="nova">${ic("criar")}Nova NC</button></header>
+        <main class="pad">
             <div class="resumo-lista t-apoio"><span class="num">${abertas} abertas</span><span class="alerta">${ic("alerta")}3 com prazo vencido</span></div>
             <label class="busca">${ic("busca")}<span class="sr">Buscar por código ou título</span><input id="busca-ncs" type="search" placeholder="Código ou título" value="${esc(E.termo)}" autocomplete="off"></label>
             <div class="segmentado" role="group" aria-label="Quais NCs">
