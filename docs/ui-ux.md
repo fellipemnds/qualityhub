@@ -253,19 +253,17 @@ claro.
 **`marca/toque`** (reservado, §2.2, item 1) aponta para o grafite do
 texto nos dois modos, até a sessão do SaaS decidir outra coisa.
 
-**O vidro e a luz** (decisão (s), B3, item 14, 2026-10-29). Primitivos
-novos, com transparência: `vidro/branco-50`, `vidro/grafite-45`,
-`sombra/grafite-5`, `sombra/preto-25`, `brilho/branco-30` e
-`brilho/branco-3`; e o espectro da luz, `luz/vermelho`, `luz/ambar`,
-`luz/verde`, `luz/ciano`, `luz/azul` e `luz/magenta` (só para a
-aproximação do Prism no Figma, o componente **Luz do Prism**; no código, a
-luz é o shader). Semânticos: `vidro/tinta` (o fundo da barra de vidro;
-branco a 50% no claro, `#161618` a 45% no escuro), `vidro/sombra-interna`
-e `vidro/brilho-interno` (as cores das sombras internas); o raio
-`raio/vidro` (20 px); e o estilo de efeito **Vidro/Capa da NC** (o Glass do
-Figma, que mostra a refração, e as duas sombras internas). Saíram o
-`fundo/destaque` e o `texto/sobre-destaque`, da barra escura, que ninguém
-mais usa.
+**A luz** (decisão (u), B4, 2026-10-30; antes, o vidro da (s)). O espectro,
+`luz/vermelho`, `luz/ambar`, `luz/verde`, `luz/ciano`, `luz/azul` e
+`luz/magenta`: no Figma, a aproximação do Prism (o componente **Luz do
+Prism**, no login) e o **Brilho iridescente** (a T-03, §7.1); no código, o
+Prism é o shader e o brilho, gradientes de CSS. **Saíram** em 2026-10-30
+os primitivos do vidro (`vidro/branco-50`, `vidro/grafite-45`,
+`sombra/grafite-5`, `sombra/preto-25`, `brilho/branco-30`,
+`brilho/branco-3`), os semânticos `vidro/tinta`, `vidro/sombra-interna` e
+`vidro/brilho-interno`, o `raio/vidro` e o estilo **Vidro/Capa da NC**:
+a capa da NC ficou plana (§7.3). Antes, em 2026-10-29, já tinham saído o
+`fundo/destaque` e o `texto/sobre-destaque`, da barra escura.
 
 **O contraste** (WCAG 2; texto ≥ 4,5:1, ícone e borda de controle ≥
 3:1), o pior caso entre os quatro fundos (página, card, lateral e
@@ -294,15 +292,15 @@ fundos. **O ⚠️:** a borda de um campo dentro de uma linha selecionada
 fica abaixo de 3:1, e já ficava antes dos primitivos (2,96 e 2,86). Fica
 para o G2: só vale se uma tela puser um campo numa linha selecionada.
 
-**Sobre o vidro** (a capa da NC, decisão (s); G2 conferido em 2026-10-29,
-no pior ponto da luz, com a cor dela na opacidade da cópia e a tinta do
-vidro por cima): o `texto/principal` passa folgado (12,3:1 no claro, 8,9:1
-no escuro); o `texto/apoio` não (3,5:1 e 3,8:1), e engrossar a tinta não
-resolve sem acabar com o vidro (a 70%, 4,1:1). **A regra: sobre o vidro,
-texto só em `texto/principal`, sem opacidade**; ícone em `texto/apoio`
-passa (≥ 3:1). O botão bloqueado fica no cinza dele: controle
-desabilitado está fora da regra de contraste do WCAG, e o cinza é o que
-diz que ele está bloqueado.
+**Sobre a luz da T-03** (decisão (u)): a saudação e o cartão "O mais
+urgente" passam sobre o brilho, mais fraco que a luz da antiga capa de
+vidro (60% em modo *screen* no escuro, 32% no claro) e fora do centro do
+Prism. **A conferir na C3**, no navegador e no pior ponto do brilho: o
+`texto/apoio` da saudação e do cartão translúcido (≥ 4,5:1). Se não
+passar, a saída é baixar o brilho, nunca clarear o texto. O botão
+bloqueado fica no cinza dele: controle desabilitado está fora da regra de
+contraste do WCAG, e o cinza é o que diz que ele está bloqueado. (A regra
+da (s), "sobre o vidro, texto só em `texto/principal`", saiu com o vidro.)
 
 ### 3.2 Tipografia
 
@@ -633,14 +631,15 @@ revisão da B2 confere cada um); o 5 é acabamento (B3).
 1. **O bloco do título, com hierarquia.** Toda página de item abre com um
    bloco que dá o "rosto" do item: o código, o título (ou o rótulo, nos
    filhos, §10.3), o estado e quem está envolvido. **A NC é a casa**, a
-   que agrupa tudo: só ela tem a **luz** (decisão (s), 2026-10-29: a barra
-   escura saiu, pesada demais para a Calma; no computador, o título fica
-   numa **barra de vidro**, e a luz do Prism, parada, acende o canto
-   superior esquerdo atrás dela; no celular, também, com a barra do topo
-   branca acima, §7.3). Os **filhos** são
-   da família: a mesma anatomia num tom **claro**, com o nome da NC em
-   cima (o caminho de volta, `CabecalhoItem`), que diz a quem pertencem.
-   Nenhuma outra tela usa a luz. **Nos filhos** (decisão (h),
+   que agrupa tudo. Desde a decisão (u) (2026-10-30), a NC e os
+   **filhos** têm a **mesma capa plana** (o `CabecalhoItem`: o título
+   sobre a cor dos cartões, o estado na caixinha cinza, um fio embaixo),
+   sem luz e sem vidro; o que diz que a NC é a casa é o conteúdo (a etapa,
+   os indicadores, os itens), e nos filhos o nome da NC em cima (o caminho
+   de volta) diz a quem pertencem. A luz fica na porta (o login e a T-03,
+   §7.1); as telas de trabalho não a usam. (Antes: a barra escura, depois
+   a barra de vidro com a luz do Prism, decisão (s), 2026-10-29: "fomos
+   perdendo a vibe minimalista", Matthew.) **Nos filhos** (decisão (h),
    2026-10-26), o título do bloco é o **tipo** ("Classificação"), não o
    rótulo, que repetia o primeiro campo da página e podia contradizê-lo
    antes do Salvar; o código fica na barra de cima. E o estado vem
@@ -680,6 +679,20 @@ precisa ser **convidativa**. Responde duas perguntas: *o que eu faço
 primeiro* (o cartão) e *como está o meu dia* (as gavetas). Decisão (j) da
 B2 (2026-10-26), a C2: o cartão da A (Asana) com o resumo da B (Deel),
 virado gavetinhas a pedido de Matthew.
+
+**A luz da porta** (decisão (u), 2026-10-30): a T-03 é a única tela do app
+com luz, porque é a porta, logo depois do Prism do login. No canto
+superior esquerdo, o **Brilho iridescente**, parado: manchas suaves na
+ordem de um holograma (rosa, âmbar, verde, ciano, azul e violeta), que
+somem antes do meio da tela; no escuro, somando como luz (modo *screen*,
+60%), no claro, pastel (32%); no computador, a mesma peça maior. Por que o
+canto esquerdo: a luz tem uma direção, é onde a leitura começa, e o
+direito é das ações. O cartão **"O mais urgente"**, sob o brilho, fica
+translúcido (o `fundo/card` a 55% no escuro e 70% no claro) e tem a
+**borda que pega a luz**: o fio na cor do texto, só no canto de cima, sem
+cor própria (`DESIGN.md` §2.5). Nos estados (Carregando, Erro, vazio) o
+brilho continua; é o fundo da tela. Decorativo (`aria-hidden`), e parado
+também com o "reduzir movimento" (não há o que parar).
 
 **Computador:**
 
@@ -868,27 +881,18 @@ incident.io e o Jira, no `docs/identidade/referencias-interface.md`).
 └───────────────────────────────────────────────┴──────────────────────┘
 ```
 
-1. **A capa da NC** (decisão (s), 2026-10-29, no lugar do bloco escuro; o
-   gesto 1 da casa, §6.2): o código e o título, o estado, a etapa e os
-   indicadores, a fila dos envolvidos e as ações à direita, numa **barra de
-   vidro líquido** (o bloco de sempre, com cantos de 20 px e sem borda). Atrás
-   dela, no **canto superior esquerdo**, a luz do Prism (o mesmo do login,
-   §7.7, no espectro original e na resolução 0,4), desfeita por uma máscara
-   antes dos cartões. O vidro: a tinta dos cartões translúcida por cima
-   (branco a 50% no claro, o cinza dos cartões a 45% no escuro), a luz
-   **refratada** por baixo (desenhada de novo dentro da barra, passando por
-   uma lente: aumenta 5% no meio e se curva nas bordas, 28 px dos lados e
-   22 px em cima e embaixo; feito por nós, e não pelo filtro do navegador,
-   para valer também no Safari), uma **sombra interna bem sutil** (em cima,
-   escura; embaixo, clara) e uma sombra externa leve. **Bem sutil no
-   escuro, sutil no claro** (o brilho a 0,45 e a 0,7 do login). **Parada**
-   por padrão (desenhada uma vez, sem custo); **em movimento** (gira
-   devagar, `timeScale` 0,15) se a pessoa escolher, na Minha conta (T-13),
-   guardado no aparelho. Com o "reduzir movimento", sempre parada; sem
-   WebGL2, sem a luz e sem a refração (fica a tinta). Decorativa
-   (`aria-hidden`). **A conferir no G2:** o título passa sobre a luz no
-   canto esquerdo, então o contraste do texto sobre o vidro tem de chegar a
-   4,5:1 no pior ponto da luz. O protótipo: https://claude.ai/artifact/E6KQoDA3W9KhUGnkqrFC8t.
+1. **A capa da NC** (decisão (u), 2026-10-30; o gesto 1 da casa, §6.2):
+   o código e o título, o estado, a etapa e os indicadores, a fila dos
+   envolvidos e as ações à direita, numa **capa plana**, igual à dos
+   filhos: o `fundo/card`, a borda `borda/padrao` e os cantos em
+   `raio/card`; o estado e os avatares em `fundo/selecao`. Sem luz e sem
+   vidro: a NC é tela de trabalho, e a luz atrás dela disputava com a cor
+   que diz o estado (o azul de Aberta e o violeta de Em aprovação ficavam
+   dentro do brilho). **Antes** (a decisão (s), 2026-10-29): uma barra de
+   vidro líquido com a luz do Prism refratada no canto esquerdo, parada ou
+   em movimento pela Minha conta; saiu porque "fomos perdendo a vibe
+   minimalista" (Matthew). O protótipo da (s), como histórico:
+   https://claude.ai/artifact/E6KQoDA3W9KhUGnkqrFC8t.
 2. **Os Dados** trazem a **classificação vigente** (a última aprovada,
    PRD Q19) como tag, mesmo repetida nos Itens: é o que mais diz sobre a
    NC. O ID fica em cinza ao lado da tag.
@@ -958,11 +962,15 @@ título no topo e a página em quatro abas.
 
 1. **A barra do topo:** voltar, o código e o ⋯.
 2. **O bloco do título** (o "título grande" do Fresha). **Desde a decisão
-   (s)** (2026-10-29), sem o fundo escuro: a **barra do topo** (o voltar,
-   o código e o ⋯) fica **branca e sólida** (`fundo/card`; Matthew:
-   "mantém a barra branca nos celulares"), e o bloco do título embaixo
-   dela é a **barra de vidro**, com os cantos de baixo em `raio/vidro` e a
-   luz do Prism atrás, no canto esquerdo, como no computador. Antes, em
+   (u)** (2026-10-30): a **barra do topo** (o voltar, o código e o ⋯) fica
+   **branca e sólida** (`fundo/card`; Matthew, na (s): "mantém a barra
+   branca nos celulares"), e o bloco do título embaixo dela é a **capa
+   plana** da NC, a mesma dos filhos (`fundo/card` e um fio embaixo), com
+   os cantos de baixo em `raio/folha`, sem luz. O respiro em volta do fio é
+   igual dos dois lados: 16 px da última linha da capa até ele, e 16 dele
+   até o texto das abas (4 px do corpo e os 12 da folga da própria aba,
+   que guarda o alvo de 44 px). Na (s), o bloco era a barra de vidro, com a
+   luz do Prism atrás. Antes, em
    `fundo/destaque`, token novo para a B3: no claro, o grafite
    (#1C1C1F); no escuro, um degrau **acima** da página e dos cartões
    (#1D1D21), porque a página já é quase preta. Dentro dele, de cima para
@@ -1541,9 +1549,21 @@ Expedição   9 · 24%  │  ┄┄┄┄┄┄┄┄  ┄┄ Menor      │    
 ...                  │                          │                        │ NCs reabertas 2 ›
 ```
 
-1. **A régua do período** manda em tudo embaixo: os meses dos últimos dois
-   anos, o trecho escolhido com o fundo `fundo/selecao`, e a frase do
-   período embaixo. No celular, mostra 7 meses e se arrasta para os lados.
+1. **A régua do período** manda em tudo embaixo (decisão (u), 2026-10-30,
+   pela barra da referência de Matthew, o *52W range* de um app de
+   mercado): o **trilho** são os últimos 24 meses (out/24 a out/26), o
+   **período escolhido fica hachurado** (o hachurado quer dizer "o
+   recorte", como na eficácia), e uma **marca com a dica** (nov/25) diz
+   onde ele começa; embaixo, **as pontas** (out/24, "o começo do
+   histórico"; out/26, "hoje"). Embaixo da régua, os **atalhos** (o
+   `ToggleGroup`: Mês · 3M · 6M · 12M · Ano · Tudo no celular, com "3
+   meses" por extenso no computador; o escolhido na pílula `fundo/selecao`)
+   e a frase do período ("Últimos 12 meses · 38 NCs abertas no período").
+   **Os atalhos escolhem, a régua mostra:** no celular a régua não se
+   arrasta; no computador, arrastar a marca dá o **período livre** e
+   desmarca os atalhos. "Tudo" hachura o trilho inteiro. A pílula tem 32
+   px visíveis; no celular, a área de toque vai a 44 no código. (Antes:
+   a régua dos meses, que se arrastava para os lados no celular.)
 2. **O que mudou:** até 3 frases sobre o período, cada uma com ícone (o
    atraso com o ⚠ vermelho). A regra de qual mudança vale uma frase fica
    para a C7, com a analista.
@@ -1561,7 +1581,12 @@ Expedição   9 · 24%  │  ┄┄┄┄┄┄┄┄  ┄┄ Menor      │    
 Os quatro relatórios da RF-19, nessa ordem. **Todo número leva à lista de
 NCs já filtrada** (J12). Componentes: o `Tooltip` e o `Chart` do shadcn
 (sobre o **Recharts**: biblioteca nova, entra no changelog com o código,
-§1), as barras em HTML simples, e a régua, que é nossa.
+§1), as barras em HTML simples, e a régua, que é nossa (o trilho e a
+hachura em CSS; os atalhos, o `toggle-group`; a marca do computador, o
+`slider`). **A barra da eficácia** (decisão (u)) tem 16 px de altura e
+separa os trechos por **textura**, não por tom: liso (Eficaz), hachurado
+(Parcialmente eficaz) e só o contorno (Não eficaz), com a legenda igual.
+Distingue sem cor, também para quem não enxerga cores.
 
 ### 7.13 T-09 Usuários (com a T-10 e a T-11)
 
@@ -1946,3 +1971,4 @@ tokens.
 | 2026-10-29 | v1.53 — §2.2 e §5.2: o ASCII testado no Figma e animado, e deixado de lado; o `Esqueleto` volta ao cinza pulsando |
 | 2026-10-29 | v1.54 — §3.1: o contraste sobre o vidro (G2): texto só em `texto/principal` |
 | 2026-10-29 | v1.55 — §5.1: o `AtalhoAtividade`; §7.7: a (p) fechada pela (s) (B3, item 14) |
+| 2026-10-30 | v1.56 — a decisão (u), a luz no app: §3.1, os tokens do vidro saíram e a nota de contraste passou para a luz da T-03; §6.2 e §7.3, a capa plana da NC, igual à dos filhos; §7.1, a luz da porta (o Brilho iridescente) e a borda que pega a luz; §7.12, a régua como a barra da referência, com os atalhos embaixo, e a eficácia por textura |

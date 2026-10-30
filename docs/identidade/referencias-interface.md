@@ -402,3 +402,19 @@ Coleção no Mobbin: "Andon · T-01 Login (o fundo)".
 - **React Bits · Iridescence** (https://www.reactbits.dev/backgrounds/iridescence)
   e **Paper Shaders** (https://shaders.paper.design/, Apache-2.0): os dois
   candidatos levantados pelo Claude; ficaram de fora quando o Prism apareceu.
+
+## 2026-10-30 · A luz no app e a régua (decisão (u))
+
+As imagens são capturas que Matthew trouxe no chat (de outro autor: ficam fora
+do repositório).
+
+- **Um app de mercado (Markets), em modo escuro:** o brilho azul só no canto
+  superior esquerdo da tela inicial, que some antes da metade; a tela da ação em
+  preto puro; a busca e os chips num branco translúcido com um fio de borda; o
+  cartão selecionado com a borda mais clara do lado da luz. Matthew: "quando eu
+  imaginava o app, eu imaginava uma vibe tipo assim, tá vendo esse azul em cima?
+  Tipo isso, mas mais sutil". Deu a luz na porta (a T-03) e a borda que pega a luz.
+- **O mesmo app, a barra do *52W range*:** o trilho, o trecho preenchido com
+  listras diagonais, a marca com a dica do preço e as pontas (o low e o high)
+  embaixo; acima do gráfico, os atalhos 1D · 5D · 1M · YTD em pílulas. Matthew:
+  "usa ela como exemplo". Deu a régua da T-08, com os atalhos embaixo da barra.
