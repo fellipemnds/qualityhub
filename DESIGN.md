@@ -12,6 +12,8 @@
 
 1. **Grafite, sem cor de destaque.** A interface é neutra; a cor diz **estado** (o ícone do
    estado, ≥ 3:1) e nunca vem sozinha: o rótulo ao lado vai em `texto/principal` (`docs/marca.md`).
+   **Exceção: o prazo vencido** (o `Item/Prazo`): o texto vai também em `estado/vencida`, junto
+   do ⚠ (Matthew, 2026-10-30, como o `docs/ui-ux.md` §7.1 já pedia).
 2. **A luz é um lugar, nunca um componente.** Ela aparece em dois lugares, os dois na porta: o
    **login** (o Prism atrás, na tela inteira) e a **T-03 Minhas pendências**, a primeira tela
    depois dele (o `Brilho iridescente`, parado, no canto superior esquerdo, que some antes do meio
@@ -241,3 +243,4 @@ shadcn de cada um.
 | 2026-10-29 | Os organismos `Bloco do título` e `Atalho/Atividade deste item`; as 65 cópias do bloco e as 43 do atalho na Mockups viraram instâncias | Eram 118 cópias soltas: uma mudança no bloco precisava ser refeita à mão em cada tela, e a fase C não sabia que a peça existia. As 10 das telas de Carregando ficam como estão (são o esqueleto) |
 | 2026-10-30 | **Saíram** `vidro/*`, `sombra/*`, `brilho/*`, `raio/vidro` e o estilo `Vidro/Capa da NC`; a capa da NC ficou plana, igual à dos filhos | "Fomos perdendo a vibe minimalista" (Matthew): a luz sai das telas de trabalho (decisão (u)) |
 | 2026-10-30 | O organismo `Brilho iridescente`, a borda que pega a luz e a hachura (§2.5); a régua da T-08 com os atalhos | A luz vai para a T-03, a porta do app; a régua segue a barra da referência de Matthew (decisão (u)) |
+| 2026-10-30 | A regra 1 ganhou a exceção do prazo vencido: o texto em `estado/vencida`, com o ⚠ | O revisor do protótipo achou a regra 1 contra o `ui-ux.md` §7.1; Matthew escolheu o vermelho |
