@@ -336,9 +336,15 @@
     .rotulo-campo { font-weight: 500; }
     .folga-compositor { height: calc(96px + env(safe-area-inset-bottom, 0px)); }
 
-    /* T-01 Login */
-    .login { min-height: 100%; display: grid; place-items: start center; }
-    .login-cartao { width: 100%; max-width: 440px; display: grid; gap: 24px; padding-block: 32px 40px; }
+    /* T-01 Login, sobre o Prism (decisão (r)) */
+    #app { z-index: 1; }
+    .palco { position: fixed; inset: 0; z-index: 0; display: none; }
+    .prism { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    .prism-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+    body.com-prisma .palco { display: block; }
+    body.com-prisma #app { background: transparent; }
+    .login { min-height: 100%; display: grid; place-items: start center; padding-block: 24px 40px; }
+    .login-cartao { width: 100%; max-width: 440px; display: grid; gap: 24px; padding: 24px; border: 1px solid var(--borda); border-radius: 12px; background: var(--card); }
     .logo { font-size: 28px; line-height: 32px; font-weight: 600; letter-spacing: -0.03em; }
     .perfis { display: grid; gap: 8px; }
     .perfis-lista { display: grid; gap: 8px; margin-top: 4px; }
@@ -449,12 +455,13 @@
     body.desk .folha .pega { display: none; }
     body.desk .grade-6m { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     body.desk .login { place-items: center; padding-block: 40px; }
-    body.desk .login-cartao { border: 1px solid var(--borda); border-radius: 12px; background: color-mix(in srgb, var(--card) var(--transl), transparent); padding: 32px; }
+    body.desk .login-cartao { padding: 32px; }
     .compositor.embutido { position: relative; left: auto; bottom: auto; transform: none; width: auto; border: 0; padding: 0; background: none; }
     .compositor.embutido .sugestoes { left: 0; right: 0; }
     body.desk .avisos { bottom: 96px; }
 </style>
 
+<div class="palco" aria-hidden="true"><div class="prism" id="prism"><canvas class="prism-canvas"></canvas></div></div>
 <div id="app"></div>
 <div class="avisos" id="avisos" role="status" aria-live="polite"></div>
 
@@ -1186,9 +1193,9 @@
                 ${av(s, "m")}<span class="corpo"><span class="nome">${esc(x.nome)}</span><span class="t-rotulo">${x.papeis.map((q) => NOME_PAPEL[q]).join(" + ")} · ${esc(x.setor)}</span><span class="t-apoio">${esc(x.perfil)}</span></span>
                 <span class="marca-sel">${ic("feito")}</span></button>`;
         }).join("");
-        return `<main class="login porta">
-            ${BRILHO}
-            <div class="login-cartao pad">
+        return `<main class="login ${prisma ? "" : "porta"} pad">
+            ${prisma ? "" : BRILHO}
+            <div class="login-cartao">
                 <p class="logo">andon</p>
                 <section class="perfis" aria-labelledby="perfis-t">
                     <h2 class="t-secao" id="perfis-t">Protótipo: entrar como</h2>
@@ -1879,6 +1886,239 @@
                 return folhaAdmin(f) || "";
         }
     }
+    // ─── O Prism (React Bits) no fundo do login: decisão (r), ui-ux §7.7 ─────────────────
+    // O porte para JS puro do protótipo da (r) (https://claude.ai/artifact/WKunQ3US2x77UHBkYZcfKy): o shader e a lógica
+    // são os do original. Gira em 3D a 0,25, no espectro original, com a resolução em 0,4; no claro, a luz vira tinta.
+    // Sem WebGL2, fica o fundo liso; com o "reduzir movimento", parado.
+    const INTRO_SECONDS = 1.4;
+    // o giro de matiz do original fica desligado (hueShift 0): a matriz vai só para preencher o uniforme
+    const HUE_W = [0.299, 0.587, 0.114, 0.299, 0.587, 0.114, 0.299, 0.587, 0.114];
+    const VERTEX = `#version 300 es
+void main() {
+  vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));
+  gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);
+}`;
+    const FRAGMENT = `#version 300 es
+precision highp float;
+uniform vec2 uResolution; uniform mat3 uRay; uniform float uGlow; uniform vec2 uOffset; uniform float uColorFreq;
+uniform float uCenterShift; uniform float uInvBaseHalf; uniform float uInvHeight; uniform float uMinAxis; uniform float uPxScale;
+uniform float uTime; uniform float uNoise; uniform float uSaturation;
+uniform mat3 uHue; uniform int uUseHue; uniform float uLight;
+out vec4 outColor;
+const vec4 PHASE_COS = vec4(1.0, 0.5403023058681398, -0.4161468365471424, -0.9899924966004454);
+const vec4 PHASE_SIN = vec4(0.0, 0.8414709848078965, 0.9092974268256817, 0.1411200080598672);
+float rand(vec2 co) { return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453123); }
+float pyramid(vec3 p) {
+  vec3 q = vec3(abs(p.x) * uInvBaseHalf, abs(p.y) * uInvHeight, abs(p.z) * uInvBaseHalf);
+  return max((q.x + q.y + q.z - 1.0) * uMinAxis * 0.5773502691896258, -p.y);
+}
+vec3 grade(vec3 col, vec2 seed) {
+  col += (rand(seed) - 0.5) * uNoise;
+  col = clamp(col, 0.0, 1.0);
+  float L = dot(col, vec3(0.2126, 0.7152, 0.0722));
+  col = clamp(mix(vec3(L), col, uSaturation), 0.0, 1.0);
+  if (uUseHue == 1) col = clamp(uHue * col, 0.0, 1.0);
+  return col;
+}
+void main() {
+  vec2 f = (gl_FragCoord.xy - 0.5 * uResolution - uOffset) * uPxScale;
+  vec3 origin = uRay * vec3(f, 0.0);
+  vec3 axis = uRay[2];
+  float z = 5.0;
+  vec4 o = vec4(0.0);
+  for (int i = 0; i < 100; i++) {
+    vec3 p = origin + axis * z;
+    float d = 0.1 + 0.2 * abs(pyramid(p + vec3(0.0, uCenterShift, 0.0)));
+    z -= d;
+    float phase = (p.y + z) * uColorFreq;
+    vec4 band = sin(phase) * PHASE_COS + cos(phase) * PHASE_SIN + 1.0;
+    o += band / d;
+  }
+  vec4 raw = o * o * uGlow / 1e5;
+  vec4 e = exp(2.0 * raw);
+  vec4 mapped = (e - 1.0) / (e + 1.0);
+  vec2 seed = gl_FragCoord.xy + vec2(uTime);
+  if (uLight > 0.5) {
+    float peak = max(raw.r, max(raw.g, raw.b));
+    vec3 hue = grade(raw.rgb / max(peak, 1e-6), seed);
+    vec3 ink = pow(hue, vec3(1.5)) * 0.86;
+    float strength = max(mapped.r, max(mapped.g, mapped.b)) * mapped.a;
+    float cover = clamp(strength * 0.95 + (rand(seed.yx) - 0.5) * uNoise * 0.5, 0.0, 1.0);
+    outColor = vec4(ink * cover, cover);
+  } else {
+    outColor = vec4(grade(mapped.rgb, seed) * mapped.a, mapped.a);
+  }
+}`;
+    const limitar = (v, a, b) => Math.min(b, Math.max(a, v));
+    function compilar(gl, tipo, fonte) {
+        const s = gl.createShader(tipo);
+        if (!s) return null;
+        gl.shaderSource(s, fonte);
+        gl.compileShader(s);
+        if (gl.getShaderParameter(s, gl.COMPILE_STATUS)) return s;
+        gl.deleteShader(s);
+        return null;
+    }
+    function ligarPrograma(gl) {
+        const v = compilar(gl, gl.VERTEX_SHADER, VERTEX);
+        const fr = compilar(gl, gl.FRAGMENT_SHADER, FRAGMENT);
+        const p = gl.createProgram();
+        if (!v || !fr || !p) return null;
+        gl.attachShader(p, v);
+        gl.attachShader(p, fr);
+        gl.linkProgram(p);
+        gl.deleteShader(v);
+        gl.deleteShader(fr);
+        if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+            gl.deleteProgram(p);
+            return null;
+        }
+        const u = {};
+        const n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+        for (let i = 0; i < n; i++) {
+            const info = gl.getActiveUniform(p, i);
+            if (info) u[info.name] = gl.getUniformLocation(p, info.name);
+        }
+        return { program: p, uniforms: u };
+    }
+    function rotacao(yaw, pitch, roll) {
+        const cy = Math.cos(yaw);
+        const sy = Math.sin(yaw);
+        const cx = Math.cos(pitch);
+        const sx = Math.sin(pitch);
+        const cz = Math.cos(roll);
+        const sz = Math.sin(roll);
+        return [cy * cz + sy * sx * sz, cx * sz, -sy * cz + cy * sx * sz, -cy * sz + sy * sx * cz, cx * cz, sy * sz + cy * sx * cz, sy * cx, -sx, cy * cx];
+    }
+    function multiplicar(a, b) {
+        const o = new Array(9);
+        for (let c = 0; c < 3; c++) for (let r = 0; r < 3; r++) o[c * 3 + r] = a[r] * b[c * 3] + a[3 + r] * b[c * 3 + 1] + a[6 + r] * b[c * 3 + 2];
+        return o;
+    }
+    // o claro e o escuro de verdade (a escolha da aba Eu, ou a do aparelho)
+    const temaEscuro = () => {
+        const t = document.documentElement.getAttribute("data-theme");
+        return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    };
+    const AJUSTES_PRISMA = { height: 4.1, baseWidth: 6.7, glow: 1.3, noise: 0, scale: 3.6, hueShift: 0, colorFrequency: 2.5, saturation: 1.5, timeScale: 0.25, hoverStrength: 0.7, inertia: 0.11, resolution: 0.4 };
+
+    function montarPrisma(container) {
+        const canvas = container.querySelector("canvas");
+        const gl = canvas.getContext("webgl2", { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false });
+        if (!gl) return null;
+        const shader = ligarPrograma(gl);
+        if (!shader) return null;
+        const u = shader.uniforms;
+        const vao = gl.createVertexArray();
+        const s = AJUSTES_PRISMA;
+        const reduzir = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const view = { width: 1, height: 1, scale: 1 };
+        const pose = { yaw: 0, pitch: 0, roll: 0 };
+        const ponteiro = { x: 0, y: 0, dentro: false };
+        let tempo = 0;
+        let intro = reduzir ? 1 : 0;
+        let raf = 0;
+        let ultimo = 0;
+        let ligado = false;
+        const orientacao = () => {
+            const t = tempo * s.timeScale;
+            return multiplicar(rotacao(pose.yaw, pose.pitch, pose.roll), rotacao(t * 0.55, Math.sin(t * 0.6 + 0.6) * 0.6, Math.sin(t * 0.35 + 1.9) * 0.5));
+        };
+        const desenharPrisma = () => {
+            const meia = s.baseWidth * 0.5;
+            const acende = intro * intro * (3 - 2 * intro);
+            gl.bindVertexArray(vao);
+            gl.viewport(0, 0, canvas.width, canvas.height);
+            gl.useProgram(shader.program);
+            gl.uniform2f(u.uResolution, canvas.width, canvas.height);
+            gl.uniformMatrix3fv(u.uRay, false, orientacao());
+            gl.uniform1f(u.uGlow, s.glow * acende * acende);
+            gl.uniform2f(u.uOffset, 0, 0);
+            gl.uniform1f(u.uColorFreq, s.colorFrequency);
+            gl.uniform1f(u.uCenterShift, s.height * 0.25);
+            gl.uniform1f(u.uInvBaseHalf, 1 / meia);
+            gl.uniform1f(u.uInvHeight, 1 / s.height);
+            gl.uniform1f(u.uMinAxis, Math.min(meia, s.height));
+            gl.uniform1f(u.uPxScale, 1 / (canvas.height * 0.1 * s.scale));
+            gl.uniform1f(u.uTime, tempo);
+            gl.uniform1f(u.uNoise, s.noise);
+            gl.uniform1f(u.uSaturation, s.saturation);
+            gl.uniformMatrix3fv(u.uHue, false, HUE_W);
+            gl.uniform1i(u.uUseHue, 0);
+            gl.uniform1f(u.uLight, temaEscuro() ? 0 : 1);
+            gl.clearColor(0, 0, 0, 0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            gl.drawArrays(gl.TRIANGLES, 0, 3);
+        };
+        const redimensionar = () => {
+            view.width = Math.max(1, container.clientWidth);
+            view.height = Math.max(1, container.clientHeight);
+            view.scale = Math.min(devicePixelRatio || 1, 2) * s.resolution;
+            canvas.width = Math.max(1, Math.round(view.width * view.scale));
+            canvas.height = Math.max(1, Math.round(view.height * view.scale));
+            desenharPrisma();
+            acordar();
+        };
+        const quadro = (agora) => {
+            raf = 0;
+            if (!ligado || document.hidden) return;
+            const dt = ultimo ? limitar((agora - ultimo) / 1000, 0.001, 0.05) : 1 / 60;
+            ultimo = agora;
+            if (!reduzir) tempo += dt;
+            if (intro < 1) intro = Math.min(1, intro + dt / INTRO_SECONDS);
+            const mirar = ponteiro.dentro && !reduzir;
+            const alcance = 0.09 * s.hoverStrength;
+            const yaw = mirar ? -ponteiro.x * alcance : 0;
+            const pitch = mirar ? ponteiro.y * alcance : 0;
+            const seguir = 1 - (1 - s.inertia) ** (dt * 60);
+            pose.yaw += (yaw - pose.yaw) * seguir;
+            pose.pitch += (pitch - pose.pitch) * seguir;
+            desenharPrisma();
+            if (!reduzir || intro < 1) raf = requestAnimationFrame(quadro);
+            else ultimo = 0;
+        };
+        function acordar() {
+            if (!raf && ligado && !document.hidden) raf = requestAnimationFrame(quadro);
+        }
+        addEventListener(
+            "pointermove",
+            (e) => {
+                const x = (e.clientX / Math.max(1, innerWidth)) * 2 - 1;
+                const y = (e.clientY / Math.max(1, innerHeight)) * 2 - 1;
+                Object.assign(ponteiro, { dentro: true, x: limitar(x, -1, 1), y: limitar(y, -1, 1) });
+            },
+            { passive: true },
+        );
+        addEventListener("blur", () => {
+            ponteiro.dentro = false;
+        });
+        document.addEventListener("visibilitychange", () => {
+            ultimo = 0;
+            acordar();
+        });
+        new ResizeObserver(() => ligado && redimensionar()).observe(container);
+        return {
+            // só gira enquanto o login está na tela: fora dele, não gasta bateria
+            ligar(sim) {
+                if (sim === ligado) return;
+                ligado = sim;
+                if (sim) {
+                    intro = reduzir ? 1 : 0;
+                    ultimo = 0;
+                    redimensionar();
+                } else if (raf) {
+                    cancelAnimationFrame(raf);
+                    raf = 0;
+                }
+            },
+            redesenhar: () => ligado && desenharPrisma(),
+        };
+    }
+    let prisma = null;
+    try {
+        prisma = montarPrisma(document.getElementById("prism"));
+    } catch {}
+
     // ─── O tema (ui-ux.md, linha Tema): Sistema segue o aparelho; a escolha fica no navegador ────
     const temaDoHost = document.documentElement.getAttribute("data-theme");
     let temaAtual = "Sistema";
@@ -1895,7 +2135,9 @@
         try {
             localStorage.setItem("andon-tema", t);
         } catch {}
+        prisma?.redesenhar();
     }
+    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => prisma?.redesenhar());
     aplicarTema(temaAtual);
 
     // ─── T-13 Eu (no computador, Minha conta) ─────────────────────────────────────────
@@ -2063,6 +2305,8 @@
         if (!E.usuario || !eu()) E.tela = "login";
         document.body.classList.toggle("desk", desk);
         app.innerHTML = (TELAS[E.tela] || TELAS.login)() + folha();
+        document.body.classList.toggle("com-prisma", !!prisma && E.tela === "login");
+        prisma?.ligar(E.tela === "login");
         if (rolarTopo) window.scrollTo(0, 0);
         guardar();
         ligar();
