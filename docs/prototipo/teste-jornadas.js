@@ -25,6 +25,7 @@ const elemento = (id) => ({
     addEventListener() {},
     scrollIntoView() {},
     closest: () => null,
+    querySelector: () => null,
     appendChild() {},
     selectionStart: 0,
 });
@@ -63,7 +64,7 @@ const sandbox = {
                   : app.innerHTML.includes(`id="${id}"`)
                     ? elemento(id)
                     : null,
-        createElement: () => ({ innerHTML: "", remove() {} }),
+        createElement: () => ({ innerHTML: "", remove() {}, querySelector: () => null }),
         querySelector: () => null,
         querySelectorAll: (sel) => (sel.includes("papel") ? (valores.papeis || []).map((value) => ({ value })) : []),
         addEventListener: (tipo, f) => {
@@ -91,7 +92,10 @@ function clicar(acao, extra = {}) {
     if (!app.innerHTML) throw new Error(`tela vazia depois de ${acao}`);
     return avisos.slice(ultimo).join(" | ");
 }
+// o campo tem de existir na tela com o data-campo e o data-reg, como o ouvinte do protótipo lê (foi assim que o envio da NC escapou)
 function mudar(reg, campo, valor) {
+    const temNaTela = new RegExp(`data-campo="${campo}" data-reg="${reg}"`).test(app.innerHTML);
+    ok(temNaTela, `o campo ${campo} da ${reg} está na tela, com o data-reg`);
     ouvintes.change({ target: { dataset: { reg, campo }, value: valor } });
 }
 const entrar = (s) => {
@@ -201,14 +205,16 @@ for (const desk of [false, true]) {
     clicar("valor", { id: cl, campo: "gravidade", valor: "Maior" });
     clicar("publicar-item", { id: cl });
     const cl2 = E().itemId;
-    ok(R(cl2)?.estado === "Aberta" && R(cl2).aprovador === "BL", `${cl2} publicada com a aprovadora da NC`);
-    clicar("bloqueado", { id: cl2 });
-    ok(E().folha?.lista?.includes("Escrever a justificativa"), "o envio bloqueado lista a justificativa");
+    ok(
+        R(cl2)?.estado === "Aberta" && !R(cl2).aprovador,
+        `${cl2} publicada sem aprovador (a Classificação não tem portão, PRD Q22)`,
+    );
+    clicar("concluir", { id: cl2 });
+    ok(E().folha?.lista?.includes("Escrever a justificativa"), "concluir sem a justificativa lista o que falta");
     clicar("fechar-folha");
     mudar(cl2, "justificativa", "Para a pintura da linha 5.");
-    clicar("submeter", { id: cl2 });
-    ok(R(cl2).estado === "Em aprovação" && pend().includes(`aprovar:${cl2}`), "enviada; aparece no Aprovar dela mesma");
-    clicar("aprovar", { id: cl2 });
+    clicar("concluir", { id: cl2 });
+    ok(!pend().includes(`aprovar:${cl2}`), "a classificação não passa pelo Aprovar");
     ok(R(cl2).estado === "Fechada" && etapa(nova) === "Em investigação", "aprovada; etapa: Em investigação");
 
     console.log("J3 · Contenção (Fulana preenche, Beltrana aprova)");
@@ -300,6 +306,7 @@ for (const desk of [false, true]) {
     ok(pend().includes("fechamento:NC-2026-0040"), "a NC-2026-0040 está no Enviar para fechamento");
     clicar("abrir", { id: "NC-2026-0040" });
     ok(vm.runInContext('faltas(R("NC-2026-0040"))', sandbox).length === 2, "faltam os riscos e as mudanças");
+    clicar("aba", { id: "detalhes" });
     mudar("NC-2026-0040", "riscos", "Sem risco novo");
     mudar("NC-2026-0040", "mudancas", "Checklist da troca de modelo revisado");
     clicar("submeter", { id: "NC-2026-0040" });

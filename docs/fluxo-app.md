@@ -217,10 +217,11 @@ requisitos do MVP (gate G0 do `arquitetura.md` §11).
    que pode ser trocado item a item.
 3. Seção Classificação → **Nova classificação** (só `APROVADOR`/`GERENTE`,
    RN-20) → escolhe Maior/Menor e escreve a justificativa. A
-   classificação já nasce com o aprovador da NC.
-4. **Publicar** → **Submeter**. Se quem classificou for também o
-   aprovador, a pendência "Aprovar" aparece para ele na hora; aprova, e o
-   feed marca *"Aprovado pelo próprio autor"* (RN-27/28).
+   classificação **não tem portão** nem aprovador (PRD Q22): classificar já
+   é o julgamento da qualidade.
+4. **Publicar** → **Concluir classificação**: ela fecha direto, como a
+   Verificação (`ui-ux.md` §7.9). Antes da Q22, era Publicar → Submeter, e o
+   próprio autor aprovava (RN-27/28, que saíram com a Q22).
 5. Etapa da NC → *Em investigação*.
 
 Se um filho for criado **antes** de a NC ter aprovador, ele nasce sem
@@ -636,3 +637,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-30 | v1.25 — a decisão (u): a T-06 com a capa plana, sem luz; a luz da NC sai da Minha conta; a T-08 com os atalhos embaixo da régua |
 | 2026-11-03 | v1.26 — Minha conta (T-13) com o Tema: Sistema · Claro · Escuro, guardado no aparelho |
 | 2026-11-03 | v1.27 — §4, regra 2: a NC cancelada mostra a etapa onde parou, não "Cancelada" (Matthew, na B4) |
+| 2026-11-03 | v1.28 — J2, passos 3 e 4: a Classificação sem portão, com o Concluir classificação (alinhado ao PRD Q22 e ao `ui-ux.md` §7.9, que já diziam isso; achado da revisão do protótipo da B4) |

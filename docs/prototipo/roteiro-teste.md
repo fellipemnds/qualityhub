@@ -74,10 +74,13 @@ pendências? Se tentar publicar faltando campo, entende a mensagem ao lado do ca
 está certo. Faça o que precisa ser feito."
 
 **Completou** quando a NC-2026-0038 fica **Fechada**. **Observe:** troca de pessoa sozinho (aba
-Eu)? Começa pelas Pendências (a gaveta Aprovar, ou o "mais urgente") ou pela lista de NCs? Lê o
-checklist antes de decidir? Hesita entre Aprovar e Reprovar?
+Eu)? Começa pelas Pendências (o "mais urgente" já é a NC-2026-0038, ou a gaveta Aprovar) ou pela
+lista de NCs? Lê a descrição e a atividade antes de decidir? (O checklist não aparece: ele só vale
+com a NC aberta, e esta já está em aprovação.) Hesita entre Aprovar e Reprovar?
 
-Se ele **reprovar por engano**, anote e siga: a NC volta para a Fulana corrigir.
+Se ele **reprovar por engano**, anote e siga: a NC volta para a Fulana corrigir. Se ele abrir e
+**aprovar a IV-2026-0007** (a outra da gaveta Aprovar), anote também: ela muda o estado da
+NC-2026-0042, mas a tarefa 3 continua funcionando.
 
 #### Tarefa 3 · Comentar com menção (J10) · você é a **Fulana Souza**
 
@@ -95,7 +98,7 @@ Escolha 2 ou 3, de preferência diferentes para cada colega, para cobrir todas e
 
 | | Tarefa (leia assim) | Quem | Completou quando |
 |---|---|---|---|
-| E1 · J2 | "A NC do vazamento de ar que a Fulana registrou chegou para a qualidade. Defina quem aprova as coisas dela e classifique como Maior, porque parou a pintura." | Beltrana | A classificação da NC-2026-0046 fecha (a etapa vira "Em investigação"). Só depois da tarefa 1 |
+| E1 · J2 | "A NC do vazamento de ar que a Fulana registrou chegou para a qualidade. Defina quem aprova as coisas dela e classifique como Maior, porque parou a pintura." | Beltrana | A classificação da NC-2026-0046 fecha com o "Concluir classificação", sem aprovação (PRD Q22), e a etapa vira "Em investigação". Só depois da tarefa 1 |
 | E2 · J3 | "Ontem você segregou o que sobrou do lote 118 de parafusos e corrigiu a identificação. Registre isso e mande para a qualidade." | Fulana | A CT-2026-0020 fica Em aprovação |
 | E3 · J5 | "Hoje você trocou o fornecedor da junta da linha 3, como combinado. Registre e encerre a ação, para a qualidade conferir daqui a 30 dias." | Fulana | A AC-2026-0003 fecha, e a verificação nasce para a Beltrana |
 | E4 · J7 | "Você conferiu as 50 tampas do painel na embalagem: nenhuma arranhada. Registre o resultado." | Beltrana | A VE-2026-0001 fecha como eficaz. **Observe:** lê o aviso do que acontece antes de concluir? |
