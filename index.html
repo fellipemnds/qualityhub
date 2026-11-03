@@ -433,14 +433,14 @@
     .painel-adm { display: grid; gap: 12px; align-content: start; margin-top: 12px; }
 
     /* ─── O computador (acima de 1024 px): a doca, as colunas, as tabelas e as janelas ─── */
-    body.desk #app { max-width: 1200px; border-inline: 0; }
-    body.desk .pad { padding-left: 32px; padding-right: 32px; }
+    body.desk #app { max-width: none; border-inline: 0; }
+    body.desk .pad { padding-left: 40px; padding-right: 40px; }
     .doca { width: auto; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
     .doca .abas-app { flex: none; gap: 2px; }
     .doca .aba-app { flex: none; display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; font-size: 14px; }
     .doca .aba-app .bolha { position: static; margin-left: -4px; }
     .doca .pessoa-doca { border-left: 1px solid var(--borda); border-radius: 0 999px 999px 0; }
-    .duas-colunas { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) 360px; align-items: start; }
+    .duas-colunas { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) 400px; align-items: start; }
     .duas-colunas.largo { padding-top: 16px; }
     .coluna-lado { padding-top: 24px; }
     body.desk .capa { border-radius: 0 0 12px 12px; }
@@ -1249,7 +1249,7 @@
             </div>`;
         const grupos = GRUPOS.filter((x) => x.papeis.some((p) => tem(p)));
         const cheios = grupos.filter((x) => lista.some((p) => p.grupo === x.id && !vencidas.includes(p)));
-        const emDia = grupos.filter((x) => !cheios.includes(x)).map((x) => x.nome);
+        const emDia = grupos.filter((x) => !lista.some((p) => p.grupo === x.id)).map((x) => x.nome);
         const nomeAcao = { aprovar: "Aprovar", corrigir: "Corrigir", executar: "Executar ação", verificar: "Verificar", fechamento: "Enviar para fechamento", triagem: "Triagem", mencoes: "Você foi mencionado", rascunhos: "Continuar rascunho" };
         const urgente = urg
             ? `<section class="urgente" aria-label="O mais urgente">
