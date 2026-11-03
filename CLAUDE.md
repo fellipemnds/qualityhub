@@ -52,7 +52,8 @@ uma constante só; o código continua `qualityhub`.
 **Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B37; os corrigidos
 têm ✅, com a fase e o teste). **Nenhum bug aberto.** O bloco A fechou
 em 2026-10-13 (portão "fundação pronta"); o passeio guiado (Matthew explicar a
-A4, a A6 e a A7) vai em sessões curtas durante o Bloco B e é condição para o C0.
+A4, a A6 e a A7), condição para o C0, foi concluído em 2026-11-03 (o detalhe no
+`handoff.md`).
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com

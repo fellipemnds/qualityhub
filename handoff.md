@@ -470,9 +470,15 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
    lados travando a linha da NC) ficou entendida **depois** da
    explicação; as respostas dele erraram nos dois pontos. A parada 2 (o
    teste do `pausarNoMeio`: onde pausa, o 200 e o 409, a contagem) foi
-   "não sei" e foi explicada. **Repetir a parada 2** num dia descansado, no
-   PC, com o `nc.routes.test.ts:225` aberto e Matthew explicando: é o que
-   falta do portão para o C0.
+   "não sei" e foi explicada. ~~**Repetir a parada 2**~~ (**feita em
+   2026-11-03**, no trabalho, pelo PC: o passeio está completo, e a condição
+   do portão para o C0 está cumprida). Desta vez, Matthew acertou a linha
+   travada (a da NC), a pausa depois do `travar`, o 200 e o 409, a
+   contagem 1 (a investigação do cenário) e o ponto central: sem o
+   `travar`, a outra requisição dá 201 e a (b) falha. A afinar, já
+   explicados: quem chega depois **espera** no `FOR NO KEY UPDATE` (ele
+   pulou para o erro), e a outra requisição **cria uma linha nova**, não
+   altera a da NC.
    O roteiro original:
    (plano, portão "fundação pronta"; condição para o C0): A4 (o B19 e o
    `SameSite=Strict`), A6 (a RN-43 e o convite) e A7 (a trava entre
