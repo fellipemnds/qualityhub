@@ -438,30 +438,87 @@
     .pessoa-linha[data-acao] { width: 100%; text-align: left; }
     .painel-adm { display: grid; gap: 12px; align-content: start; margin-top: 12px; }
 
-    /* ─── O computador (acima de 1024 px): a doca, as colunas, as tabelas e as janelas ─── */
-    /* até 1280 px, no centro; a luz passa da borda da coluna, para não parecer uma caixa */
-    body.desk #app { max-width: 1280px; border-inline: 0; overflow-x: visible; }
+    /* ─── O computador (acima de 1024 px), como na página Mockups do Figma ─── */
+    /* a tela de 1440 do Figma, com 40 px de margem; mais larga que isso, fica no centro */
+    body.desk #app { max-width: 1440px; border-inline: 0; overflow-x: visible; }
     body.desk .pad { padding-left: 40px; padding-right: 40px; }
+    main.pc { padding: 32px 40px 0; display: grid; gap: 24px; align-content: start; }
     .doca { width: auto; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
-    .doca .abas-app { flex: none; gap: 2px; }
+    .doca .abas-app { flex: none; gap: 2px; align-items: center; }
     .doca .aba-app { flex: none; display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; font-size: 14px; }
-    .doca .aba-app .bolha { position: static; margin-left: -4px; }
-    .doca .pessoa-doca { border-left: 1px solid var(--borda); border-radius: 0 999px 999px 0; }
-    .duas-colunas { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) 400px; align-items: start; }
-    .duas-colunas.largo { padding-top: 16px; }
-    .coluna-lado { padding-top: 24px; }
-    body.desk .capa { border-radius: 0 0 12px 12px; }
+    .doca .aba-app .bolha { position: static; margin-left: -2px; }
+    .doca .busca-doca { margin-right: 6px; border-radius: 999px 0 0 999px; box-shadow: 1px 0 0 var(--borda); }
+    .doca .pessoa-doca { margin-left: 6px; padding: 4px 10px 4px 6px; box-shadow: -1px 0 0 var(--borda); border-radius: 0 999px 999px 0; }
+    .duas-colunas { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) 340px; align-items: start; }
+    .coluna-lado { display: grid; gap: 24px; align-content: start; }
+    main.pc .conteudo { padding-top: 0; gap: 24px; }
     .conteudo-form { max-width: 720px; margin-inline: auto; }
-    body.desk .barra-sup { gap: 8px; }
-    .tabela-caixa { margin-top: 12px; border: 1px solid var(--borda); border-radius: 8px; background: var(--card); overflow-x: auto; }
+
+    /* o bloco do título (o componente Bloco do título · computador) */
+    .bloco-titulo { display: flex; justify-content: space-between; align-items: center; gap: 24px; padding: 24px; border: 1px solid var(--borda); border-radius: 8px; background: var(--card); }
+    .bloco-corpo { display: grid; gap: 8px; min-width: 0; }
+    .bloco-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; color: var(--apoio); font-size: 13px; }
+    .bloco-linha .etapa { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+    .bloco-acoes { flex: none; display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px; }
+    .pares { display: grid; gap: 12px; }
+    .par { display: grid; grid-template-columns: 196px minmax(0, 1fr); gap: 16px; }
+    .par .k { color: var(--apoio); }
+    .atalho-atividade.cinza { background: var(--selecao); border-color: transparent; }
+    .painel-atividade { position: sticky; top: 16px; max-height: calc(100vh - 120px); grid-template-rows: auto auto minmax(0, 1fr); }
+    .painel-rolar { overflow-y: auto; min-height: 0; }
+    .grupo-pc { border-top: 1px solid var(--borda); }
+    .item-linha { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 140px 170px 150px; gap: 12px; align-items: center; min-height: 48px; padding-block: 6px; border-top: 1px solid var(--borda); text-align: left; }
+    .grade-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .anexo.area { flex-direction: column; min-height: 104px; gap: 4px; padding: 16px; text-align: center; }
+
+    /* T-03 */
+    .pc-porta { position: relative; isolation: isolate; }
+    body.desk .brilho { transform: scale(2.6); transform-origin: 0 0; }
+    /* a luz maior passa da borda: corta a sobra, sem rolar a página para o lado */
+    body.desk { overflow-x: clip; }
+    .saudacao-pc { display: flex; align-items: center; gap: 16px; }
+    .saudacao-pc > div { flex: 1; display: grid; gap: 2px; }
+    .av.xg { width: 56px; height: 56px; font-size: 14px; }
+    .urgente-pc { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 24px; border: 1px solid var(--borda); border-radius: 8px; background: color-mix(in srgb, var(--card) var(--transl), transparent); }
+    .tile { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 8px; background: var(--selecao); }
+    .urgente-pc .corpo { display: grid; gap: 4px; min-width: 0; }
+    .lado { flex: none; }
+    .suas-ncs { border: 1px solid var(--borda); border-radius: 8px; background: var(--card); overflow: hidden; }
+    .sua-nc { width: 100%; display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--borda); text-align: left; }
+    .sua-nc .corpo { flex: 1; min-width: 0; display: grid; gap: 2px; }
+    .sua-nc-todas { display: block; padding: 14px 16px; }
+
+    /* T-04 */
+    .cab-pagina { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+    .cab-pagina > div:first-child { display: grid; gap: 4px; }
+    .abas-pc { display: flex; gap: 24px; border-bottom: 1px solid var(--borda); }
+    .abas-pc button { position: relative; display: inline-flex; align-items: center; gap: 6px; height: 40px; color: var(--apoio); }
+    .abas-pc button[aria-selected="true"] { color: var(--texto); font-weight: 500; }
+    .abas-pc button[aria-selected="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--texto); }
+    .filtros-pc { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .filtros-pc .busca { margin-top: 0; width: 300px; height: 36px; }
+    .espaco { flex: 1; }
+    .tabela-caixa { border: 1px solid var(--borda); border-radius: 8px; background: var(--card); overflow-x: auto; }
     .tabela { width: 100%; border-collapse: collapse; }
-    .tabela th { text-align: left; font-size: 12px; font-weight: 500; color: var(--apoio); padding: 10px 12px; border-bottom: 1px solid var(--borda); white-space: nowrap; }
-    .tabela td { padding: 12px; border-bottom: 1px solid var(--borda); vertical-align: middle; }
+    .tabela th { padding: 10px 16px; border-bottom: 1px solid var(--borda); background: color-mix(in srgb, var(--selecao) 50%, var(--card)); font-size: 12px; font-weight: 500; color: var(--apoio); text-align: left; white-space: nowrap; }
+    .tabela td { padding: 12px 16px; border-bottom: 1px solid var(--borda); vertical-align: middle; }
     .tabela tr:last-child td { border-bottom: 0; }
     .tabela tbody tr { cursor: pointer; }
     .tabela tbody tr:hover, .tabela tbody tr:focus-visible { background: var(--selecao); }
-    body.desk .relatorios { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .tabela .dir { text-align: right; }
+
+    /* as gavetas, o plano, os relatórios, as telas de gestão e as janelas */
+    body.desk .gaveta-cab { background: color-mix(in srgb, var(--selecao) 50%, var(--card)); }
+    body.desk .plano-grade { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 32px; }
+    body.desk .plano-grade .dado { display: grid; gap: 4px; justify-content: stretch; }
+    body.desk .plano-grade .dado .k { max-width: none; }
+    body.desk .plano-grade .dado .v { justify-content: flex-start; text-align: left; }
+    body.desk .relatorios { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; }
+    body.desk .relatorio { border: 0; border-radius: 0; background: none; padding: 8px 24px; box-shadow: -1px 0 0 var(--borda); }
+    body.desk .relatorio:first-child { padding-left: 0; box-shadow: none; }
     body.desk .regua .segmentado { max-width: 480px; }
+    body.desk .barra-sup { position: static; min-height: 0; padding-top: 32px; border-bottom: 0; background: none; }
+    body.desk .barra-sup .t { font-size: 24px; line-height: 32px; }
     body.desk .veu { align-items: center; }
     body.desk .folha { width: min(480px, 100% - 32px); border-radius: 12px; padding: 24px; }
     body.desk .folha .pega { display: none; }
@@ -514,6 +571,12 @@
         atividade: '<path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>',
         reprovar: '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
         setor: '<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>',
+        caixa: '<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+        grafico: '<path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+        usuarios: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+        arquivo: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/>',
+        upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/>',
+        conversa: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
         voltar2: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5 5.5 5.5 0 0 1-5.5 5.5H11"/>',
         rascunho: '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>',
     };
@@ -1176,17 +1239,17 @@
     function navegacao(ativa) {
         const n = negocio() ? pendencias().length : 0;
         const itens = [];
-        if (tem("EDITOR", "APROVADOR", "GERENTE")) itens.push(["pendencias", "Pendências", "pendencias", n]);
+        if (tem("EDITOR", "APROVADOR", "GERENTE")) itens.push(["pendencias", "Pendências", desk ? "caixa" : "pendencias", n]);
         if (negocio() || tem("VISUALIZADOR")) itens.push(["ncs", "NCs", "ncs"]);
-        if (desk && tem("GERENTE")) itens.push(["relatorios", "Relatórios", "atividade"]);
-        if (tem("ADMIN")) itens.push(["usuarios", "Usuários", "triagem"], ["setores", "Setores", "setor"]);
+        if (desk && tem("GERENTE")) itens.push(["relatorios", "Relatórios", "grafico"]);
+        if (tem("ADMIN")) itens.push(["usuarios", "Usuários", "usuarios"], ["setores", "Setores", "setor"]);
         if (!desk) itens.push(["eu", "Eu", "eu"]);
         const aba = ([id, nome, icone, qtd]) =>
             `<button class="aba-app" data-acao="aba-app" data-tela="${id}" ${ativa === id ? 'aria-current="page"' : ""}>${ic(icone, "g")}${qtd ? `<span class="bolha num" aria-label="${qtd} pendências">${qtd}</span>` : ""}<span>${nome}</span></button>`;
         const busca = negocio() || tem("VISUALIZADOR");
         return `<nav class="barra-inf ${desk ? "doca" : ""}" aria-label="Navegação">
-            <div class="abas-app">${itens.map(aba).join("")}
-                ${desk ? `${busca ? `<button class="aba-app" data-acao="lupa">${ic("busca", "g")}<span>Buscar</span></button>` : ""}<button class="aba-app pessoa-doca" data-acao="aba-app" data-tela="eu" ${ativa === "eu" ? 'aria-current="page"' : ""}>${av(E.usuario)}<span>${esc(primeiro(E.usuario))}</span></button>` : ""}
+            <div class="abas-app">${desk && busca ? `<button class="aba-app busca-doca" data-acao="lupa">${ic("busca", "g")}<span>Buscar</span></button>` : ""}${itens.map(aba).join("")}
+                ${desk ? `<button class="aba-app pessoa-doca" data-acao="aba-app" data-tela="eu" ${ativa === "eu" ? 'aria-current="page"' : ""} aria-label="Minha conta">${av(E.usuario)}${ic("cima", "p")}</button>` : ""}
             </div>
             ${!desk && busca && ativa !== "eu" ? `<button class="lupa" data-acao="lupa" aria-label="Buscar">${ic("busca", "gg")}</button>` : ""}
         </nav>`;
@@ -1244,7 +1307,8 @@
         const g = E.gavetas;
         const linha = (p) => `
             <button class="linha" data-acao="abrir" data-id="${p.id}" ${p.mencao ? 'data-mencao="1"' : ""}>
-                <span class="corpo"><span class="titulo">${esc(p.titulo)}</span><span class="t-apoio">${esc(p.sub)}</span>${p.prazo ? `<span class="t-rotulo">${prazoTag(p.prazo)}</span>` : p.apoio ? `<span class="t-rotulo">${esc(p.apoio)}</span>` : ""}</span>
+                <span class="corpo"><span class="titulo">${esc(p.titulo)}</span><span class="t-apoio">${esc(p.sub)}</span>${desk ? "" : p.prazo ? `<span class="t-rotulo">${prazoTag(p.prazo)}</span>` : p.apoio ? `<span class="t-rotulo">${esc(p.apoio)}</span>` : ""}</span>
+                ${desk ? `<span class="lado t-apoio">${p.prazo ? prazoTag(p.prazo) : esc(p.apoio || "")}</span>` : ""}
                 <span class="chev">${ic("direita")}</span>
             </button>`;
         const gaveta = (id, icone, nome, itens, alerta = false) => `
@@ -1275,15 +1339,10 @@
                 ${emDia.length ? `<div class="em-dia">${ic("ok", "g")}<span>${emDia.length > 3 ? `${emDia.slice(0, 2).join(", ")} e mais ${emDia.length - 2} tipos` : emDia.join(", ")}: em dia</span></div>` : ""}
             </div>`
             : `<div class="vazio-dia">${ic("ok", "gg")}<h2 class="t-secao">Você está em dia</h2><p class="t-apoio">Nada espera por você agora.</p><button class="btn btn-sec" data-acao="aba-app" data-tela="ncs">Ver as NCs</button></div>`;
-        const minhas = desk
-            ? `<aside class="coluna-lado"><h2 class="t-secao secao-titulo">Suas NCs</h2><div class="cartoes">${listaNcs()
-                  .filter((nc) => colab(nc))
-                  .map(cartaoNc)
-                  .join("") || '<p class="cartao t-apoio">Nenhuma NC com você.</p>'}</div></aside>`
-            : "";
+        if (desk) return telaPendenciasPC(lista, ordenadas, vencidas, gavetas);
         return `<main class="porta pad">
             ${BRILHO}
-            <div class="${desk ? "duas-colunas" : ""}">
+            <div>
                 <div>
                     <header class="saudacao">
                         <p class="t-rotulo">${hojePorExtenso()}</p>
@@ -1293,7 +1352,6 @@
                     ${urgente}
                     ${gavetas}
                 </div>
-                ${minhas}
             </div>
             <div class="folga-barra"></div>
         </main>${navegacao("pendencias")}`;
@@ -1318,6 +1376,7 @@
             .filter((nc) => !termo || nc.codigo.toLowerCase().includes(termo) || nc.campos.titulo.toLowerCase().includes(termo));
         const abertas = todas.filter((nc) => nc.estado === "Aberta" || nc.estado === "Em aprovação").length;
         const vencidas = todas.filter((nc) => indicadores(nc).some((i) => i.alerta)).length;
+        if (desk) return telaNcsPC(lista, todas, abertas, vencidas);
         const corpo = desk
             ? `<div class="tabela-caixa"><table class="tabela">
                 <thead><tr><th>Código</th><th>Título</th><th>Estado</th><th>Etapa</th><th>Setor</th><th>Com quem</th><th>Detectada</th></tr></thead>
@@ -1355,6 +1414,21 @@
         const desc = (id) => (er[id] ? `aria-invalid="true" aria-describedby="a-${id}"` : `aria-describedby="a-${id}"`);
         const opcoes = (lista, val) => `<option value="">Escolha</option>${lista.map((o) => `<option ${o === val ? "selected" : ""}>${o}</option>`).join("")}`;
         const resp = f.resp || [E.usuario];
+        if (desk) {
+            const formPC = `<form class="form" id="form-nova" novalidate>
+                <div class="grupo"><h2 class="t-secao">O que aconteceu</h2>
+                    ${campo("titulo", "Título", `<input id="f-titulo" name="titulo" maxlength="200" placeholder="Ex.: Vazamento na linha 3" value="${esc(f.titulo)}" ${desc("titulo")}>`, "Pelo menos 5 caracteres")}
+                    ${campo("descricao", "Descrição", `<textarea id="f-descricao" name="descricao" placeholder="O que aconteceu, onde e quando" ${desc("descricao")}>${esc(f.descricao)}</textarea>`, "Pelo menos 20 caracteres: o que aconteceu, onde e quando")}
+                    <div class="grade-2">${campo("detectada", "Detectada em", `<input id="f-detectada" name="detectada" type="date" value="${esc(f.detectada || hojeIso())}" max="${hojeIso()}" ${desc("detectada")}>`, "")}${campo("origem", "Origem", `<select id="f-origem" name="origem" ${desc("origem")}>${opcoes(ORIGENS, f.origem)}</select>`, "")}</div></div>
+                <div class="grupo"><h2 class="t-secao">Onde</h2>
+                    <div class="grade-2">${campo("setor", "Setor", `<select id="f-setor" name="setor" ${desc("setor")}>${opcoes(SETORES_ATIVOS(), f.setor)}</select>`, "")}${campo("processo", "Processo afetado", `<input id="f-processo" name="processo" placeholder="Ex.: Montagem do cabeçote" value="${esc(f.processo)}" ${desc("processo")}>`, "")}</div>
+                    ${campo("cliente", "Cliente (opcional)", `<input id="f-cliente" name="cliente" placeholder="Nome do cliente" value="${esc(f.cliente)}">`, "")}</div>
+                <div class="grupo"><h2 class="t-secao">O que foi violado</h2>
+                    ${campo("requisito", "Requisito violado", `<input id="f-requisito" name="requisito" placeholder="Ex.: IT-042, item 5.3" value="${esc(f.requisito)}" ${desc("requisito")}>`, "")}</div>
+            </form>`;
+            const anexosPC = `<label class="anexo area">${ic("upload", "g")}<span>Arraste fotos ou PDF aqui</span><span class="t-rotulo">ou clique para escolher · JPEG, PNG, WebP ou PDF, até 10 MB</span><input id="f-anexo" type="file" accept="image/*,application/pdf" multiple></label><p class="anexos-lista" id="anexos-lista">${(f.anexos || []).map((a) => esc(a[0])).join(" · ")}</p>`;
+            return telaNovaPC(formPC, resp.map((s) => `<div class="pessoa">${av(s, "m")}${esc(voce(s))}</div>`).join(""), anexosPC);
+        }
         return `<header class="barra-sup pad"><button class="alvo" data-acao="fechar-nova" aria-label="Fechar">${ic("x", "gg")}</button><span class="t">${f.editId ? "Rascunho" : "Nova NC"}</span>
             ${desk ? `<button class="btn btn-sec btn-barra" data-acao="salvar-rascunho">Salvar rascunho</button><button class="btn btn-pri btn-barra" data-acao="publicar" ${E.publicando ? "disabled" : ""}>${E.publicando ? "Publicando…" : "Publicar"}</button>` : ""}</header>
         <main class="pad conteudo-form">
@@ -1531,7 +1605,6 @@
             <h1 class="t-pagina">${esc(ehNC ? r.campos.titulo : TIPOS[r.tipo].nome)}</h1>
             ${ehNC ? `<div class="etapa">${etapa(etapaDe(r))}${indicadoresHtml(r)}</div>` : `<div class="etapa">${r.tipo === "AC" && r.planoAprovado ? `<span>${ic("feito")}Plano aprovado</span>` : ""}${r.campos.prazo && r.estado !== "Fechada" && r.estado !== "Cancelada" ? prazoTag(r.campos.prazo) : ""}</div>`}
             ${fechado}${reprov}
-            ${desk ? `<div class="acoes-topo">${botoesAcao(r).join("")}</div>` : ""}
         </section>`;
     }
 
@@ -1546,14 +1619,7 @@
         ];
         const descricao = `<section class="cartao-s"><h2 class="t-secao">Descrição</h2><p class="t-longo">${esc(nc.campos.descricao)}</p></section>`;
         const cab = `<header class="barra-sup pad sem-fio"><button class="alvo" data-acao="voltar" aria-label="Voltar">${ic("voltar", "g")}</button><span class="t num">${nc.codigo}</span>${botaoMais(nc)}</header>`;
-        if (desk) {
-            return `${cab}<main>${capa(nc, nc)}
-                <div class="pad duas-colunas largo">
-                    <div class="conteudo">${descricao}${nc.estado === "Aberta" ? cartaoChecklist(nc) : ""}<section class="cartao-s"><h2 class="t-secao">Itens da NC</h2>${cartaoItens(nc)}</section>
-                        <section class="cartao-s"><h2 class="t-secao">Atividade</h2>${pode("comentar", nc) ? compositor(true) : ""}${listaFeed(feedDe(nc.id))}</section></div>
-                    <aside class="conteudo">${cartaoDados(nc)}${cartaoEnvio(nc)}${cartaoAtribuicoes(nc)}${cartaoAnexos(nc)}</aside>
-                </div><div class="folga-barra"></div></main>${navegacao("ncs")}`;
-        }
+        if (desk) return telaNcPC(nc);
         let corpo = "";
         if (E.aba === "resumo") corpo = `${descricao}${nc.estado === "Aberta" ? cartaoChecklist(nc) : ""}<section class="cartao-s"><div class="cab-cartao"><h2 class="t-secao">Atividade recente</h2><button class="link-sec" data-acao="ir-aba" data-id="feed">Ver tudo</button></div>${listaFeed(feedDe(nc.id).slice(0, 2), true)}</section>`;
         else if (E.aba === "detalhes") corpo = `${descricao}${cartaoDados(nc)}${cartaoEnvio(nc)}${cartaoAtribuicoes(nc)}${cartaoAnexos(nc)}`;
@@ -1737,7 +1803,7 @@
         const ivLink = iv ? `<button class="link" data-acao="abrir" data-id="${iv.id}">${esc(iv.codigo)}</button>` : "—";
         const plano = r.planoAprovado
             ? `<section class="cartao-s"><div class="cab-cartao"><h2 class="t-secao">Plano</h2><span class="tag">${ic("feito", "p")} aprovado</span></div>
-                <div class="dados">${linhaDado("Descrição", r.campos.descricao)}${linhaDado("Instruções de verificação", r.campos.instrucoes)}${linhaDado("Prazo", `${br(r.campos.prazo)}`)}${linhaDado("Investigação", ivLink, true)}</div></section>`
+                <div class="dados plano-grade">${linhaDado("Descrição", r.campos.descricao)}${linhaDado("Instruções de verificação", r.campos.instrucoes)}${linhaDado("Prazo", `${br(r.campos.prazo)}`)}${linhaDado("Investigação", ivLink, true)}</div></section>`
             : `<section class="cartao-s"><h2 class="t-secao">Plano</h2>
                 ${fld(r, "descricao", "Descrição", { tipo: "textarea", placeholder: "O que vai ser feito para a causa raiz não voltar" })}
                 ${fld(r, "prazo", "Prazo", { tipo: "date", atalhos: [["Em 15 dias", -15], ["Em 30 dias", -30]] })}
@@ -1827,10 +1893,151 @@
         const n = feedDe(nc.id, r.id).length;
         const atividade = `<button class="atalho-atividade" data-acao="atividade" data-id="${r.id}">${ic("atividade", "g")}<span class="corpo"><span>Atividade deste item</span><span class="t-rotulo">${n} ${n === 1 ? "evento" : "eventos"} · no feed da ${nc.codigo}</span></span>${ic("direita")}</button>`;
         const cab = `<header class="barra-sup pad sem-fio"><button class="alvo" data-acao="voltar" aria-label="Voltar">${ic("voltar", "g")}</button><span class="t num">${esc(nomeItem(r))}</span>${botaoMais(r)}</header>`;
-        if (desk)
-            return `${cab}<main>${capa(r, nc)}<div class="pad duas-colunas largo"><div class="conteudo">${form}</div><aside class="conteudo">${atividade}${cartaoAtribuicoes(r)}${cartaoAnexos(r)}</aside></div><div class="folga-barra"></div></main>${navegacao("ncs")}`;
+        if (desk) return telaItemPC(r, nc, form);
         return `${cab}<main>${capa(r, nc)}<div class="pad conteudo">${form}${cartaoAtribuicoes(r)}${cartaoAnexos(r)}${atividade}</div><div class="folga-acoes"></div></main>${barraAcoes(r)}`;
     }
+    // ─── O computador, como na página Mockups do Figma (T-03 a T-13 · computador) ─────────
+    // Sem barra no topo: cada tela abre com o bloco do título, e as ações ficam à direita dele.
+    function blocoTitulo(r, nc) {
+        const ehNC = r.tipo === "NC";
+        const linha2 = ehNC
+            ? `${etapa(etapaDe(r))}${indicadoresHtml(r)}`
+            : `${r.tipo === "AC" && r.planoAprovado ? `<span class="et">${ic("feito", "p")}Plano aprovado</span>` : ""}${r.campos.prazo && r.estado !== "Fechada" && r.estado !== "Cancelada" ? prazoTag(r.campos.prazo) : ""}`;
+        const reprov = r.reprovacao && r.estado === "Aberta" ? `<div class="reprovado" role="note"><span class="t-rotulo">Reprovad${ehNC ? "a" : "o"} por ${esc(voce(r.reprovacao.por))} · ${haQuanto(r.reprovacao.ts)}</span><span>“${esc(r.reprovacao.motivo)}”</span><span class="t-rotulo">Corrija e envie de novo.</span></div>` : "";
+        const fechado = r.estado === "Fechada" && r.fechadoEm ? `<p class="t-rotulo">Fechada em ${new Date(r.fechadoEm).toLocaleDateString("pt-BR")}${r.aprovadoPor ? ` · aprovada por ${esc(nomeDe(r.aprovadoPor))}` : ""}</p>` : "";
+        const mais = pode("cancelar", r) || pode("reabrir", r) ? `<button class="btn btn-sec" data-acao="mais" data-id="${r.id}">Mais ${ic("baixo")}</button>` : "";
+        const acoes = botoesAcao(r).filter((b) => !b.includes('data-acao="reabrir"'));
+        return `<section class="bloco-titulo">
+            <div class="bloco-corpo">
+                ${ehNC ? "" : `<button class="caminho t-apoio" data-acao="abrir" data-id="${nc.id}">${nc.codigo} · ${esc(nc.campos.titulo)} ${ic("direita", "p")} ${esc(nomeItem(r))}</button>`}
+                <h1 class="t-pagina">${ehNC ? `${r.codigo} · ${esc(r.campos.titulo)}` : esc(TIPOS[r.tipo].nome)}</h1>
+                <div class="bloco-linha">${pilula(r.estado)}<span class="etapa">${linha2}</span>${avatares([...(r.aprovador ? [r.aprovador] : []), ...r.resp.filter((s) => s !== r.aprovador)])}</div>
+                ${fechado}${reprov}
+            </div>
+            <div class="bloco-acoes">${acoes.join("")}${mais}</div>
+        </section>`;
+    }
+    const atalhoAtividade = (r, nc) => {
+        const n = feedDe(nc.id, r.tipo === "NC" ? null : r.id).length;
+        const comentarios = feedDe(nc.id).filter((e) => e.tipo === "comentario").length;
+        return `<button class="atalho-atividade cinza" data-acao="${r.tipo === "NC" ? "painel-atividade" : "atividade"}" data-id="${r.id}">${ic("conversa", "g")}<span class="corpo"><span>${r.tipo === "NC" ? "Atividade" : "Atividade deste item"}</span><span class="t-rotulo">${r.tipo === "NC" ? `${comentarios} ${comentarios === 1 ? "comentário" : "comentários"} · ${n} eventos` : `${n} ${n === 1 ? "evento" : "eventos"} · no feed da ${nc.codigo}`}</span></span>${ic("direita")}</button>`;
+    };
+
+    // T-06 no computador
+    function telaNcPC(nc) {
+        const c = nc.campos;
+        const cl = filhosDe(nc.id, "CL").filter((r) => r.estado === "Fechada").sort((a, b) => b.fechadoEm - a.fechadoEm)[0];
+        const par = (k, v, html = false) => `<div class="par"><span class="k">${k}</span><span>${html ? v : esc(v || "—")}</span></div>`;
+        const dados = `<section class="cartao-s"><div class="cab-cartao"><h2 class="t-secao">Dados</h2>${pode("editar", nc) ? `<button class="link-sec" data-acao="fora">${ic("editar", "p")} Editar</button>` : ""}</div>
+            <div class="pares">${par("Descrição", c.descricao)}${par("Requisito violado", c.requisito)}${par("Processo afetado", c.processo)}${par("Setor", c.setor)}${par("Origem", c.origem)}
+            ${par("Classificação", cl ? `<span class="tag">${esc(cl.campos.gravidade)}</span> <span class="t-apoio num">${cl.codigo}</span>` : "—", !!cl)}${par("Detectada em", br(c.detectada))}${par("Cliente", c.cliente)}</div></section>`;
+        const lado = E.painelAtividade
+            ? `<aside class="painel-atividade cartao-s"><div class="cab-cartao"><h2 class="t-secao">Atividade</h2><button class="alvo" data-acao="painel-atividade" aria-label="Fechar a atividade">${ic("x", "g")}</button></div>${pode("comentar", nc) ? compositor(true) : ""}<div class="painel-rolar">${listaFeed(feedDe(nc.id))}</div></aside>`
+            : `<aside class="coluna-lado">${atalhoAtividade(nc, nc)}${nc.estado === "Aberta" ? cartaoChecklist(nc) : ""}${cartaoAtribuicoes(nc)}${cartaoAnexos(nc)}</aside>`;
+        return `<main class="pc">${blocoTitulo(nc, nc)}
+            <div class="duas-colunas">
+                <div class="conteudo">${dados}<section class="cartao-s">${cabItensPC(nc)}${tabelaItensPC(nc)}</section>${cartaoEnvio(nc)}</div>
+                ${lado}
+            </div><div class="folga-barra"></div></main>${navegacao("ncs")}`;
+    }
+    function cabItensPC(nc) {
+        const todos = filhosDe(nc.id).filter((r) => r.estado !== "Rascunho" || colab(r));
+        const fechados = todos.filter((it) => it.estado === "Fechada").length;
+        return `<div class="cab-cartao"><span class="et"><h2 class="t-secao">Itens da NC</h2><span class="t-apoio num">· ${fechados} de ${todos.length} fechados</span>${segmentos(fechados, todos.length)}</span>
+            <span class="et"><button class="btn btn-sec btn-barra" data-acao="fora">Ordenar: estado ${ic("baixo")}</button></span></div>`;
+    }
+    function tabelaItensPC(nc) {
+        const todos = filhosDe(nc.id).filter((r) => r.estado !== "Rascunho" || colab(r));
+        const notas = { AC: "nasce de uma investigação aberta", VE: "nasce sozinha ao finalizar uma ação" };
+        return FILHOS.map((t) => {
+            const lista = todos.filter((r) => r.tipo === t);
+            const chave = `${nc.id}:${t}`;
+            const aberto = E.grupos[chave] ?? lista.some((it) => it.estado !== "Fechada" && it.estado !== "Cancelada");
+            const nota = lista.length && lista.every((it) => it.estado === "Fechada") ? "fechada" : notas[t];
+            const podeNova = t === "AC" ? filhosDe(nc.id, "IV").some((iv) => pode("criarAC", iv)) : t !== "VE" && pode("criar", nc, t);
+            const linha = (it) => {
+                const prazo = it.estado !== "Fechada" && it.estado !== "Cancelada" && it.campos.prazo;
+                return `<button class="item-linha" data-acao="abrir" data-id="${it.id}"><span class="trunc"><span class="t-apoio num">${esc(nomeItem(it))}</span> · ${esc(textoDe(it))}</span><span>${pilula(it.estado)}</span><span class="et">${av(it.resp[0])}${esc(nomeDe(it.resp[0]))}</span><span>${prazo ? prazoTag(it.campos.prazo) : '<span class="t-apoio">—</span>'}</span></button>`;
+            };
+            return `<div class="grupo-pc"><div class="itens-cab"><button class="grupo-bt" data-acao="grupo" data-id="${chave}" aria-expanded="${aberto}">${ic(aberto ? "baixo" : "direita")}<span class="tipo">${TIPOS[t].nome}</span><span class="num">${lista.length}</span>${nota ? `<span class="nota">· ${esc(nota)}</span>` : ""}</button>${podeNova ? `<button class="link-sec" data-acao="novo-filho" data-id="${t}">+ Nova</button>` : ""}</div>
+                ${aberto ? lista.map(linha).join("") : ""}</div>`;
+        }).join("");
+    }
+
+    // T-07 no computador
+    function telaItemPC(r, nc, form) {
+        return `<main class="pc">${blocoTitulo(r, nc)}
+            <div class="duas-colunas"><div class="conteudo">${form}</div>
+            <aside class="coluna-lado">${atalhoAtividade(r, nc)}${cartaoAtribuicoes(r)}${cartaoAnexos(r)}</aside></div>
+            <div class="folga-barra"></div></main>${navegacao("ncs")}`;
+    }
+
+    // T-03 no computador
+    function telaPendenciasPC(lista, ordenadas, vencidas, gavetasHtml) {
+        const urg = ordenadas[0];
+        const g = urg && GRUPOS.find((x) => x.id === urg.grupo);
+        const nomeAcao = { aprovar: "Aprovar", corrigir: "Corrigir", executar: "Executar ação", verificar: "Verificar", fechamento: "Enviar para fechamento", triagem: "Triagem", mencoes: "Mencionado", rascunhos: "Continuar rascunho" };
+        const alvoR = urg && R(urg.id);
+        const ncDoUrg = alvoR && (alvoR.nc ? R(alvoR.nc) : alvoR.tipo === "NC" ? alvoR : null);
+        const urgente = urg
+            ? `<section class="urgente-pc">
+                <span class="tile">${ic(g.icone, "g")}</span>
+                <div class="corpo"><p class="t-rotulo et">O mais urgente · ${esc(nomeAcao[urg.grupo])}${urg.prazo ? ` ${prazoTag(urg.prazo)}` : ""}</p>
+                    <p class="t-secao">${esc(urg.titulo)}</p>
+                    <p class="t-apoio et">${ic("arquivo", "p")}${esc(urg.sub)}${alvoR?.resp ? ` ${avatares(alvoR.resp.slice(0, 3))}` : ""}</p></div>
+                <div class="bloco-acoes">${ncDoUrg && alvoR.tipo !== "NC" ? `<button class="btn btn-sec" data-acao="abrir" data-id="${ncDoUrg.id}">Ver a NC</button>` : ""}<button class="btn btn-pri" data-acao="abrir" data-id="${urg.id}" ${urg.mencao ? 'data-mencao="1"' : ""}>Abrir</button></div>
+            </section>`
+            : "";
+        const minhas = listaNcs().filter((nc) => colab(nc));
+        return `<main class="pc porta pc-porta">${BRILHO}
+            <header class="saudacao-pc">${av(E.usuario, "xg")}<div><p class="t-rotulo">${hojePorExtenso()}</p><h1 class="t-pagina">${saudacaoHora()}, ${esc(primeiro(E.usuario))}</h1>
+                <p class="t-apoio">${lista.length ? `${lista.length} ${lista.length === 1 ? "coisa espera" : "coisas esperam"} por você.${vencidas.length ? ` ${vencidas.length} ${vencidas.length === 1 ? "está vencida" : "estão vencidas"}.` : ""}` : "Tudo em dia."}</p></div>
+                ${pode("criarNC") ? '<button class="btn btn-sec" data-acao="nova">Nova NC</button>' : ""}</header>
+            ${urgente}
+            <div class="duas-colunas">
+                <div>${gavetasHtml}</div>
+                <aside><h2 class="t-secao secao-titulo">Suas NCs</h2><div class="suas-ncs">${minhas
+                    .slice(0, 5)
+                    .map((nc) => `<button class="sua-nc" data-acao="abrir" data-id="${nc.id}">${ic("arquivo", "g")}<span class="corpo"><span>${nc.codigo} · ${esc(nc.campos.titulo)}</span><span class="t-apoio">${etapa(etapaDe(nc))}</span></span>${ic("direita")}</button>`)
+                    .join("") || '<p class="sua-nc t-apoio">Nenhuma NC com você.</p>'}
+                    <button class="link sua-nc-todas" data-acao="minhas-ncs">Ver todas as suas NCs</button></div></aside>
+            </div>
+            <div class="folga-barra"></div></main>${navegacao("pendencias")}`;
+    }
+
+    // T-04 no computador
+    function telaNcsPC(lista, todas, abertas, vencidas) {
+        const n = { Todas: todas.length, Minhas: todas.filter((nc) => colab(nc)).length, Vencidas: vencidas };
+        return `<main class="pc">
+            <header class="cab-pagina"><div><h1 class="t-pagina">Não Conformidades</h1><p class="t-apoio et">${abertas} abertas${vencidas ? ` <span class="alerta">${ic("alerta", "p")}${vencidas} com prazo vencido</span>` : ""}</p></div>
+                ${pode("criarNC") ? `<button class="btn btn-pri" data-acao="nova">${ic("criar")}Nova NC</button>` : ""}</header>
+            <div class="abas-pc" role="tablist">${["Todas", "Minhas", "Vencidas"].map((f) => `<button role="tab" data-acao="filtro" data-id="${f}" aria-selected="${E.filtro === f}">${f} <span class="contador num">${n[f]}</span></button>`).join("")}</div>
+            <div class="filtros-pc"><label class="busca">${ic("busca")}<span class="sr">Buscar por código ou título</span><input id="busca-ncs" type="search" placeholder="Código ou título" value="${esc(E.termo)}" autocomplete="off"></label>
+                ${["Estado", "Etapa", "Setor", "Mais filtros"].map((c) => `<button class="chip" data-acao="fora">${c}${ic("baixo")}</button>`).join("")}<span class="espaco"></span><button class="link-sec et" data-acao="fora">${ic("pendencias", "p")}Agrupar: nenhum ${ic("baixo")}</button></div>
+            <div class="tabela-caixa"><table class="tabela">
+                <thead><tr><th>Código</th><th>Título</th><th>Estado</th><th>Etapa</th><th>Setor</th><th>Com quem</th><th class="dir">Detecção</th></tr></thead>
+                <tbody>${lista
+                    .map((nc) => {
+                        const al = indicadores(nc).find((i) => i.alerta);
+                        return `<tr data-acao="abrir" data-id="${nc.id}" tabindex="0"><td class="num">${nc.codigo}</td><td>${esc(nc.campos.titulo)}${al ? `<br><span class="alerta t-rotulo">${ic("alerta", "p")}${esc(al.texto)}</span>` : ""}</td><td>${pilula(nc.estado)}</td><td>${etapa(etapaDe(nc))}</td><td><span class="tag">${esc(nc.campos.setor)}</span></td><td>${avatares(nc.resp.slice(0, 3))}</td><td class="num dir t-apoio">${br(nc.campos.detectada)}</td></tr>`;
+                    })
+                    .join("")}</tbody></table>${lista.length ? "" : '<p class="cartao t-apoio">Nenhuma NC com esse código ou título.</p>'}</div>
+            <p class="rodape-lista t-apoio num" style="text-align:left">Mostrando ${lista.length} de ${todas.length}</p>
+            <div class="folga-barra"></div></main>${navegacao("ncs")}`;
+    }
+
+    // T-05 no computador
+    function telaNovaPC(formHtml, resp, anexos) {
+        const f = E.form || {};
+        return `<main class="pc">
+            <header class="cab-pagina"><div><h1 class="t-pagina">${f.editId ? "Rascunho da NC" : "Nova Não Conformidade"}</h1><p class="t-apoio">Rascunho: ganha código ao publicar</p></div>
+                <div class="bloco-acoes"><button class="btn btn-sec" data-acao="fechar-nova">Cancelar</button><button class="btn btn-sec" data-acao="salvar-rascunho">Salvar rascunho</button><button class="btn btn-pri" data-acao="publicar" ${E.publicando ? "disabled" : ""}>${E.publicando ? "Publicando…" : "Publicar"}</button></div></header>
+            <div class="duas-colunas"><section class="cartao-s">${formHtml}</section>
+                <aside class="coluna-lado"><section class="cartao-s"><h2 class="t-secao">Responsáveis</h2><p class="t-apoio">Quem vai trabalhar na NC. Você entra como responsável.</p>${resp}<button type="button" class="link-sec" style="justify-self:start" data-acao="pessoas-form">+ Adicionar responsável</button></section>
+                <section class="cartao-s"><h2 class="t-secao">Anexos</h2>${anexos}</section></aside></div>
+            <div class="folga-barra"></div></main>${navegacao("ncs")}`;
+    }
+
     // ─── As folhas (no celular, sobem de baixo; no computador, viram janelas; ui-ux §8.2) ────
     function folha() {
         const f = E.folha;
@@ -1866,7 +2073,7 @@
             case "sair":
                 return casca("Sair sem publicar?", '<p class="t-apoio">Salve como rascunho para continuar depois. Ele fica nas suas pendências, e só você vê.</p>', '<button class="btn btn-pri btn-full" data-acao="salvar-rascunho">Salvar rascunho</button><button class="btn btn-des btn-full" data-acao="descartar">Descartar</button><button class="btn btn-sec btn-full" data-acao="fechar-folha">Voltar</button>');
             case "mais":
-                return casca("Mais ações", "", `${pode("cancelar", r) ? '<button class="btn btn-des btn-full" data-acao="cancelar">Cancelar o item</button>' : ""}${voltarBt}`);
+                return casca("Mais ações", "", `${pode("reabrir", r) ? `<button class="btn btn-sec btn-full" data-acao="reabrir" data-id="${r.id}">Reabrir a NC</button>` : ""}${pode("cancelar", r) ? '<button class="btn btn-des btn-full" data-acao="cancelar">Cancelar o item</button>' : ""}${voltarBt}`);
             case "pessoas": {
                 const ja = f.form ? E.form.resp || [E.usuario] : r.resp;
                 const op = E.pessoas.filter((p) => p.ativo && p.papeis.some((x) => x === "EDITOR" || x === "GERENTE") && !ja.includes(p.sigla));
@@ -2658,6 +2865,15 @@ void main() {
                 break;
             case "data-rapida":
                 r.campos[alvo.dataset.campo] = iso(Number(alvo.dataset.dias));
+                desenhar();
+                break;
+            case "painel-atividade":
+                E.painelAtividade = !E.painelAtividade;
+                desenhar();
+                break;
+            case "minhas-ncs":
+                trocarAba("ncs");
+                E.filtro = "Minhas";
                 desenhar();
                 break;
             case "salvar-envio":
