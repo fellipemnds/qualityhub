@@ -350,8 +350,9 @@
 
     /* T-01 Login, sobre o Prism (decisão (r)) */
     #app { z-index: 1; }
-    /* a altura grande da tela (lvh): o fundo passa por baixo da barra de endereço que flutua no celular */
-    .palco { position: fixed; top: 0; left: 0; right: 0; height: 100lvh; z-index: 0; display: none; }
+    /* o fundo passa da tela em cima e embaixo: no celular, o navegador encolhe a área "fixa" quando mostra as barras
+       (a de status e a de endereço), mas ainda desenha a página por baixo delas */
+    .palco { position: fixed; top: -160px; bottom: -160px; left: 0; right: 0; z-index: 0; display: none; }
     .prism { position: relative; width: 100%; height: 100%; overflow: hidden; }
     .prism-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
     body.com-prisma .palco { display: block; }
