@@ -15,9 +15,9 @@ Quem conduz: Matthew. Uns **15 minutos por colega** com as três tarefas; até *
 ## 1. Antes de cada colega
 
 1. O protótipo aberto no celular dele (ou no seu), na tela de **login**.
-2. Se outro colega já usou: entre com qualquer perfil, aba **Eu → Recomeçar o protótipo**. O
-   protótipo guarda tudo no aparelho, até recarregar a página: sem o Recomeçar, o próximo colega
-   pega o que o anterior fez.
+2. Se outro colega já usou: entre com qualquer perfil, aba **Eu → Recomeçar o protótipo** (no
+   computador, o seu avatar na doca → Minha conta). O protótipo guarda tudo no aparelho, mesmo
+   recarregando a página: sem o Recomeçar, o próximo colega pega o que o anterior fez.
 3. Anote se o celular está no modo claro ou no escuro: a luz da T-03 muda entre os dois.
 4. Uma folha de anotação por colega (§5) e o cartão com os dados da NC (§3, tarefa 1) à mão.
 
@@ -101,7 +101,7 @@ Escolha 2 ou 3, de preferência diferentes para cada colega, para cobrir todas e
 | E4 · J7 | "Você conferiu as 50 tampas do painel na embalagem: nenhuma arranhada. Registre o resultado." | Beltrana | A VE-2026-0001 fecha como eficaz. **Observe:** lê o aviso do que acontece antes de concluir? |
 | E5 · J4 | "Na investigação dos parafusos sem certificado, registre a sua suspeita: a conferência do recebimento não pede o certificado. Você vai testar olhando o checklist." | Fulana | A IV-2026-0008 tem a hipótese, com o como verificar |
 | E6 · J11 | "A Joana Prado, da Montagem, começa amanhã. Dê acesso a ela para registrar NCs." | Tiago | O link do convite aparece. **Observe:** entende que precisa mandar o link? |
-| E7 · J12 | "Quantas ações estão atrasadas, e qual é a pior?" | Rui | Ele responde pelo relatório Atrasadas |
+| E7 · J12 | "Quantas ações estão atrasadas, e qual é a pior?" | Rui | Ele responde pelo relatório "Ações e verificações atrasadas" (no celular, Eu → Relatórios) |
 | E8 · computador | Repita uma das tarefas num computador (ou no celular deitado, se a tela tiver mais de 1024 px). | qualquer | A mesma tarefa, no outro desenho |
 
 ## 4. No fim (depois das tarefas)
