@@ -110,7 +110,10 @@ completou, e é um achado importante.)
 
 ### 3.2 As extras (se sobrar tempo; não contam para o portão)
 
-Escolha 2 ou 3, de preferência diferentes para cada colega, para cobrir todas entre os três.
+Escolha 2 ou 3, de preferência diferentes para cada colega, para cobrir todas entre os três. Nas
+extras, observe também **se ele acha o item certo pela lista** (os filhos não têm título: aparecem
+como o código e o começo do texto). Se dois colegas hesitarem entre itens parecidos, o título
+opcional entra na C2 (`ui-ux.md` §10.3).
 
 | | Tarefa (leia assim) | Quem | Completou quando |
 |---|---|---|---|

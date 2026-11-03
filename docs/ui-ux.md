@@ -1881,8 +1881,11 @@ O rótulo vale nas listas, no feed, nas pendências e no caminho de volta.
 **No bloco do título do próprio filho, não**: lá o título é o tipo, e o
 código fica na barra de cima (decisão (h), §6.2).
 
-No front, o rótulo sai de **uma função só**: se os filhos ganharem título
-(a avaliar antes da C0, plano), muda só ela.
+No front, o rótulo sai de **uma função só**: se os filhos ganharem título,
+muda só ela. **Decidido em 2026-11-03 (Matthew): sem título no MVP,
+revisável.** O teste da B4 confere se itens parecidos da mesma NC confundem;
+se dois colegas hesitarem, o título **opcional** entra na C2 (antes da
+produção), com o começo do texto quando ele estiver vazio.
 
 ---
 
@@ -1976,3 +1979,4 @@ tokens.
 | 2026-10-30 | v1.56 — a decisão (u), a luz no app: §3.1, os tokens do vidro saíram e a nota de contraste passou para a luz da T-03; §6.2 e §7.3, a capa plana da NC, igual à dos filhos; §7.1, a luz da porta (o Brilho iridescente) e a borda que pega a luz; §7.12, a régua como a barra da referência, com os atalhos embaixo, e a eficácia por textura |
 | 2026-11-03 | v1.57 — Tema: a escolha Sistema · Claro · Escuro na tela Eu (Conta), guardada no aparelho (Matthew, na B4) |
 | 2026-11-03 | v1.58 — §4.2: a NC cancelada mostra a etapa onde parou (Matthew, na B4) |
+| 2026-11-03 | v1.59 — §10.3: os filhos sem título no MVP, revisável pelo teste da B4 (Matthew) |
