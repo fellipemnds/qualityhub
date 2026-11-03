@@ -26,6 +26,7 @@ próprio, com aprovação de Matthew (`CONSTRAINTS.md` §6).
 | `docs/trd.md` | Stack, sessão, API, anexos, testes, infraestrutura, hospedagem, ADR-33 a ADR-38 |
 | `docs/esquema-backend.md` | Modelo de dados, mudanças M1–M5, valores calculados, contrato da API, correções B1–B37 |
 | `docs/plano-implementacao.md` | **Ordem de execução**: fases A0–A7 (fundação do backend), B (design), C0–C8 (frontend em fatias), D (produção) |
+| `docs/fluxo-de-trabalho.md` | Quem faz o quê com qual modelo e esforço (os degraus, do automático ao Opus), a delegação, o protocolo do limite de 5 horas, a passagem para o Antigravity e o que falta construir (v1, 2026-10-30) |
 | `docs/changelog-arquitetura.md` | Registro de toda decisão de arquitetura e divergência do documento original. **Leia antes de propor mudança estrutural** |
 | `docs/arquitetura.md` | Documento de design **original** (histórico). Onde diverge dos documentos acima, eles valem |
 
@@ -51,7 +52,8 @@ uma constante só; o código continua `qualityhub`.
 **Bugs conhecidos:** `docs/esquema-backend.md` §7 (B1–B37; os corrigidos
 têm ✅, com a fase e o teste). **Nenhum bug aberto.** O bloco A fechou
 em 2026-10-13 (portão "fundação pronta"); o passeio guiado (Matthew explicar a
-A4, a A6 e a A7) vai em sessões curtas durante o Bloco B e é condição para o C0.
+A4, a A6 e a A7), condição para o C0, foi concluído em 2026-11-03 (o detalhe no
+`handoff.md`).
 
 **Ambiente:** os testes (Testcontainers) precisam do **Docker Desktop
 aberto** — a integração com o WSL está confirmada (2026-09-24), mas com
