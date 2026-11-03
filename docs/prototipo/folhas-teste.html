@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Folhas do teste da B4</title>
+<!--
+  As folhas impressas do teste do protótipo (roteiro-teste.md): o cartão da tarefa 1, a folha de anotação
+  de quem conduz e o questionário do colega. A4, em preto e branco. Para o PDF: imprimir pelo navegador
+  (Ctrl P, "Salvar como PDF", sem cabeçalho e rodapé) ou pelo Aside (page.pdf).
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&display=swap">
+<style>
+    @page { size: A4; margin: 14mm; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #121214; background: #fff; font: 400 10.5pt/1.4 "Figtree", system-ui, sans-serif; }
+    .pagina { break-after: page; display: grid; gap: 4mm; align-content: start; }
+    .pagina:last-child { break-after: auto; }
+    h1 { margin: 0; font-size: 15pt; font-weight: 600; }
+    h2 { margin: 0; font-size: 11.5pt; font-weight: 600; }
+    p { margin: 0; }
+    .apoio { color: #555; font-size: 9pt; }
+    .cab { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1.5pt solid #121214; padding-bottom: 2mm; }
+    .campos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm 6mm; }
+    .campo { display: flex; gap: 2mm; align-items: flex-end; }
+    .campo .rot { white-space: nowrap; }
+    .campo .linha { flex: 1; border-bottom: 0.75pt solid #888; height: 5mm; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    th, td { border: 0.75pt solid #888; padding: 2mm; vertical-align: top; text-align: left; }
+    th { background: #f2f2f3; font-weight: 600; font-size: 9.5pt; }
+    .pauta { height: 22mm; background: repeating-linear-gradient(to bottom, transparent 0 6.6mm, #ccc 6.6mm 7.3mm); }
+    .pauta.alta { height: 30mm; }
+    .opcoes { display: flex; flex-wrap: wrap; gap: 2mm 5mm; }
+    .caixa { display: inline-flex; align-items: center; gap: 1.5mm; white-space: nowrap; }
+    .caixa::before { content: ""; width: 3.5mm; height: 3.5mm; border: 0.75pt solid #121214; border-radius: 0.6mm; }
+    .bolas { display: flex; gap: 6mm; align-items: center; }
+    .bola { width: 9mm; height: 9mm; border: 0.75pt solid #121214; border-radius: 50%; display: grid; place-items: center; font-weight: 600; }
+    .pergunta { display: grid; gap: 2mm; padding: 3mm 0; border-top: 0.75pt solid #ddd; }
+    .pergunta:first-of-type { border-top: 0; }
+    .n { display: inline-grid; place-items: center; width: 5.5mm; height: 5.5mm; margin-right: 1.5mm; border-radius: 50%; background: #121214; color: #fff; font-size: 8.5pt; }
+    /* o cartão da tarefa 1: três jogos, recortados na linha tracejada */
+    .jogo { border: 0.75pt dashed #888; padding: 4mm; display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+    .cartao { border: 1pt solid #121214; border-radius: 2mm; padding: 3mm 4mm; display: grid; gap: 2mm; }
+    .cartao table td { border: 0; border-bottom: 0.5pt solid #ddd; padding: 1.2mm 0; }
+    .cartao table td:first-child { color: #555; width: 32%; }
+    .tesoura { font-size: 8.5pt; color: #888; text-align: center; }
+    @media screen {
+        body { background: #e9e9ec; padding: 24px 16px; }
+        .pagina { background: #fff; width: min(210mm, 100%); min-height: 297mm; margin: 0 auto 24px; padding: 14mm; box-shadow: 0 2px 12px rgb(0 0 0 / 0.12); }
+    }
+</style>
+</head>
+<body>
+
+<!-- 1 · O cartão da tarefa 1 (§3.1 do roteiro) -->
+<section class="pagina">
+    <div class="cab"><h1>Cartões da tarefa 1 · Registrar uma NC</h1><span class="apoio">Recorte nas linhas tracejadas. Um jogo por colega.</span></div>
+    <p class="apoio">Entregue primeiro o cartão <strong>1a</strong>. O <strong>1b</strong>, só depois que ele guardar o que já escreveu.</p>
+    <div class="jogo">
+        <div class="cartao"><h2>1a · O que você já sabe</h2><table><tr><td>Título</td><td>Vazamento de ar na linha 5</td></tr><tr><td>Descrição</td><td>Vazamento de ar comprimido na conexão da pistola de pintura da linha 5, ouvido na inspeção do turno da tarde</td></tr></table></div>
+        <div class="cartao"><h2>1b · O resto</h2><table><tr><td>Detectada em</td><td>hoje</td></tr><tr><td>Origem</td><td>Operação</td></tr><tr><td>Setor</td><td>Produção</td></tr><tr><td>Processo afetado</td><td>Pintura</td></tr><tr><td>Requisito violado</td><td>IT-051, item 2.1</td></tr></table></div>
+    </div>
+    <p class="tesoura">✂ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─</p>
+    <div class="jogo">
+        <div class="cartao"><h2>1a · O que você já sabe</h2><table><tr><td>Título</td><td>Vazamento de ar na linha 5</td></tr><tr><td>Descrição</td><td>Vazamento de ar comprimido na conexão da pistola de pintura da linha 5, ouvido na inspeção do turno da tarde</td></tr></table></div>
+        <div class="cartao"><h2>1b · O resto</h2><table><tr><td>Detectada em</td><td>hoje</td></tr><tr><td>Origem</td><td>Operação</td></tr><tr><td>Setor</td><td>Produção</td></tr><tr><td>Processo afetado</td><td>Pintura</td></tr><tr><td>Requisito violado</td><td>IT-051, item 2.1</td></tr></table></div>
+    </div>
+    <p class="tesoura">✂ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─</p>
+    <div class="jogo">
+        <div class="cartao"><h2>1a · O que você já sabe</h2><table><tr><td>Título</td><td>Vazamento de ar na linha 5</td></tr><tr><td>Descrição</td><td>Vazamento de ar comprimido na conexão da pistola de pintura da linha 5, ouvido na inspeção do turno da tarde</td></tr></table></div>
+        <div class="cartao"><h2>1b · O resto</h2><table><tr><td>Detectada em</td><td>hoje</td></tr><tr><td>Origem</td><td>Operação</td></tr><tr><td>Setor</td><td>Produção</td></tr><tr><td>Processo afetado</td><td>Pintura</td></tr><tr><td>Requisito violado</td><td>IT-051, item 2.1</td></tr></table></div>
+    </div>
+</section>
+
+<template id="anotacao">
+<section class="pagina">
+    <div class="cab"><h1>Folha de anotação · colega <span class="num-colega"></span></h1><span class="apoio">Quem preenche: quem conduz o teste</span></div>
+    <div class="campos">
+        <div class="campo"><span class="rot">Colega (uma letra):</span><span class="linha"></span></div>
+        <div class="campo"><span class="rot">Função:</span><span class="linha"></span></div>
+        <div class="campo"><span class="rot">Data e hora:</span><span class="linha"></span></div>
+        <div class="campo"><span class="rot">Aparelho:</span><span class="linha"></span></div>
+        <div class="campo"><span class="rot">Modo:</span><span class="opcoes"><span class="caixa">claro</span><span class="caixa">escuro</span></span></div>
+        <div class="campo"><span class="rot">Recomeçou antes?</span><span class="opcoes"><span class="caixa">sim</span></span></div>
+    </div>
+    <table>
+        <colgroup><col style="width:21%"><col style="width:17%"><col style="width:9%"><col style="width:27%"><col style="width:26%"></colgroup>
+        <thead><tr><th>Tarefa</th><th>Completou?</th><th>Tempo</th><th>Onde hesitou ou errou</th><th>O que ele disse</th></tr></thead>
+        <tbody>
+            <tr><td><strong>1 · NC com rascunho</strong><br><span class="apoio">Fulana. Achou o Nova NC? Salvou o rascunho? Achou o Continuar rascunho?</span></td><td><div class="opcoes" style="display:grid"><span class="caixa">sozinho</span><span class="caixa">com dica</span><span class="caixa">não</span></div></td><td></td><td><div class="pauta alta"></div></td><td><div class="pauta alta"></div></td></tr>
+            <tr><td><strong>2 · Aprovar</strong><br><span class="apoio">Beltrana, NC-2026-0038. Trocou de pessoa sozinho? Hesitou entre Aprovar e Reprovar?</span></td><td><div class="opcoes" style="display:grid"><span class="caixa">sozinho</span><span class="caixa">com dica</span><span class="caixa">não</span></div></td><td></td><td><div class="pauta alta"></div></td><td><div class="pauta alta"></div></td></tr>
+            <tr><td><strong>3 · Comentar com @</strong><br><span class="apoio">Fulana, NC-2026-0042. Achou o Feed? Usou o @ ou só escreveu "Ciclano"?</span></td><td><div class="opcoes" style="display:grid"><span class="caixa">sozinho</span><span class="caixa">com dica</span><span class="caixa">não</span></div></td><td></td><td><div class="pauta alta"></div></td><td><div class="pauta alta"></div></td></tr>
+            <tr><td><strong>Extras</strong><br><span class="apoio">Quais (E1 a E8):</span><div class="campo"><span class="linha"></span></div></td><td><div class="opcoes" style="display:grid"><span class="caixa">sozinho</span><span class="caixa">com dica</span><span class="caixa">não</span></div></td><td></td><td><div class="pauta"></div></td><td><div class="pauta"></div></td></tr>
+        </tbody>
+    </table>
+    <h2>No fim (as perguntas do §4, se ele não preencher o questionário)</h2>
+    <table>
+        <colgroup><col style="width:30%"><col></colgroup>
+        <tbody>
+            <tr><td>A mais difícil, e por quê</td><td><div class="pauta" style="height:14mm"></div></td></tr>
+            <tr><td>Palavras que não entendeu</td><td><div class="pauta" style="height:14mm"></div></td></tr>
+            <tr><td>A luz da tela inicial (a frase dele, do jeito que veio)</td><td><div class="pauta" style="height:14mm"></div></td></tr>
+            <tr><td>Nota de 1 a 5</td><td><div class="bolas"><span class="bola">1</span><span class="bola">2</span><span class="bola">3</span><span class="bola">4</span><span class="bola">5</span></div></td></tr>
+        </tbody>
+    </table>
+    <p class="apoio">O nome do colega não vai para o repositório (ele é público): use só a letra.</p>
+</section>
+
+<section class="pagina">
+    <div class="cab"><h1>O que você achou?</h1><span class="apoio">Colega <span class="num-colega"></span> · obrigado por testar</span></div>
+    <p>O teste foi do sistema, não seu. Não tem resposta certa: o que você sentir ajuda a melhorar.</p>
+    <div class="pergunta"><h2><span class="n">1</span>Qual das tarefas foi a mais difícil?</h2>
+        <div class="opcoes"><span class="caixa">1 · Registrar a NC</span><span class="caixa">2 · Aprovar o fechamento</span><span class="caixa">3 · Comentar chamando o Ciclano</span></div>
+        <p class="apoio">Por quê?</p><div class="pauta"></div></div>
+    <div class="pergunta"><h2><span class="n">2</span>Alguma palavra da tela que você não entendeu, ou entendeu diferente?</h2><div class="pauta"></div></div>
+    <div class="pergunta"><h2><span class="n">3</span>O brilho colorido no alto da tela de pendências:</h2>
+        <div class="opcoes"><span class="caixa">gostei</span><span class="caixa">atrapalha</span><span class="caixa">nem tinha reparado</span></div>
+        <p class="apoio">Quer comentar?</p><div class="pauta" style="height:15mm"></div></div>
+    <div class="pergunta"><h2><span class="n">4</span>No geral, quão fácil foi usar?</h2>
+        <div class="bolas"><span class="apoio">muito difícil</span><span class="bola">1</span><span class="bola">2</span><span class="bola">3</span><span class="bola">4</span><span class="bola">5</span><span class="apoio">muito fácil</span></div></div>
+    <div class="pergunta"><h2>Mais alguma coisa?</h2><div class="pauta alta"></div></div>
+    <p class="apoio">Não precisa escrever o seu nome.</p>
+</section>
+</template>
+
+<script>
+    // três colegas: cada um com a folha de anotação e o questionário, na ordem
+    const modelo = document.getElementById("anotacao");
+    for (const n of ["A", "B", "C"]) {
+        const copia = modelo.content.cloneNode(true);
+        for (const el of copia.querySelectorAll(".num-colega")) el.textContent = n;
+        document.body.appendChild(copia);
+    }
+</script>
+</body>
+</html>

@@ -20,8 +20,9 @@ Quem conduz: Matthew. Uns **15 minutos por colega** com as três tarefas; até *
 2. **O aparelho:** o celular do próprio colega (é o que ele conhece) ou o seu. Abra o link
    antes no aparelho que for usado, para ver se carrega (o login com o fundo colorido). Bateria
    carregada e o "não perturbe" ligado.
-3. **Os papéis:** imprima o cartão da tarefa 1 (§3.1, as duas tabelas, recortadas: a 1a e a 1b
-   em pedaços separados) e três folhas de anotação (§5). Uma caneta.
+3. **Os papéis:** imprima o `docs/prototipo/folhas-teste.html` (no navegador, Ctrl P, A4, sem
+   cabeçalho e rodapé; 7 páginas): os cartões da tarefa 1, para recortar, e, para cada colega
+   (A, B e C), a folha de anotação (a sua) e o questionário (o dele). Uma caneta.
 4. **O seu ensaio:** faça as três tarefas uma vez sozinho, do começo ao fim, para saber o
    caminho certo de cada uma. Depois, **Eu → Recomeçar o protótipo**.
 5. **O tempo:** um cronômetro (o do celular serve) para anotar quanto cada tarefa levou, mais ou
