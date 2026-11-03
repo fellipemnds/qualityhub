@@ -16,6 +16,8 @@ Quem conduz: Matthew. Uns **15 minutos por colega**, um de cada vez.
 2. Se outro colega já usou: aba **Eu → Recomeçar o protótipo**.
 3. Anote se o celular está no modo claro ou no escuro: a luz da T-03 muda entre os dois.
 4. Uma folha de anotação por colega (§5) e o cartão com os dados da NC (§3, tarefa 1) à mão.
+5. A barra no alto da página (o título e o Share) é do Claude, que hospeda o protótipo, e não do
+   sistema: se o colega perguntar ou tocar nela, diga isso e volte para a tarefa.
 
 ## 2. A abertura (ler em voz alta)
 
