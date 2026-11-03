@@ -12,6 +12,21 @@ mostra a versão do computador.
 
 Quem conduz: Matthew. Uns **15 minutos por colega** com as três tarefas; até **30** com as extras.
 
+## 0. Na véspera (o setup, uma vez só)
+
+1. **Os 3 colegas e os horários:** de preferência, gente que vai usar o sistema e que não viu o
+   protótipo. Um de cada vez, 30 minutos cada (15 do teste, o resto de folga), num lugar sem
+   gente olhando por cima.
+2. **O aparelho:** o celular do próprio colega (é o que ele conhece) ou o seu. Abra o link
+   antes no aparelho que for usado, para ver se carrega (o login com o fundo colorido). Bateria
+   carregada e o "não perturbe" ligado.
+3. **Os papéis:** imprima o cartão da tarefa 1 (§3.1, as duas tabelas, recortadas: a 1a e a 1b
+   em pedaços separados) e três folhas de anotação (§5). Uma caneta.
+4. **O seu ensaio:** faça as três tarefas uma vez sozinho, do começo ao fim, para saber o
+   caminho certo de cada uma. Depois, **Eu → Recomeçar o protótipo**.
+5. **O tempo:** um cronômetro (o do celular serve) para anotar quanto cada tarefa levou, mais ou
+   menos.
+
 ## 1. Antes de cada colega
 
 1. O protótipo aberto no celular dele (ou no seu), na tela de **login**.
