@@ -115,7 +115,7 @@ saídas ficam no **menu da pessoa**, que abre do fim da doca:
 | Tela inicial | Quem acessa mais de uma tela inicial possível | Preferência (§3) |
 | Atalhos de teclado | Todos (só no computador) | Abre a janela dos atalhos (o ?), onde fica o interruptor dos atalhos de uma tecla (`ui-ux.md` §6.1, WCAG 2.1.4); a escolha fica no navegador |
 | Sair | Todos | |
-| Minha conta | Todos | No computador, abre a T-13: a foto, o apelido (RN-52), a Tela inicial, a sessão (decisão (l)). (A **luz da NC**, parada ou em movimento, da decisão (s), saiu com a (u): a NC ficou sem luz, e a luz da T-03 é sempre parada) |
+| Minha conta | Todos | No computador, abre a T-13: a foto, o apelido (RN-52), a Tela inicial, o Tema (Sistema · Claro · Escuro, guardado no aparelho; 2026-11-03), a sessão (decisão (l)). (A **luz da NC**, parada ou em movimento, da decisão (s), saiu com a (u): a NC ficou sem luz, e a luz da T-03 é sempre parada) |
 | Sair de todos os aparelhos | Todos | No menu da pessoa, embaixo do Sair: encerra as sessões abertas em outros computadores (`POST /auth/sair-de-todos`, pronto desde a A4; Matthew, 2026-10-21) |
 
 ---
@@ -634,3 +634,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-29 | v1.23 — T-06 na capa da NC (decisão (s)) e a luz da NC na Minha conta |
 | 2026-10-29 | v1.24 — §8: o Carregando em ASCII (decisão (t)), testado e desfeito no mesmo dia |
 | 2026-10-30 | v1.25 — a decisão (u): a T-06 com a capa plana, sem luz; a luz da NC sai da Minha conta; a T-08 com os atalhos embaixo da régua |
+| 2026-11-03 | v1.26 — Minha conta (T-13) com o Tema: Sistema · Claro · Escuro, guardado no aparelho |

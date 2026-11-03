@@ -22,7 +22,7 @@ Com Matthew, em 2026-09-24:
 | Biblioteca de componentes | **shadcn/ui** (Radix + Tailwind) | **Diverge do `arquitetura.md`** (ADR-28 recomendava Mantine). Os componentes são copiados para dentro do projeto e viram código nosso |
 | Identidade visual | **Própria da plataforma Andon** (nome **provisório** desde 2026-10-20, `docs/marca.md`), com a **assinatura** da empresa (revisto em 2026-10-13; antes, "decidir depois"; o nome Andon é de 2026-10-15 e substitui "Dusk & Dawn" no texto ao lado, onde as **faces Dawn e Dusk estão suspensas** desde 2026-10-14, `docs/marca.md`) | A identidade oficial da empresa não combina com o app, e Matthew tem liberdade para decidir. **Andon** é o nome da **plataforma**, que vai ganhar módulos além das NCs (o roteiro no `README.md`); cada módulo mantém um nome que diz o que faz ("Andon · Qualidade"). O código continua `qualityhub`: o nome só aparece na tela. A plataforma tem **uma cara só**, com um login: as faces Dawn (colaborador) e Dusk (gestão) da direção de 2026-10-13 estão **suspensas** (`docs/marca.md`, "Suspenso"). O que muda por pessoa é o menu e a tela inicial, pelos papéis (`fluxo-app.md` §2.1 e §3). A autoria de Matthew fica numa tela **"Sobre"** ("Criado por Matthew", com o aviso de copyright), não na marca. A empresa aparece só como assinatura, com o logo dela **monocromático** (cinza ou a cor do texto, nunca as cores originais): no login, no menu da pessoa (que abre da doca do computador e na tela Eu do celular), no rodapé do e-mail de convite e no cabeçalho dos relatórios exportados. O ícone da aba, o topo das telas e os botões são do Andon. Os tokens continuam por **função** (`--perigo`, `--primary`...); a B1 definiu os valores (`docs/marca.md`: o **Grafite**, sem cor de destaque; as faces não entram no tema), e o `DESIGN.md` da B3 registra tudo |
 | Processo de design | **Documento → Figma → protótipo HTML** | Wireframes e mockups no Figma; protótipo HTML clicável quando o design fechar, para o teste do gate G3 |
-| Tema | **Claro e escuro** (revisto em 2026-10-13; antes, "só claro no MVP"; as duas faces saíram com o Dusk & Dawn) | Decidido na entrevista da B1 (`docs/marca.md`). As cores já são tokens, então o escuro não refaz telas; o custo fica na B3, com o contraste conferido nos dois modos |
+| Tema | **Claro e escuro**, seguindo o aparelho, com a escolha **Sistema · Claro · Escuro** na tela Eu (Conta) (revisto em 2026-10-13; antes, "só claro no MVP"; as duas faces saíram com o Dusk & Dawn; a escolha é de 2026-11-03, B4) | Decidido na entrevista da B1 (`docs/marca.md`). As cores já são tokens, então o escuro não refaz telas; o custo fica na B3, com o contraste conferido nos dois modos. **A escolha** (Matthew, 2026-11-03, vendo o protótipo mudar com o modo do celular): o padrão é Sistema; a escolha fica **neste aparelho** (no navegador), sem campo no banco nem rota: quem troca de aparelho escolhe de novo, e o tema certo aparece já antes do login, sem piscar |
 
 ### 1.1 O que a escolha do shadcn/ui traz junto
 
@@ -574,7 +574,7 @@ a T-03 não tem a barra superior; a saudação faz o papel do título
    pessoa, decisão (l)) traz em cima a **foto** (o botão da câmera; Trocar e
    Remover, RN-53) e **Como chamar você** (o apelido e o pedido pendente,
    RN-52). No celular, substitui o avatar e o menu ☰:
-   perfil (nome, e-mail, papéis), **Conta** (Tela inicial), **Gestão**
+   perfil (nome, e-mail, papéis), **Conta** (Tela inicial e Tema: Sistema · Claro · Escuro, guardado no aparelho), **Gestão**
    (Relatórios para `GERENTE`; Usuários e Setores para `ADMIN`; só para
    quem tem o papel), **Sessão** (Sair, Sair de todos os aparelhos) e a
    assinatura da empresa embaixo. Relatórios e administração ganham
@@ -1972,3 +1972,4 @@ tokens.
 | 2026-10-29 | v1.54 — §3.1: o contraste sobre o vidro (G2): texto só em `texto/principal` |
 | 2026-10-29 | v1.55 — §5.1: o `AtalhoAtividade`; §7.7: a (p) fechada pela (s) (B3, item 14) |
 | 2026-10-30 | v1.56 — a decisão (u), a luz no app: §3.1, os tokens do vidro saíram e a nota de contraste passou para a luz da T-03; §6.2 e §7.3, a capa plana da NC, igual à dos filhos; §7.1, a luz da porta (o Brilho iridescente) e a borda que pega a luz; §7.12, a régua como a barra da referência, com os atalhos embaixo, e a eficácia por textura |
+| 2026-11-03 | v1.57 — Tema: a escolha Sistema · Claro · Escuro na tela Eu (Conta), guardada no aparelho (Matthew, na B4) |

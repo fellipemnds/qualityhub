@@ -317,6 +317,7 @@
     /* T-13 Eu */
     .perfil { display: flex; gap: 12px; align-items: center; padding-top: 24px; }
     .recomecar { margin-top: 24px; display: grid; gap: 8px; }
+    .recomecar .segmentado { margin-top: 0; }
 
     @media (prefers-reduced-motion: reduce) {
         .folha, .toast { animation: none; }
@@ -1121,10 +1122,36 @@
         return "";
     }
 
+    // O tema (ui-ux.md, linha Tema): Sistema segue o aparelho; a escolha fica no navegador, fora do "Recomeçar"
+    const temaDoHost = document.documentElement.getAttribute("data-theme");
+    let temaAtual = "Sistema";
+    try {
+        temaAtual = localStorage.getItem("andon-tema") || "Sistema";
+    } catch {}
+    function aplicarTema(t) {
+        temaAtual = t;
+        const raiz = document.documentElement;
+        if (t === "Sistema") {
+            if (temaDoHost) raiz.setAttribute("data-theme", temaDoHost);
+            else raiz.removeAttribute("data-theme");
+        } else raiz.setAttribute("data-theme", t === "Claro" ? "light" : "dark");
+        try {
+            localStorage.setItem("andon-tema", t);
+        } catch {}
+    }
+    aplicarTema(temaAtual);
+
     // T-13 Eu
     function telaEu() {
         return `<main class="pad">
             <div class="perfil"><span class="av m" style="width:48px;height:48px;font-size:16px">FS</span><div><h1 class="t-secao">Fulana Souza</h1><p class="t-apoio">Responsável e aprovadora · Produção</p></div></div>
+            <div class="recomecar cartao-s">
+                <h2 class="t-secao">Tema</h2>
+                <div class="segmentado" role="group" aria-label="Tema">
+                    ${["Sistema", "Claro", "Escuro"].map((t) => `<button data-acao="tema" data-id="${t}" aria-pressed="${temaAtual === t}">${t}</button>`).join("")}
+                </div>
+                <p class="t-apoio">Sistema segue o modo do aparelho. A escolha fica guardada neste aparelho.</p>
+            </div>
             <div class="recomecar cartao-s">
                 <h2 class="t-secao">Protótipo</h2>
                 <p class="t-apoio">Tudo o que você fez aqui fica só neste aparelho, até recarregar a página. Para o próximo colega começar do zero:</p>
@@ -1285,6 +1312,10 @@
                 break;
             case "sugestao":
                 escolherSugestao(Number(id));
+                break;
+            case "tema":
+                aplicarTema(id);
+                desenhar();
                 break;
             case "recomecar":
                 E = estadoInicial();
