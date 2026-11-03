@@ -1353,6 +1353,11 @@
     }
 
     // ─── T-03 Minhas pendências (a porta: a única tela do app com a luz) ─────────────
+    function apoioUrgente(p) {
+        const r = R(p.id);
+        if (!r || p.mencao) return p.sub;
+        return r.tipo === "NC" ? r.campos.titulo || p.sub : `${textoDe(r)} · ${r.nc}`;
+    }
     const ORDEM_URGENCIA = ["aprovar", "corrigir", "executar", "verificar", "fechamento", "triagem", "mencoes", "rascunhos"];
     function telaPendencias() {
         const lista = pendencias();
@@ -1382,7 +1387,7 @@
             ? `<section class="urgente" aria-label="O mais urgente">
                 <div class="topo"><span class="t-rotulo">O mais urgente</span>${urg.prazo ? prazoTag(urg.prazo) : ""}</div>
                 <div class="acao">${ic(GRUPOS.find((x) => x.id === urg.grupo).icone)}${esc(nomeAcao[urg.grupo])} · ${esc(urg.titulo.split(" · ")[0])}</div>
-                <p class="t-apoio">${esc(urg.sub)}</p>
+                <p class="t-apoio">${esc(apoioUrgente(urg))}</p>
                 <button class="btn btn-pri btn-full" data-acao="abrir" data-id="${urg.id}" ${urg.mencao ? 'data-mencao="1"' : ""}>Abrir</button>
             </section>`
             : "";
@@ -2014,7 +2019,7 @@
                 <span class="tile">${ic(g.icone, "g")}</span>
                 <div class="corpo"><p class="t-rotulo et">O mais urgente · ${esc(nomeAcao[urg.grupo])}${urg.prazo ? ` ${prazoTag(urg.prazo)}` : ""}</p>
                     <p class="t-secao">${esc(urg.titulo)}</p>
-                    <p class="t-apoio et">${ic("arquivo", "p")}${esc(urg.sub)}${alvoR?.resp ? ` ${avatares(alvoR.resp.slice(0, 3))}` : ""}</p></div>
+                    <p class="t-apoio et">${ic("arquivo", "p")}${esc(ncDoUrg ? `${ncDoUrg.codigo} · ${ncDoUrg.campos.titulo}` : urg.sub)}${alvoR?.resp ? ` ${avatares(alvoR.resp.slice(0, 3))}` : ""}</p></div>
                 <div class="bloco-acoes">${ncDoUrg && alvoR.tipo !== "NC" ? `<button class="btn btn-sec" data-acao="abrir" data-id="${ncDoUrg.id}">Ver a NC</button>` : ""}<button class="btn btn-pri" data-acao="abrir" data-id="${urg.id}" ${urg.mencao ? 'data-mencao="1"' : ""}>Abrir</button></div>
             </section>`
             : "";
