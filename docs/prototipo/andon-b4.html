@@ -421,7 +421,8 @@
     .painel-adm { display: grid; gap: 12px; align-content: start; margin-top: 12px; }
 
     /* ─── O computador (acima de 1024 px): a doca, as colunas, as tabelas e as janelas ─── */
-    body.desk #app { max-width: none; border-inline: 0; }
+    /* até 1280 px, no centro; a luz passa da borda da coluna, para não parecer uma caixa */
+    body.desk #app { max-width: 1280px; border-inline: 0; overflow-x: visible; }
     body.desk .pad { padding-left: 40px; padding-right: 40px; }
     .doca { width: auto; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
     .doca .abas-app { flex: none; gap: 2px; }
