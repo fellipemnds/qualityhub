@@ -148,8 +148,8 @@
     .btn[disabled] { opacity: 0.6; cursor: default; }
     .btn-full { width: 100%; }
     /* o toque vai a 44 px sem mudar o desenho (ui-ux §9): uma área invisível, centrada no botão */
-    .btn, .segmentado button, .chip, .link-sec, button.check, .grupo-bt, .responder, .link { position: relative; }
-    :is(.btn, .segmentado button, .chip, .link-sec, button.check, .grupo-bt, .responder, .link)::before { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, 44px); height: max(100%, 44px); transform: translate(-50%, -50%); }
+    .btn, .segmentado button, .chip, .link-sec, button.check, .grupo-bt, .responder, .link, .atalhos-regua button, .abas-mini button, .alvo.pequeno { position: relative; }
+    :is(.btn, .segmentado button, .chip, .link-sec, button.check, .grupo-bt, .responder, .link, .atalhos-regua button, .abas-mini button, .alvo.pequeno)::before { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, 44px); height: max(100%, 44px); transform: translate(-50%, -50%); }
     .estado { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px; border-radius: 4px; background: var(--selecao); font-size: 12px; line-height: 16px; font-weight: 500; white-space: nowrap; }
     .estado i { width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
     .estado svg.ic { width: 14px; height: 14px; color: var(--c); }
@@ -346,7 +346,8 @@
     .segmentado button { white-space: normal; line-height: 16px; padding-inline: 6px; }
     .prazo { display: inline-flex; align-items: center; gap: 4px; color: var(--apoio); }
     .prazo.vencido { color: var(--vencida); }
-    .prazo.breve { color: var(--breve); }
+    .ic-prazo { display: inline-flex; }
+    .prazo.breve .ic-prazo { color: var(--breve); }
     .trunc { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .item .dir { display: flex; gap: 6px; align-items: center; }
     .item { min-width: 0; }
@@ -748,7 +749,7 @@
             resp: ["FS", "DA"], aprovador: "BL", criadoEm: ha(6, 9, 30),
             campos: { titulo: "Lote de parafusos sem certificado", descricao: "O lote 118 de parafusos M8 chegou sem o certificado de material. O lote já tinha sido liberado para a montagem quando a falta foi vista na conferência dos documentos.", setor: "Recebimento", processo: "Inspeção de recebimento", origem: "Auditoria interna", detectada: iso(6), requisito: "PR-03, item 6.1 (certificado obrigatório)", cliente: "" },
         }));
-        por(reg("CL-2026-0012", "CL", "NC-2026-0044", "Fechada", { resp: ["BL"], aprovador: "BL", criadoEm: ha(5), fechadoEm: ha(5, 11), campos: { gravidade: "Menor", justificativa: "O material é o especificado; falta só o documento." } }));
+        por(reg("CL-2026-0012", "CL", "NC-2026-0044", "Fechada", { resp: ["BL"], criadoEm: ha(5), fechadoEm: ha(5, 11), campos: { gravidade: "Menor", justificativa: "O material é o especificado; falta só o documento." } }));
         por(reg("CT-2026-0020", "CT", "NC-2026-0044", "Aberta", { resp: ["FS"], aprovador: "BL", criadoEm: ha(5, 14), campos: { descricao: "Segregar o que sobrou do lote 118 e bloquear o uso até o certificado chegar", prazo: iso(-2) } }));
         por(reg("IV-2026-0008", "IV", "NC-2026-0044", "Aberta", { resp: ["FS"], aprovador: "BL", criadoEm: ha(4), campos: { realProblema: "O recebimento libera lotes sem conferir o certificado", hipoteses: [], porques: [], ishikawa: {} } }));
         // J5 e J8 · A ação vencida para executar, a investigação esperando a Beltrana
@@ -756,7 +757,7 @@
             resp: ["FS", "CR", "DA"], aprovador: "BL", criadoEm: ha(14, 8, 40),
             campos: { titulo: "Vazamento na linha 3", descricao: "Vazamento de óleo na junta da bomba da linha 3, encontrado na inspeção do turno da manhã. A junta estava ressecada e o óleo chegou ao piso da área de envase, perto da esteira 2. A linha parou por 40 minutos para limpeza.", setor: "Produção", processo: "Montagem do cabeçote", origem: "Operação", detectada: iso(14), requisito: "IT-042, item 5.3 (estanqueidade)", cliente: "" },
         }));
-        por(reg("CL-2026-0011", "CL", "NC-2026-0042", "Fechada", { resp: ["BL"], aprovador: "BL", criadoEm: ha(12), fechadoEm: ha(11, 11, 5), campos: { gravidade: "Maior", justificativa: "Parou a linha e o óleo chegou à área de envase." } }));
+        por(reg("CL-2026-0011", "CL", "NC-2026-0042", "Fechada", { resp: ["BL"], criadoEm: ha(12), fechadoEm: ha(11, 11, 5), campos: { gravidade: "Maior", justificativa: "Parou a linha e o óleo chegou à área de envase." } }));
         por(reg("CT-2026-0019", "CT", "NC-2026-0042", "Aberta", { resp: ["CR"], aprovador: "BL", criadoEm: ha(9, 16, 40), campos: { descricao: "Isolar o lote 42 e conferir as juntas das outras bombas da linha", prazo: iso(-5) } }));
         por(reg("IV-2026-0007", "IV", "NC-2026-0042", "Em aprovação", {
             resp: ["FS"], aprovador: "BL", criadoEm: ha(10), enviadoEm: ha(1, 14, 2),
@@ -781,7 +782,7 @@
             resp: ["FS", "DA"], aprovador: "BL", criadoEm: ha(21, 10),
             campos: { titulo: "Torque fora da faixa na montagem", descricao: "Parafusos da tampa apertados com 18 N·m, abaixo dos 22 N·m da instrução. A apertadeira estava com a calibração certa, mas o programa era o da tampa antiga.", setor: "Montagem", processo: "Aperto da tampa", origem: "Auditoria interna", detectada: iso(21), requisito: "IT-031, item 4.4 (torque)", cliente: "" },
         }));
-        por(reg("CL-2026-0010", "CL", "NC-2026-0040", "Fechada", { resp: ["BL"], aprovador: "BL", fechadoEm: ha(19), campos: { gravidade: "Menor", justificativa: "Peças retrabalhadas antes de sair da fábrica." } }));
+        por(reg("CL-2026-0010", "CL", "NC-2026-0040", "Fechada", { resp: ["BL"], fechadoEm: ha(19), campos: { gravidade: "Menor", justificativa: "Peças retrabalhadas antes de sair da fábrica." } }));
         por(reg("CT-2026-0018", "CT", "NC-2026-0040", "Fechada", { resp: ["DA"], aprovador: "BL", fechadoEm: ha(16), campos: { descricao: "Reapertar as tampas do turno", prazo: iso(18), execucao: iso(18), disposicao: "Corrigido" } }));
         por(reg("IV-2026-0006", "IV", "NC-2026-0040", "Fechada", { resp: ["DA"], aprovador: "BL", fechadoEm: ha(3), campos: { realProblema: "A troca de modelo não troca o programa da apertadeira", causaDireta: "Programa da tampa antiga carregado", causaRaiz: "O checklist da troca de modelo não inclui a apertadeira", hipoteses: [{ desc: "Programa errado na apertadeira", num: "1", comoVerificar: "Ver o programa ativo", classe: "Causa direta" }], porques: ["Torque baixo", "Programa antigo", "Ninguém trocou", "Não está no checklist"], ishikawa: { Método: "1. Checklist da troca sem a apertadeira" } } }));
         por(reg("AC-2026-0004", "AC", "NC-2026-0040", "Aberta", { resp: ["DA"], aprovador: "BL", planoAprovado: true, campos: { iv: "IV-2026-0006", descricao: "Incluir a apertadeira no checklist da troca de modelo", prazo: iso(-12), instrucoes: "Acompanhar 3 trocas de modelo." } }));
@@ -791,7 +792,7 @@
             campos: { titulo: "Atraso na calibração", descricao: "O paquímetro PQ-17 foi usado na inspeção final por 12 dias com a calibração vencida. As peças medidas nesse período foram reinspecionadas com outro instrumento, e nenhuma estava fora da tolerância.", setor: "Metrologia", processo: "Inspeção final", origem: "Auditoria interna", detectada: iso(28), requisito: "PR-07, item 4.2 (calibração em dia)", cliente: "", riscos: "Sem risco novo: o controle de calibração cobria o caso", mudancas: "PR-07 revisado: o alerta de vencimento sai 15 dias antes" },
             anexos: [["certificado-calibracao-pq17.pdf", "220 KB"], ["reinspecao-semana-41.xlsx", "48 KB"]],
         }));
-        por(reg("CL-2026-0009", "CL", "NC-2026-0038", "Fechada", { resp: ["BL"], aprovador: "BL", fechadoEm: ha(26), campos: { gravidade: "Menor", justificativa: "Nenhuma peça fora da tolerância." } }));
+        por(reg("CL-2026-0009", "CL", "NC-2026-0038", "Fechada", { resp: ["BL"], fechadoEm: ha(26), campos: { gravidade: "Menor", justificativa: "Nenhuma peça fora da tolerância." } }));
         por(reg("CT-2026-0016", "CT", "NC-2026-0038", "Fechada", { resp: ["DA"], aprovador: "BL", fechadoEm: ha(20), campos: { descricao: "Reinspecionar as peças da semana com outro paquímetro", prazo: iso(22), execucao: iso(21), disposicao: "Aceito" } }));
         por(reg("IV-2026-0005", "IV", "NC-2026-0038", "Fechada", { resp: ["DA"], aprovador: "BL", fechadoEm: ha(4, 10, 12), campos: { realProblema: "O controle de calibração não avisava antes do vencimento", causaDireta: "Sem aviso de vencimento", causaRaiz: "O PR-07 não previa aviso", hipoteses: [{ desc: "Sem aviso de vencimento", num: "1", comoVerificar: "Ver o sistema de calibração", classe: "Causa direta" }], porques: ["Paquímetro vencido em uso", "Ninguém foi avisado"], ishikawa: { Método: "1. Sem aviso de vencimento" } } }));
         por(reg("AC-2026-0002", "AC", "NC-2026-0038", "Aberta", { resp: ["DA"], aprovador: "BL", planoAprovado: true, campos: { iv: "IV-2026-0005", descricao: "Alerta de vencimento no sistema de calibração, 15 dias antes", prazo: iso(6), instrucoes: "Conferir se os alertas saíram no mês seguinte." } }));
@@ -800,7 +801,7 @@
             resp: ["FS"], aprovador: "BL", criadoEm: ha(60), fechadoEm: ha(30),
             campos: { titulo: "Arranhão na tampa do painel", descricao: "Tampas do painel P-200 com arranhões na pintura, vistos na embalagem.", setor: "Produção", processo: "Pintura", origem: "Reclamação de cliente", detectada: iso(60), requisito: "Desenho P-200, nota 4 (acabamento)", cliente: "Metalúrgica Andrade", riscos: "Revisado: sem risco novo", mudancas: "Nenhuma" },
         }));
-        por(reg("CL-2026-0007", "CL", "NC-2026-0036", "Fechada", { resp: ["BL"], aprovador: "BL", fechadoEm: ha(58), campos: { gravidade: "Maior", justificativa: "Reclamação de cliente." } }));
+        por(reg("CL-2026-0007", "CL", "NC-2026-0036", "Fechada", { resp: ["BL"], fechadoEm: ha(58), campos: { gravidade: "Maior", justificativa: "Reclamação de cliente." } }));
         por(reg("IV-2026-0004", "IV", "NC-2026-0036", "Fechada", { resp: ["FS"], aprovador: "BL", fechadoEm: ha(35), campos: { realProblema: "As tampas se encostam no carrinho de transporte", causaDireta: "Carrinho sem separador", causaRaiz: "O carrinho foi feito para a tampa antiga, menor", hipoteses: [{ desc: "Tampas encostando no carrinho", num: "1", comoVerificar: "Acompanhar um transporte", classe: "Causa direta" }], porques: ["Arranhão", "Encostam", "Sem separador"], ishikawa: { Máquina: "1. Carrinho sem separador" } } }));
         por(reg("AC-2026-0001", "AC", "NC-2026-0036", "Fechada", { resp: ["FS"], aprovador: "BL", planoAprovado: true, fechadoEm: ha(25), campos: { iv: "IV-2026-0004", descricao: "Pôr separadores de espuma no carrinho", prazo: iso(28), instrucoes: "Conferir 50 tampas na embalagem: nenhuma arranhada.", execucao: iso(25), evidencia: "Separadores instalados nos 4 carrinhos." } }));
         por(reg("VE-2026-0001", "VE", "NC-2026-0036", "Aberta", { resp: ["BL"], criadoEm: ha(25), campos: { ac: "AC-2026-0001", iv: "IV-2026-0004", prazo: iso(-2), instrucoes: "Conferir 50 tampas na embalagem: nenhuma arranhada." } }));
@@ -809,7 +810,7 @@
             resp: ["CR"], aprovador: "BL", criadoEm: ha(90), fechadoEm: ha(40),
             campos: { titulo: "Etiqueta trocada no lote 77", descricao: "O lote 77 saiu com a etiqueta do lote 76. O cliente avisou na entrada.", setor: "Expedição", processo: "Etiquetagem", origem: "Reclamação de cliente", detectada: iso(90), requisito: "IT-088, item 3.1 (rastreabilidade)", cliente: "Distribuidora Leste", riscos: "Revisado", mudancas: "IT-088 revisada" },
         }));
-        por(reg("CL-2026-0005", "CL", "NC-2026-0031", "Fechada", { resp: ["BL"], aprovador: "BL", fechadoEm: ha(88), campos: { gravidade: "Maior", justificativa: "Rastreabilidade com o cliente." } }));
+        por(reg("CL-2026-0005", "CL", "NC-2026-0031", "Fechada", { resp: ["BL"], fechadoEm: ha(88), campos: { gravidade: "Maior", justificativa: "Rastreabilidade com o cliente." } }));
         por(reg("IV-2026-0003", "IV", "NC-2026-0031", "Fechada", { resp: ["CR"], aprovador: "BL", fechadoEm: ha(50), campos: { realProblema: "Duas etiquetas impressas ao mesmo tempo", causaDireta: "Impressão em lote", causaRaiz: "A impressora imprime dois lotes seguidos", hipoteses: [{ desc: "Impressão em lote", num: "1", comoVerificar: "Ver o log da impressora", classe: "Causa direta" }], porques: ["Etiqueta trocada", "Impressas juntas"], ishikawa: { Máquina: "1. Impressão em lote" } } }));
         por(reg("AC-2026-0000", "AC", "NC-2026-0031", "Fechada", { resp: ["CR"], aprovador: "BL", planoAprovado: true, fechadoEm: ha(45), campos: { iv: "IV-2026-0003", descricao: "Uma etiqueta por vez, com a leitura do código antes de colar", prazo: iso(46), instrucoes: "Auditar 3 expedições.", execucao: iso(45), evidencia: "Procedimento novo em uso." } }));
         por(reg("VE-2026-0000", "VE", "NC-2026-0031", "Fechada", { resp: ["BL"], fechadoEm: ha(41), campos: { ac: "AC-2026-0000", iv: "IV-2026-0003", prazo: iso(40), instrucoes: "Auditar 3 expedições.", resultado: "EFICAZ", conclusao: "Nenhuma troca nas 3 expedições.", data: iso(41) } }));
@@ -906,7 +907,8 @@
     // Quem pode o quê: o papel, o estado e a atribuição (o podeExecutar do backend)
     function pode(acao, r, tipo) {
         const g = tem("GERENTE");
-        const escreve = r && (r.tipo === "CL" ? tem("APROVADOR", "GERENTE") : negocio()) && (colab(r) || g);
+        // escrever exige o papel e estar no item (o podeExecutar do backend): nem o gerente pula a atribuição
+        const escreve = r && (r.tipo === "CL" ? tem("APROVADOR", "GERENTE") : negocio()) && colab(r);
         switch (acao) {
             case "criarNC":
                 return tem("EDITOR", "GERENTE");
@@ -914,10 +916,10 @@
                 // r é a NC, e o tipo é o do filho novo
                 if (r.estado !== "Aberta") return false;
                 if (tipo === "CL") return tem("APROVADOR", "GERENTE");
-                return negocio() && (colab(r) || g);
+                return tem("EDITOR", "GERENTE");
             }
             case "criarAC":
-                return r.tipo === "IV" && r.estado === "Aberta" && negocio() && (colab(r) || g);
+                return r.tipo === "IV" && r.estado === "Aberta" && tem("EDITOR", "GERENTE");
             case "editar":
                 if (r.tipo === "VE") return r.estado === "Aberta" && colab(r) && tem("APROVADOR", "GERENTE");
                 if (r.tipo === "AC" && r.planoAprovado) return r.estado === "Aberta" && escreve;
@@ -926,10 +928,11 @@
             case "excluir":
                 return r.estado === "Rascunho" && escreve;
             case "submeter":
-                return r.estado === "Aberta" && r.tipo !== "VE" && !(r.tipo === "AC" && r.planoAprovado) && escreve;
+                return r.estado === "Aberta" && r.tipo !== "VE" && r.tipo !== "CL" && !(r.tipo === "AC" && r.planoAprovado) && escreve;
             case "finalizar":
                 return r.tipo === "AC" && r.estado === "Aberta" && r.planoAprovado && escreve;
             case "concluir":
+                if (r.tipo === "CL") return r.estado === "Aberta" && escreve;
                 return r.tipo === "VE" && r.estado === "Aberta" && colab(r) && tem("APROVADOR", "GERENTE");
             case "decidir":
                 return r.estado === "Em aprovação" && r.aprovador === E.usuario;
@@ -940,9 +943,11 @@
             case "reabrir":
                 return r.tipo === "NC" && r.estado === "Fechada" && tem("APROVADOR", "GERENTE");
             case "aprovador":
-                return r.tipo !== "VE" && (editavel(r) ? tem("APROVADOR", "GERENTE") : r.estado === "Em aprovação" && g);
+                // RN-18 e Q23: o aprovador/gerente, ou o editor que está no item; em aprovação, só o gerente
+                return r.tipo !== "VE" && r.tipo !== "CL" && (editavel(r) ? tem("APROVADOR", "GERENTE") || (tem("EDITOR") && colab(r)) : r.estado === "Em aprovação" && g);
             case "responsavel":
-                return editavel(r) && (escreve || (r.tipo === "NC" && tem("APROVADOR", "GERENTE")));
+                // RN-18: qualquer editor ou gerente, sem precisar já estar no item
+                return editavel(r) && tem("EDITOR", "GERENTE");
             case "comentar":
                 return negocio();
             default:
@@ -959,9 +964,9 @@
         // a NC cancelada mostra a etapa onde parou (Matthew, 2026-11-03), não "Cancelada": o badge de estado já diz
         if (nc.estado === "Aberta" || nc.estado === "Cancelada") {
             if (!de("CL").some((r) => r.estado === "Fechada")) return "Aguardando classificação";
-            const ivs = de("IV").filter((r) => r.estado !== "Rascunho");
+            const ivs = de("IV");
             if (!ivs.some((r) => r.estado === "Fechada") || ivs.some((r) => r.estado !== "Fechada")) return "Em investigação";
-            if (de("CT").some((r) => r.estado === "Aberta" || r.estado === "Em aprovação")) return "Aguardando contenção";
+            if (de("CT").some((r) => r.estado !== "Fechada")) return "Aguardando contenção";
             return "Pronta para fechamento";
         }
         if (de("AC").some((r) => r.estado !== "Fechada")) return "Fechada · ação em execução";
@@ -997,15 +1002,18 @@
     // O checklist de fechamento (o avaliarFechamentoNC): os filhos e o envio
     function checklist(nc) {
         const f = filhosDe(nc.id).filter(vivo);
-        const de = (t) => f.filter((r) => r.tipo === t && r.estado !== "Rascunho");
+        // o rascunho conta, como no backend: só o cancelado e o fechado saem da conta
+        const de = (t) => f.filter((r) => r.tipo === t);
         const cls = de("CL");
         const ivs = de("IV");
-        const cts = de("CT").filter((r) => r.estado === "Aberta" || r.estado === "Em aprovação");
+        const cts = de("CT").filter((r) => r.estado !== "Fechada");
         const ivAberta = ivs.find((r) => r.estado !== "Fechada");
+        const como = (r) => ({ "Em aprovação": "em aprovação", Aberta: "aberta", Rascunho: "em rascunho" })[r.estado];
+        const icone = (r) => (r?.estado === "Em aprovação" ? "ampulheta" : r?.estado === "Aberta" ? "ponto" : "pendente");
         return [
-            { ok: cls.some((r) => r.estado === "Fechada"), feito: "Classificação fechada", falta: cls.length ? `${cls[0].codigo} ainda não aprovada` : "Classificar a NC", ir: "itens" },
-            { ok: ivs.length > 0 && !ivAberta, feito: "Investigação fechada", falta: ivAberta ? `${ivAberta.codigo} ${ivAberta.estado === "Em aprovação" ? "em aprovação" : "aberta"}` : "Investigar a NC", ir: "itens" },
-            { ok: cts.length === 0, feito: "Nenhuma contenção pendente", falta: cts.length ? `${cts[0].codigo} ${cts[0].estado === "Em aprovação" ? "em aprovação" : "aberta"}` : "", ir: "itens" },
+            { ok: cls.some((r) => r.estado === "Fechada"), feito: "Classificação fechada", falta: cls.length ? `${nomeItem(cls[0])} ${como(cls[0])}` : "Classificar a NC", icone: icone(cls[0]), ir: "itens" },
+            { ok: ivs.length > 0 && !ivAberta, feito: "Investigação fechada", falta: ivAberta ? `${nomeItem(ivAberta)} ${como(ivAberta)}` : "Investigar a NC", icone: icone(ivAberta), ir: "itens" },
+            { ok: cts.length === 0, feito: "Nenhuma contenção pendente", falta: cts.length ? `${nomeItem(cts[0])} ${como(cts[0])}` : "", icone: icone(cts[0]), ir: "itens" },
             { ok: !!nc.campos.riscos?.trim(), feito: "Riscos revisados", falta: "Revisar os riscos", ir: "detalhes" },
             { ok: !!nc.campos.mudancas?.trim(), feito: "Mudanças no SGQ registradas", falta: "Registrar as mudanças no SGQ", ir: "detalhes" },
             { ok: !!nc.aprovador, feito: "Aprovador definido", falta: "Definir o aprovador", ir: "detalhes" },
@@ -1043,7 +1051,7 @@
             if (!c.prazo) f.push("Dar um prazo");
             if (vazio(c.instrucoes)) f.push("Escrever as instruções de verificação");
         }
-        if (!r.aprovador) f.push("Definir o aprovador");
+        if (!r.aprovador && r.tipo !== "CL") f.push("Definir o aprovador");
         return f;
     }
     function faltasFinalizar(r) {
@@ -1060,10 +1068,10 @@
         const ncTitulo = (r) => `${r.nc ? `${r.nc} · ` : ""}${R(r.nc || r.id).campos.titulo}`;
         for (const r of Object.values(E.reg)) {
             if (r.estado === "Em aprovação" && r.aprovador === E.usuario)
-                add("aprovar", r, `${nomeItem(r)} · ${r.tipo === "NC" ? "Fechamento" : r.tipo === "AC" && !r.planoAprovado ? "Plano" : textoDe(r)}`, r.tipo === "NC" ? r.campos.titulo : ncTitulo(r), null, { apoio: `Enviada ${haQuanto(r.enviadoEm || r.criadoEm)}` });
+                add("aprovar", r, `${nomeItem(r)} · ${r.tipo === "NC" ? "Fechamento" : r.tipo === "AC" && !r.planoAprovado ? "Plano" : textoDe(r)}`, r.tipo === "NC" ? r.campos.titulo : ncTitulo(r), null, { apoio: `Enviada ${haQuanto(r.enviadoEm || r.criadoEm)}`, ts: r.enviadoEm || r.criadoEm });
             if (r.estado === "Aberta" && r.reprovacao && colab(r)) add("corrigir", r, `${nomeItem(r)} · reprovada por ${primeiro(r.reprovacao.por)}`, `“${r.reprovacao.motivo}”`, null);
             if (r.estado === "Rascunho" && colab(r)) add("rascunhos", r, r.tipo === "NC" ? "Continuar rascunho" : `${TIPOS[r.tipo].nome} em rascunho`, r.tipo === "NC" ? r.campos.titulo?.trim() || "Sem título" : ncTitulo(r), null, { apoio: "Só você vê" });
-            if (tem("APROVADOR", "GERENTE") && r.estado === "Aberta" && !r.aprovador && r.tipo !== "VE")
+            if (tem("APROVADOR", "GERENTE") && r.estado === "Aberta" && !r.aprovador && r.tipo !== "VE" && r.tipo !== "CL")
                 add("triagem", r, `${nomeItem(r)} · ${r.tipo === "NC" ? r.campos.titulo : textoDe(r)}`, `${r.tipo === "NC" ? "NC" : TIPOS[r.tipo].nome} sem aprovador · publicada ${haQuanto(r.criadoEm)}`, null);
             if (r.tipo === "AC" && r.estado === "Aberta" && r.planoAprovado && colab(r)) add("executar", r, `${r.codigo} · ${textoDe(r)}`, `Executar ação · ${r.nc}`, r.campos.prazo);
             if (r.tipo === "VE" && r.estado === "Aberta" && colab(r)) add("verificar", r, `${r.codigo} · ${textoDe(r)}`, `Verificar até ${br(r.campos.prazo).slice(0, 5)} · ${r.nc}`, r.campos.prazo);
@@ -1074,16 +1082,17 @@
             const nc = R(m.nc);
             out.push({ grupo: "mencoes", id: m.nc, titulo: `${m.nc} · ${nc.campos.titulo}`, sub: `Você foi mencionado ${haQuanto(m.ts)}`, mencao: true });
         }
-        return out;
+        // dentro de cada grupo, o que espera há mais tempo vem primeiro
+        return out.sort((a, b) => (a.ts ?? 0) - (b.ts ?? 0));
     }
     const GRUPOS = [
         { id: "aprovar", nome: "Aprovar", icone: "aprovar", papeis: ["APROVADOR", "GERENTE"] },
-        { id: "corrigir", nome: "Corrigir", icone: "reprovar", papeis: ["EDITOR", "APROVADOR", "GERENTE"] },
-        { id: "executar", nome: "Executar ação", icone: "acao", papeis: ["EDITOR", "GERENTE"] },
+        { id: "corrigir", nome: "Corrigir", icone: "editar", papeis: ["EDITOR", "APROVADOR", "GERENTE"] },
         { id: "verificar", nome: "Verificar", icone: "olho", papeis: ["APROVADOR", "GERENTE"] },
+        { id: "executar", nome: "Executar ação", icone: "acao", papeis: ["EDITOR", "GERENTE"] },
         { id: "fechamento", nome: "Enviar para fechamento", icone: "pronta", papeis: ["EDITOR", "GERENTE"] },
         { id: "triagem", nome: "Triagem", icone: "triagem", papeis: ["APROVADOR", "GERENTE"] },
-        { id: "mencoes", nome: "Mencionado", icone: "arroba", papeis: ["EDITOR", "APROVADOR", "GERENTE"] },
+        { id: "mencoes", nome: "Menções", icone: "arroba", papeis: ["EDITOR", "APROVADOR", "GERENTE"] },
         { id: "rascunhos", nome: "Rascunhos", icone: "rascunho", papeis: ["EDITOR", "APROVADOR", "GERENTE"] },
     ];
 
@@ -1099,7 +1108,7 @@
     function novoFilho(tipo, ncId, extra = {}) {
         const nc = R(ncId);
         const id = `R${E.seq.R++}`;
-        E.reg[id] = { id, codigo: null, tipo, nc: ncId, estado: "Rascunho", resp: [E.usuario], aprovador: nc.aprovador, criadoEm: Date.now(), campos: { hipoteses: [], porques: [], ishikawa: {} }, anexos: [], ...extra };
+        E.reg[id] = { id, codigo: null, tipo, nc: ncId, estado: "Rascunho", resp: [E.usuario], aprovador: tipo === "CL" || nc.aprovador === E.usuario ? null : nc.aprovador, criadoEm: Date.now(), campos: { hipoteses: [], porques: [], ishikawa: {} }, anexos: [], ...extra };
         return id;
     }
     function publicarItem(r) {
@@ -1192,13 +1201,17 @@
         try {
             const s = JSON.parse(localStorage.getItem("andon-estado"));
             if (s?.versao === 2) return s;
-        } catch {}
+        } catch {
+            // sem o armazenamento do navegador (janela privada ou bloqueado), o protótipo segue sem guardar
+        }
         return estadoInicial();
     }
     function guardar() {
         try {
             localStorage.setItem("andon-estado", JSON.stringify(E));
-        } catch {}
+        } catch {
+            // sem o armazenamento do navegador (janela privada ou bloqueado), o protótipo segue sem guardar
+        }
     }
     let E = carregar();
     const app = document.getElementById("app");
@@ -1305,7 +1318,7 @@
     const av = (s, cls = "") => `<span class="av ${cls}" title="${esc(nomeDe(s))}">${esc(s)}</span>`;
     const avatares = (siglas) => `<span class="avs">${siglas.map((s) => av(s)).join("")}</span>`;
     const etapa = (nome) => `<span class="et">${ic(ETAPAS[nome] || "info")}${esc(nome)}</span>`;
-    const prazoTag = (d) => (d ? `<span class="prazo ${nivelPrazo(d)}">${nivelPrazo(d) ? ic("alerta", "p") : ic("relogio", "p")}${esc(prazoTexto(d))}</span>` : "");
+    const prazoTag = (d) => (d ? `<span class="prazo ${nivelPrazo(d)}"><span class="ic-prazo">${nivelPrazo(d) ? ic("alerta", "p") : ic("relogio", "p")}</span>${esc(prazoTexto(d))}</span>` : "");
     const indicadoresHtml = (nc) => indicadores(nc).map((i) => (i.alerta ? `<span class="alerta">${ic("alerta")}${esc(i.texto)}</span>` : `<span>· ${esc(i.texto)}</span>`)).join("");
     const voce = (s) => (s === E.usuario ? `${nomeDe(s)} (você)` : nomeDe(s));
 
@@ -1379,7 +1392,7 @@
         if (!r || p.mencao) return p.sub;
         return r.tipo === "NC" ? r.campos.titulo || p.sub : `${textoDe(r)} · ${r.nc}`;
     }
-    const ORDEM_URGENCIA = ["aprovar", "corrigir", "executar", "verificar", "fechamento", "triagem", "mencoes", "rascunhos"];
+    const ORDEM_URGENCIA = ["aprovar", "corrigir", "verificar", "executar", "fechamento", "triagem", "mencoes", "rascunhos"];
     function telaPendencias() {
         const lista = pendencias();
         const vencidas = lista.filter((p) => p.prazo && diasAte(p.prazo) < 0);
@@ -1394,11 +1407,11 @@
             </button>`;
         const gaveta = (id, icone, nome, itens, alerta = false) => `
             <div class="gaveta">
-                <button class="gaveta-cab" data-acao="gaveta" data-id="${id}" aria-expanded="${!!g[id]}">
+                <button class="gaveta-cab" data-acao="gaveta" data-id="${id}" aria-expanded="${g[id] ?? desk}">
                     ${alerta ? `<span class="alerta">${ic(icone, "g")}</span>` : ic(icone, "g")}
-                    <span class="nome">${nome}</span><span class="contador num">${itens.length}</span>${ic(g[id] ? "cima" : "baixo")}
+                    <span class="nome">${nome}</span><span class="contador num">${itens.length}</span>${ic((g[id] ?? desk) ? "cima" : "baixo")}
                 </button>
-                ${g[id] ? itens.map(linha).join("") : ""}
+                ${(g[id] ?? desk) ? itens.map(linha).join("") : ""}
             </div>`;
         const grupos = GRUPOS.filter((x) => x.papeis.some((p) => tem(p)));
         const cheios = grupos.filter((x) => lista.some((p) => p.grupo === x.id && !vencidas.includes(p)));
@@ -1407,9 +1420,9 @@
         const urgente = urg
             ? `<section class="urgente" aria-label="O mais urgente">
                 <div class="topo"><span class="t-rotulo">O mais urgente</span>${urg.prazo ? prazoTag(urg.prazo) : ""}</div>
-                <div class="acao">${ic(GRUPOS.find((x) => x.id === urg.grupo).icone)}${esc(nomeAcao[urg.grupo])} · ${esc(urg.titulo.split(" · ")[0])}</div>
+                <div class="acao">${ic(GRUPOS.find((x) => x.id === urg.grupo).icone)}${esc(nomeAcao[urg.grupo])}${urg.grupo === "rascunhos" ? "" : ` · ${esc(urg.titulo.split(" · ")[0])}`}</div>
                 <p class="t-apoio">${esc(apoioUrgente(urg))}</p>
-                <button class="btn btn-pri btn-full" data-acao="abrir" data-id="${urg.id}" ${urg.mencao ? 'data-mencao="1"' : ""}>Abrir</button>
+                <button class="btn btn-pri btn-full" data-acao="abrir" data-id="${urg.id}" ${urg.mencao ? 'data-mencao="1"' : ""}>${urg.grupo === "executar" ? "Abrir a ação" : "Abrir"}</button>
             </section>`
             : "";
         const gavetas = lista.length
@@ -1615,7 +1628,7 @@
                 .map((x) =>
                     x.ok
                         ? `<div class="check">${ic("ok", "g")}<span class="txt">${esc(x.feito)}</span></div>`
-                        : `<button class="check" data-acao="ir-aba" data-id="${x.ir}">${ic("pendente", "g")}<span class="txt">${esc(x.falta)}</span><span class="chev">${ic("direita")}</span></button>`,
+                        : `<button class="check" data-acao="ir-aba" data-id="${x.ir}">${ic(x.icone || "pendente", "g")}<span class="txt">${esc(x.falta)}</span><span class="chev">${ic("direita")}</span></button>`,
                 )
                 .join("")}</div></section>`;
     }
@@ -1633,8 +1646,8 @@
         const c = nc.campos;
         if (pode("editar", nc) && nc.estado === "Aberta")
             return `<section class="cartao-s"><h2 class="t-secao">Envio para fechamento</h2>
-                <div class="campo"><label for="e-riscos">Riscos revisados</label><textarea id="e-riscos" data-campo="riscos" placeholder="Os riscos e oportunidades do SGQ foram revistos? O que mudou?">${esc(c.riscos)}</textarea></div>
-                <div class="campo"><label for="e-mudancas">Mudanças no SGQ</label><textarea id="e-mudancas" data-campo="mudancas" placeholder="Documentos, procedimentos ou processos alterados">${esc(c.mudancas)}</textarea></div>
+                <div class="campo"><label for="e-riscos">Riscos revisados</label><textarea id="e-riscos" data-campo="riscos" data-reg="${nc.id}" placeholder="Os riscos e oportunidades do SGQ foram revistos? O que mudou?">${esc(c.riscos)}</textarea></div>
+                <div class="campo"><label for="e-mudancas">Mudanças no SGQ</label><textarea id="e-mudancas" data-campo="mudancas" data-reg="${nc.id}" placeholder="Documentos, procedimentos ou processos alterados">${esc(c.mudancas)}</textarea></div>
                 <p class="t-apoio">A ISO 9001, 10.2.1 e e f: preenchidos antes de enviar para fechamento.</p>
                 <button class="btn btn-sec" style="justify-self:start" data-acao="salvar-envio">Salvar</button></section>`;
         return `<section class="cartao-s"><h2 class="t-secao">Envio para fechamento</h2>
@@ -1737,7 +1750,7 @@
             b.push(f.length ? bt("bloqueado", `${rotulo} ${ic("info")}`, "btn-bloq") : bt("submeter", rotulo, "btn-pri"));
         }
         if (pode("finalizar", r)) b.push(faltasFinalizar(r).length ? bt("bloqueado-fin", `Finalizar execução ${ic("info")}`, "btn-bloq") : bt("finalizar", "Finalizar execução", "btn-pri"));
-        if (pode("concluir", r)) b.push(bt("concluir", "Concluir a verificação", "btn-pri"));
+        if (pode("concluir", r)) b.push(bt("concluir", r.tipo === "CL" ? "Concluir classificação" : "Concluir a verificação", "btn-pri"));
         if (pode("retirar", r)) b.push(bt("retirar", "Retirar da aprovação"));
         if (pode("reabrir", r)) b.push(bt("reabrir", "Reabrir a NC"));
         return b;
@@ -1831,7 +1844,7 @@
             ta.focus();
             return;
         }
-        const chamados = E.pessoas.filter((p) => p.sigla !== E.usuario && new RegExp(`@${p.nome.split(" ")[0]}(\\b|$)`).test(texto));
+        const chamados = E.pessoas.filter((p) => p.sigla !== E.usuario && new RegExp(`@${p.nome.split(" ")[0]}(\\b|$)`, "i").test(texto));
         listaDe(E.feed, E.ncId).unshift({ ts: Date.now(), tipo: "comentario", quem: E.usuario, texto });
         for (const p of chamados) E.mencoes.push({ para: p.sigla, nc: E.ncId, ts: Date.now() });
         E.rascunhoComentario = "";
@@ -2328,13 +2341,12 @@
                 return casca("Mais ações", "", `${pode("reabrir", r) ? `<button class="btn btn-sec btn-full" data-acao="reabrir" data-id="${r.id}">Reabrir a NC</button>` : ""}${pode("cancelar", r) ? '<button class="btn btn-des btn-full" data-acao="cancelar">Cancelar o item</button>' : ""}${voltarBt}`);
             case "pessoas": {
                 const ja = f.form ? E.form.resp || [E.usuario] : r.resp;
-                const op = E.pessoas.filter((p) => p.ativo && p.papeis.some((x) => x === "EDITOR" || x === "GERENTE") && !ja.includes(p.sigla));
+                const op = E.pessoas.filter((p) => p.ativo && p.papeis.some((x) => x === "EDITOR" || x === "GERENTE") && !ja.includes(p.sigla) && p.sigla !== r?.aprovador);
                 return casca("Adicionar responsável", op.length ? `<div class="opcoes">${op.map((p) => `<button class="opcao" data-acao="escolher-pessoa" data-id="${p.sigla}">${av(p.sigla, "m")}<span><span style="display:block">${esc(p.nome)}</span><span class="t-rotulo">${esc(p.setor)}</span></span></button>`).join("")}</div>` : '<p class="t-apoio">Todos os editores já estão no item.</p>', voltarBt);
             }
             case "aprovador": {
-                const op = E.pessoas.filter((p) => p.ativo && p.papeis.some((x) => x === "APROVADOR" || x === "GERENTE"));
-                const filhosSem = r.tipo === "NC" ? filhosDe(r.id).filter((x) => !x.aprovador && x.tipo !== "VE" && x.estado !== "Fechada" && x.estado !== "Cancelada").length : 0;
-                return casca(r.aprovador ? "Trocar o aprovador" : "Definir o aprovador", `<p class="t-apoio">${r.tipo === "NC" ? "Os itens criados daqui em diante nascem com este aprovador." : "Quem aprova este item."}${filhosSem ? ` Os ${filhosSem} itens sem aprovador também ficam com ele.` : ""}</p>
+                const op = E.pessoas.filter((p) => p.ativo && p.papeis.includes("APROVADOR") && !r.resp.includes(p.sigla));
+                return casca(r.aprovador ? "Trocar o aprovador" : "Definir o aprovador", `<p class="t-apoio">${r.tipo === "NC" ? "Os itens criados daqui em diante nascem com este aprovador." : "Quem aprova este item."} Quem é responsável pelo item não pode aprová-lo.</p>
                     <div class="opcoes">${op.map((p) => `<button class="opcao" data-acao="escolher-aprovador" data-id="${p.sigla}" aria-pressed="${r.aprovador === p.sigla}">${av(p.sigla, "m")}<span><span style="display:block">${esc(voce(p.sigla))}</span><span class="t-rotulo">${p.papeis.map((x) => NOME_PAPEL[x]).join(" + ")} · ${esc(p.setor)}</span></span></button>`).join("")}</div>`, voltarBt);
             }
             case "hipotese": {
@@ -2588,14 +2600,18 @@ void main() {
     let prisma = null;
     try {
         prisma = montarPrisma(document.getElementById("prism"));
-    } catch {}
+    } catch {
+            // sem o armazenamento do navegador (janela privada ou bloqueado), o protótipo segue sem guardar
+        }
 
     // ─── O tema (ui-ux.md, linha Tema): Sistema segue o aparelho; a escolha fica no navegador ────
     const temaDoHost = document.documentElement.getAttribute("data-theme");
     let temaAtual = "Sistema";
     try {
         temaAtual = localStorage.getItem("andon-tema") || "Sistema";
-    } catch {}
+    } catch {
+            // sem o armazenamento do navegador (janela privada ou bloqueado), o protótipo segue sem guardar
+        }
     function aplicarTema(t) {
         temaAtual = t;
         const raiz = document.documentElement;
@@ -2605,7 +2621,9 @@ void main() {
         } else raiz.setAttribute("data-theme", t === "Claro" ? "light" : "dark");
         try {
             localStorage.setItem("andon-tema", t);
-        } catch {}
+        } catch {
+            // sem o armazenamento do navegador (janela privada ou bloqueado), o protótipo segue sem guardar
+        }
         prisma?.redesenhar();
     }
     matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => prisma?.redesenhar());
@@ -2645,7 +2663,7 @@ void main() {
 
     // ─── T-09 a T-12 Administração (a lista e o painel; no celular, em telas) ─────────────
     // A recusa da RN-43: quem é aprovador de itens abertos não sai sem trocar antes
-    const aprovaAbertos = (s) => Object.values(E.reg).filter((r) => r.aprovador === s && (r.estado === "Aberta" || r.estado === "Em aprovação"));
+    const aprovaAbertos = (s) => Object.values(E.reg).filter((r) => r.aprovador === s && ["Rascunho", "Aberta", "Em aprovação"].includes(r.estado));
     function telaSetor() {
         return `<header class="barra-sup pad sem-fio"><button class="alvo" data-acao="voltar" aria-label="Voltar">${ic("voltar", "g")}</button><span class="t">${E.setorSel === "novo" ? "Novo setor" : "Setor"}</span><span class="alvo"></span></header>
             <main class="pad">${painelSetor()}<div class="folga-barra"></div></main>`;
@@ -2756,8 +2774,39 @@ void main() {
             p[Number(el.dataset.porque)] = el.value;
             r.campos.porques = p;
         } else return;
-        desenhar();
+        guardar();
+        if (apertando) barraPendente = true;
+        else atualizarBarra();
     });
+    // Só a barra de ações se refaz (o que falta para enviar), e depois do toque: trocar o botão no meio do toque o perderia
+    let apertando = false;
+    let barraPendente = false;
+    document.addEventListener(
+        "pointerdown",
+        () => {
+            apertando = true;
+        },
+        true,
+    );
+    const soltar = () =>
+        setTimeout(() => {
+            apertando = false;
+            if (barraPendente) {
+                barraPendente = false;
+                atualizarBarra();
+            }
+        }, 350);
+    document.addEventListener("pointerup", soltar, true);
+    document.addEventListener("pointercancel", soltar, true);
+    function atualizarBarra() {
+        const tmp = document.createElement("div");
+        tmp.innerHTML = (TELAS[E.tela] || TELAS.login)();
+        for (const sel of [".barra-acoes", ".bloco-titulo .bloco-acoes"]) {
+            const novo = tmp.querySelector(sel);
+            const velho = app.querySelector(sel);
+            if (novo && velho) velho.replaceWith(novo);
+        }
+    }
     document.addEventListener("submit", (e) => {
         e.preventDefault();
         if (e.target.id === "form-login") entrar();
@@ -2805,7 +2854,7 @@ void main() {
                 document.getElementById("busca-ncs")?.focus();
                 break;
             case "gaveta":
-                E.gavetas[id] = !E.gavetas[id];
+                E.gavetas[id] = !(E.gavetas[id] ?? desk);
                 desenhar();
                 break;
             case "abrir": {
@@ -2853,6 +2902,7 @@ void main() {
                 const p = E.usuario;
                 E = estadoInicial();
                 E.perfilEscolhido = p || "FS";
+                aplicarTema("Sistema");
                 desenhar(true);
                 avisar("Pronto: o protótipo voltou ao começo.");
                 break;
@@ -2933,18 +2983,22 @@ void main() {
                 avisar("Rascunho excluído.", "info");
                 break;
             case "submeter":
+            case "bloqueado": {
+                // o que falta é conferido na hora do toque, não na hora do desenho
+                const lista = faltas(r);
+                if (lista.length) return abrirFolha({ tipo: "faltas", titulo: r.tipo === "NC" ? "Para enviar para fechamento, falta:" : "Para enviar para aprovação, falta:", lista });
                 submeterItem(r);
                 desenhar(true);
                 avisar(`Enviada. ${nomeDe(r.aprovador)} vai ver na pendência Aprovar.`, "enviar");
                 break;
-            case "bloqueado": {
-                const t = r.tipo === "NC" ? "Para enviar para fechamento, falta:" : "Para enviar para aprovação, falta:";
-                abrirFolha({ tipo: "faltas", titulo: t, lista: faltas(r) });
+            }
+            case "finalizar":
+            case "bloqueado-fin": {
+                const lista = faltasFinalizar(r);
+                if (lista.length) return abrirFolha({ tipo: "faltas", titulo: "Para finalizar a execução, falta:", lista });
+                abrirFolha({ tipo: "finalizar", id, dias: 30 });
                 break;
             }
-            case "bloqueado-fin":
-                abrirFolha({ tipo: "faltas", titulo: "Para finalizar a execução, falta:", lista: faltasFinalizar(r) });
-                break;
             case "aprovar": {
                 const msg = aprovarItem(r);
                 desenhar();
@@ -2960,7 +3014,7 @@ void main() {
                 reprovarItem(R(f.id), m);
                 E.folha = null;
                 desenhar();
-                avisar(`Reprovada. ${R(f.id).resp.map(primeiro).join(" e ")} vão ver o seu motivo.`);
+                avisar(`Reprovada. ${R(f.id).resp.map(primeiro).join(" e ")} ${R(f.id).resp.length === 1 ? "vai" : "vão"} ver o seu motivo.`);
                 break;
             }
             case "retirar":
@@ -3000,9 +3054,6 @@ void main() {
                 avisar(`${f.id} reaberta.`);
                 break;
             }
-            case "finalizar":
-                abrirFolha({ tipo: "finalizar", id, dias: 30 });
-                break;
             case "confirmar-finalizar": {
                 const ve = finalizarAC(R(f.id), Number(f.dias) || 30);
                 E.folha = null;
@@ -3011,6 +3062,16 @@ void main() {
                 break;
             }
             case "concluir": {
+                // a Classificação não tem portão (PRD Q22): concluir fecha direto
+                if (r.tipo === "CL") {
+                    const lista = faltas(r);
+                    if (lista.length) return abrirFolha({ tipo: "faltas", titulo: "Para concluir a classificação, falta:", lista });
+                    Object.assign(r, { estado: "Fechada", fechadoEm: Date.now() });
+                    registrar(r.nc, "feito", `${quem()} concluiu a ${r.codigo} (${r.campos.gravidade})`, r.id);
+                    desenhar();
+                    avisar(`${r.codigo} concluída: a NC foi classificada como ${r.campos.gravidade}.`);
+                    break;
+                }
                 const c = r.campos;
                 const falta = [!c.resultado && "Escolher o resultado", !String(c.conclusao ?? "").trim() && "Escrever a conclusão", !c.data && "Dizer quando verificou"].filter(Boolean);
                 if (falta.length) return abrirFolha({ tipo: "faltas", titulo: "Para concluir, falta:", lista: falta });
@@ -3117,11 +3178,10 @@ void main() {
             case "escolher-aprovador": {
                 const alvoA = R(f.id);
                 alvoA.aprovador = id;
-                if (alvoA.tipo === "NC") for (const x of filhosDe(alvoA.id)) if (!x.aprovador && x.tipo !== "VE" && x.estado !== "Fechada" && x.estado !== "Cancelada") x.aprovador = id;
                 registrar(alvoA.nc || alvoA.id, "triagem", `${quem()} definiu ${nomeDe(id)} como aprovador${alvoA.tipo === "NC" ? "" : ` da ${nomeItem(alvoA)}`}`, alvoA.nc ? alvoA.id : null);
                 E.folha = null;
                 desenhar();
-                avisar(`${nomeDe(id)} aprova ${alvoA.tipo === "NC" ? "a NC e os itens dela" : "o item"}.`);
+                avisar(`${nomeDe(id)} aprova ${alvoA.tipo === "NC" ? "a NC e os itens criados daqui em diante" : "o item"}.`);
                 break;
             }
             // a investigação
@@ -3233,7 +3293,7 @@ void main() {
                 else {
                     pessoa(id).ativo = false;
                     E.recusa = null;
-                    avisar(`${nomeDe(id)} inativada. Ela perdeu o acesso agora.`);
+                    avisar(`${nomeDe(id)}: inativo. O acesso acabou agora.`);
                 }
                 desenhar();
                 break;
