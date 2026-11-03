@@ -399,9 +399,16 @@
     .tema-linha .segmentado { margin-top: 0; }
 
     /* T-08 Relatórios */
-    .regua { margin-top: 20px; display: grid; gap: 8px; }
-    .trilho { position: relative; height: 10px; border-radius: 999px; background: var(--selecao); overflow: hidden; }
-    .recorte { position: absolute; right: 0; top: 0; bottom: 0; border-radius: 999px; background: repeating-linear-gradient(135deg, var(--texto) 0 2px, transparent 2px 6px); opacity: 0.55; }
+    /* a régua: o trilho dos 24 meses, o período hachurado, a marca com a dica e as pontas (DESIGN.md, Régua do período) */
+    .regua { margin-top: 44px; display: grid; gap: 8px; }
+    .trilho { position: relative; height: 16px; border-radius: 999px; background: var(--selecao); }
+    .recorte { position: absolute; right: 0; top: 0; bottom: 0; border: 1px solid var(--texto); border-radius: 0 999px 999px 0; background: repeating-linear-gradient(135deg, var(--texto) 0 2px, transparent 2px 6px); opacity: 0.7; }
+    .marca-regua { position: absolute; top: -4px; bottom: -4px; width: 2px; margin-left: -1px; background: var(--texto); }
+    .dica-regua { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); padding: 2px 8px; border-radius: 999px; background: var(--primaria); color: var(--primaria-texto); font-size: 12px; line-height: 18px; white-space: nowrap; }
+    .pontas .dir { text-align: right; }
+    .atalhos-regua { display: flex; flex-wrap: wrap; gap: 4px; }
+    .atalhos-regua button { height: 32px; padding: 0 12px; border-radius: 999px; color: var(--apoio); font-size: 13px; }
+    .atalhos-regua button[aria-pressed="true"] { background: var(--selecao); color: var(--texto); font-weight: 500; }
     .pontas { display: flex; justify-content: space-between; gap: 8px; }
     .regua .segmentado { margin-top: 4px; }
     .mudou { margin-top: 16px; }
@@ -411,20 +418,61 @@
     .relatorio { display: grid; gap: 6px; padding: 16px; border: 1px solid var(--borda); border-radius: 8px; background: var(--card); align-content: start; }
     .numero { font-size: 32px; line-height: 40px; font-weight: 600; letter-spacing: -0.02em; }
     .barras { display: grid; gap: 8px; margin-top: 6px; }
-    .barra-linha { display: grid; grid-template-columns: 96px 1fr 24px; align-items: center; gap: 8px; font-size: 13px; }
+    .barra-linha { display: grid; gap: 4px; font-size: 13px; }
+    .abas-mini { display: flex; gap: 12px; margin-top: 8px; }
+    .abas-mini button { min-height: 28px; color: var(--apoio); font-size: 13px; }
+    .abas-mini button[aria-pressed="true"] { color: var(--texto); text-decoration: underline; text-underline-offset: 4px; }
+    .grafico { display: block; width: 100%; height: 96px; margin-top: 12px; overflow: visible; }
+    .eixo { display: flex; justify-content: space-between; }
+    .legenda { display: flex; gap: 16px; }
+    .traco { display: inline-block; width: 16px; border-top: 1.5px solid var(--texto); }
+    .traco.tracejado { border-top-style: dashed; opacity: 0.6; }
+    .atrasado { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 8px; padding-block: 8px; text-align: left; }
+    .atrasado .corpo { display: grid; }
+    .pilha { display: flex; gap: 3px; height: 12px; margin-top: 8px; }
+    .pilha i { min-width: 6px; border-radius: 3px; }
+    .pilha .eficaz { background: var(--texto); }
+    .pilha .parcial, .ponto-leg.parcial { border: 1px solid var(--texto); background: repeating-linear-gradient(135deg, var(--texto) 0 2px, transparent 2px 5px); }
+    .pilha .nao, .ponto-leg.nao { border: 1px solid var(--texto); }
+    .legenda-col { display: grid; gap: 6px; margin-top: 8px; font-size: 13px; }
+    .ponto-leg { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+    .ponto-leg.eficaz { background: var(--texto); }
+    .alvo.pequeno { width: 32px; height: 32px; border: 1px solid var(--borda); }
     .barra { height: 8px; border-radius: 4px; background: var(--selecao); overflow: hidden; }
     .barra i { display: block; height: 100%; background: var(--texto); border-radius: 4px; }
 
     /* T-09 a T-12 */
     .pessoa-adm[aria-current="true"], .cartao[aria-current="true"] { background: var(--selecao); }
-    .papeis { border: 0; padding: 0; margin: 0; display: grid; gap: 4px; }
-    .papeis legend { font-weight: 500; margin-bottom: 6px; }
-    .papel-op { display: flex; align-items: center; gap: 10px; min-height: 44px; }
+    .papeis { border: 0; padding: 0; margin: 0; display: grid; }
+    .papeis legend { font-weight: 600; margin-bottom: 8px; }
+    .papeis-lista { border: 1px solid var(--borda); border-radius: 8px; overflow: hidden; }
+    .papel-linha { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 16px; }
+    .papel-linha + .papel-linha { border-top: 1px solid var(--borda); }
+    .papel-linha .corpo { flex: 1; display: grid; }
+    .interruptor { appearance: none; position: relative; flex: none; width: 36px; height: 20px; margin: 0; border-radius: 999px; background: var(--controle); cursor: pointer; transition: background 150ms; }
+    .interruptor::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--card); transition: transform 150ms; }
+    .interruptor:checked { background: var(--texto); }
+    .interruptor:checked::after { transform: translateX(16px); }
+    .andamento { border: 1px solid var(--borda); border-radius: 8px; }
+    .andamento-linha { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; }
+    .andamento-linha + .andamento-linha { border-top: 1px solid var(--borda); }
+    .andamento-linha .trunc { flex: 1; min-width: 0; }
+    .andamento { min-width: 0; }
+    .lista-painel { display: grid; grid-template-columns: 320px minmax(0, 1fr); align-items: start; gap: 24px; }
+    .lista-adm { display: grid; gap: 12px; align-content: start; }
+    .lista-adm .cartoes { margin-top: 0; }
+    .chips-adm { display: flex; gap: 8px; }
+    .chips-adm .chip[aria-pressed="true"] { border-color: var(--primaria); background: var(--primaria); color: var(--primaria-texto); }
+    .pessoa-adm { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 14px; text-align: left; }
+    .pessoa-adm + .pessoa-adm { border-top: 1px solid var(--borda); }
+    .pessoa-adm .corpo { flex: 1; min-width: 0; display: grid; }
+    .painel-pessoa { gap: 16px; }
+    .vazio-painel { min-height: 200px; place-items: center; }
     .link-convite { padding: 12px; border-radius: 8px; background: var(--selecao); overflow-wrap: anywhere; font-size: 13px; user-select: all; }
     .lista-recusa { display: grid; gap: 4px; margin-block: 8px; }
     .aviso-txt { display: grid; gap: 2px; }
     .pessoa-linha[data-acao] { width: 100%; text-align: left; }
-    .painel-adm { display: grid; gap: 12px; align-content: start; margin-top: 12px; }
+    .painel-adm { display: grid; gap: 12px; align-content: start; }
 
     /* ─── O computador (acima de 1024 px), como na página Mockups do Figma ─── */
     /* a tela de 1440 do Figma, com 40 px de margem; mais larga que isso, fica no centro */
@@ -456,7 +504,8 @@
     .painel-rolar { overflow-y: auto; min-height: 0; }
     .grupo-pc { border-top: 1px solid var(--borda); }
     .item-linha { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 140px 170px 150px; gap: 12px; align-items: center; min-height: 48px; padding-block: 6px; border-top: 1px solid var(--borda); text-align: left; }
-    .grade-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .grade-2 { display: grid; gap: 16px; }
+    body.desk .grade-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .anexo.area { flex-direction: column; min-height: 104px; gap: 4px; padding: 16px; text-align: center; }
 
     /* T-03 */
@@ -477,7 +526,7 @@
     .sua-nc-todas { display: block; padding: 14px 16px; }
 
     /* T-04 */
-    .cab-pagina { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+    .cab-pagina { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 16px; }
     .cab-pagina > div:first-child { display: grid; gap: 4px; }
     .abas-pc { display: flex; gap: 24px; border-bottom: 1px solid var(--borda); }
     .abas-pc button { position: relative; display: inline-flex; align-items: center; gap: 6px; height: 40px; color: var(--apoio); }
@@ -504,7 +553,6 @@
     body.desk .relatorios { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; }
     body.desk .relatorio { border: 0; border-radius: 0; background: none; padding: 8px 24px; box-shadow: -1px 0 0 var(--borda); }
     body.desk .relatorio:first-child { padding-left: 0; box-shadow: none; }
-    body.desk .regua .segmentado { max-width: 480px; }
     body.desk .barra-sup { position: static; min-height: 0; padding-top: 32px; border-bottom: 0; background: none; }
     body.desk .barra-sup .t { font-size: 24px; line-height: 32px; }
     body.desk .veu { align-items: center; }
@@ -516,6 +564,15 @@
     .compositor.embutido { position: relative; left: auto; bottom: auto; transform: none; width: auto; border: 0; padding: 0; background: none; }
     .compositor.embutido .sugestoes { left: 0; right: 0; }
     body.desk .avisos { bottom: 96px; }
+    body.com-painel { padding-right: 400px; }
+    body.com-painel .doca { left: calc(50% - 200px); }
+    .painel-lateral { position: fixed; z-index: 25; top: 0; right: 0; bottom: 0; width: 400px; display: grid; grid-template-rows: auto auto auto minmax(0, 1fr) auto; gap: 12px; padding: 24px; border-left: 1px solid var(--borda); background: var(--card); }
+    .painel-lateral .segmentado { margin-top: 0; }
+    .painel-lateral .compositor.embutido { padding-top: 12px; border-top: 1px solid var(--borda); }
+    .faixa-lado { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    .faixa-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid var(--borda); border-radius: 8px; background: var(--card); text-align: left; }
+    .faixa-item .corpo { flex: 1; min-width: 0; display: grid; gap: 4px; }
+    .faixa-item .et { flex-wrap: wrap; }
 </style>
 
 <div class="palco" aria-hidden="true"><div class="prism" id="prism"><canvas class="prism-canvas"></canvas></div></div>
@@ -565,6 +622,11 @@
         arquivo: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/>',
         upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/>',
         conversa: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+        arroba: '<circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/>',
+        olho: '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>',
+        clipe: '<path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>',
+        diagonal: '<path d="M7 7h10v10"/><path d="M7 17 17 7"/>',
+        escudo: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
         voltar2: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5 5.5 5.5 0 0 1-5.5 5.5H11"/>',
         rascunho: '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>',
     };
@@ -872,9 +934,9 @@
         const f = filhosDe(nc.id).filter(vivo);
         const de = (t) => f.filter((r) => r.tipo === t);
         if (nc.estado === "Rascunho") return "Rascunho";
-        if (nc.estado === "Cancelada") return "Cancelada";
         if (nc.estado === "Em aprovação") return "Aguardando aprovação do fechamento";
-        if (nc.estado === "Aberta") {
+        // a NC cancelada mostra a etapa onde parou (Matthew, 2026-11-03), não "Cancelada": o badge de estado já diz
+        if (nc.estado === "Aberta" || nc.estado === "Cancelada") {
             if (!de("CL").some((r) => r.estado === "Fechada")) return "Aguardando classificação";
             const ivs = de("IV").filter((r) => r.estado !== "Rascunho");
             if (!ivs.some((r) => r.estado === "Fechada") || ivs.some((r) => r.estado !== "Fechada")) return "Em investigação";
@@ -997,10 +1059,10 @@
         { id: "aprovar", nome: "Aprovar", icone: "aprovar", papeis: ["APROVADOR", "GERENTE"] },
         { id: "corrigir", nome: "Corrigir", icone: "reprovar", papeis: ["EDITOR", "APROVADOR", "GERENTE"] },
         { id: "executar", nome: "Executar ação", icone: "acao", papeis: ["EDITOR", "GERENTE"] },
-        { id: "verificar", nome: "Verificar", icone: "ok", papeis: ["APROVADOR", "GERENTE"] },
+        { id: "verificar", nome: "Verificar", icone: "olho", papeis: ["APROVADOR", "GERENTE"] },
         { id: "fechamento", nome: "Enviar para fechamento", icone: "pronta", papeis: ["EDITOR", "GERENTE"] },
         { id: "triagem", nome: "Triagem", icone: "triagem", papeis: ["APROVADOR", "GERENTE"] },
-        { id: "mencoes", nome: "Mencionado", icone: "responder", papeis: ["EDITOR", "APROVADOR", "GERENTE"] },
+        { id: "mencoes", nome: "Mencionado", icone: "arroba", papeis: ["EDITOR", "APROVADOR", "GERENTE"] },
         { id: "rascunhos", nome: "Rascunhos", icone: "rascunho", papeis: ["EDITOR", "APROVADOR", "GERENTE"] },
     ];
 
@@ -1142,7 +1204,7 @@
     function ir(tela, extra = {}) {
         E.historico.push({ tela: E.tela, ncId: E.ncId, itemId: E.itemId, aba: E.aba });
         empilhar();
-        Object.assign(E, { tela, folha: null }, extra);
+        Object.assign(E, { tela, folha: null, painelAtividade: null, faixaAberta: null }, extra);
         desenhar(true);
     }
     let voltandoPeloApp = false;
@@ -1177,7 +1239,7 @@
     window.addEventListener("popstate", voltarNaTela);
     function trocarAba(tela) {
         E.historico = [];
-        Object.assign(E, { tela, ncId: null, itemId: null, aba: "resumo", folha: null });
+        Object.assign(E, { tela, ncId: null, itemId: null, aba: "resumo", folha: null, painelAtividade: null, faixaAberta: null });
         desenhar(true);
     }
     // A tela inicial pelo papel (fluxo-app §3)
@@ -1212,6 +1274,8 @@
         Fechada: { c: "var(--fechada)", icone: "feito" },
         Rascunho: { c: "var(--rascunho)", icone: "pendente" },
         Cancelada: { c: "var(--rascunho)", icone: "reprovar" },
+        Ativo: { c: "var(--fechada)" },
+        Inativo: { c: "var(--rascunho)" },
     };
     const pilula = (estado) => {
         const e = ESTADOS[estado];
@@ -1233,7 +1297,10 @@
         if (tem("ADMIN")) itens.push(["usuarios", "Usuários", "usuarios"], ["setores", "Setores", "setor"]);
         if (!desk) itens.push(["eu", "Eu", "eu"]);
         const aba = ([id, nome, icone, qtd]) =>
-            `<button class="aba-app" data-acao="aba-app" data-tela="${id}" ${ativa === id ? 'aria-current="page"' : ""}>${ic(icone, "g")}${qtd ? `<span class="bolha num" aria-label="${qtd} pendências">${qtd}</span>` : ""}<span>${nome}</span></button>`;
+            {
+            const bolha = qtd ? `<span class="bolha num" aria-label="${qtd} pendências">${qtd}</span>` : "";
+            return `<button class="aba-app" data-acao="aba-app" data-tela="${id}" ${ativa === id ? 'aria-current="page"' : ""}>${ic(icone, "g")}${desk ? "" : bolha}<span>${nome}</span>${desk ? bolha : ""}</button>`;
+        };
         const busca = negocio() || tem("VISUALIZADOR");
         return `<nav class="barra-inf ${desk ? "doca" : ""}" aria-label="Navegação">
             <div class="abas-app">${desk && busca ? `<button class="aba-app busca-doca" data-acao="lupa">${ic("busca", "g")}<span>Buscar</span></button>` : ""}${itens.map(aba).join("")}
@@ -1911,23 +1978,6 @@
         return `<button class="atalho-atividade cinza" data-acao="${r.tipo === "NC" ? "painel-atividade" : "atividade"}" data-id="${r.id}">${ic("conversa", "g")}<span class="corpo"><span>${r.tipo === "NC" ? "Atividade" : "Atividade deste item"}</span><span class="t-rotulo">${r.tipo === "NC" ? `${comentarios} ${comentarios === 1 ? "comentário" : "comentários"} · ${n} eventos` : `${n} ${n === 1 ? "evento" : "eventos"} · no feed da ${nc.codigo}`}</span></span>${ic("direita")}</button>`;
     };
 
-    // T-06 no computador
-    function telaNcPC(nc) {
-        const c = nc.campos;
-        const cl = filhosDe(nc.id, "CL").filter((r) => r.estado === "Fechada").sort((a, b) => b.fechadoEm - a.fechadoEm)[0];
-        const par = (k, v, html = false) => `<div class="par"><span class="k">${k}</span><span>${html ? v : esc(v || "—")}</span></div>`;
-        const dados = `<section class="cartao-s"><div class="cab-cartao"><h2 class="t-secao">Dados</h2>${pode("editar", nc) ? `<button class="link-sec" data-acao="fora">${ic("editar", "p")} Editar</button>` : ""}</div>
-            <div class="pares">${par("Descrição", c.descricao)}${par("Requisito violado", c.requisito)}${par("Processo afetado", c.processo)}${par("Setor", c.setor)}${par("Origem", c.origem)}
-            ${par("Classificação", cl ? `<span class="tag">${esc(cl.campos.gravidade)}</span> <span class="t-apoio num">${cl.codigo}</span>` : "—", !!cl)}${par("Detectada em", br(c.detectada))}${par("Cliente", c.cliente)}</div></section>`;
-        const lado = E.painelAtividade
-            ? `<aside class="painel-atividade cartao-s"><div class="cab-cartao"><h2 class="t-secao">Atividade</h2><button class="alvo" data-acao="painel-atividade" aria-label="Fechar a atividade">${ic("x", "g")}</button></div>${pode("comentar", nc) ? compositor(true) : ""}<div class="painel-rolar">${listaFeed(feedDe(nc.id))}</div></aside>`
-            : `<aside class="coluna-lado">${atalhoAtividade(nc, nc)}${nc.estado === "Aberta" ? cartaoChecklist(nc) : ""}${cartaoAtribuicoes(nc)}${cartaoAnexos(nc)}</aside>`;
-        return `<main class="pc">${blocoTitulo(nc, nc)}
-            <div class="duas-colunas">
-                <div class="conteudo">${dados}<section class="cartao-s">${cabItensPC(nc)}${tabelaItensPC(nc)}</section>${cartaoEnvio(nc)}</div>
-                ${lado}
-            </div><div class="folga-barra"></div></main>${navegacao("ncs")}`;
-    }
     function cabItensPC(nc) {
         const todos = filhosDe(nc.id).filter((r) => r.estado !== "Rascunho" || colab(r));
         const fechados = todos.filter((it) => it.estado === "Fechada").length;
@@ -1945,19 +1995,11 @@
             const podeNova = t === "AC" ? filhosDe(nc.id, "IV").some((iv) => pode("criarAC", iv)) : t !== "VE" && pode("criar", nc, t);
             const linha = (it) => {
                 const prazo = it.estado !== "Fechada" && it.estado !== "Cancelada" && it.campos.prazo;
-                return `<button class="item-linha" data-acao="abrir" data-id="${it.id}"><span class="trunc"><span class="t-apoio num">${esc(nomeItem(it))}</span> · ${esc(textoDe(it))}</span><span>${pilula(it.estado)}</span><span class="et">${av(it.resp[0])}${esc(nomeDe(it.resp[0]))}</span><span>${prazo ? prazoTag(it.campos.prazo) : '<span class="t-apoio">—</span>'}</span></button>`;
+                return `<button class="item-linha" data-acao="abrir" data-id="${it.id}"><span class="trunc"><span class="t-apoio num">${esc(nomeItem(it))}</span> · ${esc(textoDe(it))}</span><span>${pilula(it.estado)}</span><span class="et">${av(it.resp[0])}${esc(nomeDe(it.resp[0]))}</span><span>${!prazo ? '<span class="t-apoio">—</span>' : nivelPrazo(it.campos.prazo) ? prazoTag(it.campos.prazo) : `<span class="num">${br(it.campos.prazo)}</span>`}</span></button>`;
             };
             return `<div class="grupo-pc"><div class="itens-cab"><button class="grupo-bt" data-acao="grupo" data-id="${chave}" aria-expanded="${aberto}">${ic(aberto ? "baixo" : "direita")}<span class="tipo">${TIPOS[t].nome}</span><span class="num">${lista.length}</span>${nota ? `<span class="nota">· ${esc(nota)}</span>` : ""}</button>${podeNova ? `<button class="link-sec" data-acao="novo-filho" data-id="${t}">+ Nova</button>` : ""}</div>
                 ${aberto ? lista.map(linha).join("") : ""}</div>`;
         }).join("");
-    }
-
-    // T-07 no computador
-    function telaItemPC(r, nc, form) {
-        return `<main class="pc">${blocoTitulo(r, nc)}
-            <div class="duas-colunas"><div class="conteudo">${form}</div>
-            <aside class="coluna-lado">${atalhoAtividade(r, nc)}${cartaoAtribuicoes(r)}${cartaoAnexos(r)}</aside></div>
-            <div class="folga-barra"></div></main>${navegacao("ncs")}`;
     }
 
     // T-03 no computador
@@ -2024,6 +2066,202 @@
                 <aside class="coluna-lado"><section class="cartao-s"><h2 class="t-secao">Responsáveis</h2><p class="t-apoio">Quem vai trabalhar na NC. Você entra como responsável.</p>${resp}<button type="button" class="link-sec" style="justify-self:start" data-acao="pessoas-form">+ Adicionar responsável</button></section>
                 <section class="cartao-s"><h2 class="t-secao">Anexos</h2>${anexos}</section></aside></div>
             <div class="folga-barra"></div></main>${navegacao("ncs")}`;
+    }
+
+    // A Atividade no computador: um painel na altura toda, à direita, que empurra a página (Figma, T-06 · atividade aberta).
+    // Enquanto ele está aberto, a coluna da direita vira uma faixa de cartões em cima do conteúdo.
+    function painelAtividade(nc) {
+        const p = E.painelAtividade;
+        const filtro = E.filtroAtividade || "Tudo";
+        let evs = feedDe(nc.id, p.item || null);
+        if (filtro === "Comentários") evs = evs.filter((e) => e.tipo === "comentario");
+        if (filtro === "Histórico") evs = evs.filter((e) => e.tipo !== "comentario");
+        return `<aside class="painel-lateral" aria-label="Atividade">
+            <div class="cab-cartao"><h2 class="t-secao">Atividade</h2><button class="alvo" data-acao="fechar-painel" aria-label="Fechar a atividade">${ic("x", "g")}</button></div>
+            <div class="segmentado" role="group" aria-label="O que mostrar">${["Tudo", "Comentários", "Histórico"].map((f) => `<button data-acao="filtro-atividade" data-id="${f}" aria-pressed="${filtro === f}">${f}</button>`).join("")}</div>
+            ${p.item ? `<button class="chip filtro-ativo" data-acao="painel-tudo">Só este item: ${esc(nomeItem(R(p.item)))} ${ic("x", "p")}</button>` : ""}
+            <div class="painel-rolar">${listaFeed(evs)}</div>
+            ${pode("comentar", nc) ? compositor(true) : ""}
+        </aside>`;
+    }
+    function faixaLado(r) {
+        const cartoes = [];
+        if (r.tipo === "NC" && r.estado === "Aberta") {
+            const ch = checklist(r);
+            const ok = ch.filter((x) => x.ok).length;
+            cartoes.push(["checklist", "Checklist de fechamento", `<strong class="num">${ok} de ${ch.length}</strong>${segmentos(ok, ch.length)}<span class="t-apoio">${ch.length - ok} pendentes</span>`, cartaoChecklist(r)]);
+        }
+        cartoes.push(["atribuicoes", "Atribuições", `${r.aprovador ? `${av(r.aprovador)}<span class="tag forte">Aprovador</span>` : '<span class="tag">Sem aprovador</span>'}${avatares(r.resp)}<span class="tag">${r.resp.length} ${r.resp.length === 1 ? "responsável" : "responsáveis"}</span>`, cartaoAtribuicoes(r)]);
+        cartoes.push(["anexos", "Anexos", `${ic("clipe", "p")}<span>${r.anexos.length} ${r.anexos.length === 1 ? "arquivo" : "arquivos"}</span>`, cartaoAnexos(r)]);
+        const aberto = cartoes.find(([id]) => id === E.faixaAberta);
+        return `<div class="faixa-lado">${cartoes.map(([id, nome, resumo]) => `<button class="faixa-item" data-acao="faixa" data-id="${id}" aria-expanded="${E.faixaAberta === id}"><span class="corpo"><span class="t-rotulo">${nome}</span><span class="et">${resumo}</span></span>${ic(E.faixaAberta === id ? "cima" : "baixo")}</button>`).join("")}</div>${aberto ? aberto[3] : ""}`;
+    }
+    function telaNcPC(nc) {
+        const c = nc.campos;
+        const cl = filhosDe(nc.id, "CL").filter((r) => r.estado === "Fechada").sort((a, b) => b.fechadoEm - a.fechadoEm)[0];
+        const par = (k, v, html = false) => `<div class="par"><span class="k">${k}</span><span>${html ? v : esc(v || "—")}</span></div>`;
+        const dados = `<section class="cartao-s"><div class="cab-cartao"><h2 class="t-secao">Dados</h2>${pode("editar", nc) ? `<button class="link-sec" data-acao="fora">${ic("editar", "p")} Editar</button>` : ""}</div>
+            <div class="pares">${par("Descrição", c.descricao)}${par("Requisito violado", c.requisito)}${par("Processo afetado", c.processo)}${par("Setor", c.setor)}${par("Origem", c.origem)}
+            ${par("Classificação", cl ? `<span class="tag">${esc(cl.campos.gravidade)}</span> <span class="t-apoio num">${cl.codigo}</span>` : "—", !!cl)}${par("Detectada em", br(c.detectada))}${par("Cliente", c.cliente)}</div></section>`;
+        const principal = `${dados}<section class="cartao-s">${cabItensPC(nc)}${tabelaItensPC(nc)}</section>${cartaoEnvio(nc)}`;
+        if (E.painelAtividade)
+            return `<main class="pc">${blocoTitulo(nc, nc)}${faixaLado(nc)}<div class="conteudo">${principal}</div><div class="folga-barra"></div></main>${painelAtividade(nc)}${navegacao("ncs")}`;
+        return `<main class="pc">${blocoTitulo(nc, nc)}
+            <div class="duas-colunas"><div class="conteudo">${principal}</div>
+                <aside class="coluna-lado">${atalhoAtividade(nc, nc)}${nc.estado === "Aberta" ? cartaoChecklist(nc) : ""}${cartaoAtribuicoes(nc)}${cartaoAnexos(nc)}</aside></div>
+            <div class="folga-barra"></div></main>${navegacao("ncs")}`;
+    }
+    function telaItemPC(r, nc, form) {
+        if (E.painelAtividade)
+            return `<main class="pc">${blocoTitulo(r, nc)}${faixaLado(r)}<div class="conteudo">${form}</div><div class="folga-barra"></div></main>${painelAtividade(nc)}${navegacao("ncs")}`;
+        return `<main class="pc">${blocoTitulo(r, nc)}
+            <div class="duas-colunas"><div class="conteudo">${form}</div>
+            <aside class="coluna-lado">${atalhoAtividade(r, nc)}${cartaoAtribuicoes(r)}${cartaoAnexos(r)}</aside></div>
+            <div class="folga-barra"></div></main>${navegacao("ncs")}`;
+    }
+
+    // ─── T-08 Relatórios (ui-ux §7.12 e a Mockups): a régua manda no período; sem luz (a luz é só da T-03) ──
+    const PERIODOS = { Mês: ["Mês", 1, "Este mês"], "3M": ["3 meses", 3, "Últimos 3 meses"], "6M": ["6 meses", 6, "Últimos 6 meses"], "12M": ["12 meses", 12, "Últimos 12 meses"], Ano: ["Ano", 0, "Este ano"], Tudo: ["Tudo", 24, "Todo o histórico"] };
+    // a série mensal do tempo até fechar, de mentira, para o desenho do gráfico (o protótipo não tem meses de dados)
+    const SERIE_MAIOR = [31, 29, 33, 28, 27, 30, 26, 28, 25, 23, 24, 26];
+    const SERIE_MENOR = [21, 19, 22, 18, 17, 20, 18, 19, 17, 16, 17, 18];
+    function grafico(series, rotulos) {
+        const W = 300;
+        const H = 96;
+        const todos = series.flatMap((s) => s.v);
+        const min = Math.min(...todos) - 2;
+        const max = Math.max(...todos) + 2;
+        const x = (i, n) => (i / (n - 1)) * W;
+        const y = (v) => H - ((v - min) / (max - min)) * H;
+        const linhas = series.map((s) => `<polyline points="${s.v.map((v, i) => `${x(i, s.v.length).toFixed(1)},${y(v).toFixed(1)}`).join(" ")}" fill="none" stroke="var(--texto)" stroke-width="1.5" ${s.tracejada ? 'stroke-dasharray="4 3" opacity="0.6"' : ""} vector-effect="non-scaling-stroke"/>`).join("");
+        return `<svg class="grafico" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="O tempo até fechar, mês a mês">${linhas}</svg><div class="eixo t-rotulo">${rotulos.map((r) => `<span>${r}</span>`).join("")}</div>`;
+    }
+    function telaRelatorios() {
+        const ncs = listaNcs();
+        const abertas = ncs.filter((nc) => nc.estado === "Aberta" || nc.estado === "Em aprovação");
+        const atrasados = Object.values(E.reg).filter((r) => (r.tipo === "AC" || r.tipo === "VE") && r.estado === "Aberta" && r.campos.prazo && diasAte(r.campos.prazo) < 0).sort((a, b) => diasAte(a.campos.prazo) - diasAte(b.campos.prazo));
+        const fechadas = ncs.filter((nc) => nc.estado === "Fechada" && nc.fechadoEm);
+        const media = (lista) => (lista.length ? Math.round(lista.reduce((s, nc) => s + (nc.fechadoEm - nc.criadoEm) / DIA, 0) / lista.length) : 0);
+        const gravidade = (nc) => filhosDe(nc.id, "CL").find((c) => c.estado === "Fechada")?.campos.gravidade;
+        const ves = Object.values(E.reg).filter((r) => r.tipo === "VE" && r.estado === "Fechada");
+        const conta = (k) => ves.filter((v) => v.campos.resultado === k).length;
+        const pct = (n, t) => (t ? Math.round((n / t) * 100) : 0);
+        const eficacia = pct(conta("EFICAZ"), ves.length);
+        const dim = E.relDim || "setor";
+        const contagem = {};
+        for (const nc of abertas) {
+            const k = dim === "setor" ? nc.campos.setor : nc.campos.origem;
+            contagem[k] = (contagem[k] || 0) + 1;
+        }
+        const barras = Object.entries(contagem).sort((a, b) => b[1] - a[1]);
+        const maior = Math.max(...barras.map(([, n]) => n), 1);
+        const [, mesesP, rotuloP] = PERIODOS[E.periodo];
+        const meses = E.periodo === "Ano" ? new Date().getMonth() + 1 : mesesP;
+        const mesAno = (d) => `${MESES[d.getMonth()]}/${String(d.getFullYear()).slice(2)}`;
+        const mesesAtras = (n) => new Date(new Date().getFullYear(), new Date().getMonth() - n, 1);
+        const recorte = Math.min(100, (meses / 24) * 100);
+        const ultimos = Array.from({ length: 12 }, (_, i) => MESES[mesesAtras(11 - i).getMonth()]);
+        const col = (titulo, acao, numero, sub, corpo) => `<section class="relatorio"><div class="cab-cartao"><h2 class="t-secao">${titulo}</h2>${acao ? `<button class="alvo pequeno" data-acao="${acao}" aria-label="Ver as NCs deste relatório" title="Ver as NCs deste relatório">${ic("diagonal", "p")}</button>` : ""}</div><p class="numero num">${numero}</p><p class="t-apoio">${sub}</p>${corpo}</section>`;
+        return `<main class="${desk ? "pc" : "pad"} relatorios-tela">
+            <header class="saudacao"><p class="t-rotulo">${hojePorExtenso()}</p><h1 class="t-pagina">${saudacaoHora()}, ${esc(primeiro(E.usuario))}</h1>
+                <p class="t-apoio">${atrasados.length ? `${atrasados.length} ${atrasados.length === 1 ? "item atrasado" : "itens atrasados"}, o mais antigo há ${-diasAte(atrasados[0].campos.prazo)} dias · ` : ""}${abertas.length} NCs abertas</p></header>
+            <section class="regua" aria-label="Período">
+                <div class="trilho"><span class="recorte" style="width:${recorte}%"></span><span class="marca-regua" style="left:${100 - recorte}%"><span class="dica-regua">${mesAno(mesesAtras(meses - 1))}</span></span></div>
+                <div class="pontas t-rotulo"><span>${mesAno(mesesAtras(23))}<br>o começo do histórico</span><span class="dir">${mesAno(new Date())}<br>hoje</span></div>
+                <div class="atalhos-regua" role="group" aria-label="Período">${Object.entries(PERIODOS).map(([k, [nome]]) => `<button data-acao="periodo" data-id="${k}" aria-pressed="${E.periodo === k}">${desk ? nome : k}</button>`).join("")}</div>
+                <p class="t-rotulo">${rotuloP} · ${abertas.length} NCs abertas no período</p>
+            </section>
+            <section class="cartao-s mudou"><div class="cab-cartao"><h2 class="t-secao et">${ic("atividade")} O que mudou: ${rotuloP.toLowerCase()}</h2><span class="t-rotulo">Atualizado hoje</span></div>
+                <p><span class="ic-lado">${ic("alerta")}</span><span>${atrasados.length ? `${atrasados.length} ${atrasados.length === 1 ? "item está atrasado" : "itens estão atrasados"}: o pior é a ${atrasados[0].codigo}, com ${esc(nomeDe(atrasados[0].resp[0]))}.` : "Nenhum item atrasado."}</span></p>
+                <p><span class="ic-lado">${ic("ok")}</span><span>A eficácia das verificações está em ${eficacia}% (${conta("EFICAZ")} de ${ves.length}).</span></p>
+                <p><span class="ic-lado">${ic("ncs")}</span><span>${barras[0] ? `${esc(barras[0][0])} tem mais NCs abertas: ${barras[0][1]} de ${abertas.length}.` : "Nenhuma NC aberta."}</span></p></section>
+            <div class="relatorios">
+                ${col("NCs abertas", "rel-abertas", abertas.length, `de ${ncs.length} no período`, `<div class="abas-mini">${[["setor", "Por setor"], ["origem", "Por origem"]].map(([k, n]) => `<button data-acao="rel-dim" data-id="${k}" aria-pressed="${dim === k}">${n}</button>`).join("")}</div>
+                    <div class="barras">${barras.map(([s, n]) => `<div class="barra-linha"><div class="cab-cartao"><span>${esc(s)}</span><span class="t-apoio num">${n} · ${pct(n, abertas.length)}%</span></div><span class="barra"><i style="width:${(n / maior) * 100}%"></i></span></div>`).join("")}</div>`)}
+                ${col("Tempo médio até fechar", "", `${media(fechadas)} dias`, `${fechadas.length} NCs fechadas no período`, `<div class="dados">${linhaDado("Classificação Maior", `${media(fechadas.filter((nc) => gravidade(nc) === "Maior"))} dias`)}${linhaDado("Classificação Menor", `${media(fechadas.filter((nc) => gravidade(nc) === "Menor"))} dias`)}</div>
+                    ${grafico([{ v: SERIE_MAIOR }, { v: SERIE_MENOR, tracejada: true }], ultimos.filter((_, i) => i % 2 === 0))}<div class="legenda t-rotulo"><span class="et"><i class="traco"></i>Maior</span><span class="et"><i class="traco tracejado"></i>Menor</span></div>`)}
+                ${col("Ações e verificações atrasadas", "rel-vencidas", atrasados.length, "com o prazo vencido", `<div class="linhas">${atrasados.map((r) => `<button class="atrasado" data-acao="abrir" data-id="${r.id}"><span class="corpo"><span class="num">${r.codigo}</span><span class="t-rotulo">${esc(nomeDe(r.resp[0]))}</span></span><span class="alerta t-apoio">${ic("alerta", "p")}${-diasAte(r.campos.prazo)} ${diasAte(r.campos.prazo) === -1 ? "dia" : "dias"}</span></button>`).join("") || '<p class="t-apoio">Nenhum.</p>'}</div>`)}
+                ${col("Eficácia das verificações", "", `${eficacia}%`, `${conta("EFICAZ")} de ${ves.length} verificações`, `<div class="pilha" aria-hidden="true">${Object.keys(RESULTADOS).filter((k) => conta(k)).map((k) => `<i class="${k.toLowerCase()}" style="flex:${conta(k)}"></i>`).join("")}</div>
+                    <div class="legenda-col">${Object.entries(RESULTADOS).map(([k, nome]) => `<div class="cab-cartao"><span class="et"><i class="ponto-leg ${k.toLowerCase()}"></i>${nome}</span><span class="t-apoio num">${conta(k)} · ${pct(conta(k), ves.length)}%</span></div>`).join("")}</div>
+                    <h3 class="t-secao" style="margin-top:8px">Reincidência</h3><button class="link-sec" style="justify-self:start" data-acao="rel-abertas">NCs reabertas: ${ncs.filter((nc) => nc.reaberta).length} ${ic("direita", "p")}</button>`)}
+            </div>
+            <div class="folga-barra"></div>
+        </main>${navegacao("relatorios")}`;
+    }
+
+    // ─── T-09 a T-12 Administração: a lista estreita à esquerda e o painel largo à direita (Figma, T-09) ──
+    const DESCRICAO_PAPEL = { VISUALIZADOR: "Vê as NCs, sem editar", EDITOR: "Registra e trabalha nas NCs", APROVADOR: "Classifica, aprova e verifica", GERENTE: "Cancela, reatribui e vê os relatórios", ADMIN: "Cuida das contas, dos papéis e dos setores" };
+    function listaUsuarios() {
+        const termo = (E.termoAdmin || "").trim().toLowerCase();
+        const filtro = E.filtroAdmin || "Todos";
+        const lista = E.pessoas.filter((p) => (filtro === "Ativos" ? p.ativo : filtro === "Inativos" ? !p.ativo : true)).filter((p) => !termo || p.nome.toLowerCase().includes(termo) || p.email.includes(termo));
+        return `<div class="lista-adm">
+            <div class="cab-pagina"><div><h1 class="t-pagina">Usuários</h1><p class="t-apoio num">${E.pessoas.filter((p) => p.ativo).length} ativos · ${E.pessoas.filter((p) => !p.ativo).length} inativos</p></div><button class="btn btn-pri" data-acao="novo-usuario">${ic("criar")}Novo usuário</button></div>
+            <label class="busca">${ic("busca")}<span class="sr">Nome ou e-mail</span><input id="busca-adm" type="search" placeholder="Nome ou e-mail" value="${esc(E.termoAdmin || "")}" autocomplete="off"></label>
+            <div class="chips-adm">${["Todos", "Ativos", "Inativos"].map((f) => `<button class="chip" data-acao="filtro-adm" data-id="${f}" aria-pressed="${filtro === f}">${f}</button>`).join("")}</div>
+            <div class="cartoes">${lista
+                .map(
+                    (p) => `<button class="pessoa-adm" data-acao="sel-usuario" data-id="${p.sigla}" aria-current="${E.adminSel === p.sigla}">${av(p.sigla, "m")}<span class="corpo"><span class="${p.ativo ? "" : "t-apoio"}">${esc(p.nome)}</span><span class="t-rotulo">${esc(p.setor)} · ${p.papeis.map((x) => NOME_PAPEL[x]).join(", ") || "Sem papel"}</span></span>${p.ativo ? (p.convite ? '<span class="tag">Convite</span>' : "") : `${pilula("Inativo")}`}</button>`,
+                )
+                .join("")}</div>
+            <p class="t-rotulo">Mostrando ${lista.length} de ${E.pessoas.length}</p></div>`;
+    }
+    function telaUsuarios() {
+        if (!desk) return `<main class="pad">${listaUsuarios()}<div class="folga-barra"></div></main>${navegacao("usuarios")}`;
+        return `<main class="pc"><div class="lista-painel">${listaUsuarios()}<div class="painel-adm">${E.adminSel ? painelUsuario() : '<section class="cartao-s vazio-painel"><p class="t-apoio">Escolha uma pessoa na lista, ou crie um usuário novo.</p></section>'}</div></div><div class="folga-barra"></div></main>${navegacao("usuarios")}`;
+    }
+    function telaUsuario() {
+        return `<header class="barra-sup pad sem-fio"><button class="alvo" data-acao="voltar" aria-label="Voltar">${ic("voltar", "g")}</button><span class="t">${E.adminSel === "novo" ? "Novo usuário" : "Usuário"}</span><span class="alvo"></span></header>
+            <main class="pad">${painelUsuario()}<div class="folga-barra"></div></main>`;
+    }
+    function painelUsuario() {
+        const sel = E.adminSel;
+        const setores = (v) => `<select id="u-setor">${SETORES_ATIVOS().map((s) => `<option ${s === v ? "selected" : ""}>${s}</option>`).join("")}</select>`;
+        if (sel === "novo")
+            return `<form class="cartao-s" id="form-usuario" novalidate><h2 class="t-secao">Novo usuário</h2>
+                ${E.erroAdmin ? `<div class="aviso" role="alert">${ic("alerta")}<span>${esc(E.erroAdmin)}</span></div>` : ""}
+                <div class="grade-2"><div class="campo"><label for="u-nome">Nome</label><input id="u-nome" placeholder="Nome e sobrenome"></div>
+                <div class="campo"><label for="u-email">E-mail</label><input id="u-email" type="email" placeholder="nome@empresa.com.br"></div></div>
+                <div class="campo"><label for="u-setor">Setor</label>${setores("Produção")}</div>
+                <fieldset class="papeis"><legend class="et">${ic("escudo", "p")}Papéis</legend>${Object.entries(NOME_PAPEL).map(([k, nome]) => `<label class="papel-linha"><span class="corpo"><span>${nome}</span><span class="t-rotulo">${DESCRICAO_PAPEL[k]}</span></span><input class="interruptor" type="checkbox" name="papel" value="${k}" ${k === "EDITOR" ? "checked" : ""}></label>`).join("")}</fieldset>
+                <button class="btn btn-pri" style="justify-self:start" data-acao="criar-usuario">Criar e gerar o convite</button></form>`;
+        if (sel?.startsWith("convite:")) {
+            const p = pessoa(sel.slice(8));
+            const link = `https://andon.empresa.com.br/definir-senha?token=${p.convite}`;
+            return `<section class="cartao-s"><h2 class="t-secao et">${ic("ok")} ${esc(p.nome)} foi criado</h2>
+                <p class="t-apoio">Envie este link para ${esc(primeiro(p.sigla))} por fora (o sistema não manda e-mail). Ele vale por 72 horas, e aparece só agora.</p>
+                <div class="link-convite num" id="link-convite">${esc(link)}</div>
+                <button class="btn btn-pri" style="justify-self:start" data-acao="copiar-convite" data-id="${esc(link)}">Copiar o link</button></section>`;
+        }
+        const p = pessoa(sel);
+        if (!p) return "";
+        const abertos = aprovaAbertos(p.sigla);
+        const recusa = E.recusa?.sigla === p.sigla ? `<div class="aviso" role="alert">${ic("alerta")}<span class="aviso-txt"><strong>${esc(E.recusa.titulo)}</strong>${esc(E.recusa.texto)}${E.recusa.itens?.length ? `<span class="t-rotulo">0 de ${E.recusa.itens.length} trocados · um gerente troca o aprovador deles; depois, tente de novo.</span>` : ""}</span></div>` : "";
+        return `<section class="cartao-s painel-pessoa">
+            <div class="cab-pagina"><div class="perfil">${av(p.sigla, "xg")}<div><h2 class="t-pagina et">${esc(p.nome)} ${pilula(p.ativo ? "Ativo" : "Inativo")}</h2><p class="t-apoio">${esc(p.email)} · é o login, não muda</p></div></div>
+                <div class="bloco-acoes"><button class="btn btn-sec" data-acao="reativar" data-id="${p.sigla}">Gerar novo convite</button><button class="btn btn-sec" data-acao="mais-pessoa" data-id="${p.sigla}">Mais ${ic("baixo")}</button></div></div>
+            ${recusa}
+            <h3 class="t-secao">Dados</h3>
+            <div class="grade-2"><div class="campo"><label for="u-nome">Nome</label><input id="u-nome" value="${esc(p.nome)}"></div><div class="campo"><label for="u-setor">Setor</label>${setores(p.setor)}</div></div>
+            <button class="btn btn-sec" style="justify-self:start" data-acao="salvar-usuario" data-id="${p.sigla}">Salvar</button>
+            <h3 class="t-secao et">${ic("escudo", "p")}Papéis</h3><p class="t-apoio">Ligar ou desligar vale na hora. Desligar pede confirmação.</p>
+            <div class="papeis-lista">${Object.entries(NOME_PAPEL).map(([k, nome]) => `<label class="papel-linha"><span class="corpo"><span>${nome}</span><span class="t-rotulo">${DESCRICAO_PAPEL[k]}</span></span><input class="interruptor" type="checkbox" data-acao="papel" data-id="${p.sigla}" data-papel="${k}" ${p.papeis.includes(k) ? "checked" : ""}></label>`).join("")}</div>
+            ${abertos.length ? `<h3 class="t-secao et">${ic("relogio", "p")}Em andamento com ${p.sigla === "BL" || p.nome.endsWith("a") ? "ela" : "ele"}</h3><p class="t-apoio">Aprova ${abertos.length} ${abertos.length === 1 ? "item" : "itens"}. Para inativar, um gerente troca o aprovador deles antes.</p>
+                <div class="andamento">${abertos.map((r) => `<div class="andamento-linha"><span class="trunc"><span class="num">${esc(nomeItem(r))}</span> · ${esc(textoDe(r))}</span>${pilula(r.estado)}</div>`).join("")}</div>` : ""}
+        </section>`;
+    }
+
+    function listaSetores() {
+        const lista = E.setores.filter((s) => (E.abaSetores === "Ativos" ? s.ativo : !s.ativo));
+        const qtd = (s) => E.pessoas.filter((p) => p.ativo && p.setor === s.nome).length;
+        return `<div class="lista-adm">
+            <div class="cab-pagina"><div><h1 class="t-pagina">Setores</h1><p class="t-apoio num">${E.setores.filter((s) => s.ativo).length} ativos · ${E.setores.filter((s) => !s.ativo).length} desativados</p></div><button class="btn btn-pri" data-acao="novo-setor">${ic("criar")}Novo setor</button></div>
+            <div class="chips-adm">${["Ativos", "Desativados"].map((a) => `<button class="chip" data-acao="aba-setores" data-id="${a}" aria-pressed="${E.abaSetores === a}">${a}</button>`).join("")}</div>
+            <div class="cartoes">${lista.map((s) => `<button class="pessoa-adm" data-acao="sel-setor" data-id="${esc(s.nome)}" aria-current="${E.setorSel === s.nome}">${ic("setor", "g")}<span class="corpo"><span>${esc(s.nome)}</span><span class="t-rotulo num">${qtd(s)} ${qtd(s) === 1 ? "pessoa" : "pessoas"}</span></span></button>`).join("") || '<p class="cartao t-apoio">Nenhum setor aqui.</p>'}</div></div>`;
+    }
+    function telaSetores() {
+        if (!desk) return `<main class="pad">${listaSetores()}<div class="folga-barra"></div></main>${navegacao("setores")}`;
+        return `<main class="pc"><div class="lista-painel">${listaSetores()}<div class="painel-adm">${E.setorSel ? painelSetor() : '<section class="cartao-s vazio-painel"><p class="t-apoio">Escolha um setor na lista, ou crie um novo.</p></section>'}</div></div><div class="folga-barra"></div></main>${navegacao("setores")}`;
     }
 
     // ─── As folhas (no celular, sobem de baixo; no computador, viram janelas; ui-ux §8.2) ────
@@ -2379,116 +2617,9 @@ void main() {
         </main>${navegacao("eu")}`;
     }
 
-    // ─── T-08 Relatórios (ui-ux §7.12): a régua manda no período ────────────────────────
-    const PERIODOS = { Mês: 1, "3M": 3, "6M": 6, "12M": 12, Ano: 10, Tudo: 24 };
-    function telaRelatorios() {
-        const ncs = listaNcs();
-        const abertas = ncs.filter((nc) => nc.estado === "Aberta" || nc.estado === "Em aprovação");
-        const atrasados = Object.values(E.reg).filter((r) => (r.tipo === "AC" || r.tipo === "VE") && r.estado === "Aberta" && r.campos.prazo && diasAte(r.campos.prazo) < 0).sort((a, b) => diasAte(a.campos.prazo) - diasAte(b.campos.prazo));
-        const fechadas = ncs.filter((nc) => nc.estado === "Fechada" && nc.fechadoEm);
-        const tempo = fechadas.length ? Math.round(fechadas.reduce((s, nc) => s + (nc.fechadoEm - nc.criadoEm) / DIA, 0) / fechadas.length) : 0;
-        const ves = Object.values(E.reg).filter((r) => r.tipo === "VE" && r.estado === "Fechada");
-        const conta = (k) => ves.filter((v) => v.campos.resultado === k).length;
-        const eficacia = ves.length ? Math.round((conta("EFICAZ") / ves.length) * 100) : 0;
-        const contagem = {};
-        for (const nc of ncs) contagem[nc.campos.setor] = (contagem[nc.campos.setor] || 0) + 1;
-        const porSetor = Object.entries(contagem).sort((a, b) => b[1] - a[1]);
-        const maior = Math.max(...porSetor.map(([, n]) => n), 1);
-        const meses = PERIODOS[E.periodo];
-        const ini = new Date();
-        ini.setMonth(ini.getMonth() - meses + 1);
-        const rotuloPeriodo = { Mês: "Este mês", "3M": "Últimos 3 meses", "6M": "Últimos 6 meses", "12M": "Últimos 12 meses", Ano: "Este ano", Tudo: "Todo o histórico" }[E.periodo];
-        const mesAno = (d) => `${MESES[d.getMonth()]}/${String(d.getFullYear()).slice(2)}`;
-        const pct = Math.min(100, (meses / 24) * 100);
-        const relatorio = (titulo, numero, sub, corpo, acao = "") => `<section class="relatorio"><div class="cab-cartao"><h2 class="t-rotulo">${titulo}</h2>${acao ? `<button class="link-sec" data-acao="${acao}" aria-label="Ver na lista">${ic("direita")}</button>` : ""}</div><p class="numero num">${numero}</p><p class="t-apoio">${sub}</p>${corpo}</section>`;
-        return `<main class="porta pad conteudo-larg">
-            ${BRILHO}
-            <header class="saudacao"><p class="t-rotulo">${hojePorExtenso()}</p><h1 class="t-pagina">${saudacaoHora()}, ${esc(primeiro(E.usuario))}</h1>
-                <p class="t-apoio">${atrasados.length ? `${atrasados.length} ${atrasados.length === 1 ? "item atrasado" : "itens atrasados"}, o mais antigo há ${-diasAte(atrasados[0].campos.prazo)} dias · ` : ""}${abertas.length} NCs abertas</p></header>
-            <section class="regua" aria-label="Período">
-                <div class="trilho"><span class="recorte" style="width:${pct}%"></span></div>
-                <div class="pontas t-rotulo"><span>${mesAno(new Date(new Date().setMonth(new Date().getMonth() - 23)))}</span><span>${rotuloPeriodo} · ${mesAno(ini)} a ${mesAno(new Date())}</span><span>hoje</span></div>
-                <div class="segmentado" role="group" aria-label="Período">${Object.keys(PERIODOS).map((k) => `<button data-acao="periodo" data-id="${k}" aria-pressed="${E.periodo === k}">${k}</button>`).join("")}</div>
-            </section>
-            <section class="cartao-s mudou"><h2 class="t-secao">${ic("atividade")} O que mudou: ${rotuloPeriodo.toLowerCase()}</h2>
-                <p><span class="ic-lado">${ic("alerta")}</span><span>${atrasados.length ? `${atrasados.length} ${atrasados.length === 1 ? "item está atrasado" : "itens estão atrasados"}: o pior é a ${atrasados[0].codigo}, com ${esc(nomeDe(atrasados[0].resp[0]))}.` : "Nenhum item atrasado."}</span></p>
-                <p><span class="ic-lado">${ic("ok")}</span><span>A eficácia das verificações está em ${eficacia}% (${conta("EFICAZ")} de ${ves.length}).</span></p>
-                <p><span class="ic-lado">${ic("ncs")}</span><span>${porSetor[0] ? `${esc(porSetor[0][0])} tem mais NCs: ${porSetor[0][1]} de ${ncs.length}.` : ""}</span></p></section>
-            <div class="relatorios">
-                ${relatorio("NCs abertas", abertas.length, `de ${ncs.length} no período`, `<div class="barras">${porSetor.map(([s, n]) => `<div class="barra-linha"><span>${esc(s)}</span><span class="barra"><i style="width:${(n / maior) * 100}%"></i></span><span class="num t-apoio">${n}</span></div>`).join("")}</div>`, "rel-abertas")}
-                ${relatorio("Tempo médio até fechar", `${tempo} dias`, `${fechadas.length} NCs fechadas no período`, "")}
-                ${relatorio("Atrasadas", atrasados.length, "ações e verificações com o prazo vencido", `<div class="linhas">${atrasados.map((r) => `<button class="check" data-acao="abrir" data-id="${r.id}"><span class="txt num">${r.codigo}</span>${prazoTag(r.campos.prazo)}</button>`).join("")}</div>`, "rel-vencidas")}
-                ${relatorio("Eficácia", `${eficacia}%`, `${conta("EFICAZ")} de ${ves.length} verificações`, `<div class="dados">${Object.entries(RESULTADOS).map(([k, nome]) => linhaDado(nome, String(conta(k)))).join("")}${linhaDado("NCs reabertas", String(ncs.filter((nc) => nc.reaberta).length))}</div>`)}
-            </div>
-            <div class="folga-barra"></div>
-        </main>${navegacao("relatorios")}`;
-    }
-
     // ─── T-09 a T-12 Administração (a lista e o painel; no celular, em telas) ─────────────
     // A recusa da RN-43: quem é aprovador de itens abertos não sai sem trocar antes
     const aprovaAbertos = (s) => Object.values(E.reg).filter((r) => r.aprovador === s && (r.estado === "Aberta" || r.estado === "Em aprovação"));
-    function telaUsuarios() {
-        const lista = E.pessoas;
-        const linhas = lista
-            .map(
-                (p) => `<button class="cartao pessoa-adm" data-acao="sel-usuario" data-id="${p.sigla}" aria-current="${E.adminSel === p.sigla}">
-                <span class="l1"><span class="et">${av(p.sigla, "m")}<span><strong>${esc(p.nome)}</strong><span class="t-rotulo" style="display:block">${esc(p.email)}</span></span></span>${p.ativo ? (p.convite ? '<span class="tag">Convite enviado</span>' : "") : '<span class="tag">Inativo</span>'}</span>
-                <span class="t-apoio">${p.papeis.map((x) => NOME_PAPEL[x]).join(" + ") || "Sem papel"} · ${esc(p.setor)}</span></button>`,
-            )
-            .join("");
-        const painel = desk && E.adminSel ? `<aside class="painel-adm">${painelUsuario()}</aside>` : "";
-        return `<header class="barra-sup pad"><h1 class="t">Usuários</h1><button class="btn btn-pri btn-barra" data-acao="novo-usuario">${ic("criar")}Novo usuário</button></header>
-            <main class="pad conteudo-larg"><div class="${desk ? "duas-colunas" : ""}"><div><p class="resumo-lista t-apoio">${lista.filter((p) => p.ativo).length} ativos · ${lista.filter((p) => !p.ativo).length} inativos</p><div class="cartoes">${linhas}</div></div>${painel}</div><div class="folga-barra"></div></main>${navegacao("usuarios")}`;
-    }
-    function telaUsuario() {
-        return `<header class="barra-sup pad sem-fio"><button class="alvo" data-acao="voltar" aria-label="Voltar">${ic("voltar", "g")}</button><span class="t">${E.adminSel === "novo" ? "Novo usuário" : "Usuário"}</span><span class="alvo"></span></header>
-            <main class="pad">${painelUsuario()}<div class="folga-barra"></div></main>`;
-    }
-    function painelUsuario() {
-        const sel = E.adminSel;
-        const papeis = (marcados) => `<fieldset class="papeis"><legend>Papéis</legend>${Object.entries(NOME_PAPEL).map(([k, nome]) => `<label class="papel-op"><input class="caixa" type="checkbox" name="papel" value="${k}" ${marcados.includes(k) ? "checked" : ""}><span>${nome}</span></label>`).join("")}</fieldset>`;
-        const setores = (v) => `<select id="u-setor">${SETORES_ATIVOS().map((s) => `<option ${s === v ? "selected" : ""}>${s}</option>`).join("")}</select>`;
-        if (sel === "novo")
-            return `<form class="cartao-s" id="form-usuario" novalidate><h2 class="t-secao">Novo usuário</h2>
-                ${E.erroAdmin ? `<div class="aviso" role="alert">${ic("alerta")}<span>${esc(E.erroAdmin)}</span></div>` : ""}
-                <div class="campo"><label for="u-nome">Nome</label><input id="u-nome" placeholder="Nome e sobrenome"></div>
-                <div class="campo"><label for="u-email">E-mail</label><input id="u-email" type="email" placeholder="nome@empresa.com.br"></div>
-                <div class="campo"><label for="u-setor">Setor</label>${setores("Produção")}</div>
-                ${papeis(["EDITOR"])}
-                <button class="btn btn-pri" data-acao="criar-usuario">Criar e gerar o convite</button></form>`;
-        if (sel?.startsWith("convite:")) {
-            const p = pessoa(sel.slice(8));
-            const link = `https://andon.empresa.com.br/definir-senha?token=${p.convite}`;
-            return `<section class="cartao-s"><h2 class="t-secao">${ic("ok")} ${esc(p.nome)} foi criado</h2>
-                <p class="t-apoio">Envie este link para ${esc(primeiro(p.sigla))} por fora (o sistema não manda e-mail). Ele vale por 72 horas, e aparece só agora.</p>
-                <div class="link-convite num" id="link-convite">${esc(link)}</div>
-                <button class="btn btn-pri" data-acao="copiar-convite" data-id="${esc(link)}">Copiar o link</button></section>`;
-        }
-        const p = pessoa(sel);
-        if (!p) return "";
-        const recusa = E.recusa?.sigla === p.sigla ? `<div class="aviso" role="alert">${ic("alerta")}<span class="aviso-txt"><strong>${esc(E.recusa.titulo)}</strong><br>${esc(E.recusa.texto)}${E.recusa.itens?.length ? `<span class="lista-recusa">${E.recusa.itens.map((r) => `<span class="num">${r.codigo} · ${esc(textoDe(r))}</span>`).join("")}</span><span class="t-rotulo">0 de ${E.recusa.itens.length} trocados · um gerente troca o aprovador; depois, tente de novo.</span>` : ""}</span></div>` : "";
-        return `<form class="cartao-s" id="form-usuario" novalidate>
-            <div class="perfil">${av(p.sigla, "g")}<div><h2 class="t-secao">${esc(p.nome)}</h2><p class="t-apoio">${esc(p.email)}</p>${p.ativo ? "" : '<span class="tag">Inativo</span>'}</div></div>
-            ${recusa}
-            <div class="campo"><label for="u-setor">Setor</label>${setores(p.setor)}</div>
-            ${papeis(p.papeis)}
-            <button class="btn btn-pri" style="justify-self:start" data-acao="salvar-usuario" data-id="${p.sigla}">Salvar</button>
-        </form>
-        <section class="cartao-s"><h2 class="t-secao">Zona de perigo</h2>
-            ${p.ativo ? `<p class="t-apoio">A pessoa perde o acesso na hora. O que ela fez continua no histórico.</p><button class="btn btn-des" style="justify-self:start" data-acao="inativar" data-id="${p.sigla}">Inativar</button>` : `<p class="t-apoio">A pessoa volta a entrar com um convite novo.</p><button class="btn btn-sec" style="justify-self:start" data-acao="reativar" data-id="${p.sigla}">Reativar</button>`}
-        </section>`;
-    }
-
-    function telaSetores() {
-        const lista = E.setores.filter((s) => (E.abaSetores === "Ativos" ? s.ativo : !s.ativo));
-        const qtd = (s) => E.pessoas.filter((p) => p.ativo && p.setor === s.nome).length;
-        const linhas = lista.map((s) => `<button class="cartao" data-acao="sel-setor" data-id="${esc(s.nome)}" aria-current="${E.setorSel === s.nome}"><span class="l1"><strong>${esc(s.nome)}</strong><span class="t-apoio num">${qtd(s)} ${qtd(s) === 1 ? "pessoa" : "pessoas"}</span></span></button>`).join("");
-        const painel = desk && E.setorSel ? `<aside class="painel-adm">${painelSetor()}</aside>` : "";
-        return `<header class="barra-sup pad"><h1 class="t">Setores</h1><button class="btn btn-pri btn-barra" data-acao="novo-setor">${ic("criar")}Novo setor</button></header>
-            <main class="pad conteudo-larg"><div class="${desk ? "duas-colunas" : ""}"><div>
-                <div class="segmentado" role="group" aria-label="Quais setores">${["Ativos", "Desativados"].map((a) => `<button data-acao="aba-setores" data-id="${a}" aria-pressed="${E.abaSetores === a}">${a}</button>`).join("")}</div>
-                <div class="cartoes">${linhas || '<p class="cartao t-apoio">Nenhum setor aqui.</p>'}</div></div>${painel}</div><div class="folga-barra"></div></main>${navegacao("setores")}`;
-    }
     function telaSetor() {
         return `<header class="barra-sup pad sem-fio"><button class="alvo" data-acao="voltar" aria-label="Voltar">${ic("voltar", "g")}</button><span class="t">${E.setorSel === "novo" ? "Novo setor" : "Setor"}</span><span class="alvo"></span></header>
             <main class="pad">${painelSetor()}<div class="folga-barra"></div></main>`;
@@ -2505,7 +2636,17 @@ void main() {
             <section class="cartao-s"><h2 class="t-secao">${s.ativo ? "Desativar o setor" : "Reativar o setor"}</h2>
                 ${s.ativo ? `<p class="t-apoio">Ele some das escolhas de setor. As NCs dele continuam. ${ativas.length ? `Hoje, ${ativas.length} ${ativas.length === 1 ? "pessoa ativa impede" : "pessoas ativas impedem"}.` : ""}</p><button class="btn btn-des" style="justify-self:start" data-acao="desativar-setor" data-id="${esc(s.nome)}">Desativar</button>` : `<button class="btn btn-sec" style="justify-self:start" data-acao="reativar-setor" data-id="${esc(s.nome)}">Reativar</button>`}</section>`;
     }
-    const folhaAdmin = () => "";
+    function folhaAdmin(f) {
+        const voltarBt = '<button class="btn btn-sec btn-full" data-acao="fechar-folha">Voltar</button>';
+        const casca = (titulo, corpo, botoes) => `<div class="veu" data-acao="fechar-folha"><div class="folha" role="dialog" aria-modal="true" aria-labelledby="folha-t" data-parar><span class="pega" aria-hidden="true"></span><h2 class="t-secao" id="folha-t">${titulo}</h2>${corpo}<div class="botoes">${botoes}</div></div></div>`;
+        if (f.tipo === "tirar-papel")
+            return casca(`Tirar o papel de ${NOME_PAPEL[f.papel].toLowerCase()} de ${esc(nomeDe(f.sigla))}?`, `<p class="t-apoio">Vale na próxima ação dela: ${esc(DESCRICAO_PAPEL[f.papel].toLowerCase())} deixa de valer.</p>`, `<button class="btn btn-des btn-full" data-acao="confirmar-papel">Tirar o papel</button>${voltarBt}`);
+        if (f.tipo === "mais-pessoa") {
+            const p = pessoa(f.sigla);
+            return casca("Mais ações", "", `${p.ativo ? `<button class="btn btn-des btn-full" data-acao="inativar" data-id="${p.sigla}">Inativar</button>` : `<button class="btn btn-sec btn-full" data-acao="reativar" data-id="${p.sigla}">Reativar</button>`}<button class="btn btn-sec btn-full" data-acao="fora">Remover a foto</button>${voltarBt}`);
+        }
+        return "";
+    }
     // ─── Desenhar ─────────────────────────────────────────────────────────────────────
     const TELAS = { login: telaLogin, pendencias: telaPendencias, ncs: telaNcs, nova: telaNova, nc: telaNc, item: telaItem, eu: telaEu, relatorios: telaRelatorios, usuarios: telaUsuarios, usuario: telaUsuario, setores: telaSetores, setor: telaSetor };
     function desenhar(rolarTopo = false) {
@@ -2514,6 +2655,7 @@ void main() {
         app.innerHTML = (TELAS[E.tela] || TELAS.login)() + folha();
         document.body.classList.toggle("com-prisma", !!prisma && E.tela === "login");
         prisma?.ligar(E.tela === "login");
+        document.body.classList.toggle("com-painel", desk && !!E.painelAtividade && (E.tela === "nc" || E.tela === "item"));
         if (rolarTopo) window.scrollTo(0, 0);
         guardar();
         ligar();
@@ -2558,6 +2700,14 @@ void main() {
             const nb = document.getElementById("busca-ncs");
             nb.focus();
             nb.setSelectionRange(pos, pos);
+        });
+        const ba = document.getElementById("busca-adm");
+        ba?.addEventListener("input", () => {
+            E.termoAdmin = ba.value;
+            desenhar();
+            const nb = document.getElementById("busca-adm");
+            nb.focus();
+            nb.setSelectionRange(ba.value.length, ba.value.length);
         });
         const dias = document.getElementById("dias");
         dias?.addEventListener("input", () => {
@@ -2856,8 +3006,62 @@ void main() {
                 desenhar();
                 break;
             case "painel-atividade":
-                E.painelAtividade = !E.painelAtividade;
+                E.painelAtividade = { item: null };
                 desenhar();
+                break;
+            case "fechar-painel":
+                Object.assign(E, { painelAtividade: null, faixaAberta: null });
+                desenhar();
+                break;
+            case "filtro-atividade":
+                E.filtroAtividade = id;
+                desenhar();
+                break;
+            case "painel-tudo":
+                E.painelAtividade = { item: null };
+                desenhar();
+                break;
+            case "faixa":
+                E.faixaAberta = E.faixaAberta === id ? null : id;
+                desenhar();
+                break;
+            case "rel-dim":
+                E.relDim = id;
+                desenhar();
+                break;
+            case "filtro-adm":
+                E.filtroAdmin = id;
+                desenhar();
+                break;
+            case "papel": {
+                const pp = pessoa(id);
+                const k = alvo.dataset.papel;
+                if (!pp.papeis.includes(k)) {
+                    pp.papeis.push(k);
+                    E.recusa = null;
+                    desenhar();
+                    avisar(`${pp.nome} agora é ${NOME_PAPEL[k].toLowerCase()}. Vale na próxima ação.`);
+                } else abrirFolha({ tipo: "tirar-papel", sigla: id, papel: k });
+                break;
+            }
+            case "confirmar-papel": {
+                const pp = pessoa(f.sigla);
+                const resto = pp.papeis.filter((x) => x !== f.papel);
+                const abertos = aprovaAbertos(f.sigla);
+                E.folha = null;
+                if ((f.papel === "APROVADOR" || f.papel === "GERENTE") && !resto.some((x) => x === "APROVADOR" || x === "GERENTE") && abertos.length)
+                    E.recusa = { sigla: f.sigla, titulo: `Não dá para tirar o papel de ${NOME_PAPEL[f.papel].toLowerCase()} de ${primeiro(f.sigla)}`, texto: ` ${primeiro(f.sigla)} aprova ${abertos.length} ${abertos.length === 1 ? "item aberto" : "itens abertos"} (a lista embaixo).`, itens: abertos };
+                else if (f.papel === "ADMIN" && E.pessoas.filter((x) => x.ativo && x.papeis.includes("ADMIN")).length === 1) E.recusa = { sigla: f.sigla, titulo: "Este é o único administrador", texto: " Dê o papel a outra pessoa antes." };
+                else {
+                    pp.papeis = resto;
+                    E.recusa = null;
+                    avisar(`${pp.nome} não é mais ${NOME_PAPEL[f.papel].toLowerCase()}.`);
+                }
+                desenhar();
+                break;
+            }
+            case "mais-pessoa":
+                abrirFolha({ tipo: "mais-pessoa", sigla: id });
                 break;
             case "minhas-ncs":
                 trocarAba("ncs");
@@ -2919,7 +3123,10 @@ void main() {
                 break;
             // a atividade do item
             case "atividade":
-                abrirFolha({ tipo: "atividade", id });
+                if (desk) {
+                    E.painelAtividade = { item: id };
+                    desenhar();
+                } else abrirFolha({ tipo: "atividade", id });
                 break;
             case "atividade-todos":
                 E.folha.todos = true;
@@ -2983,25 +3190,16 @@ void main() {
                 break;
             }
             case "salvar-usuario": {
-                const p = pessoa(id);
-                const papeis = [...document.querySelectorAll('input[name="papel"]:checked')].map((x) => x.value);
-                const perde = (x) => p.papeis.includes(x) && !papeis.includes(x);
-                const abertos = aprovaAbertos(id);
-                if ((perde("APROVADOR") || perde("GERENTE")) && !papeis.some((x) => x === "APROVADOR" || x === "GERENTE") && abertos.length) {
-                    E.recusa = { sigla: id, titulo: `Não dá para tirar o papel de aprovador de ${primeiro(id)}`, texto: `${primeiro(id)} aprova ${abertos.length} ${abertos.length === 1 ? "item aberto" : "itens abertos"}:`, itens: abertos };
-                    return desenhar();
-                }
-                if (perde("ADMIN") && E.pessoas.filter((x) => x.ativo && x.papeis.includes("ADMIN")).length === 1) {
-                    E.recusa = { sigla: id, titulo: "Este é o único administrador", texto: "Dê o papel de administrador a outra pessoa antes." };
-                    return desenhar();
-                }
-                Object.assign(p, { papeis, setor: document.getElementById("u-setor").value });
+                const pp = pessoa(id);
+                const nome = document.getElementById("u-nome")?.value.trim() || pp.nome;
+                Object.assign(pp, { nome, setor: document.getElementById("u-setor").value });
                 E.recusa = null;
                 desenhar();
-                avisar(`${p.nome} atualizada. Vale na próxima ação dela.`);
+                avisar(`${pp.nome}: dados salvos.`);
                 break;
             }
             case "inativar": {
+                E.folha = null;
                 const abertos = aprovaAbertos(id);
                 if (id === E.usuario) E.recusa = { sigla: id, titulo: "Você não pode inativar a si mesmo", texto: "Peça a outro administrador." };
                 else if (abertos.length) E.recusa = { sigla: id, titulo: `Não dá para inativar ${nomeDe(id)}`, texto: `${primeiro(id)} aprova ${abertos.length} ${abertos.length === 1 ? "item aberto" : "itens abertos"}:`, itens: abertos };
@@ -3014,6 +3212,7 @@ void main() {
                 break;
             }
             case "reativar":
+                E.folha = null;
                 Object.assign(pessoa(id), { ativo: true, convite: Math.random().toString(36).slice(2, 14) });
                 E.adminSel = `convite:${id}`;
                 desenhar();

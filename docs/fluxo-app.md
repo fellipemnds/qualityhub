@@ -152,7 +152,7 @@ A etapa é o "em que pé está" mostrado na lista e no detalhe. É
 | # | Condição | Etapa exibida |
 |---|---|---|
 | 1 | NC em `RASCUNHO` | Rascunho |
-| 2 | NC `CANCELADA` | Cancelada |
+| 2 | NC `CANCELADA` | **A etapa onde ela parou**: a primeira das regras 4 a 7, como se estivesse aberta (Matthew, 2026-11-03: o badge de estado já diz que foi cancelada; a etapa diz até onde ela chegou) |
 | 3 | NC `EM_APROVACAO` | Aguardando aprovação do fechamento |
 | 4 | NC `ABERTA`, sem Classificação `FECHADA` | Aguardando classificação |
 | 5 | NC `ABERTA`, sem Investigação `FECHADA`, ou com alguma Investigação não cancelada ainda não `FECHADA` | Em investigação |
@@ -635,3 +635,4 @@ Com Matthew, em 2026-09-24.
 | 2026-10-29 | v1.24 — §8: o Carregando em ASCII (decisão (t)), testado e desfeito no mesmo dia |
 | 2026-10-30 | v1.25 — a decisão (u): a T-06 com a capa plana, sem luz; a luz da NC sai da Minha conta; a T-08 com os atalhos embaixo da régua |
 | 2026-11-03 | v1.26 — Minha conta (T-13) com o Tema: Sistema · Claro · Escuro, guardado no aparelho |
+| 2026-11-03 | v1.27 — §4, regra 2: a NC cancelada mostra a etapa onde parou, não "Cancelada" (Matthew, na B4) |

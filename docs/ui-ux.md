@@ -369,7 +369,7 @@ confundem):
 
 | Etapa | Ícone |
 |---|---|
-| Rascunho / Cancelada | — (o badge de estado já diz) |
+| Rascunho | — (o badge de estado já diz) |
 | Aguardando aprovação do fechamento | `hourglass` |
 | Aguardando classificação | `tag` |
 | Em investigação | `search` |
@@ -378,6 +378,8 @@ confundem):
 | Fechada · ação em execução | `wrench` |
 | Fechada · em verificação | `scan-search` |
 | Concluída | `badge-check` |
+
+Na NC **cancelada**, a etapa é a de onde ela parou, com o ícone dela (`fluxo-app.md` §4, regra 2; Matthew, 2026-11-03): o badge Cancelada diz o estado, e a etapa diz até onde a NC chegou.
 
 **Indicadores paralelos** são etiquetas pequenas: *Contenção em
 andamento* (`--info`), *Prazo vencido* (`--perigo`), *Reaberta*
@@ -1973,3 +1975,4 @@ tokens.
 | 2026-10-29 | v1.55 — §5.1: o `AtalhoAtividade`; §7.7: a (p) fechada pela (s) (B3, item 14) |
 | 2026-10-30 | v1.56 — a decisão (u), a luz no app: §3.1, os tokens do vidro saíram e a nota de contraste passou para a luz da T-03; §6.2 e §7.3, a capa plana da NC, igual à dos filhos; §7.1, a luz da porta (o Brilho iridescente) e a borda que pega a luz; §7.12, a régua como a barra da referência, com os atalhos embaixo, e a eficácia por textura |
 | 2026-11-03 | v1.57 — Tema: a escolha Sistema · Claro · Escuro na tela Eu (Conta), guardada no aparelho (Matthew, na B4) |
+| 2026-11-03 | v1.58 — §4.2: a NC cancelada mostra a etapa onde parou (Matthew, na B4) |

@@ -347,6 +347,15 @@ for (const desk of [false, true]) {
     valores.motivo = "Lote já isolado pela outra contenção";
     clicar("confirmar-cancelar");
     ok(R("CT-2026-0019").estado === "Cancelada", "Rui cancela a contenção");
+    clicar("abrir", { id: "NC-2026-0045" });
+    clicar("mais", { id: "NC-2026-0045" });
+    clicar("cancelar");
+    valores.motivo = "Registrada em dobro";
+    clicar("confirmar-cancelar");
+    ok(
+        R("NC-2026-0045").estado === "Cancelada" && etapa("NC-2026-0045") === "Aguardando classificação",
+        "a NC cancelada mostra a etapa onde parou",
+    );
     clicar("abrir", { id: "IV-2026-0007" });
     ok(true, `Rui abre a IV-2026-0007 (${R("IV-2026-0007").estado})`);
 
@@ -398,7 +407,10 @@ for (const desk of [false, true]) {
     entrar("RS");
     clicar("aba-app", { tela: "relatorios" });
     for (const p of ["Mês", "3M", "6M", "12M", "Ano", "Tudo"]) clicar("periodo", { id: p });
-    ok(tela().includes("Eficácia") && tela().includes("Atrasadas"), "os quatro relatórios aparecem");
+    ok(
+        tela().includes("Eficácia das verificações") && tela().includes("verificações atrasadas"),
+        "os quatro relatórios aparecem",
+    );
     clicar("rel-vencidas");
     ok(E().tela === "ncs" && E().filtro === "Vencidas", "Atrasadas leva à lista filtrada");
 
