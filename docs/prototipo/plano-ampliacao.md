@@ -6,7 +6,13 @@ vai cobrir **o ciclo inteiro da NC**, com **um login de perfis** para cada coleg
 que quiser, e **uma versão para o computador**. O teste com os 3 colegas foi **adiado** até o
 protótipo ampliado ficar pronto e passar pelo revisor.
 
-**Status:** proposta, esperando o ok de Matthew (as perguntas no fim).
+**Status (2026-11-03, tarde):** aprovado por Matthew ("pode incluir tudo": os perfis do §2, a J11 e
+a J12; o teste fica para 04/11 ou 05/11). **Feitas, numa leva só:** as fatias 1 a 6, a J11 e a J12,
+e o roteiro novo (`roteiro-teste.md`, as três tarefas do portão e oito extras). O
+`teste-jornadas.js` clica pelas jornadas com cada perfil, no celular e no computador, num DOM de
+mentira (o Chrome não estava conectado): todas passam. **Falta:** olhar o desenho num navegador de
+verdade (o teste não vê layout) e a revisão em contexto limpo (o `revisor`). O perfil do `ADMIN`
+é o Tiago Melo (TI).
 
 ## 1. O que entra
 
