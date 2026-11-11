@@ -382,6 +382,8 @@ com a coleção "Tema" (19 cores, 4 modos) e as páginas "Marca", "Fonte" e
 
 ## 6. Próximo passo
 
+**Ao chegar (anotado em 2026-11-11, da sessão do Sunglass):** o plugin `agent-skills` do QualityHub está na **0.6.10**, e a mais nova é a **0.6.15**. Atualize, nos dois PCs: `claude plugin marketplace update addy-agent-skills` e `claude plugin update agent-skills@addy-agent-skills --scope project`.
+
 **Enquanto o teste da B4 não acontece (plano combinado em 2026-11-03, fim da tarde, no trabalho; Matthew talvez continue em casa):** a C0 espera o portão G3 (o teste pode mudar telas) e não começa antes do merge da B4. Os pré-requisitos dela estão cumpridos (o passeio da A7, a sessão do SaaS, o título dos filhos). Dá para puxar, do mais útil para o menos:
 1. **Os pontos "a revisitar" do passeio** (recomendado; sessões de 20–30 min, Matthew explica primeiro): o B23 e o `buscarRegistroDoTipoOuFalhar`; os códigos 409 × 403 × 401; o `podeExecutar` (papel + atribuição); o `secure` e o `SameSite` do cookie (site × domínio, CSRF, o `path: "/api"`); a idempotência do inativar, o convite antigo na reativação, o token que aparece uma vez só, o oráculo da mensagem única e o bcrypt fora da transação (a lista completa no item 4 do "Antes (2026-10-28...)", mais abaixo). Motivo: na C0 em diante, o front consome essa API, e saber por que ela responde 409 e não 403 é o que faz a tela mostrar a mensagem certa.
 2. **O painel de acompanhamento no app do Claude** (o mod da skill `plugin-authoring`; pedido de 2026-10-30): conversar antes o que mostrar (o que está rodando, quem do time fez o quê, o uso da janela de 5 horas e da semana) e o que o app já mostra.
