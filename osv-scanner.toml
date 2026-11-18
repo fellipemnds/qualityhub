@@ -15,3 +15,10 @@ reason = "X1: mysql2, transitiva do Prisma 7 (CONSTRAINTS.md §5)"
 id = "GHSA-rgwj-5xj2-c3m3"
 ignoreUntil = 2026-12-31
 reason = "X1: mysql2, transitiva do Prisma 7 (CONSTRAINTS.md §5)"
+
+# X6 (CONSTRAINTS.md §5): picomatch 4.0.7, do Vitest e do Vite (só desenvolvimento), sem versão corrigida
+
+[[IgnoredVulns]]
+id = "GHSA-fc5q-39xc-vjpf"
+ignoreUntil = 2026-12-18
+reason = "X6: picomatch, do Vitest e do Vite, sem versão corrigida (CONSTRAINTS.md §5)"
