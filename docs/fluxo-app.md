@@ -115,7 +115,7 @@ saídas ficam no **menu da pessoa**, que abre do fim da doca:
 | Tela inicial | Quem acessa mais de uma tela inicial possível | Preferência (§3) |
 | Atalhos de teclado | Todos (só no computador) | Abre a janela dos atalhos (o ?), onde fica o interruptor dos atalhos de uma tecla (`ui-ux.md` §6.1, WCAG 2.1.4); a escolha fica no navegador |
 | Sair | Todos | |
-| Minha conta | Todos | No computador, abre a T-13: a foto, o apelido (RN-52), a Tela inicial, a sessão (decisão (l)) e a **luz da NC** (parada ou em movimento, guardada no aparelho; decisão (s)) |
+| Minha conta | Todos | No computador, abre a T-13: a foto, o apelido (RN-52), a Tela inicial, o Tema (Sistema · Claro · Escuro, guardado no aparelho; 2026-11-03), a sessão (decisão (l)). (A **luz da NC**, parada ou em movimento, da decisão (s), saiu com a (u): a NC ficou sem luz, e a luz da T-03 é sempre parada) |
 | Sair de todos os aparelhos | Todos | No menu da pessoa, embaixo do Sair: encerra as sessões abertas em outros computadores (`POST /auth/sair-de-todos`, pronto desde a A4; Matthew, 2026-10-21) |
 
 ---
@@ -152,7 +152,7 @@ A etapa é o "em que pé está" mostrado na lista e no detalhe. É
 | # | Condição | Etapa exibida |
 |---|---|---|
 | 1 | NC em `RASCUNHO` | Rascunho |
-| 2 | NC `CANCELADA` | Cancelada |
+| 2 | NC `CANCELADA` | **A etapa onde ela parou**: a primeira das regras 4 a 7, como se estivesse aberta (Matthew, 2026-11-03: o badge de estado já diz que foi cancelada; a etapa diz até onde ela chegou) |
 | 3 | NC `EM_APROVACAO` | Aguardando aprovação do fechamento |
 | 4 | NC `ABERTA`, sem Classificação `FECHADA` | Aguardando classificação |
 | 5 | NC `ABERTA`, sem Investigação `FECHADA`, ou com alguma Investigação não cancelada ainda não `FECHADA` | Em investigação |
@@ -217,10 +217,11 @@ requisitos do MVP (gate G0 do `arquitetura.md` §11).
    que pode ser trocado item a item.
 3. Seção Classificação → **Nova classificação** (só `APROVADOR`/`GERENTE`,
    RN-20) → escolhe Maior/Menor e escreve a justificativa. A
-   classificação já nasce com o aprovador da NC.
-4. **Publicar** → **Submeter**. Se quem classificou for também o
-   aprovador, a pendência "Aprovar" aparece para ele na hora; aprova, e o
-   feed marca *"Aprovado pelo próprio autor"* (RN-27/28).
+   classificação **não tem portão** nem aprovador (PRD Q22): classificar já
+   é o julgamento da qualidade.
+4. **Publicar** → **Concluir classificação**: ela fecha direto, como a
+   Verificação (`ui-ux.md` §7.9). Antes da Q22, era Publicar → Submeter, e o
+   próprio autor aprovava (RN-27/28, que saíram com a Q22).
 5. Etapa da NC → *Em investigação*.
 
 Se um filho for criado **antes** de a NC ter aprovador, ele nasce sem
@@ -460,7 +461,7 @@ Os dados também mostram a **classificação vigente** (a última aprovada,
 PRD Q19), e o envio para fechamento vem **depois** dos filhos.
 
 No celular, as mesmas partes em quatro abas, Resumo · Detalhes · Itens ·
-Feed, com o cabeçalho na capa da NC, sem a barra escura e com a luz no canto (decisão (s), `ui-ux.md` §7.3).
+Feed, com o cabeçalho na capa plana da NC, a mesma dos filhos, sem luz (decisão (u), `ui-ux.md` §7.3).
 
 ### T-07 Detalhe do item filho
 
@@ -481,7 +482,7 @@ celular, tudo empilhado numa página só, sem abas (decisão (h) da B2,
 ### T-08 Relatórios
 
 Os quatro relatórios da RF-19, todos com o mesmo período, escolhido na
-**régua** do topo (decisão (k) da B2, `ui-ux.md` §7.12). Antes deles, o
+**régua** do topo, com os atalhos embaixo (decisão (k) da B2, revista na (u); `ui-ux.md` §7.12). Antes deles, o
 **"O que mudou"** no período, em até 3 frases, e cada relatório compara com o
 período anterior. Os números e o ↗ de cada relatório levam à lista de NCs
 filtrada. **A decidir na C7:** a T-08 é a tela inicial do `GERENTE` (§3),
@@ -633,3 +634,7 @@ Com Matthew, em 2026-09-24.
 | 2026-10-28 | v1.22 — §8: onde cada erro aparece (a tela inteira só para não abrir, não encontrado, sem permissão e o erro inesperado; o resto no lugar) |
 | 2026-10-29 | v1.23 — T-06 na capa da NC (decisão (s)) e a luz da NC na Minha conta |
 | 2026-10-29 | v1.24 — §8: o Carregando em ASCII (decisão (t)), testado e desfeito no mesmo dia |
+| 2026-10-30 | v1.25 — a decisão (u): a T-06 com a capa plana, sem luz; a luz da NC sai da Minha conta; a T-08 com os atalhos embaixo da régua |
+| 2026-11-03 | v1.26 — Minha conta (T-13) com o Tema: Sistema · Claro · Escuro, guardado no aparelho |
+| 2026-11-03 | v1.27 — §4, regra 2: a NC cancelada mostra a etapa onde parou, não "Cancelada" (Matthew, na B4) |
+| 2026-11-03 | v1.28 — J2, passos 3 e 4: a Classificação sem portão, com o Concluir classificação (alinhado ao PRD Q22 e ao `ui-ux.md` §7.9, que já diziam isso; achado da revisão do protótipo da B4) |

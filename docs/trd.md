@@ -613,7 +613,7 @@ Entram no Plano de Implementação:
 | `partialIndexes` do Prisma é *preview* | Mantido; coberto por teste (um aprovador por item) |
 | Mudança na API quebrar o frontend sem aviso | Cliente gerado pelo Orval + TypeScript |
 | Guarda de fechamento contornável por alguma rota nova | Fechamento só pelo ciclo de vida; teste de que nenhuma rota altera `estado` diretamente |
-| **Vulnerabilidades nas dependências do Prisma 7** (`npm audit`, 2026-09-24): `deepmerge-ts` (estouro de pilha com objetos recursivos) e `mysql2` (vazamento de credencial e DoS), ambas de severidade alta | Risco prático baixo: o `deepmerge-ts` só junta a configuração do Prisma, que vem de arquivo nosso; o `mysql2` só é usado com MySQL, e usamos PostgreSQL. **Nunca rodar `npm audit fix --force`**: a "correção" rebaixa para o Prisma 6 e quebra o projeto. Reavaliar a cada atualização do Prisma. Dono e prazo da aceitação: exceção **X1** do `CONSTRAINTS.md` §5 (vence em 2026-12-31) |
+| **Vulnerabilidades nas dependências do Prisma 7** (`npm audit`, 2026-09-24): `deepmerge-ts` (estouro de pilha com objetos recursivos) e `mysql2` (vazamento de credencial e DoS), ambas de severidade alta | Risco prático baixo: o `deepmerge-ts` só junta a configuração do Prisma, que vem de arquivo nosso; o `mysql2` só é usado com MySQL, e usamos PostgreSQL. **Nunca rodar `npm audit fix --force`**: a "correção" rebaixa para o Prisma 6 e quebra o projeto. Reavaliar a cada atualização do Prisma. Dono e prazo da aceitação: exceção **X1** do `CONSTRAINTS.md` §5. **Resolvido em 2026-11-18** pelo Prisma 7.10.1 (`deepmerge-ts` 8.0.2, `mysql2` 3.24.4); a X1 foi encerrada |
 
 ---
 
@@ -663,3 +663,4 @@ backend — só a fase de deploy.
 | 2026-09-30 | v1.3 — dias de calendário só em `"AAAA-MM-DD"` na entrada da API (§6, §7, B14) |
 | 2026-09-30 | v1.2 — convenção de dia de calendário (meia-noite UTC, lido em UTC; "hoje" pelo `hojeEmSaoPaulo()`), testes em `TZ=UTC` (§6, B11) |
 | 2026-10-02 | v1.5 — coerência documental: Vitest, Testcontainers e Biome no "como está" (§3.1); ferramentas do `CONSTRAINTS.md` e `@fastify/helmet` nos acréscimos (§3.2); dívidas resolvidas riscadas (§12); risco do Prisma ligado à exceção X1 (§13) |
+| 2026-11-18 | v1.6 — o risco do Prisma 7 resolvido pelo Prisma 7.10.1, e a exceção X1 encerrada (§13) |

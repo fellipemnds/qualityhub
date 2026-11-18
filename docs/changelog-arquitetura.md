@@ -9,6 +9,32 @@ documento de arquitetura.
 
 ## Decisões já aplicadas
 
+### Antes da C0 — o Andon como SaaS (sessão de `idea-refine`, 2026-11-03)
+
+- **O SaaS fica para depois do MVP (Matthew).** Ainda não há segunda
+  empresa em vista, nem data, nem quem opere; o objetivo em um ano é ter de
+  1 a 3 empresas pagando. Das sete variações, ficaram o *multi-tenant* de
+  verdade (um sistema só, a `empresaId` em todas as tabelas e a separação
+  no Postgres), a **empresa como dado**, a NC exportada com a identidade da
+  empresa (para o auditor; junto com a Q28 do PRD) e, a validar
+  conversando, o serviço e as consultorias de ISO como canal. **Saíram**
+  uma instalação por empresa e um banco por empresa: quando a segunda
+  empresa vier, o caminho é o *multi-tenant* de verdade. A parte de negócio
+  fica fora do repositório (ele é público).
+- **Duas regras para a C0, sem custo, para não desfazer depois:**
+  1. **A empresa vem da sessão, nunca da rota.** Nenhuma rota da API recebe
+     a empresa como parâmetro: quando o *multi-tenant* entrar, ela sai de
+     quem está logado, e o front não muda.
+  2. **Nada da empresa escrito no código do front.** O nome, o logo, o
+     prefixo dos códigos, o glossário e a cor de toque (`marca/toque`) vêm
+     de **um lugar só** (uma configuração), como o nome Andon, que já é uma
+     constante só. No MVP, essa configuração é fixa; depois, ela vem da API.
+- **Depois do MVP:** a fase do *multi-tenant* (backend), já pensada para
+  **uma pessoa em várias empresas** (a consultora troca de empresa no menu
+  da pessoa), para não refazer o vínculo; e a exportação com a identidade da
+  empresa. Com a empresa atual em produção, a migração é dar a todas as
+  linhas a mesma `empresaId`.
+
 ### Fase B3 — fundações e mockups (branch `fase/b3-fundacoes-e-mockups`, PR #14)
 
 - **Os tokens em duas camadas, aplicados (2026-10-28).** A coleção

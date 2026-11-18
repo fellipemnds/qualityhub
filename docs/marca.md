@@ -139,11 +139,17 @@ luz que se abre em prisma, como na imagem do Apple Music da página Logo
 onde o "o que evitar" continua valendo; quando o símbolo a tiver, o fundo
 do login pode herdar a mesma luz. **Em 2026-10-29** (decisão (r)), ela entrou
 na porta pelo Prism (o espectro original, que se abre em prisma), e, dentro do
-app, só na **capa da NC**, no computador (decisão (s)): a mesma luz, parada e
-sutil, no canto superior esquerdo, vista através de uma barra de vidro e
-desfeita antes do conteúdo. No celular, igual, com a barra do topo branca acima. A regra: **a luz é um lugar
-(a porta, a capa da NC), nunca um componente**; os botões e o resto continuam
-Grafite.
+app, primeiro na capa da NC, através de uma barra de vidro (decisão (s)).
+**Em 2026-10-30** (decisão (u)), a luz saiu das telas de trabalho, porque o
+vidro fazia o sistema perder a vibe minimalista, e foi para a **T-03**, a
+primeira tela depois do login: o **Brilho iridescente**, parado, no canto
+superior esquerdo, as seis cores em manchas suaves na ordem de um holograma,
+que somem antes do meio da tela. **A iridescência é a assinatura do Andon,
+não a cor de destaque:** o destaque continua o preto e branco, porque uma
+cor de destaque precisa de contraste fixo, e o espectro tem as cores dos
+estados. A regra: **a luz é um lugar (a porta: o login e a T-03), nunca um
+componente**; os botões e o resto continuam Grafite, e a única peça que
+conversa com ela é a borda que pega a luz, sem cor própria.
 
 ## Suspenso: o dia inteiro, em duas luzes (Dusk & Dawn)
 

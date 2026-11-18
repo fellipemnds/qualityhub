@@ -1,0 +1,11 @@
+prefixo: QH
+rotulos: []            # feature, bug e decisao já valem sempre
+silos:
+  - Back-End
+  - Front-End
+  - Testes
+gates:
+  - id: 4B             # a fase B4 do plano (no Sunglass, o gate é número e depois letras)
+    nome: Protótipo e teste
+  - id: 0C             # a fase C0 do plano
+    nome: Base do front

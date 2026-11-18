@@ -619,6 +619,8 @@ Para cada linha: `claude plugin marketplace add <marketplace>` e depois `claude 
 
 Para instalar: `git clone --depth 1` do repositório numa pasta temporária, ler o `SKILL.md` e copiar a pasta para `~/.claude/skills/`. Valem a partir da próxima sessão do Claude Code. Na nuvem (§13) não estão.
 
+**Antigravity CLI (`agy`), o plano B** (desde 2026-10-30, nos dois PCs): quando o limite semanal do Claude acaba, o agente do Google pela assinatura Gemini Pro de Matthew. **Nunca o OpenCode com o login do Google** (há relatos de contas bloqueadas). Instalar: baixar o `https://antigravity.google/cli/install.sh` para um arquivo, ler e rodar com `bash` (vai para `~/.local/bin/agy`, confere o SHA-512, sem `sudo`; repositório oficial `google-antigravity/antigravity-cli`). O login é no primeiro `agy`, pelo navegador. As regras do projeto chegam pelo `AGENTS.md` da raiz, que inclui o `CLAUDE.md`. As travas ficam em `~/.gemini/antigravity-cli/settings.json`, fora do Git: as mesmas nos dois PCs (`sudo`, `--force`, `git reset --hard`, push na `main`, o `.env`), conforme `antigravity.google/docs/permissions?tab=cli`.
+
 ### 12.5 Foto do ambiente: comparando os dois PCs
 
 Um script tira uma "foto" do ambiente desta máquina e a guarda no Git, em `docs/ambiente/`: versões do Ubuntu, nvm, Node (e o padrão do nvm), npm, Git, Docker, gh e Claude Code; nome e e-mail do Git; conta e escopos do `gh`; se o `.env` tem todas as chaves do `.env.example` (só os **nomes**, nunca os valores); se o banco está no ar e com as migrations em dia; e as extensões do VS Code nos dois lados (WSL e Windows).
